@@ -1,0 +1,23 @@
+temple-management-system/
+├── public/
+│   └── favicon.ico
+├── src/
+│   ├── assets/
+│   │   └── logo.png
+│   ├── components/
+│   │   ├── LoginForm.vue
+│   │   └── ContactForm.vue
+│   ├── router/
+│   │   └── index.js
+│   ├── stores/
+│   │   └── auth.js
+│   ├── views/
+│   │   ├── Login.vue
+│   │   └── Contact.vue
+│   ├── App.vue
+│   ├── main.js
+│   └── style.css
+├── index.html
+├── package.json
+├── vite.config.js
+└── README.md
