@@ -12,6 +12,7 @@
         <el-button type="primary" native-type="submit" style="width: 100%;">登入</el-button>
       </el-form-item>
     </el-form>
+    <p>測試帳號：<b>admin</b>密碼：<b>password</b></p>
   </div>
 </template>
 

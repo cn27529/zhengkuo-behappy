@@ -1,5 +1,23 @@
 <template>
-  <div class="contact-container">
+
+ <div class="common-layout">
+    <el-container>
+      <el-header>
+        <el-menu mode="horizontal" :router="true">    
+    <el-menu-item index="/login">登出</el-menu-item>    
+  </el-menu>
+      </el-header>
+      <el-container>
+        <el-aside width="100px">          
+          <el-menu mode="vertical" :router="true">
+    <el-menu-item index="/welcome">歡迎頁面</el-menu-item>
+    <el-menu-item index="/contact">聯絡我們</el-menu-item>
+  </el-menu>
+
+        </el-aside>
+        <el-main>
+          
+<div class="contact-container">
     <h2>聯絡我們</h2>
     <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ isSubmitting }">
       <div class="form-group">
@@ -20,6 +38,14 @@
       <el-button type="primary" native-type="submit" :disabled="isSubmitting">送出</el-button>
     </Form>
   </div>
+
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+
+
+  
 </template>
 
 <script setup>

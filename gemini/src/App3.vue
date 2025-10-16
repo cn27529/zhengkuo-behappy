@@ -3,14 +3,11 @@
 </script>
 
 <template>
-  <el-menu mode="horizontal" :router="true">
-    <el-menu-item index="/login">登入</el-menu-item>
-    <el-menu-item index="/welcome">歡迎頁面</el-menu-item>
-    <el-menu-item index="/contact">聯絡我們</el-menu-item>
-  </el-menu>
+  
   <main>
     <router-view></router-view>
   </main>
+
   <div style="display: none;">
     <a href="https://vite.dev" target="_blank">
       <img src="/vite.svg" class="logo" alt="Vite logo" />
