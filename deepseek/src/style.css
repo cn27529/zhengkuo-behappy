@@ -2,15 +2,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+  font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
 }
 
 :root {
-  --primary-color: #8B4513;
-  --secondary-color: #D2691E;
-  --accent-color: #CD853F;
-  --light-color: #F5F5DC;
-  --dark-color: #4A3520;
+  --primary-color: #8b4513;
+  --secondary-color: #d2691e;
+  --accent-color: #cd853f;
+  --light-color: #f5f5dc;
+  --dark-color: #4a3520;
   --success-color: #28a745;
   --error-color: #dc3545;
 }
@@ -28,7 +28,11 @@ body {
 }
 
 header {
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(
+    to right,
+    var(--primary-color),
+    var(--secondary-color)
+  );
   color: white;
   padding: 1rem 2rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -72,7 +76,8 @@ nav a {
   transition: background-color 0.3s;
 }
 
-nav a:hover, nav a.router-link-active {
+nav a:hover,
+nav a.router-link-active {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -109,7 +114,9 @@ label {
   font-weight: 500;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ddd;
@@ -118,7 +125,9 @@ input, textarea, select {
   transition: border-color 0.3s;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   border-color: var(--accent-color);
   outline: none;
   box-shadow: 0 0 0 2px rgba(205, 133, 63, 0.2);
@@ -186,16 +195,51 @@ footer {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   nav ul {
     gap: 0.5rem;
   }
-  
+
   main {
     padding: 1rem;
   }
-  
+
   .page {
     padding: 1.5rem;
   }
+}
+
+/* 添加按钮样式 20251016加
+*/
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* 图表容器响应式 */
+canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* 滚动条样式 */
+.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }

@@ -96,8 +96,9 @@ export default {
         
         // 模拟跳转延迟
         setTimeout(() => {
-          alert('登录成功！在实际应用中，这里会跳转到仪表板页面。')
+          //alert('登录成功！在实际应用中，这里会跳转到仪表板页面。')
           success.value = false
+          router.push('/dashboard')
         }, 1500)
       } catch (error) {
         alert(error.message)
