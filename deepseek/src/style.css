@@ -83,7 +83,7 @@ nav a.router-link-active {
 
 main {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
@@ -198,10 +198,6 @@ footer {
 
   nav ul {
     gap: 0.5rem;
-  }
-
-  main {
-    padding: 1rem;
   }
 
   .page {

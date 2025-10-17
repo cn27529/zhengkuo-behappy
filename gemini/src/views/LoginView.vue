@@ -20,6 +20,7 @@
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
+import api from '../services/mockApi'; 
 
 const username = ref('');
 const password = ref('');
@@ -35,6 +36,21 @@ const handleLogin = () => {
   console.log('登入資料:', { username: username.value, password: password.value });
   router.push('/welcome');
 };
+
+async function submit() {
+      // error.value = ''
+      // token.value = ''
+      // loading.value = true
+      try {
+        const res = await api.login(form.value)
+        //token.value = res.token
+      } catch (e) {
+        //error.value = e.message || '登入失敗'
+      } finally {
+        //loading.value = false
+      }
+    }
+
 </script>
 
 <style scoped>

@@ -54,6 +54,7 @@ import { required, email } from '@vee-validate/rules';
 import { localize, setLocale } from '@vee-validate/i18n';
 import zh_TW from '@vee-validate/i18n/dist/locale/zh_TW.json';
 import { ElMessage } from 'element-plus';
+import api from '../services/mockApi'
 
 // --- Vee-Validate 設定 ---
 // 定義規則

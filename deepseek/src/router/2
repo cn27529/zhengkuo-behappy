@@ -1,20 +1,26 @@
-// src/router/index.js 更新版本
+// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "../stores/auth";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
-  { path: "/login", component: () => import("../views/Login.vue") },
-  { path: "/contact", component: () => import("../views/Contact.vue") },
+  {
+    path: "/login",
+    component: () => import("../views/Login.vue"),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: "/contact",
+    component: () => import("../views/Contact.vue"),
+    meta: { requiresAuth: true },
+  },
   {
     path: "/dashboard",
     component: () => import("../views/Dashboard.vue"),
     meta: { requiresAuth: true },
   },
-  { path: "/logout", component: () => import("../views/Logout.vue") },
   {
-    path: "/registration",
-    component: () => import("../views/Registration.vue"),
+    path: "/logout",
+    component: () => import("../views/Logout.vue"),
     meta: { requiresAuth: true },
   },
   // 为未来功能预留路由
@@ -40,13 +46,18 @@ const router = createRouter({
   routes,
 });
 
-// 路由守卫
+// 路由守卫 - 更新版本
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
-
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next("/login");
+  const authStore = useAuthStore?.(); // 确保在setup外使用Pinia store
+  // 如果authStore未定义，跳过认证检查
+  if (to.meta.requiresAuth && (!authStore || !authStore.isAuthenticated)) {
+    next("/login"); // 重定向到登录页
   } else {
+    // 更新菜单激活状态
+    const menuStore = useMenuStore?.();
+    if (menuStore) {
+      menuStore.setActiveMenuByPath(to.path);
+    }
     next();
   }
 });

@@ -4,15 +4,18 @@
       <div class="header-content">
         <div class="logo">
           <div class="logo-icon">🛕</div>
-          <h1>寺庙活动报名系统</h1>
-          <div class="user-info" v-if="showUserInfo">
+          <h1>寺庙活动报名系统0版</h1>
+          <div class="user-info" v-if="$route.path !== '/login'">
             <span>管理员</span><span>你好</span>🙏
           </div>
         </div>
         <!-- 顶部导航栏 -->
         <nav>
           <ul>
-            <li><router-link to="/logout" v-if="showLogoutLink">退出登录</router-link></li>
+            <!-- <li><router-link to="/login">登录</router-link></li> -->
+            <!-- <li><router-link to="/contact">联系我们</router-link></li> -->
+            <li><router-link to="/dashboard" v-if="$route.path !== '/login'">仪表板</router-link></li>
+            <li><router-link to="/logout" v-if="$route.path !== '/login'">退出登录</router-link></li>
           </ul>
         </nav>
       </div>
@@ -21,100 +24,79 @@
     <!-- 主要内容区 -->
     <div class="dashboard-container">
       <div class="dashboard-content">
-        <!-- 侧边菜单栏 -->
-        <aside v-if="showSidebar" :class="['sidebar', { 'sidebar-left': menuPosition === 'left', 'sidebar-right': menuPosition === 'right' }]">
-          <div class="menu-toggle" style="display: none;">
-            <label>菜单位置：</label>
-            <select v-model="menuPosition" class="position-select">
-              <option value="left">左侧</option>
-              <option value="right">右侧</option>
-            </select>
-          </div>
-          
-          <nav class="sidebar-nav">
-            <ul>
-              <li v-for="menuItem in availableMenuItems" :key="menuItem.id">
-                <router-link 
-                  :to="menuItem.path" 
-                  :class="['nav-link', { active: isMenuActive(menuItem) }]"
-                  @click="handleMenuClick(menuItem)"
-                >
-                  <span class="nav-icon">{{ menuItem.icon }}</span>
-                  <span class="nav-text">{{ menuItem.name }}</span>
-                  <span v-if="isMenuActive(menuItem)" class="nav-icon">😀</span>
-                </router-link>
-              </li>
-            </ul>
-          </nav>
-        </aside>
 
+        <!-- 侧边菜单栏 -->
+      <aside v-if="$route.path !== '/login' && $route.path !== '/logout'" :class="['sidebar', { 'sidebar-left': menuPosition === 'left', 'sidebar-right': menuPosition === 'right' }]">
+        <div class="menu-toggle" style="display: none;">
+          <label>菜单位置：</label>
+          <select v-model="menuPosition" class="position-select">
+            <option value="left">左侧</option>
+            <option value="right">右侧</option>
+          </select>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <ul>
+            <li>
+              <router-link to="/dashboard" class="nav-link active">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">仪表板</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/contact" class="nav-link">
+                <span class="nav-icon">📝</span>
+                <span class="nav-text">活动报名</span>
+              </router-link>
+            </li>
+            <li>
+              <a href="#" class="nav-link">
+                <span class="nav-icon">🧾</span>
+                <span class="nav-text">收据管理</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link">
+                <span class="nav-icon">🔍</span>
+                <span class="nav-text">查询收据</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link">
+                <span class="nav-icon">📥</span>
+                <span class="nav-text">数据导入</span>
+              </a>
+            </li>
+            
+          </ul>
+        </nav>
+      </aside>
         <main>
           <router-view></router-view>
         </main>
       </div>
     </div>
     
-    <footer v-if="showFooter">
+    
+    <footer v-if="$route.path !== '/dashboard'">
       <p>© 2025 寺庙活动报名系统 | 弘扬佛法，服务众生</p>
     </footer>
   </div>
 </template>
 
 <script>
-import { useRouter, useRoute } from 'vue-router'
+
+import { useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
-import { useMenuStore } from './stores/menu'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 export default {
   name: 'App',
   setup() {
-    const router = useRouter()
-    const route = useRoute()
+    // 这里可以添加全局状态或方法
     const authStore = useAuthStore()
-    const menuStore = useMenuStore()
-    
+    const router = useRouter()
     const menuPosition = ref(localStorage.getItem('menuPosition') || 'left')
-
-    // 计算属性
-    const showSidebar = computed(() => {
-      return route.path !== '/login' && route.path !== '/logout'
-    })
-
-    const showFooter = computed(() => {
-      return route.path !== '/dashboard'
-    })
-
-    const showUserInfo = computed(() => {
-      return route.path !== '/login'
-    })
-
-    const showDashboardLink = computed(() => {
-      return route.path !== '/login'
-    })
-
-    const showLogoutLink = computed(() => {
-      return route.path !== '/login'
-    })
-
-    const availableMenuItems = computed(() => {
-      //alert(typeof(menuStore.availableMenuItems))
-      return menuStore.availableMenuItems
-    })
-
-    // 方法
-    const isMenuActive = (menuItem) => {
-      return menuStore.activeMenuId === menuItem.id
-    }
-
-    const handleMenuClick = (menuItem) => {
-      menuStore.navigateToMenu(menuItem)
-    }
-
-    // 监听路由变化，更新激活菜单
-    watch(() => route.path, (newPath) => {
-      menuStore.setActiveMenuByPath(newPath)
-    })
 
     // 當 menuPosition 改變時，同步到 localStorage
     watch(menuPosition, (val) => {
@@ -125,33 +107,31 @@ export default {
       }
     })
 
+    const logout = () => {
+      authStore.logout()
+      alert('退出登录！在实际应用中，这里会跳转到登录页面。')
+      router.push('/login')
+    }
+
     onMounted(() => {
-      // 初始化菜单
-      menuStore.initializeActiveMenu()
-      
       // 檢查用戶是否已登入
-      if (!authStore.isAuthenticated && route.path !== '/login') {
+      if (!authStore.isAuthenticated && router.currentRoute.value.path !== '/login') {
         router.push('/login')
       }
     })
-
     return {
       menuPosition,
-      showSidebar,
-      showFooter,
-      showUserInfo,
-      showDashboardLink,
-      showLogoutLink,
-      availableMenuItems,
-      isMenuActive,
-      handleMenuClick
+      logout
     }
+    
+
   }
+
+  
 }
 </script>
 
 <style>
-
 /* 全局样式 */
 .dashboard-container {
   min-height: 100vh;
@@ -359,22 +339,4 @@ export default {
   background: #a8a8a8;
 }
 
-/* 保持原有的样式不变，只添加active状态的样式增强 */
-.nav-link.active {
-  background-color: var(--light-color) !important;
-  color: var(--primary-color) !important;
-  font-weight: 600;
-  border-left: 3px solid var(--primary-color);
-}
-
-.nav-link.active .nav-icon {
-  transform: scale(1.1);
-}
-
-/* 平滑过渡效果 */
-.nav-link {
-  transition: all 0.3s ease;
-}
-
-/* 其他原有样式保持不变 */
 </style>
