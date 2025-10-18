@@ -1,10 +1,16 @@
 <!-- src/views/Registration.vue -->
 <template>
-    
+  
   <div class="main-content">
     <div class="page-header">
       <h2>消災超度登記表</h2>
-      <p>請填寫以下信息完成活動報名</p>
+    </div>
+
+    <!-- 顯示驗證錯誤訊息（若有） -->
+    <div style="display:none;" v-if="validationDetails && validationDetails.messages.length" class="validation-summary">
+      <ul>
+        <li v-for="(msg, idx) in validationDetails.messages" :key="idx">{{ msg }}</li>
+      </ul>
     </div>
 
     <div class="registration-form">
@@ -13,8 +19,8 @@
         <h2>聯絡人信息</h2>
         <div class="form-grid">
 
-          <div class="form-group">
-            <label for="contactName">聯絡人姓名 <span class="required">*</span></label>
+          <div class="form-group address-row">
+            <label for="contactName">聯絡人姓名<span class="required">*</span></label>
             <input
               type="text"
               id="contactName"
@@ -24,8 +30,18 @@
             >
           </div>
 
-          <div class="form-group">
-            <label for="contactPhone">家用電話 <span class="required">*</span></label>
+          <div class="form-group address-row">
+            <label for="contactMobile">手機號碼<span class="required">*</span></label>
+            <input
+              type="tel"
+              id="contactMobile"
+              v-model="registrationForm.contact.mobile"
+              placeholder="請輸入手機號碼"
+            >
+          </div>
+
+          <div class="form-group address-row">
+            <label for="contactPhone">家用電話<span class="required">*</span></label>
             <input
               type="tel"
               id="contactPhone"
@@ -35,19 +51,16 @@
             >
           </div>
 
-          <div class="form-group">
-            <label for="contactMobile">手機號碼</label>
-            <input
-              type="tel"
-              id="contactMobile"
-              v-model="registrationForm.contact.mobile"
-              placeholder="請輸入手機號碼"
-            >
-          </div>
+          
 
           <div class="form-group">
-            <label>資料表屬性 <span class="required">*</span></label>
+
+            <label>資料表屬性<span class="required">*</span></label>
+            
+            
             <div class="radio-group">
+
+              
               <label v-for="option in relationshipOptions" :key="option" class="radio-label">
                 <input
                   type="radio"
@@ -56,20 +69,22 @@
                 >
                 <span class="radio-text">{{ option }}</span>
               </label>
-              
-            </div>
-            
-            <input
+
+              <input
               v-if="registrationForm.contact.relationship === '其它'"
               type="text"
               v-model="registrationForm.contact.otherRelationship"
               placeholder="請輸入其他關係"
               class="other-input"
             >
-          </div>
-          <div class="form-group">
+              
+            </div>
+
+            
+            
             
           </div>
+          
         </div>
       </div>
 
@@ -77,7 +92,7 @@
       <div class="form-section">
         <h2>消災祈福</h2>
         
-        <div class="form-group">
+        <div class="form-group address-row">
           <label for="blessingAddress">地址 <span class="required">*</span></label>
           <input
             type="text"
@@ -92,8 +107,8 @@
           <div class="section-header">
             <h3>消災人員名單</h3>
             <div class="section-info">
-              <span class="count-badge">已填寫: {{ availableBlessingPersons.length }} 位</span>
-              <span class="count-badge">戶長: {{ currentHouseholdHeadsCount }}/{{ config.maxHouseholdHeads }} 位</span>
+              <span style="display:none;" class="count-badge">已填寫: {{ availableBlessingPersons.length }} 位</span>
+              <span style="display:none;" class="count-badge">戶長: {{ currentHouseholdHeadsCount }}/{{ config.maxHouseholdHeads }} 位</span>
               <button type="button" class="btn btn-outline btn-sm" @click="addBlessingPerson">
                 + 增加人員
               </button>
@@ -120,7 +135,7 @@
               
               <div class="person-form">
                 <div class="form-grid compact">
-                  <div class="form-group">
+                  <div class="form-group address-row">
                     <label>姓名</label>
                     <input
                       type="text"
@@ -129,7 +144,7 @@
                     >
                   </div>
 
-                  <div class="form-group">
+                  <div class="form-group address-row">
                     <label>生肖</label>
                     <select v-model="person.zodiac">
                       <option value="">請選擇生肖</option>
@@ -139,7 +154,7 @@
                     </select>
                   </div>
 
-                  <div class="form-group">
+                  <div class="form-group address-row">
                     <label>備註</label>
                     <input
                       type="text"
@@ -153,8 +168,6 @@
                       <input
                         type="checkbox"
                         v-model="person.isHouseholdHead"
-                        @change="toggleHouseholdHead(person.id)"
-                        :disabled="!person.isHouseholdHead && currentHouseholdHeadsCount >= config.maxHouseholdHeads"
                       >
                       <span>設為戶長</span>
                     </label>
@@ -169,8 +182,7 @@
       <!-- 超度區塊 -->
       <div class="form-section">
         <h2>超度祈福</h2>
-        
-        <div class="form-group">
+        <div class="form-group address-row">
           <label for="salvationAddress">地址 <span class="required">*</span></label>
           <input
             type="text"
@@ -179,6 +191,14 @@
             placeholder="請輸入地址"
             required
           >
+          <button
+            v-if="registrationForm.blessing.address && registrationForm.blessing.address.trim()"
+            type="button"
+            class="btn btn-outline btn-sm copy-address-btn"
+            @click="copyBlessingAddress"
+          >
+            同消災地址
+          </button>
         </div>
 
         <!-- 祖先資料 -->
@@ -186,7 +206,7 @@
           <div class="section-header">
             <h3>歷代祖先</h3>
             <div class="section-info">
-              <span class="count-badge">已填寫: {{ currentAncestorsCount }}/{{ config.maxAncestors }} 位</span>
+              <span style="display:none;" class="count-badge">已填寫: {{ currentAncestorsCount }}/{{ config.maxAncestors }} 位</span>
               <button type="button" class="btn btn-outline btn-sm" @click="addAncestor">
                 + 增加祖先
               </button>
@@ -213,16 +233,17 @@
               
               <div class="person-form">
                 <div class="form-grid compact">
-                  <div class="form-group">
-                    <label>姓氏</label>
+                  <div class="form-group address-row">
+                    <label>祖先</label>
                     <input
                       type="text"
                       v-model="ancestor.surname"
                       placeholder="請輸入祖先姓氏"
                     >
+                    <p>氏歷代祖先</p>
                   </div>
 
-                  <div class="form-group">
+                  <div class="form-group address-row">
                     <label>備註</label>
                     <input
                       type="text"
@@ -230,6 +251,7 @@
                       placeholder="備註信息"
                     >
                   </div>
+                  
                 </div>
               </div>
             </div>
@@ -241,7 +263,7 @@
           <div class="section-header">
             <h3>陽上人</h3>
             <div class="section-info">
-              <span class="count-badge">已填寫: {{ currentSurvivorsCount }}/{{ config.maxSurvivors }} 位</span>
+              <span style="display:none;" class="count-badge">已填寫: {{ currentSurvivorsCount }}/{{ config.maxSurvivors }} 位</span>
               <button type="button" class="btn btn-outline btn-sm" @click="addSurvivor">
                 + 增加陽上人
               </button>
@@ -252,19 +274,19 @@
             {{ survivorsWarning }}
           </div>
 
-          <!-- 從消災人員導入 -->
-          <div v-if="availableBlessingPersons.length > 0" class="import-section">
-            <h4>從消災人員導入</h4>
+          <!-- 從消災人員載入 -->
+          <div v-if="registrationForm.blessing.persons.some(p => p.name && p.name.trim() !== '')" class="import-section">
+            <h4>從消災人員載入</h4>
             <div class="import-buttons">
               <button
-                v-for="person in availableBlessingPersons"
+                v-for="person in registrationForm.blessing.persons"
                 :key="person.id"
                 type="button"
                 class="btn btn-outline btn-sm"
                 @click="importSurvivorFromBlessing(person)"
                 :disabled="currentSurvivorsCount >= config.maxSurvivors"
               >
-                導入 {{ person.name }}
+                載入 {{ person.name }}
               </button>
             </div>
           </div>
@@ -285,7 +307,7 @@
               
               <div class="person-form">
                 <div class="form-grid compact">
-                  <div class="form-group">
+                  <div class="form-group address-row">
                     <label>姓名</label>
                     <input
                       type="text"
@@ -294,7 +316,7 @@
                     >
                   </div>
 
-                  <div class="form-group">
+                  <div class="form-group address-row">
                     <label>生肖</label>
                     <select v-model="survivor.zodiac">
                       <option value="">請選擇生肖</option>
@@ -304,7 +326,7 @@
                     </select>
                   </div>
 
-                  <div class="form-group">
+                  <div class="form-group address-row">
                     <label>備註</label>
                     <input
                       type="text"
@@ -328,7 +350,7 @@
           type="button" 
           class="btn btn-primary" 
           @click="submitForm"
-          :disabled="!isFormValid || submitting"
+          :disabled="submitting"
         >
           {{ submitting ? '提交中...' : '提交報名' }}
         </button>
@@ -340,6 +362,7 @@
 <script>
 import { useRegistrationStore } from '../stores/registration'
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus';
 
 export default {
   name: 'Registration',
@@ -351,14 +374,30 @@ export default {
       await registrationStore.loadConfig()
     })
 
+    const copyBlessingAddress = () => {
+      const src = registrationStore.registrationForm.blessing.address || ''
+      if (src && src.trim()) {
+        registrationStore.registrationForm.salvation.address = src
+        ElMessage.success('已複製消災地址到超度地址')
+      }
+    }
+
     const submitForm = async () => {
+      // 先檢查 validationDetails
+      const details = registrationStore.validationDetails
+      if (details && !details.valid) {
+        // 顯示第一則錯誤為訊息，並同時在畫面上列出所有錯誤
+        ElMessage.error(details.messages[0] || '表單驗證失敗')
+        return
+      }
+
       submitting.value = true
       try {
         const result = await registrationStore.submitRegistration()
-        alert(result.message)
+        ElMessage.success(result.message)
         registrationStore.resetForm()
       } catch (error) {
-        alert('提交失敗: ' + error.message)
+        ElMessage.error('提交失敗: ' + error.message)
       } finally {
         submitting.value = false
       }
@@ -367,7 +406,8 @@ export default {
     return {
       ...registrationStore,
       submitting,
-      submitForm
+      submitForm,
+      copyBlessingAddress
     }
   }
 }
@@ -395,6 +435,10 @@ export default {
   color: #666;
   font-size: 1.1rem;
 } */
+
+.ancestors-section{
+  margin-bottom: 20px;
+}
 
 .form-section {
   background: white;
@@ -646,6 +690,42 @@ input:focus, select:focus {
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #e9ecef;
+}
+
+.address-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.address-row label {
+  flex: 0 0 100px;
+  margin: 0;
+}
+
+.address-row input {
+  flex: 1;
+}
+
+.form-group.address-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.form-group.address-row label {
+  width: 120px;
+  margin-bottom: 0; /* 取消 label 的底部間距，讓其與 input 水平對齊 */
+}
+
+.form-group.address-row input {
+  flex: 1;
+}
+
+.copy-address-btn {
+  margin-left: 8px;
+  align-self: center;
+  height: 36px;
 }
 
 /* 響應式設計 */

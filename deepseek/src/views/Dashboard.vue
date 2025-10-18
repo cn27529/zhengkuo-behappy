@@ -3,7 +3,7 @@
       <main class="main-content">
         <div class="page-header">
           <h2>活动统计仪表板</h2>
-          <p>查看寺庙各项活动的报名情况和统计数据</p>
+          <p>查看活动报名情况和统计数据</p>
           <div class="total-participants">
             年度总参与人数: <strong>{{ totalParticipants }}</strong> 人
           </div>
@@ -107,22 +107,6 @@ export default {
 <style scoped>
 
 
-
-
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.page-header h2 {
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-  font-size: 1.8rem;
-}
-
-.page-header p {
-  color: #666;
-  font-size: 1rem;
-}
 
 /* 统计卡片网格 */
 .stats-grid {

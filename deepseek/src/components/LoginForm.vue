@@ -9,7 +9,7 @@
           v-model="loginForm.username" 
           placeholder="请输入用户名"
           required>
-        <div class="error" v-if="errors.username">{{ errors.username }}</div>
+        
       </div>
       
       <div class="form-group">
@@ -17,20 +17,19 @@
         <input 
           type="password" 
           id="password" 
-          v-model="loginForm.password" 
+          v-model="loginForm.password"
           placeholder="请输入密码"
           required>
-        <div class="error" v-if="errors.password">{{ errors.password }}</div>
+        
       </div>
       
       <button type="submit" class="btn btn-primary btn-block" :disabled="loading">
         {{ loading ? '登录中...' : '登录' }}
       </button>
+
     </form>
     
-    <div v-if="success" class="success-message">
-      登录成功！正在跳转...
-    </div>
+    
   </div>
 </template>
 
@@ -38,6 +37,7 @@
 import { ref, reactive } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus';
 
 export default {
   name: 'LoginForm',
@@ -50,35 +50,30 @@ export default {
       password: ''
     })
     
-    const errors = reactive({
-      username: '',
-      password: ''
-    })
-    
-    const success = ref(false)
+    //const success = ref(false)
     const loading = ref(false)
     
     const validateForm = () => {
       let isValid = true
       
       // 重置错误信息
-      Object.keys(errors).forEach(key => errors[key] = '')
+      //Object.keys(errors).forEach(key => errors[key] = '')
       
       // 用户名验证
       if (!loginForm.username.trim()) {
-        errors.username = '请输入用户名'
+        ElMessage.error('请输入用户名')
         isValid = false
       } else if (loginForm.username.length < 3) {
-        errors.username = '用户名至少需要3个字符'
+        ElMessage.error('用户名至少需要3个字符')
         isValid = false
       }
       
       // 密码验证
       if (!loginForm.password) {
-        errors.password = '请输入密码'
+        ElMessage.error('请输入密码')
         isValid = false
       } else if (loginForm.password.length < 6) {
-        errors.password = '密码至少需要6个字符'
+        ElMessage.error('密码至少需要6个字符')
         isValid = false
       }
       
@@ -92,12 +87,14 @@ export default {
       
       try {
         await authStore.login(loginForm.username, loginForm.password)
-        success.value = true
+        //success.value = true
+        
+        ElMessage.success('登录成功！正在跳转...👍👍');
         
         // 模拟跳转延迟
         setTimeout(() => {
           //alert('登录成功！在实际应用中，这里会跳转到仪表板页面。')
-          success.value = false
+          //success.value = false
           router.push('/dashboard')
         }, 1500)
       } catch (error) {
@@ -109,11 +106,11 @@ export default {
     
     return {
       loginForm,
-      errors,
-      success,
+      //success,
       loading,
       handleLogin
     }
   }
 }
 </script>
+

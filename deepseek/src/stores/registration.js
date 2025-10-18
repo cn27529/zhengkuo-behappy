@@ -1,42 +1,52 @@
 // src/stores/registration.js
+// 本檔為報名表單的 Pinia store，管理整個消災超度登記表的狀態與操作。
+// 註解會說明每個變數與方法在 Registration.vue 中的用途與對應位置。
+
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
 export const useRegistrationStore = defineStore("registration", () => {
-  // 配置參數
+  // config：全域配置，決定表單的限制值（例如最大戶長數、最大祖先數等）。
+  // 在 Registration.vue 中會用到 config.maxHouseholdHeads、config.maxAncestors、config.maxSurvivors
+  // 來顯示上限或決定按鈕是否 disabled。
   const config = ref({
     maxHouseholdHeads: 1, // 最大戶長數
     maxAncestors: 5, // 最大祖先數
     maxSurvivors: 2, // 最大陽上人數
-    defaultSurvivors: 2, // 預設陽上人數
+    defaultSurvivors: 2, // 預設陽上人數（用於初始化）
   });
 
-  // 表單數據
+  // registrationForm：整個表單的核心資料結構，對應 Registration.vue 裡各輸入欄位的 v-model。
+  // - contact: 聯絡人資訊（name, phone, mobile, relationship, otherRelationship）
+  // - blessing: 消災區塊（address, persons[]）
+  // - salvation: 超度區塊（address, ancestors[], survivors[]）
+  // 在畫面上會直接使用 registrationForm.contact.name、registrationForm.blessing.address 等。
   const registrationForm = ref({
-    // 聯絡人信息
     contact: {
       name: "",
       phone: "",
       mobile: "",
-      relationship: "本家", // 本家、娘家、朋友、其它
+      relationship: "本家", // 本家、娘家、朋友、其它（對應畫面上的 radio）
       otherRelationship: "",
     },
-    // 消災區塊
     blessing: {
+      // 消災地址
       address: "",
+      // 消災人員
       persons: [
         {
           id: 1,
           name: "",
           zodiac: "",
           notes: "",
-          isHouseholdHead: true,
+          isHouseholdHead: true, // 是否為戶長，畫面用 checkbox 控制
         },
       ],
     },
-    // 超度區塊
     salvation: {
+      // 超度地址
       address: "",
+      // 祖先清單
       ancestors: [
         {
           id: 1,
@@ -44,15 +54,10 @@ export const useRegistrationStore = defineStore("registration", () => {
           notes: "",
         },
       ],
+      // 陽上人清單
       survivors: [
         {
           id: 1,
-          name: "",
-          zodiac: "",
-          notes: "",
-        },
-        {
-          id: 2,
           name: "",
           zodiac: "",
           notes: "",
@@ -61,10 +66,9 @@ export const useRegistrationStore = defineStore("registration", () => {
     },
   });
 
-  // 關係選項
+  // UI 選項資料（對應 Registration.vue 的下拉/選項）
   const relationshipOptions = ref(["本家", "娘家", "朋友", "其它"]);
 
-  // 生肖選項
   const zodiacOptions = ref([
     "鼠",
     "牛",
@@ -80,33 +84,54 @@ export const useRegistrationStore = defineStore("registration", () => {
     "豬",
   ]);
 
-  // Getter - 計算屬性
+  // --- computed getters ---
+  // currentHouseholdHeadsCount：計算目前被標記為戶長的人數（用於限制戶長數量）
   const currentHouseholdHeadsCount = computed(() => {
     return registrationForm.value.blessing.persons.filter(
       (person) => person.isHouseholdHead
     ).length;
   });
 
+  // currentAncestorsCount：目前祖先條目數，用於顯示與限制
   const currentAncestorsCount = computed(() => {
     return registrationForm.value.salvation.ancestors.length;
   });
 
+  // currentSurvivorsCount：目前陽上人數，用於顯示與限制
   const currentSurvivorsCount = computed(() => {
     return registrationForm.value.salvation.survivors.length;
   });
 
+  // availableBlessingPersons：過濾出已填寫姓名的消災人員，畫面可用這個來 "從消災人員載入" 陽上人
   const availableBlessingPersons = computed(() => {
     return registrationForm.value.blessing.persons.filter(
       (person) => person.name.trim() !== ""
     );
   });
 
+  // availableAncestors：過濾出已填寫姓氏的祖先，供驗證使用（只有有填寫祖先時才要求超度地址）
+  const availableAncestors = computed(() => {
+    return registrationForm.value.salvation.ancestors.filter(
+      (a) => a.surname && a.surname.trim() !== ""
+    );
+  });
+
+  // availableSurvivors：過濾出已填寫姓名的陽上人，供驗證使用
+  const availableSurvivors = computed(() => {
+    return registrationForm.value.salvation.survivors.filter(
+      (s) => s.name && s.name.trim() !== ""
+    );
+  });
+
+  // 提示訊息 computed：如果超出限制或缺少必要戶長，回傳警告字串，供畫面顯示
   const householdHeadWarning = computed(() => {
     const count = currentHouseholdHeadsCount.value;
-    const max = config.value.maxHouseholdHeads;
+    const max = config.value.maxHouseholdHeads; // 最大戶長數
+    const filledCount = availableBlessingPersons.value.length; // 已填姓名的人數
     if (count > max) {
       return `戶長數量超過限制 (${count}/${max})`;
-    } else if (count === 0) {
+    } else if (filledCount > 0 && count === 0) {
+      // 只有當至少有一筆已填寫的消災人員時，才提示需指定戶長
       return "請至少指定一位戶長";
     }
     return null;
@@ -130,20 +155,145 @@ export const useRegistrationStore = defineStore("registration", () => {
     return null;
   });
 
-  const isFormValid = computed(() => {
-    return (
-      !householdHeadWarning.value &&
-      !ancestorsWarning.value &&
-      !survivorsWarning.value &&
-      registrationForm.value.contact.name.trim() !== "" &&
-      (registrationForm.value.contact.phone.trim() !== "" ||
-        registrationForm.value.contact.mobile.trim() !== "") &&
-      registrationForm.value.blessing.address.trim() !== "" &&
-      registrationForm.value.salvation.address.trim() !== ""
-    );
+  // validationDetails：回傳完整的驗證結果物件，包含每個欄位的狀態與錯誤訊息
+  // 這樣 Registration.vue 可以顯示更細的錯誤內容，例如提示哪個欄位未通過驗證
+  const validationDetails = computed(() => {
+    const details = {
+      valid: true,
+      errors: {},
+      messages: [],
+    };
+
+    // 戶長相關檢查
+    const hhCount = currentHouseholdHeadsCount.value;
+    if (hhCount > config.value.maxHouseholdHeads) {
+      details.valid = false;
+      details.errors.householdHead = `戶長數量超過限制 (${hhCount}/${config.value.maxHouseholdHeads})`;
+      details.messages.push(details.errors.householdHead);
+    } else if (availableBlessingPersons.value.length > 0 && hhCount === 0) {
+      // 只有當有已填寫的消災人員時，才要求至少指定一位戶長
+      details.valid = false;
+      details.errors.householdHead = "請至少指定一位戶長";
+      details.messages.push(details.errors.householdHead);
+    } else {
+      details.errors.householdHead = null;
+    }
+
+    // 祖先檢查
+    const ancCount = currentAncestorsCount.value;
+    if (ancCount > config.value.maxAncestors) {
+      details.valid = false;
+      details.errors.ancestors = `祖先數量超過限制 (${ancCount}/${config.value.maxAncestors})`;
+      details.messages.push(details.errors.ancestors);
+    } else {
+      details.errors.ancestors = null;
+    }
+
+    // 陽上人檢查
+    const svCount = currentSurvivorsCount.value;
+    if (svCount > config.value.maxSurvivors) {
+      details.valid = false;
+      details.errors.survivors = `陽上人數量超過限制 (${svCount}/${config.value.maxSurvivors})`;
+      details.messages.push(details.errors.survivors);
+    } else {
+      details.errors.survivors = null;
+    }
+
+    // 聯絡人姓名
+    if (!registrationForm.value.contact.name.trim()) {
+      details.valid = false;
+      details.errors.contactName = "聯絡人姓名為必填";
+      details.messages.push(details.errors.contactName);
+    } else {
+      details.errors.contactName = null;
+    }
+
+    // 電話或手機至少一個
+    if (
+      !registrationForm.value.contact.phone.trim() &&
+      !registrationForm.value.contact.mobile.trim()
+    ) {
+      details.valid = false;
+      details.errors.contactPhone = "請填寫電話或手機其中之一";
+      details.messages.push(details.errors.contactPhone);
+    } else {
+      details.errors.contactPhone = null;
+    }
+
+    // 當 relationship 選擇為 '其它' 時，otherRelationship 必填
+    if (
+      registrationForm.value.contact.relationship === "其它" &&
+      !registrationForm.value.contact.otherRelationship.trim()
+    ) {
+      details.valid = false;
+      details.errors.otherRelationship = "選擇『其它』時，請填寫其他關係說明";
+      details.messages.push(details.errors.otherRelationship);
+    } else {
+      details.errors.otherRelationship = null;
+    }
+
+    // 消災地址
+    const blessingAddrFilled =
+      registrationForm.value.blessing.address &&
+      registrationForm.value.blessing.address.trim();
+    const filledBlessingPersons = availableBlessingPersons.value.length;
+
+    // 若已填寫至少一筆消災人員，則消災地址為必填
+    if (filledBlessingPersons > 0 && !blessingAddrFilled) {
+      details.valid = false;
+      details.errors.blessingAddress = "已填寫消災人員，消災地址為必填";
+      details.messages.push(details.errors.blessingAddress);
+    } else {
+      details.errors.blessingAddress = null;
+    }
+
+    // 當消災地址有填寫時，至少要有一筆已填寫的消災人員（保留對稱檢查）
+    if (blessingAddrFilled && filledBlessingPersons === 0) {
+      details.valid = false;
+      details.errors.blessingPersons = "消災地址已填寫，請至少填寫一筆消災人員";
+      details.messages.push(details.errors.blessingPersons);
+    } else {
+      details.errors.blessingPersons = null;
+    }
+
+    // 超度地址驗證：
+    // 新規則：如果已填寫任一祖先或陽上人，則超度地址為必填；
+    // 同時保留：如果超度地址有填寫，則至少要有一筆祖先或陽上人
+    const salvationAddrFilled =
+      registrationForm.value.salvation.address &&
+      registrationForm.value.salvation.address.trim();
+    const filledAncestorsCount = availableAncestors.value.length;
+    const filledSurvivorsCount = availableSurvivors.value.length;
+
+    // 當已填寫祖先或陽上人時，超度地址必填
+    if (
+      filledAncestorsCount + filledSurvivorsCount > 0 &&
+      !salvationAddrFilled
+    ) {
+      details.valid = false;
+      details.errors.salvationAddress = "已填寫祖先或陽上人，超度地址為必填";
+      details.messages.push(details.errors.salvationAddress);
+    } else if (
+      salvationAddrFilled &&
+      filledAncestorsCount + filledSurvivorsCount === 0
+    ) {
+      // 如果超度地址已填寫，但沒有祖先或陽上人，則要求至少填一筆
+      details.valid = false;
+      details.errors.salvationAddress =
+        "超度地址已填寫，請至少填寫一筆歷代祖先或陽上人";
+      details.messages.push(details.errors.salvationAddress);
+    } else {
+      details.errors.salvationAddress = null;
+    }
+
+    return details;
   });
 
-  // Actions - 消災區塊方法
+  // isFormValid：維持布林值，但改由 validationDetails 計算，便於向下相容
+  const isFormValid = computed(() => validationDetails.value.valid);
+
+  // --- Actions: 消災區塊相關操作 ---
+  // addBlessingPerson：新增一個消災人員條目（對應畫面上的 + 增加人員）
   const addBlessingPerson = () => {
     const newId =
       Math.max(...registrationForm.value.blessing.persons.map((p) => p.id), 0) +
@@ -157,6 +307,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     });
   };
 
+  // removeBlessingPerson：刪除消災人員（畫面有刪除按鈕），保護至少保留一筆
   const removeBlessingPerson = (id) => {
     const index = registrationForm.value.blessing.persons.findIndex(
       (p) => p.id === id
@@ -166,6 +317,8 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // toggleHouseholdHead：切換某人是否為戶長，並檢查不超過限制
+  // 當畫面上 checkbox 變動時會呼叫此函式
   const toggleHouseholdHead = (id) => {
     const person = registrationForm.value.blessing.persons.find(
       (p) => p.id === id
@@ -182,7 +335,8 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // Actions - 超度區塊方法
+  // --- Actions: 超度區塊相關操作 ---
+  // addAncestor / removeAncestor：管理祖先清單（畫面上的 + 增加祖先 / 刪除）
   const addAncestor = () => {
     const newId =
       Math.max(
@@ -205,6 +359,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // addSurvivor / removeSurvivor：管理陽上人名單
   const addSurvivor = () => {
     const newId =
       Math.max(
@@ -228,6 +383,8 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // importSurvivorFromBlessing：將已填寫的消災人員匯入為陽上人（畫面上有載入按鈕）
+  // 會檢查目前陽上人數是否已達上限
   const importSurvivorFromBlessing = (person) => {
     if (currentSurvivorsCount.value < config.value.maxSurvivors) {
       const newId =
@@ -244,7 +401,8 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // 表單提交
+  // submitRegistration：提交表單（此處為模擬，實際可呼叫 API）
+  // 在 Registration.vue 中 submitForm 會呼叫此方法並顯示結果
   const submitRegistration = async () => {
     if (!isFormValid.value) {
       throw new Error("表單驗證失敗，請檢查所有必填欄位");
@@ -275,7 +433,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // 重置表單
+  // resetForm：重置整個表單為初始狀態（畫面上的重置按鈕呼叫）
   const resetForm = () => {
     registrationForm.value = {
       contact: {
@@ -324,7 +482,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     };
   };
 
-  // 加載配置
+  // loadConfig：模擬從遠端加載配置，未來可改成真正的 API 請求
   const loadConfig = async () => {
     try {
       // 模擬從API加載配置
@@ -351,10 +509,13 @@ export const useRegistrationStore = defineStore("registration", () => {
     currentAncestorsCount,
     currentSurvivorsCount,
     availableBlessingPersons,
+    availableAncestors,
+    availableSurvivors,
     householdHeadWarning,
     ancestorsWarning,
     survivorsWarning,
     isFormValid,
+    validationDetails,
 
     // Actions
     addBlessingPerson,

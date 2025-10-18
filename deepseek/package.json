@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "chart.js": "^4.5.1",
+    "element-plus": "^2.11.5",
     "pinia": "^2.1.4",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
