@@ -14,10 +14,9 @@ const routes = [
   { path: "/logout", component: () => import("../views/Logout.vue") },
   {
     path: "/registration",
-    component: () => import("../views/Registration2.vue"),
+    component: () => import("../views/Registration.vue"),
     meta: { requiresAuth: true },
   },
-  //print-registration
   {
     path: "/print-registration",
     component: () => import("../views/PrintRegistration.vue"),
@@ -26,7 +25,7 @@ const routes = [
   // 为未来功能预留路由
   {
     path: "/receipts",
-    component: () => import("../views/Registration.vue"),
+    component: () => import("../views/Registration2.vue"),
     meta: { requiresAuth: true },
   },
   {

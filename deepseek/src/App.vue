@@ -4,7 +4,7 @@
       <div class="header-content">
         <div class="logo">
           <div class="logo-icon">🛕</div>
-          <h1>消災超度活动报名系统</h1>
+          <h1>{{ appTitle }}</h1>
           <div class="user-info" v-if="showUserInfo">
             <span>管理员</span><span>你好</span>🙏
           </div>
@@ -55,7 +55,7 @@
     </div>
     
     <footer v-if="showFooter">
-      <p>© 2025 消災超度活动报名系统 | 弘扬佛法，服务众生</p>
+      <p>© 2025 {{ appTitle }} | 弘扬佛法，服务众生</p>
     </footer>
   </div>
 </template>
@@ -64,7 +64,8 @@
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { useMenuStore } from './stores/menu'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, provide } from 'vue'
+import appConfig from './config/appConfig'
 
 export default {
   name: 'App',
@@ -80,7 +81,7 @@ export default {
     const isPrintRoute = computed(() => route.path && route.path.includes('print'))
 
     const showHeader = computed(() => {
-      return !isPrintRoute.value && route.path !== '/login'
+      return !isPrintRoute.value 
     })
 
     const showSidebar = computed(() => {
@@ -89,7 +90,7 @@ export default {
 
     const showFooter = computed(() => {
       //return route.path !== '/dashboard'
-      return !isPrintRoute.value && route.path !== '/login'
+      return !isPrintRoute.value
     })
 
     const showUserInfo = computed(() => {
@@ -153,7 +154,8 @@ export default {
       showLogoutLink,
       availableMenuItems,
       isMenuActive,
-      handleMenuClick
+      handleMenuClick,
+      appTitle: appConfig.title,
     }
   }
 }

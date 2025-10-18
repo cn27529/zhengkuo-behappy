@@ -3,7 +3,7 @@
   <div class="page login-container">
     <h2>已退出登录</h2>
     <div class="welcome-message">
-      <p>您已成功退出消災超度活动报名系统</p>
+      <p>您已成功退出{{ appTitle }}</p>
     </div>
     <div class="logout-actions" style="display: none;">
         <router-link to="/login" class="btn btn-primary">重新登录</router-link>
@@ -17,10 +17,12 @@ import { onMounted,ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { ElMessage } from 'element-plus'
+import appConfig from '../config/appConfig'
 
 export default {
   name: 'Logout',
   setup() {
+    
     const router = useRouter()
     const authStore = useAuthStore()
 
@@ -48,9 +50,11 @@ export default {
       setTimeout(() => {
         router.push('/login')
       }, 10000)
+
     })
 
     return {
+      appTitle: appConfig.title,
       errors,
       //success,
       //loading,

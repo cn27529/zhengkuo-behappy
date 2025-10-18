@@ -227,6 +227,16 @@ export default {
 
         printData.value = parsed
         formId.value = printId
+
+        // 成功載入資料後再設定 document.title，確保使用到最新資料
+        try {
+          const contactName = (printData.value.contact?.name || '未填寫').toString().trim()
+          document.title = `${contactName} - 消災超度登記表`
+        } catch (e) {
+          // 如果意外錯誤，不阻斷流程
+          console.warn('設定 document.title 失敗:', e)
+        }
+        
       } catch (error) {
         console.error('載入列印數據失敗:', error)
         alert('載入列印數據失敗，請返回重新操作')

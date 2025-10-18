@@ -283,16 +283,16 @@
           </div>
 
           <!-- 從消災人員載入 -->
-          <div v-if="registrationForm.blessing.persons.some(p => p.name && p.name.trim() !== '')" class="import-section">
+          <div v-if="registrationForm.blessing.persons && registrationForm.blessing.persons.some(p => p.name && p.name.trim() !== '')" class="import-section">
             <h4>從消災人員載入</h4>
             <div class="import-buttons">
               <button
-                v-for="person in availableBlessingPersons"
+                v-for="person in registrationForm.blessing.persons"
                 :key="person.id"
                 type="button"
                 class="btn btn-outline btn-sm"
-                @click="registrationStore.importSurvivorFromBlessing(person)"
-                :disabled="currentSurvivorsCount >= config.maxSurvivors"
+                @click="importFromBlessing(person)"
+                :disabled="availableSurvivors && availableSurvivors.length >= config.maxSurvivors"
               >
                 載入 {{ person.name }}
               </button>
@@ -422,6 +422,18 @@ export default {
       return registrationStore.addContactToSurvivors()
     }
 
+    const importFromBlessing = (person) => {
+      const res = registrationStore.importSurvivorFromBlessing(person)
+      if (res && res.status) {
+        if (res.status === 'ok') {
+          ElMessage.success(res.message)
+        } else if (res.status === 'warning' || res.status === 'duplicate' || res.status === 'max') {
+          ElMessage.warning(res.message)
+        }
+      }
+      return res
+    }
+
     const openPrintPage = () => {
 
       const details = registrationStore.validationDetails
@@ -460,6 +472,7 @@ export default {
       submitForm,
       addContactAsBlessing,
       addContactAsSurvivor,
+      importFromBlessing,
       openPrintPage,
     }
   }

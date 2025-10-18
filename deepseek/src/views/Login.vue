@@ -2,7 +2,7 @@
   <div class="page login-container">
     <h2>系统登录</h2>
     <div class="welcome-message">
-      <p>欢迎使用消災超度活动报名系统，请登录您的账户</p>
+      <p>欢迎使用{{ appTitle }}，请登录用户</p>
     </div>
     
     <LoginForm />
@@ -11,9 +11,17 @@
 
 <script>
 import LoginForm from '../components/LoginForm.vue'
+import appConfig from '../config/appConfig'
 
 export default {
   name: 'Login',
+  setup() {
+    
+    return {
+      appTitle: appConfig.title,
+    }
+
+  },
   components: {
     LoginForm
   }

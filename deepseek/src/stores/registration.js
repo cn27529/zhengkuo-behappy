@@ -323,7 +323,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.survivorIncomplete = null;
     }
 
-    // 超度地址驗證：若已填寫祖先或陽上人，超度地址必填；若超度地址有填但沒有祖先或陽上人，亦提示
+    // 超度地址驗證：若已填寫祖先或陽上人，超度地址必填；若超度地址有填時，要求至少有祖先，且有祖先時需有陽上人
     const salvationAddrFilled = (registrationForm.value.salvation.address || "")
       .toString()
       .trim();
@@ -337,16 +337,34 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.valid = false;
       details.errors.salvationAddress = "已填寫祖先或陽上人，超度地址為必填";
       details.messages.push(details.errors.salvationAddress);
-    } else if (
-      salvationAddrFilled &&
-      filledAncestorsCount + filledSurvivorsCount === 0
-    ) {
-      details.valid = false;
-      details.errors.salvationAddress =
-        "超度地址已填寫，請至少填寫一筆歷代祖先或陽上人";
-      details.messages.push(details.errors.salvationAddress);
+    } else if (salvationAddrFilled) {
+      // 超度地址已填情況：必須至少填寫一筆祖先
+      if (filledAncestorsCount === 0) {
+        details.valid = false;
+        details.errors.salvationAddress =
+          "超度地址已填寫，請至少填寫一筆歷代祖先";
+        details.messages.push(details.errors.salvationAddress);
+      } else if (filledSurvivorsCount === 0) {
+        // 有祖先但沒有陽上人
+        details.valid = false;
+        details.errors.survivorsRequiredForAncestors =
+          "已填寫祖先，請至少填寫一位陽上人";
+        details.messages.push(details.errors.survivorsRequiredForAncestors);
+      } else {
+        details.errors.salvationAddress = null;
+      }
     } else {
       details.errors.salvationAddress = null;
+    }
+
+    // 新規則：若有已填寫的祖先，但沒有任何已填寫的陽上人，視為不完整
+    if (filledAncestorsCount > 0 && filledSurvivorsCount === 0) {
+      details.valid = false;
+      details.errors.survivorsRequiredForAncestors =
+        "已填寫祖先，請至少填寫一位陽上人";
+      details.messages.push(details.errors.survivorsRequiredForAncestors);
+    } else {
+      details.errors.survivorsRequiredForAncestors = null;
     }
 
     // 新增檢查：消災人員或祖先必須至少有一項被填寫，避免兩邊都為空
@@ -466,10 +484,10 @@ export const useRegistrationStore = defineStore("registration", () => {
       setActionMessage("warning", "此人資料無效，無法匯入");
       return { status: "invalid", message: "此人資料無效，無法匯入" };
     }
-    if (currentSurvivorsCount.value >= config.value.maxSurvivors) {
-      setActionMessage("warning", "陽上人名單已達上限");
-      return { status: "max", message: "陽上人名單已達上限" };
-    }
+    // if (currentSurvivorsCount.value >= config.value.maxSurvivors) {
+    //   setActionMessage("warning", "陽上人名單已達上限");
+    //   return { status: "max", message: "陽上人名單已達上限" };
+    // }
     const exists = registrationForm.value.salvation.survivors.some(
       (s) => s.name && s.name.trim() === name
     );
@@ -489,6 +507,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       zodiac: person.zodiac,
       notes: person.notes,
     });
+
     setActionMessage("success", "已匯入陽上人");
     return { status: "ok", message: "已匯入陽上人" };
   };
