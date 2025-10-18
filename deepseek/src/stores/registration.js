@@ -104,24 +104,34 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // availableBlessingPersons：過濾出已填寫姓名的消災人員，畫面可用這個來 "從消災人員載入" 陽上人
   const availableBlessingPersons = computed(() => {
-    return registrationForm.value.blessing.persons.filter(
-      (person) => person.name.trim() !== ""
-    );
+    return registrationForm.value.blessing.persons.filter((person) => {
+      const name = (person.name || "").toString().trim();
+      return name !== "";
+    });
   });
 
   // availableAncestors：過濾出已填寫姓氏的祖先，供驗證使用（只有有填寫祖先時才要求超度地址）
   const availableAncestors = computed(() => {
-    return registrationForm.value.salvation.ancestors.filter(
-      (a) => a.surname && a.surname.trim() !== ""
-    );
+    return registrationForm.value.salvation.ancestors.filter((a) => {
+      const s = (a.surname || "").toString().trim();
+      return s !== "";
+    });
   });
 
   // availableSurvivors：過濾出已填寫姓名的陽上人，供驗證使用
   const availableSurvivors = computed(() => {
-    return registrationForm.value.salvation.survivors.filter(
-      (s) => s.name && s.name.trim() !== ""
-    );
+    return registrationForm.value.salvation.survivors.filter((s) => {
+      const name = (s.name || "").toString().trim();
+      return name !== "";
+    });
   });
+
+  // actionMessage：store 內部提供的單一訊息物件，供 UI 讀取並顯示
+  const actionMessage = ref({ type: null, text: "" });
+  const setActionMessage = (type, text) => {
+    actionMessage.value = { type, text };
+    return actionMessage.value;
+  };
 
   // 提示訊息 computed：如果超出限制或缺少必要戶長，回傳警告字串，供畫面顯示
   const householdHeadWarning = computed(() => {
@@ -256,16 +266,70 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.blessingPersons = null;
     }
 
-    // 超度地址驗證：
-    // 新規則：如果已填寫任一祖先或陽上人，則超度地址為必填；
-    // 同時保留：如果超度地址有填寫，則至少要有一筆祖先或陽上人
-    const salvationAddrFilled =
-      registrationForm.value.salvation.address &&
-      registrationForm.value.salvation.address.trim();
+    // 檢查消災人員是否有未填寫必要欄位（姓名）
+    const allBlessingPersons = registrationForm.value.blessing.persons || [];
+    // 只有當清單中有 2 筆或以上時，才提示未填空白條目（避免預設一筆造成誤報）
+    if (allBlessingPersons.length >= 2) {
+      const hasIncompletePerson = allBlessingPersons.some(
+        (p) => !p.name || !p.name.trim()
+      );
+      if (hasIncompletePerson) {
+        details.valid = false;
+        details.errors.blessingPersonIncomplete =
+          "消災人員中有未填寫姓名的條目，請填寫或刪除空白條目";
+        details.messages.push(details.errors.blessingPersonIncomplete);
+      } else {
+        details.errors.blessingPersonIncomplete = null;
+      }
+    } else {
+      details.errors.blessingPersonIncomplete = null;
+    }
+
+    // 檢查祖先名單是否有未填寫必要欄位（姓氏）
+    const allAncestors = registrationForm.value.salvation.ancestors || [];
+    // 只有當祖先清單多於或等於 2 筆時才檢查
+    if (allAncestors.length >= 2) {
+      const hasIncompleteAncestor = allAncestors.some(
+        (a) => !a.surname || !a.surname.trim()
+      );
+      if (hasIncompleteAncestor) {
+        details.valid = false;
+        details.errors.ancestorIncomplete =
+          "祖先名單中有未填寫姓氏的條目，請填寫或刪除空白條目";
+        details.messages.push(details.errors.ancestorIncomplete);
+      } else {
+        details.errors.ancestorIncomplete = null;
+      }
+    } else {
+      details.errors.ancestorIncomplete = null;
+    }
+
+    // 檢查陽上人名單是否有未填寫必要欄位（姓名）
+    const allSurvivors = registrationForm.value.salvation.survivors || [];
+    // 只有當陽上人清單多於或等於 2 筆時才檢查
+    if (allSurvivors.length >= 2) {
+      const hasIncompleteSurvivor = allSurvivors.some(
+        (s) => !s.name || !s.name.trim()
+      );
+      if (hasIncompleteSurvivor) {
+        details.valid = false;
+        details.errors.survivorIncomplete =
+          "陽上人名單中有未填寫姓名的條目，請填寫或刪除空白條目";
+        details.messages.push(details.errors.survivorIncomplete);
+      } else {
+        details.errors.survivorIncomplete = null;
+      }
+    } else {
+      details.errors.survivorIncomplete = null;
+    }
+
+    // 超度地址驗證：若已填寫祖先或陽上人，超度地址必填；若超度地址有填但沒有祖先或陽上人，亦提示
+    const salvationAddrFilled = (registrationForm.value.salvation.address || "")
+      .toString()
+      .trim();
     const filledAncestorsCount = availableAncestors.value.length;
     const filledSurvivorsCount = availableSurvivors.value.length;
 
-    // 當已填寫祖先或陽上人時，超度地址必填
     if (
       filledAncestorsCount + filledSurvivorsCount > 0 &&
       !salvationAddrFilled
@@ -277,13 +341,24 @@ export const useRegistrationStore = defineStore("registration", () => {
       salvationAddrFilled &&
       filledAncestorsCount + filledSurvivorsCount === 0
     ) {
-      // 如果超度地址已填寫，但沒有祖先或陽上人，則要求至少填一筆
       details.valid = false;
       details.errors.salvationAddress =
         "超度地址已填寫，請至少填寫一筆歷代祖先或陽上人";
       details.messages.push(details.errors.salvationAddress);
     } else {
       details.errors.salvationAddress = null;
+    }
+
+    // 新增檢查：消災人員或祖先必須至少有一項被填寫，避免兩邊都為空
+    const hasFilledBlessing = availableBlessingPersons.value.length > 0;
+    const hasFilledAncestors = availableAncestors.value.length > 0;
+    if (!hasFilledBlessing && !hasFilledAncestors) {
+      details.valid = false;
+      details.errors.blessingOrAncestorsRequired =
+        "請至少填寫消災人員或歷代祖先其中一項";
+      details.messages.push(details.errors.blessingOrAncestorsRequired);
+    } else {
+      details.errors.blessingOrAncestorsRequired = null;
     }
 
     return details;
@@ -384,21 +459,109 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // importSurvivorFromBlessing：將已填寫的消災人員匯入為陽上人（畫面上有載入按鈕）
-  // 會檢查目前陽上人數是否已達上限
+  // 會檢查目前陽上人數是否已達上限，並避免重複匯入
   const importSurvivorFromBlessing = (person) => {
-    if (currentSurvivorsCount.value < config.value.maxSurvivors) {
-      const newId =
-        Math.max(
-          ...registrationForm.value.salvation.survivors.map((s) => s.id),
-          0
-        ) + 1;
-      registrationForm.value.salvation.survivors.push({
-        id: newId,
-        name: person.name,
-        zodiac: person.zodiac,
-        notes: person.notes,
-      });
+    const name = (person.name || "").trim();
+    if (!name) {
+      setActionMessage("warning", "此人資料無效，無法匯入");
+      return { status: "invalid", message: "此人資料無效，無法匯入" };
     }
+    if (currentSurvivorsCount.value >= config.value.maxSurvivors) {
+      setActionMessage("warning", "陽上人名單已達上限");
+      return { status: "max", message: "陽上人名單已達上限" };
+    }
+    const exists = registrationForm.value.salvation.survivors.some(
+      (s) => s.name && s.name.trim() === name
+    );
+    if (exists) {
+      setActionMessage("warning", "此人已在陽上人名單中");
+      return { status: "duplicate", message: "此人已在陽上人名單中" };
+    }
+
+    const newId =
+      Math.max(
+        ...registrationForm.value.salvation.survivors.map((s) => s.id),
+        0
+      ) + 1;
+    registrationForm.value.salvation.survivors.push({
+      id: newId,
+      name: person.name,
+      zodiac: person.zodiac,
+      notes: person.notes,
+    });
+    setActionMessage("success", "已匯入陽上人");
+    return { status: "ok", message: "已匯入陽上人" };
+  };
+
+  // 將聯絡人加入消災人員（避免重複）
+  const addContactToBlessing = () => {
+    const name = (registrationForm.value.contact.name || "").trim();
+    if (!name) {
+      setActionMessage("warning", "聯絡人姓名為空，無法加入消災人員");
+      return { status: "invalid", message: "聯絡人姓名為空" };
+    }
+    const exists = registrationForm.value.blessing.persons.some(
+      (p) => p.name && p.name.trim() === name
+    );
+    if (exists) {
+      setActionMessage("warning", "聯絡人已在消災人員名單中");
+      return { status: "duplicate", message: "聯絡人已在消災人員名單中" };
+    }
+    const newId =
+      Math.max(...registrationForm.value.blessing.persons.map((p) => p.id), 0) +
+      1;
+    registrationForm.value.blessing.persons.push({
+      id: newId,
+      name: name,
+      zodiac: "",
+      notes: "",
+      isHouseholdHead: false,
+    });
+    setActionMessage("success", "已將聯絡人加入消災人員");
+    return { status: "ok", message: "已將聯絡人加入消災人員" };
+  };
+
+  // 將聯絡人加入陽上人（避免重複，並檢查上限）
+  const addContactToSurvivors = () => {
+    const name = (registrationForm.value.contact.name || "").trim();
+    if (!name) {
+      setActionMessage("warning", "聯絡人姓名為空，無法加入陽上人");
+      return { status: "invalid", message: "聯絡人姓名為空" };
+    }
+    if (currentSurvivorsCount.value >= config.value.maxSurvivors) {
+      setActionMessage("warning", "陽上人名單已達上限");
+      return { status: "max", message: "陽上人名單已達上限" };
+    }
+    const exists = registrationForm.value.salvation.survivors.some(
+      (s) => s.name && s.name.trim() === name
+    );
+    if (exists) {
+      setActionMessage("warning", "聯絡人已在陽上人名單中");
+      return { status: "duplicate", message: "聯絡人已在陽上人名單中" };
+    }
+    const newId =
+      Math.max(
+        ...registrationForm.value.salvation.survivors.map((s) => s.id),
+        0
+      ) + 1;
+    registrationForm.value.salvation.survivors.push({
+      id: newId,
+      name: name,
+      zodiac: "",
+      notes: "",
+    });
+    setActionMessage("success", "已將聯絡人加入陽上人名單");
+    return { status: "ok", message: "已將聯絡人加入陽上人名單" };
+  };
+
+  // 複製消災地址到超度地址（回傳 boolean，供 UI 顯示訊息）
+  const copyBlessingAddress = () => {
+    const src = (registrationForm.value.blessing.address || "").trim();
+    if (src) {
+      registrationForm.value.salvation.address = src;
+      return true;
+    }
+    return false;
   };
 
   // submitRegistration：提交表單（此處為模擬，實際可呼叫 API）
@@ -419,6 +582,9 @@ export const useRegistrationStore = defineStore("registration", () => {
       );
 
       // 模擬成功響應
+      // 在成功時先重置表單
+      resetForm();
+
       return {
         success: true,
         message: "報名提交成功！",
@@ -511,6 +677,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     availableBlessingPersons,
     availableAncestors,
     availableSurvivors,
+    actionMessage,
     householdHeadWarning,
     ancestorsWarning,
     survivorsWarning,
@@ -526,6 +693,9 @@ export const useRegistrationStore = defineStore("registration", () => {
     addSurvivor,
     removeSurvivor,
     importSurvivorFromBlessing,
+    addContactToBlessing,
+    addContactToSurvivors,
+    copyBlessingAddress,
     submitRegistration,
     resetForm,
     loadConfig,

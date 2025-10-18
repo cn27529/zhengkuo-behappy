@@ -109,9 +109,14 @@
             <div class="section-info">
               <span style="display:none;" class="count-badge">已填寫: {{ availableBlessingPersons.length }} 位</span>
               <span style="display:none;" class="count-badge">戶長: {{ currentHouseholdHeadsCount }}/{{ config.maxHouseholdHeads }} 位</span>
-              <button type="button" class="btn btn-outline btn-sm" @click="addBlessingPerson">
-                + 增加人員
-              </button>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <button type="button" class="btn btn-outline btn-sm" @click="addBlessingPerson">
+                  + 增加消災人員
+                </button>
+                <button v-if="registrationForm.contact.name && registrationForm.contact.name.trim()" type="button" class="btn btn-outline btn-sm" @click="addContactAsBlessing">
+                  同聯絡人
+                </button>
+              </div>
             </div>
           </div>
 
@@ -267,6 +272,9 @@
               <button type="button" class="btn btn-outline btn-sm" @click="addSurvivor">
                 + 增加陽上人
               </button>
+              <button v-if="registrationForm.contact.name && registrationForm.contact.name.trim()" type="button" class="btn btn-outline btn-sm" @click="addContactAsSurvivor">
+                同聯絡人
+              </button>
             </div>
           </div>
 
@@ -279,11 +287,11 @@
             <h4>從消災人員載入</h4>
             <div class="import-buttons">
               <button
-                v-for="person in registrationForm.blessing.persons"
+                v-for="person in availableBlessingPersons"
                 :key="person.id"
                 type="button"
                 class="btn btn-outline btn-sm"
-                @click="importSurvivorFromBlessing(person)"
+                @click="registrationStore.importSurvivorFromBlessing(person)"
                 :disabled="currentSurvivorsCount >= config.maxSurvivors"
               >
                 載入 {{ person.name }}
@@ -344,7 +352,7 @@
       <!-- 提交按鈕 -->
       <div class="form-actions">
         <button type="button" class="btn btn-secondary" @click="resetForm">
-          重置表單
+          清空表單重新填寫
         </button>
         <button 
           type="button" 
@@ -374,14 +382,6 @@ export default {
       await registrationStore.loadConfig()
     })
 
-    const copyBlessingAddress = () => {
-      const src = registrationStore.registrationForm.blessing.address || ''
-      if (src && src.trim()) {
-        registrationStore.registrationForm.salvation.address = src
-        ElMessage.success('已複製消災地址到超度地址')
-      }
-    }
-
     const submitForm = async () => {
       // 先檢查 validationDetails
       const details = registrationStore.validationDetails
@@ -395,7 +395,7 @@ export default {
       try {
         const result = await registrationStore.submitRegistration()
         ElMessage.success(result.message)
-        registrationStore.resetForm()
+        // 不再在元件內 reset，store 已在 submitRegistration 內處理
       } catch (error) {
         ElMessage.error('提交失敗: ' + error.message)
       } finally {
@@ -403,11 +403,22 @@ export default {
       }
     }
 
+    // wrapper: 將聯絡人加入消災人員（呼叫 store）
+    const addContactAsBlessing = () => {
+      return registrationStore.addContactToBlessing()
+    }
+
+    // wrapper: 將聯絡人加入陽上人（呼叫 store）
+    const addContactAsSurvivor = () => {
+      return registrationStore.addContactToSurvivors()
+    }
+
     return {
       ...registrationStore,
       submitting,
       submitForm,
-      copyBlessingAddress
+      addContactAsBlessing,
+      addContactAsSurvivor,
     }
   }
 }
