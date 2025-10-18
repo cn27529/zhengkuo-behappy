@@ -17,6 +17,12 @@ const routes = [
     component: () => import("../views/Registration2.vue"),
     meta: { requiresAuth: true },
   },
+  //print-registration
+  {
+    path: "/print-registration",
+    component: () => import("../views/PrintRegistration.vue"),
+    meta: { requiresAuth: false },
+  },
   // 为未来功能预留路由
   {
     path: "/receipts",
@@ -43,8 +49,20 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
+  // 明確檢查 matched records 中是否有 requiresAuth === true
+  const requiresAuth = to.matched.some(
+    (record) => record.meta && record.meta.requiresAuth === true
+  );
 
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+  console.log("路由守衛:", {
+    to: to.path,
+    requiresAuth,
+    matched: to.matched.map((r) => ({ path: r.path, meta: r.meta })),
+    isAuthenticated: authStore.isAuthenticated,
+  });
+
+  if (requiresAuth && !authStore.isAuthenticated) {
+    console.log("需要驗證但未登入，跳轉到登入頁");
     next("/login");
   } else {
     next();

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <header>
+    <header v-if="showHeader">
       <div class="header-content">
         <div class="logo">
           <div class="logo-icon">🛕</div>
@@ -21,6 +21,7 @@
     <!-- 主要内容区 -->
     <div class="dashboard-container">
       <div class="dashboard-content">
+        
         <!-- 侧边菜单栏 -->
         <aside v-if="showSidebar" :class="['sidebar', { 'sidebar-left': menuPosition === 'left', 'sidebar-right': menuPosition === 'right' }]">
           <div class="menu-toggle" style="display: none;">
@@ -76,16 +77,23 @@ export default {
     const menuPosition = ref(localStorage.getItem('menuPosition') || 'left')
 
     // 计算属性
+    const isPrintRoute = computed(() => route.path && route.path.includes('print'))
+
+    const showHeader = computed(() => {
+      return !isPrintRoute.value && route.path !== '/login'
+    })
+
     const showSidebar = computed(() => {
-      return route.path !== '/login' && route.path !== '/logout'
+      return !isPrintRoute.value && route.path !== '/login' && route.path !== '/logout'
     })
 
     const showFooter = computed(() => {
-      return route.path !== '/dashboard'
+      //return route.path !== '/dashboard'
+      return !isPrintRoute.value && route.path !== '/login'
     })
 
     const showUserInfo = computed(() => {
-      return route.path !== '/login'
+      return !isPrintRoute.value && route.path !== '/login'
     })
 
     const showDashboardLink = computed(() => {
@@ -93,7 +101,7 @@ export default {
     })
 
     const showLogoutLink = computed(() => {
-      return route.path !== '/login'
+      return !isPrintRoute.value && route.path !== '/login'
     })
 
     const availableMenuItems = computed(() => {
@@ -129,14 +137,16 @@ export default {
       menuStore.initializeActiveMenu()
       
       // 檢查用戶是否已登入
-      if (!authStore.isAuthenticated && route.path !== '/login') {
-        router.push('/login')
-      }
+      // if (!authStore.isAuthenticated && route.path !== '/login') {
+      //   router.push('/login')
+      // }
+
     })
 
     return {
       menuPosition,
       showSidebar,
+      showHeader,
       showFooter,
       showUserInfo,
       showDashboardLink,

@@ -362,6 +362,15 @@
         >
           {{ submitting ? '提交中...' : '提交報名' }}
         </button>
+
+        <button 
+          type="button" 
+          class="btn btn-outline" 
+          @click="openPrintPage"
+        >
+          🖨️ 預覽列印
+        </button>
+
       </div>
     </div>
   </div>
@@ -413,12 +422,45 @@ export default {
       return registrationStore.addContactToSurvivors()
     }
 
+    const openPrintPage = () => {
+
+      const details = registrationStore.validationDetails
+      if (details && !details.valid) {
+        // 顯示第一則錯誤為訊息，並同時在畫面上列出所有錯誤
+        ElMessage.error(details.messages[0] || '表單驗證失敗')
+        return
+      }
+
+      try {
+    // 生成唯一 ID
+    const printId = 'print_form_' + Date.now() + '_' + Math.floor(Math.random() * 1000)
+    
+    console.log('準備儲存列印數據，ID:', printId)
+
+    // 儲存到 sessionStorage
+    const formData = JSON.stringify(registrationStore.registrationForm)
+    console.log('儲存列印數據:', { printId, data: registrationStore.registrationForm })
+    
+    sessionStorage.setItem(printId, formData)
+
+    // 開啟列印頁面
+    const printUrl = `${window.location.origin}/print-registration?id=${printId}`
+    console.log('開啟列印頁面:', printUrl)
+    
+    window.open(printUrl, '_blank', 'width=1000,height=800,scrollbars=yes')
+  } catch (error) {
+    console.error('開啟列印頁面失敗:', error)
+    ElMessage.error('開啟列印預覽失敗')
+  }
+    }
+
     return {
       ...registrationStore,
       submitting,
       submitForm,
       addContactAsBlessing,
       addContactAsSurvivor,
+      openPrintPage,
     }
   }
 }
