@@ -294,7 +294,7 @@
                 @click="importFromBlessing(person)"
                 :disabled="availableSurvivors && availableSurvivors.length >= config.maxSurvivors"
               >
-                載入 {{ person.name }}
+                陽上人 {{ person.name }}
               </button>
             </div>
           </div>
@@ -324,7 +324,7 @@
                     >
                   </div>
 
-                  <div class="form-group address-row">
+                  <div style="display:none; " class="form-group address-row">
                     <label>生肖</label>
                     <select v-model="survivor.zodiac">
                       <option value="">請選擇生肖</option>
@@ -422,6 +422,7 @@ export default {
       return registrationStore.addContactToSurvivors()
     }
 
+    // wrapper: 從消災人員載入陽上人（呼叫 store）
     const importFromBlessing = (person) => {
       const res = registrationStore.importSurvivorFromBlessing(person)
       if (res && res.status) {
