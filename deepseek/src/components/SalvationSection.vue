@@ -234,7 +234,6 @@ export default {
       })
     },
 
-    
     addAncestor() {
       this.$emit('add-ancestor')
     },
