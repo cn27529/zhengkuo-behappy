@@ -1,7 +1,7 @@
 [
     {
         "username": "admin",
-        "password": "password",
+        "password": "password!123456",
         "nickname": "阿隬陀佛",
         "role": "admin",
         "permissions": [
@@ -14,7 +14,7 @@
     {
         "username": "zkuser01",
         "password": "zk!123456",
-        "nickname": "廣廣大心一號",
+        "nickname": "廣小明",
         "role": "user",
         "permissions": [
             "registration"
