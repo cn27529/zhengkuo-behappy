@@ -38,11 +38,42 @@
         {{ loading ? "登录中..." : "登录" }}
       </button>
     </form>
+
+    <!-- 裝置提示對話框 -->
+    <el-dialog
+      v-model="showDeviceDialog"
+      title="裝置提示"
+      width="500px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      align-center
+      class="custom-dialog"
+    >
+      <div class="dialog-content">
+        <div class="warning-icon">
+          <el-icon size="48" color="#E6A23C">
+            <Warning />
+          </el-icon>
+        </div>
+        <div class="warning-text">
+          <h3>為了較佳的使用體驗，請選擇桌上型裝置</h3>
+        </div>
+      </div>
+      
+      <span class="dialog-footer">
+          <el-button type="primary" @click="confirmDeviceDialog" size="large">
+            我知道了
+          </el-button>
+        </span>
+      
+    </el-dialog>
+    
   </div>
 </template>
 
 <script>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useAuthStore } from "../stores/auth";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
@@ -54,10 +85,53 @@ export default {
     const router = useRouter();
     const rememberMe = ref(false);
 
+    const showDeviceDialog = ref(false);
+
+    // 检测是否为移动设备
+    const isMobileDevice = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const screenWidth = window.innerWidth;
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      
+      const mobileKeywords = [
+        'android', 'iphone', 'ipad', 'ipod', 'blackberry',
+        'windows phone', 'webos', 'opera mini', 'iemobile', 'mobile'
+      ];
+      
+      return mobileKeywords.some(keyword => userAgent.includes(keyword)) || 
+             (screenWidth <= 768 && hasTouch);
+    };
+
+    const detectDeviceType = () => {
+      const userAgent = navigator.userAgent;
+      const screenWidth = window.innerWidth;
+      
+      // 更精確的移動設備檢測
+      const isMobile = {
+        // User Agent 檢測
+        byUA: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent),
+        // 屏幕尺寸 + 觸控
+        byScreen: screenWidth <= 768 && ('ontouchstart' in window || navigator.maxTouchPoints > 0),
+        // 特定移動特徵
+        byFeatures: !!userAgent.match(/iPhone|Android/i) && 'ontouchstart' in window
+      };
+      
+      return isMobile.byUA || isMobile.byScreen || isMobile.byFeatures ? 'mobile' : 'desktop';
+    };
+
+    // 確認對話框
+    const confirmDeviceDialog = () => {
+      showDeviceDialog.value = false;
+      // 可選：將用戶選擇存儲在本地，避免每次都要顯示
+      //localStorage.setItem('device-warning-confirmed', 'true');
+    };
+
     const loginForm = reactive({
       username: "",
       password: "",
     });
+
+    
 
     //const success = ref(false)
     const loading = ref(false);
@@ -129,6 +203,34 @@ export default {
         loading.value = false;
       }
     };
+    
+
+    onMounted(() => {
+      
+      // // 檢查用戶是否已經確認過提示
+      // const hasConfirmed = localStorage.getItem('device-warning-confirmed');
+      
+      if (isMobileDevice() || detectDeviceType() === 'mobile') {
+        // 延迟显示，确保页面加载完成
+        setTimeout(() => {
+          showDeviceDialog.value = true;
+        }, 800);
+      }
+
+      //const deviceType = detectDeviceType();
+      //console.log(`檢測到裝置類型: ${deviceType}`);
+      
+      //if (deviceType === 'mobile') {
+        // ElMessage({
+        //   message: "為了較佳的使用體驗，請選擇桌上型裝置",
+        //   type: 'warning',
+        //   duration: 6000,
+        //   showClose: true,
+        // });
+      //}
+
+      
+    })
 
     return {
       loginForm,
@@ -136,7 +238,65 @@ export default {
       loading,
       handleLogin,
       rememberMe,
+      showDeviceDialog,
+      confirmDeviceDialog
     };
   },
 };
 </script>
+
+<style scoped>
+.dialog-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.warning-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.warning-text h3 {
+  margin: 0 0 8px 0;
+  color: #E6A23C;
+  font-size: 18px;
+  text-align: center;
+}
+
+.warning-text p {
+  margin: 0;
+  color: #606266;
+  line-height: 1.5;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+}
+
+/* 自訂對話框樣式 */
+:deep(.custom-dialog .el-dialog__title) {
+  color: white !important;  
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .dialog-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .warning-icon {
+    align-self: center;
+  }
+
+    /* 自訂對話框樣式 */
+  :deep(.custom-dialog .el-dialog__title) {
+    color: white !important;
+    
+  }
+
+}
+</style>
