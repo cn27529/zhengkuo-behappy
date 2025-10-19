@@ -457,7 +457,7 @@ export default {
     sessionStorage.setItem(printId, formData)
 
     // 開啟列印頁面
-    const printUrl = `${window.location.origin}/print-registration?printid=${printId}`
+    const printUrl = `${window.location.origin}/print-registration?print_id=${printId}`
     console.log('開啟列印頁面:', printUrl)
     
     window.open(printUrl, '_blank', 'width=1000,height=800,scrollbars=yes')
