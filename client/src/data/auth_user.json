@@ -1,0 +1,53 @@
+[
+    {
+        "username": "admin",
+        "password": "password",
+        "nickname": "阿隬陀佛",
+        "role": "admin",
+        "permissions": [
+            "dashboard",
+            "registration",
+            "receipts",
+            "users"
+        ]
+    },
+    {
+        "username": "zkuser01",
+        "password": "zk!123456",
+        "nickname": "廣廣大心一號",
+        "role": "user",
+        "permissions": [
+            "registration"
+        ]
+    },
+    {
+        "username": "temple_staff",
+        "password": "temple123",
+        "nickname": "寺廟工作人員",
+        "role": "staff",
+        "permissions": [
+            "dashboard",
+            "registration",
+            "receipts"
+        ]
+    },
+    {
+        "username": "volunteer",
+        "password": "volunteer123",
+        "nickname": "志工",
+        "role": "volunteer",
+        "permissions": [
+            "dashboard",
+            "registration"
+        ]
+    },
+    {
+        "username": "user01",
+        "password": "user0123",
+        "nickname": "一般用戶01",
+        "role": "user",
+        "permissions": [
+            "registration"
+        ]
+    }
+]

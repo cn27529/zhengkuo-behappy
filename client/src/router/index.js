@@ -60,8 +60,25 @@ router.beforeEach((to, from, next) => {
     isAuthenticated: authStore.isAuthenticated,
   });
 
+  // 改為localStorage檢查設定isAuthenticated
+  const savedUser = localStorage.getItem("auth-user");
+  if (savedUser) {
+    try {
+      authStore.user = JSON.parse(savedUser);
+      authStore.isAuthenticated = true;
+      console.log(
+        "index router 從本地存儲恢復用戶會話:",
+        authStore.user.nickname
+      );
+    } catch (error) {
+      console.error("index router 解析保存的用戶數據失敗:", error);
+      authStore.logout();
+    }
+  }
+
+  // 如果需要驗證且未登入
   if (requiresAuth && !authStore.isAuthenticated) {
-    console.log("需要驗證但未登入，跳轉到登入頁");
+    console.log("index router 需要驗證但未登入，跳轉到登入頁");
     next("/login");
   } else {
     next();

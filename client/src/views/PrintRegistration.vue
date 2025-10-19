@@ -204,7 +204,7 @@ export default {
     const loadPrintData = () => {
       try {
         const urlParams = new URLSearchParams(window.location.search)
-        const printId = urlParams.get('id')
+        const printId = urlParams.get('print_id')
 
         if (!printId) {
           throw new Error('無效的列印ID')
