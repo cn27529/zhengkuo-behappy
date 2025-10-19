@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <header v-if="showHeader">
+    <header v-if="layoutReady && showHeader">
       <div class="header-content">
         <div class="logo">
           <div class="logo-icon">🛕</div>
@@ -12,33 +12,46 @@
         <!-- 顶部导航栏 -->
         <nav>
           <ul>
-            <li><router-link to="/logout" v-if="showLogoutLink">退出登录</router-link></li>
+            <li>
+              <router-link to="/logout" v-if="showLogoutLink"
+                >退出登录</router-link
+              >
+            </li>
           </ul>
         </nav>
       </div>
     </header>
-    
+
     <!-- 主要内容区 -->
     <div class="dashboard-container">
       <div class="dashboard-content">
-        
         <!-- 侧边菜单栏 -->
-        <aside v-if="showSidebar" :class="['sidebar', { 'sidebar-left': menuPosition === 'left', 'sidebar-right': menuPosition === 'right' }]">
-          <div class="menu-toggle" style="display: none;">
+        <aside
+          v-if="layoutReady && showSidebar"
+          :class="[
+            'sidebar',
+            {
+              'sidebar-left': menuPosition === 'left',
+              'sidebar-right': menuPosition === 'right',
+            },
+          ]"
+        >
+          <div class="menu-toggle" style="display: none">
             <label>菜单位置：</label>
             <select v-model="menuPosition" class="position-select">
               <option value="left">左侧</option>
               <option value="right">右侧</option>
             </select>
           </div>
-          
+
           <nav class="sidebar-nav">
             <ul>
               <li v-for="menuItem in availableMenuItems" :key="menuItem.id">
-                <router-link 
-                  :to="menuItem.path" 
+                <router-link
+                  :to="menuItem.path"
                   :class="['nav-link', { active: isMenuActive(menuItem) }]"
-                  @click="handleMenuClick(menuItem)">
+                  @click="handleMenuClick(menuItem)"
+                >
                   <span class="nav-icon">{{ menuItem.icon }}</span>
                   <span class="nav-text">{{ menuItem.name }}</span>
                   <!-- <span v-if="isMenuActive(menuItem)" class="nav-icon">👌</span> -->
@@ -53,116 +66,156 @@
         </main>
       </div>
     </div>
-    
-    <footer v-if="showFooter">
+    <!-- 底部-->
+    <footer v-if="layoutReady && showFooter">
       <p>© 2025 {{ appTitle }} | 弘扬佛法，服务众生</p>
     </footer>
   </div>
 </template>
 
 <script>
-import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from './stores/auth'
-import { useMenuStore } from './stores/menu'
-import { ref, computed, onMounted, watch, provide } from 'vue'
-import appConfig from './config/appConfig'
+import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "./stores/auth";
+import { useMenuStore } from "./stores/menu";
+import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
+import appConfig from "./config/appConfig";
 
 export default {
-  name: 'App',
+  name: "App",
   setup() {
-    const router = useRouter()
-    const route = useRoute()
-    const authStore = useAuthStore()
-    const menuStore = useMenuStore()
-    
-    const menuPosition = ref(localStorage.getItem('menuPosition') || 'left')
+    const router = useRouter();
+    const route = useRoute();
+    const authStore = useAuthStore();
+    const menuStore = useMenuStore();
 
-    // 计算属性
-    const isPrintRoute = computed(() => route.path && route.path.includes('print'))
+    const menuPosition = ref(localStorage.getItem("menuPosition") || "left");
 
-    const showHeader = computed(() => {
-      return !isPrintRoute.value 
-    })
+    // 顶部导航栏显示控制：在非打印页面显示，將三個 UI 可見性預設為 false，等待子組件載入完成後再設定
+    const showHeader = ref(false);
 
-    const showSidebar = computed(() => {
-      return !isPrintRoute.value && route.path !== '/login' && route.path !== '/logout'
-    })
+    // 侧边菜单栏显示控制：在非打印页面且非登录/登出页面显示
+    const showSidebar = ref(false);
 
-    const showFooter = computed(() => {
-      //return route.path !== '/dashboard'
-      return !isPrintRoute.value
-    })
+    // 底部显示控制：在非打印页面显示
+    const showFooter = ref(false);
 
+    // layoutReady: 在子組件完成渲染（nextTick）後才變 true，避免先顯示後隱藏的閃爍
+    const layoutReady = ref(false);
+
+    // 計算是否為列印路由（供判斷用）
+    const isPrintRoute = computed(
+      () => route.path && route.path.includes("print")
+    );
+
+    // 依賴 showHeader 的顯示條件（確保在尚未載入時不會顯示）
     const showUserInfo = computed(() => {
-      return !isPrintRoute.value && route.path !== '/login'
-    })
-
-    const showDashboardLink = computed(() => {
-      return route.path !== '/login'
-    })
+      return (
+        showHeader.value &&
+        !isPrintRoute.value &&
+        route.path !== "/login" &&
+        route.path !== "/logout"
+      );
+    });
 
     const showLogoutLink = computed(() => {
-      return !isPrintRoute.value && route.path !== '/login'
-    })
+      return (
+        showHeader.value &&
+        !isPrintRoute.value &&
+        route.path !== "/login" &&
+        route.path !== "/logout"
+      );
+    });
 
     const availableMenuItems = computed(() => {
-      //alert(typeof(menuStore.availableMenuItems))
-      return menuStore.availableMenuItems
-    })
+      return menuStore.availableMenuItems;
+    });
 
     // 方法
     const isMenuActive = (menuItem) => {
-      return menuStore.activeMenuId === menuItem.id
-    }
+      return menuStore.activeMenuId === menuItem.id;
+    };
 
     const handleMenuClick = (menuItem) => {
-      menuStore.navigateToMenu(menuItem)
-    }
+      menuStore.navigateToMenu(menuItem);
+    };
 
-    // 监听路由变化，更新激活菜单
-    watch(() => route.path, (newPath) => {
-      menuStore.setActiveMenuByPath(newPath)
-    })
+    // 计算顶部导航栏、侧边菜单栏、底部的预期可见性（不直接改变 ref，供 updateLayoutVisibility 使用）
+    const computeVisibility = () => {
+      const isPrint = route.path && route.path.includes("print");
+      return {
+        header: !isPrint, // 顶部导航栏：非打印页面显示
+        sidebar:
+          !isPrint && route.path !== "/login" && route.path !== "/logout", // 侧边菜单栏：非打印页面且非登录/登出页面显示
+        footer: !isPrint, // 底部：非打印页面显示
+      };
+    };
+
+    // 在 nextTick 后更新三个 UI 状态（确保子组件已完成 mounted / DOM 已更新）
+    // 根据路由条件控制顶部导航栏、侧边菜单栏、底部的显示/隐藏
+    const updateLayoutVisibility = async () => {
+      await nextTick();
+      const v = computeVisibility();
+      showHeader.value = v.header; // 更新顶部导航栏显示状态
+      showSidebar.value = v.sidebar; // 更新侧边菜单栏显示状态
+      showFooter.value = v.footer; // 更新底部显示状态
+      // 完成更新后标记 layout 已准备好，template 才会显示 header/sidebar/footer
+      layoutReady.value = true;
+    };
+
+    // 監聽路由變化以更新 menu active
+    watch(
+      () => route.path,
+      (newPath) => {
+        menuStore.setActiveMenuByPath(newPath);
+      }
+    );
+
+    // 每次路由切換開始時，先把 layoutReady 關閉，避免中途顯示舊 layout
+    router.beforeEach((to, from, next) => {
+      layoutReady.value = false;
+      next();
+    });
 
     // 當 menuPosition 改變時，同步到 localStorage
     watch(menuPosition, (val) => {
       try {
-        localStorage.setItem('menuPosition', val)
+        localStorage.setItem("menuPosition", val);
       } catch (e) {
         // ignore quota errors
       }
-    })
+    });
 
     onMounted(() => {
       // 初始化菜单
-      menuStore.initializeActiveMenu()
-      
-      // 檢查用戶是否已登入
-      // if (!authStore.isAuthenticated && route.path !== '/login') {
-      //   router.push('/login')
-      // }
+      menuStore.initializeActiveMenu();
 
-    })
+      // 初始載入時，在 nextTick 後設定 header/sidebar/footer
+      updateLayoutVisibility();
+
+      // 每次路由切換後，在 nextTick 後更新（確保 router-view 的子組件已渲染完成）
+      router.afterEach(() => {
+        updateLayoutVisibility();
+      });
+    });
 
     return {
       menuPosition,
       showSidebar,
       showHeader,
       showFooter,
+      layoutReady,
       showUserInfo,
-      showDashboardLink,
       showLogoutLink,
       availableMenuItems,
       isMenuActive,
       handleMenuClick,
       appTitle: appConfig.title,
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style>
-
 /* 全局样式 */
 .dashboard-container {
   min-height: 100vh;
@@ -170,7 +223,11 @@ export default {
 }
 
 .dashboard-header {
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(
+    to right,
+    var(--primary-color),
+    var(--secondary-color)
+  );
   color: white;
   padding: 1rem 2rem;
   display: flex;
@@ -264,7 +321,8 @@ export default {
   box-sizing: border-box;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
   background-color: var(--light-color);
   color: var(--primary-color);
   transform: translateX(5px);
@@ -293,44 +351,44 @@ export default {
   background-color: #f8f9fa;
 }
 
-
 /* 响应式设计 */
 @media (max-width: 768px) {
   .dashboard-content {
     flex-direction: column;
   }
-  
+
   .sidebar {
     width: 100%;
     order: 1;
     max-height: 300px;
   }
-  
+
   .main-content {
     order: 0;
     padding: 1rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .chart-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .header-right {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .dashboard-header {
     padding: 1rem;
   }
-  
-  .nav-link:hover, .nav-link.active {
+
+  .nav-link:hover,
+  .nav-link.active {
     transform: translateY(2px);
   }
 }

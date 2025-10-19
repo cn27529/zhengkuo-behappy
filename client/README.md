@@ -1,3 +1,21 @@
+# 在 Netlify 设置中
+
+## Build command: 
+npm run build:netlify
+
+## 假设你的项目结构
+my-project/
+├── backend/
+├── frontend/
+│   ├── package.json
+│   ├── src/
+│   └── dist/
+├── netlify.toml
+└── README.md
+
+
+
+
 使用说明
 将以上文件按照项目结构创建
 

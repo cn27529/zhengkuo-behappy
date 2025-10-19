@@ -1,0 +1,13 @@
+[build]
+  base = "."  #基础目录
+  command = "cd client && npm install && npm run build"
+  publish = "client/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# 重定向设置（单页应用需要）
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -13,7 +13,7 @@
       </ul>
     </div>
 
-    <div class="registration-form">
+    <div class="form-content">
       <!-- 聯絡人信息 -->
       <div class="form-section">
         <h2>聯絡人信息</h2>
@@ -502,6 +502,10 @@ export default {
   color: #666;
   font-size: 1.1rem;
 } */
+
+.form-content {
+  margin: 0 auto;
+}
 
 .ancestors-section{
   margin-bottom: 20px;

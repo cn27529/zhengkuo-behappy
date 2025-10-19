@@ -1,0 +1,14 @@
+{
+  "name": "zhengkuo-behappy",
+  "version": "1.0.0",
+  "description": "An zhengkuo-behappy app for eform app",
+  "main": "index.js",
+  "scripts": {
+    "build:netlify": "cd client && npm install && npm run build",
+    "install:netlify": "cd client && npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

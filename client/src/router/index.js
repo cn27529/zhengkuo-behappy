@@ -25,7 +25,7 @@ const routes = [
   // 为未来功能预留路由
   {
     path: "/receipts",
-    component: () => import("../views/Registration2.vue"),
+    component: () => import("../views/Placeholder.vue"),
     meta: { requiresAuth: true },
   },
   {
