@@ -1,15 +1,13 @@
 
 # zk-client-v0-13 版本
-
 ## 手記
-
-### 2025-10-20
+2025-10-20
 
 Ant Design Vue整合
 
 https://antdv.com/components/overview
 
-## 2025-10-19
+2025-10-19
 
 完成 登入功能 /login
 
@@ -27,11 +25,9 @@ https://zkapp.netlify.app
 
 ## user guide 
 
-
 # 部署
-
 ## netlify
-### 假设你的项目结构檔案建在這，其它都不用理
+假设你的项目结构檔案建在這，其它都不用理
 
 my-project/
 ├── backend/
