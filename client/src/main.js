@@ -13,6 +13,10 @@ import router from "./router";
 import appConfig from "./config/appConfig";
 import { useMenuStore } from "./stores/menu";
 
+// 引入 antd
+import Antd from 'ant-design-vue';
+import 'ant-design-vue/dist/reset.css'; // 引入樣式
+
 // 创建Pinia实例
 const pinia = createPinia();
 
@@ -23,6 +27,8 @@ const app = createApp(App);
 app.use(router);
 app.use(pinia);
 app.use(ElementPlus); // 使用Element Plus组件库
+
+app.use(Antd); // 使用 Ant Design Vue 组件库
 
 // 挂载应用
 app.mount("#app");
