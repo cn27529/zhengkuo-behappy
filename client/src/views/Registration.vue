@@ -6,12 +6,19 @@
       <h2>消災超度登記表</h2>
     </div>
 
+    // 表單頭部
+    <div class="form-header">
+  
+</div>
+
     <!-- 顯示驗證錯誤訊息（若有） -->
     <div style="display:none;" v-if="validationDetails && validationDetails.messages.length" class="validation-summary">
       <ul>
         <li v-for="(msg, idx) in validationDetails.messages" :key="idx">{{ msg }}</li>
       </ul>
     </div>
+
+    
 
     <div class="form-content">
       <!-- 聯絡人信息 -->
