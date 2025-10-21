@@ -10,8 +10,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "ant-design-vue": "^4.2.6"
-  }
+  "license": "ISC"
 }
