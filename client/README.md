@@ -42,6 +42,12 @@ my-project/
 
 部署設定詳見netlify.toml
 
+# 共用組件
+src/components/registration/
+├── BlessingSection.vue      # 消災祈福區塊
+├── SalvationSection.vue     # 超度祈福區塊
+└── PersonForm.vue          # 共用的人員表單組件
+
 # 使用说明
 
 将以上文件按照项目结构创建

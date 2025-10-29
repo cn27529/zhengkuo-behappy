@@ -1,11 +1,160 @@
 // src/stores/registration.js
 // 本檔為報名表單的 Pinia store，管理整個消災超度登記表的狀態與操作。
 // 註解會說明每個變數與方法在 Registration.vue 中的用途與對應位置。
-
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
 export const useRegistrationStore = defineStore("registration", () => {
+  // 支援多張表單的陣列
+  const formArray = ref([]);
+  // 當前編輯的表單索引
+  const currentFormIndex = ref(0);
+
+  // 新增表單
+  const addNewForm = () => {
+    if (currentFormIndex === 0 && formArray.value.length === 0) {
+      // 初始情況下，先加入當前表單
+      formArray.value.push({ ...registrationForm.value });
+    }
+
+    // 1. 保存當前表單到 formArray[currentFormIndex]
+    if (formArray.value.length > 0) {
+      formArray.value[currentFormIndex.value] = {
+        ...registrationForm.value,
+      };
+    }
+
+    // 2. 建立新表單加入 formArray，這 newForm 是代表下一張表單
+    const newForm = getInitialFormData();
+    formArray.value.push(newForm);
+
+    // 3. 更新 currentFormIndex 並載入新表單
+    currentFormIndex.value = formArray.value.length - 1;
+    registrationForm.value = { ...newForm };
+
+    // 4. 返回新表單索引
+    return currentFormIndex.value;
+  };
+
+  // 切換表單
+  const switchForm = (index) => {
+    // 保存當前表單狀態
+    registrationForm.value.status = "saved";
+    // 更新最後修改時間
+    registrationForm.value.lastModified = new Date().toISOString();
+
+    // 1. 保存當前表單到 formArray[currentFormIndex]
+    formArray.value[currentFormIndex.value] = {
+      ...registrationForm.value,
+    };
+
+    // 2. 載入目標表單，從 formArray[n] 載入資料到 registrationForm
+    currentFormIndex.value = index;
+    registrationForm.value = JSON.parse(JSON.stringify(formArray.value[index]));
+
+    // 3. 更新表單狀態
+    registrationForm.value.status = "editing";
+  };
+
+  // 刪除表單
+  const deleteForm = (index) => {
+    if (formArray.value.length <= 1) return false; // 至少保留一張
+
+    formArray.value.splice(index, 1);
+    if (currentFormIndex.value >= index) {
+      currentFormIndex.value = Math.max(0, currentFormIndex.value - 1);
+    }
+    switchForm(currentFormIndex.value);
+  };
+
+  // 複製表單
+  const duplicateForm = (index) => {
+    const duplicated = JSON.parse(JSON.stringify(formArray.value[index]));
+    duplicated.createDate = new Date().toISOString();
+    duplicated.formName = `${duplicated.formName} - 複本`;
+
+    formArray.value.push(duplicated);
+    switchForm(formArray.value.length - 1);
+  };
+
+  // 獲取表單摘要資訊
+  const getFormSummaries = computed(() => {
+    if (currentFormIndex.value === 0 && formArray.value.length === 0) {
+      return [];
+    }
+    return formArray.value.map((form, index) => ({
+      index,
+      formName: form.formName || `表單 ${index + 1}`,
+      status: form.status,
+      createDate: form.createDate,
+      lastModified: form.lastModified,
+      contactName: form.contact.name,
+      personsCount: form.blessing.persons.filter((p) => p.name.trim()).length,
+      ancestorsCount: form.salvation.ancestors.filter((a) => a.surname.trim())
+        .length,
+    }));
+  });
+
+  // 當前表單資訊
+  const currentFormSummary = computed(
+    () => getFormSummaries.value[currentFormIndex.value]
+  );
+
+  // 獲取初始表單資料（深拷貝）
+  const getInitialFormData = () => {
+    return JSON.parse(
+      JSON.stringify({
+        status: "creating", // saved, creating, editing, completed, submitted
+        createDate: new Date().toISOString(),
+        lastModified: null,
+        formName: "", // 2025消災超度報名表
+        formSource: "", // 來源說明，例如「來自哪個活動」
+        contact: {
+          name: "",
+          phone: "",
+          mobile: "",
+          relationship: "本家", // 本家、娘家、朋友、其它（對應畫面上的 radio）
+          otherRelationship: "",
+        },
+        blessing: {
+          // 消災地址
+          address: "",
+          // 消災人員
+          persons: [
+            {
+              id: 1,
+              name: "",
+              zodiac: "",
+              notes: "",
+              isHouseholdHead: true, // 是否為戶長，畫面用 checkbox 控制
+            },
+          ],
+        },
+        salvation: {
+          // 超度地址
+          address: "",
+          // 祖先清單
+          ancestors: [
+            {
+              id: 1,
+              surname: "",
+              notes: "",
+            },
+          ],
+          // 陽上人清單
+          survivors: [
+            {
+              id: 1,
+              name: "",
+              zodiac: "",
+              notes: "",
+            },
+          ],
+        },
+      })
+    );
+  };
+
   // config：全域配置，決定表單的限制值（例如最大戶長數、最大祖先數等）。
   // 在 Registration.vue 中會用到 config.maxHouseholdHeads、config.maxAncestors、config.maxSurvivors
   // 來顯示上限或決定按鈕是否 disabled。
@@ -21,50 +170,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   // - blessing: 消災區塊（address, persons[]）
   // - salvation: 超度區塊（address, ancestors[], survivors[]）
   // 在畫面上會直接使用 registrationForm.contact.name、registrationForm.blessing.address 等。
-  const registrationForm = ref({
-    contact: {
-      name: "",
-      phone: "",
-      mobile: "",
-      relationship: "本家", // 本家、娘家、朋友、其它（對應畫面上的 radio）
-      otherRelationship: "",
-    },
-    blessing: {
-      // 消災地址
-      address: "",
-      // 消災人員
-      persons: [
-        {
-          id: 1,
-          name: "",
-          zodiac: "",
-          notes: "",
-          isHouseholdHead: true, // 是否為戶長，畫面用 checkbox 控制
-        },
-      ],
-    },
-    salvation: {
-      // 超度地址
-      address: "",
-      // 祖先清單
-      ancestors: [
-        {
-          id: 1,
-          surname: "",
-          notes: "",
-        },
-      ],
-      // 陽上人清單
-      survivors: [
-        {
-          id: 1,
-          name: "",
-          zodiac: "",
-          notes: "",
-        },
-      ],
-    },
-  });
+  const registrationForm = ref(getInitialFormData());
 
   // UI 選項資料（對應 Registration.vue 的下拉/選項）
   const relationshipOptions = ref(["本家", "娘家", "朋友", "其它"]);
@@ -591,6 +697,9 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     try {
+      registrationForm.value.status = "submitted"; // 更新狀態為已提交
+      registrationForm.value.lastModified = new Date().toISOString(); // 更新最後修改時間
+
       // 模擬API調用
       // 這裡將來可以替換為真實的API調用
       // const response = await api.post('/registrations', registrationForm.value)
@@ -601,9 +710,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       );
 
       // 模擬成功響應
-      // 在成功時先重置表單
-      resetForm();
-
       return {
         success: true,
         message: "報名提交成功！",
@@ -620,51 +726,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // resetForm：重置整個表單為初始狀態（畫面上的重置按鈕呼叫）
   const resetForm = () => {
-    registrationForm.value = {
-      contact: {
-        name: "",
-        phone: "",
-        mobile: "",
-        relationship: "本家",
-        otherRelationship: "",
-      },
-      blessing: {
-        address: "",
-        persons: [
-          {
-            id: 1,
-            name: "",
-            zodiac: "",
-            notes: "",
-            isHouseholdHead: true,
-          },
-        ],
-      },
-      salvation: {
-        address: "",
-        ancestors: [
-          {
-            id: 1,
-            surname: "",
-            notes: "",
-          },
-        ],
-        survivors: [
-          {
-            id: 1,
-            name: "",
-            zodiac: "",
-            notes: "",
-          },
-          {
-            id: 2,
-            name: "",
-            zodiac: "",
-            notes: "",
-          },
-        ],
-      },
-    };
+    //registrationForm.value = getInitialFormData();
   };
 
   // loadConfig：模擬從遠端加載配置，未來可改成真正的 API 請求
@@ -702,6 +764,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     survivorsWarning,
     isFormValid,
     validationDetails,
+    currentFormSummary,
 
     // Actions
     addBlessingPerson,

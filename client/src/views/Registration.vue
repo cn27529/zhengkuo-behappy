@@ -392,6 +392,7 @@ export default {
   name: 'Registration',
   setup() {
     const registrationStore = useRegistrationStore()
+
     const submitting = ref(false)
 
     onMounted(async () => {
