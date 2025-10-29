@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.76.1",
     "ant-design-vue": "^4.2.6",
     "chart.js": "^4.5.1",
     "element-plus": "^2.11.5",
