@@ -138,4 +138,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# package-lock.json 不喜歡見到它
+# 环境变量文件
+.env.local
+.env.*.local
