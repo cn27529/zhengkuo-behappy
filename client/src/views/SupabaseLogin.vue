@@ -5,12 +5,7 @@
     <div class="welcome-message">
       <p>歡迎使用{{ appTitle }}，請選擇登入方式</p>
     </div>
-    
-    <SupabaseLogin />
-    
-    <div class="login-options">
-      <p>或使用 <router-link to="/login">傳統帳號登入</router-link></p>
-    </div>
+    <SupabaseLoginForm />
   </div>
 </template>
 

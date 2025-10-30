@@ -2,7 +2,7 @@
     {
         "username": "admin",
         "password": "password!123456",
-        "nickname": "阿隬陀佛",
+        "displayName": "阿德民",
         "role": "admin",
         "permissions": [
             "dashboard",
@@ -14,7 +14,7 @@
     {
         "username": "zkuser01",
         "password": "zk!123456",
-        "nickname": "廣小明",
+        "displayName": "廣小明",
         "role": "user",
         "permissions": [
             "registration"
@@ -23,7 +23,7 @@
     {
         "username": "temple_staff",
         "password": "temple123",
-        "nickname": "寺廟工作人員",
+        "displayName": "寺廟工作人員",
         "role": "staff",
         "permissions": [
             "dashboard",
@@ -34,7 +34,7 @@
     {
         "username": "volunteer",
         "password": "volunteer123",
-        "nickname": "志工",
+        "displayName": "志工",
         "role": "volunteer",
         "permissions": [
             "dashboard",
@@ -44,7 +44,7 @@
     {
         "username": "user01",
         "password": "user0123",
-        "nickname": "一般用戶01",
+        "displayName": "一般用戶01",
         "role": "user",
         "permissions": [
             "registration"

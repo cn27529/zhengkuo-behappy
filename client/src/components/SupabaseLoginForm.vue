@@ -77,7 +77,7 @@
         </button>
       </form>
 
-      <div class="social-login-section">
+      <div class="social-login-section" style="display: none;">
         <div class="divider">
           <span>或使用以下方式登入</span>
         </div>
@@ -113,7 +113,7 @@
 
     <!-- 開發測試提示 -->
     <div class="dev-note" v-if="isDevelopment">
-      <p><strong>開發提示：</strong>請確保已配置 Supabase 環境變量</p>
+      <p><strong>開發提示：</strong>請確保已配置 Supabase 環境變量, env={{ import.meta.env.VITE_MODE }}</p>
     </div>
   </div>
 </template>
@@ -121,11 +121,14 @@
 <script>
 import { ref, computed } from 'vue'
 import { useSupabaseAuthStore } from '../stores/supabase-auth'
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 
 export default {
   name: 'SupabaseLogin',
   setup() {
     const authStore = useSupabaseAuthStore()
+    const router = useRouter();
     
     // 表單數據
     const email = ref('')
@@ -137,9 +140,10 @@ export default {
     const showResetPassword = ref(false)
     const message = ref('')
     const messageType = ref('') // 'success' or 'error'
+    const mode = ref(import.meta.env.VITE_MODE)
 
     // 環境判斷
-    const isDevelopment = computed(() => import.meta.env.MODE === 'development')
+    const isDevelopment = computed(() => mode.value === 'development')
 
     // 顯示消息
     const showMessage = (text, type = 'error') => {
@@ -160,13 +164,16 @@ export default {
 
       const result = await authStore.loginWithEmail(email.value, password.value)
       
+      console.log('Supabase Login result:', result)
+
       if (result.success) {
         showMessage(result.message, 'success')
         // 登入成功後的處理，例如路由跳轉
         setTimeout(() => {
           // 這裡可以觸發父組件的登入成功事件或路由跳轉
-          window.location.href = '/dashboard'
-        }, 1000)
+          //window.location.href = '/dashboard'
+          router.push("/dashboard");
+        }, 500)
       } else {
         showMessage(result.message)
       }
@@ -212,6 +219,7 @@ export default {
       handleEmailLogin,
       handleSocialLogin,
       handleResetPassword,
+      mode,
     }
   }
 }

@@ -56,21 +56,22 @@ export const useAuthStore = defineStore("auth", () => {
           user.value = userInfo;
           isAuthenticated.value = true;
 
-          // 主要使用 sessionStorage
+          // sessionStorage（關閉瀏覽器就登出）
           sessionStorage.setItem("auth-user", JSON.stringify(user.value));
+          //sessionStorage.setItem("auth-token", "mock-token-" + Date.now());
 
           // 可選：保存到localStorage
-          localStorage.setItem("auth-user", JSON.stringify(userInfo));
-          localStorage.setItem("auth-token", "mock-token-" + Date.now());
+          //localStorage.setItem("auth-user", JSON.stringify(userInfo));
+          //localStorage.setItem("auth-token", "mock-token-" + Date.now());
           // 可選：在localStorage存一個標記，用於顯示"記住我"功能
-          localStorage.setItem("last-login-user", username);
+          //localStorage.setItem("last-login-user", username);
 
           resetInactivityTimer();
           setupActivityListeners();
 
           resolve({
             success: true,
-            message: `登入成功！歡迎 ${userInfo.nickname}`,
+            message: `登入成功！歡迎 ${userInfo.displayName}`,
             user: userInfo,
           });
         } else {
@@ -96,15 +97,17 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     // 清除本地存儲中的認證信息
-    localStorage.removeItem("auth-token");
-    localStorage.removeItem("auth-user");
+    sessionStorage.removeItem("auth-user");
+    //sessionStorage.removeItem("auth-token");
 
     console.log("用户已退出登录");
   };
 
   // 初始化時檢查本地存儲
   const initializeAuth = () => {
-    const savedUser = localStorage.getItem("auth-user");
+    //sessionStorage（關閉瀏覽器就登出）
+    const savedUser = sessionStorage.getItem("auth-user");
+
     if (savedUser) {
       try {
         user.value = JSON.parse(savedUser);
@@ -116,7 +119,10 @@ export const useAuthStore = defineStore("auth", () => {
         resetInactivityTimer();
         setupActivityListeners();
 
-        console.log("auth store 從本地存儲恢復用戶會話:", user.value.nickname);
+        console.log(
+          "auth store 從本地存儲恢復用戶會話:",
+          user.value.displayName
+        );
       } catch (error) {
         console.error("auth store 解析保存的用戶數據失敗:", error);
         logout();

@@ -10,50 +10,149 @@ export const useRegistrationStore = defineStore("registration", () => {
   // 當前編輯的表單索引
   const currentFormIndex = ref(0);
 
-  // 新增表單
+  // addNewForm：安全的新增表單方法
   const addNewForm = () => {
-    if (currentFormIndex === 0 && formArray.value.length === 0) {
-      // 初始情況下，先加入當前表單
-      formArray.value.push({ ...registrationForm.value });
-    }
+    try {
+      console.log("🚀 開始新增表單...");
 
-    // 1. 保存當前表單到 formArray[currentFormIndex]
-    if (formArray.value.length > 0) {
-      formArray.value[currentFormIndex.value] = {
-        ...registrationForm.value,
+      //當前表單標記為已保存
+      registrationForm.value.status = "saved";
+
+      // 🎯 關鍵：先確保當前表單已保存到陣列
+      if (formArray.value.length === 0) {
+        // 第一次新增，保存初始表單
+        formArray.value.push(
+          JSON.parse(JSON.stringify(registrationForm.value))
+        );
+      } else {
+        // 保存當前編輯的表單
+        formArray.value[currentFormIndex.value] = JSON.parse(
+          JSON.stringify(registrationForm.value)
+        );
+      }
+
+      // 建立新表單
+      const newForm = getInitialFormData();
+      formArray.value.push(newForm);
+
+      // 切換到新表單
+      currentFormIndex.value = formArray.value.length - 1;
+
+      // 🎯 關鍵：安全地載入新表單數據到當前響應式物件
+      const loadFormToRegistration = (formData) => {
+        // 重置當前表單
+        const initialData = getInitialFormData();
+
+        // 1. 載入頂層屬性
+        Object.keys(formData).forEach((key) => {
+          if (key !== "contact" && key !== "blessing" && key !== "salvation") {
+            registrationForm.value[key] = formData[key];
+          }
+        });
+
+        // 2. 載入 contact
+        Object.keys(formData.contact).forEach((key) => {
+          registrationForm.value.contact[key] = formData.contact[key];
+        });
+
+        // 3. 載入 blessing
+        registrationForm.value.blessing.address = formData.blessing.address;
+        registrationForm.value.blessing.persons.length = 0;
+        formData.blessing.persons.forEach((person) => {
+          registrationForm.value.blessing.persons.push({ ...person });
+        });
+
+        // 4. 載入 salvation
+        registrationForm.value.salvation.address = formData.salvation.address;
+        registrationForm.value.salvation.ancestors.length = 0;
+        formData.salvation.ancestors.forEach((ancestor) => {
+          registrationForm.value.salvation.ancestors.push({ ...ancestor });
+        });
+        registrationForm.value.salvation.survivors.length = 0;
+        formData.salvation.survivors.forEach((survivor) => {
+          registrationForm.value.salvation.survivors.push({ ...survivor });
+        });
       };
+
+      // 載入新表單
+      loadFormToRegistration(newForm);
+
+      console.log("✅ 新增表單完成，當前索引:", currentFormIndex.value);
+      return currentFormIndex.value;
+    } catch (error) {
+      console.error("❌ 新增表單失敗:", error);
+      return -1;
     }
-
-    // 2. 建立新表單加入 formArray，這 newForm 是代表下一張表單
-    const newForm = getInitialFormData();
-    formArray.value.push(newForm);
-
-    // 3. 更新 currentFormIndex 並載入新表單
-    currentFormIndex.value = formArray.value.length - 1;
-    registrationForm.value = { ...newForm };
-
-    // 4. 返回新表單索引
-    return currentFormIndex.value;
   };
 
-  // 切換表單
+  // switchForm：安全的表單切換方法
   const switchForm = (index) => {
-    // 保存當前表單狀態
-    registrationForm.value.status = "saved";
-    // 更新最後修改時間
-    registrationForm.value.lastModified = new Date().toISOString();
+    try {
+      if (index < 0 || index >= formArray.value.length) {
+        console.error("❌ 切換表單索引無效:", index);
+        return false;
+      }
 
-    // 1. 保存當前表單到 formArray[currentFormIndex]
-    formArray.value[currentFormIndex.value] = {
-      ...registrationForm.value,
-    };
+      console.log("🔄 切換表單從", currentFormIndex.value, "到", index);
 
-    // 2. 載入目標表單，從 formArray[n] 載入資料到 registrationForm
-    currentFormIndex.value = index;
-    registrationForm.value = JSON.parse(JSON.stringify(formArray.value[index]));
+      // 🎯 關鍵：先保存當前表單
+      if (formArray.value.length > 0) {
+        formArray.value[currentFormIndex.value] = JSON.parse(
+          JSON.stringify(registrationForm.value)
+        );
+      }
 
-    // 3. 更新表單狀態
-    registrationForm.value.status = "editing";
+      // 載入目標表單
+      const targetForm = formArray.value[index];
+
+      // 使用相同的載入邏輯
+      const loadFormToRegistration = (formData) => {
+        // 重置當前表單
+        const initialData = getInitialFormData();
+
+        // 載入所有屬性...
+        Object.keys(formData).forEach((key) => {
+          if (key !== "contact" && key !== "blessing" && key !== "salvation") {
+            registrationForm.value[key] = formData[key];
+          }
+        });
+
+        Object.keys(formData.contact).forEach((key) => {
+          registrationForm.value.contact[key] = formData.contact[key];
+        });
+
+        registrationForm.value.blessing.address = formData.blessing.address;
+        registrationForm.value.blessing.persons.length = 0;
+        formData.blessing.persons.forEach((person) => {
+          registrationForm.value.blessing.persons.push({ ...person });
+        });
+
+        registrationForm.value.salvation.address = formData.salvation.address;
+        registrationForm.value.salvation.ancestors.length = 0;
+        formData.salvation.ancestors.forEach((ancestor) => {
+          registrationForm.value.salvation.ancestors.push({ ...ancestor });
+        });
+        registrationForm.value.salvation.survivors.length = 0;
+        formData.salvation.survivors.forEach((survivor) => {
+          registrationForm.value.salvation.survivors.push({ ...survivor });
+        });
+      };
+
+      loadFormToRegistration(targetForm);
+      currentFormIndex.value = index;
+
+      // 更新狀態
+      registrationForm.value.status = "editing";
+      registrationForm.value.lastModified = new Date().toISOString();
+
+      console.log("傳入的索引:", index);
+      console.log("表單切換完成，當前表單索引:", currentFormIndex.value);
+
+      return currentFormIndex.value;
+    } catch (error) {
+      console.error("❌ 表單切換失敗:", error);
+      return -1;
+    }
   };
 
   // 刪除表單
@@ -64,7 +163,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     if (currentFormIndex.value >= index) {
       currentFormIndex.value = Math.max(0, currentFormIndex.value - 1);
     }
-    switchForm(currentFormIndex.value);
+    const resultIndex = switchForm(currentFormIndex.value);
   };
 
   // 複製表單
@@ -74,10 +173,10 @@ export const useRegistrationStore = defineStore("registration", () => {
     duplicated.formName = `${duplicated.formName} - 複本`;
 
     formArray.value.push(duplicated);
-    switchForm(formArray.value.length - 1);
+    const resultIndex = switchForm(formArray.value.length - 1);
   };
 
-  // 獲取表單摘要資訊
+  // 獲取多筆表單摘要
   const getFormSummaries = computed(() => {
     if (currentFormIndex.value === 0 && formArray.value.length === 0) {
       return [];
@@ -95,7 +194,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }));
   });
 
-  // 當前表單資訊
+  // 當前表單摘要
   const currentFormSummary = computed(
     () => getFormSummaries.value[currentFormIndex.value]
   );
@@ -689,7 +788,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     return false;
   };
 
-  // submitRegistration：提交表單（此處為模擬，實際可呼叫 API）
+  // 提交表單（此處為模擬，實際可呼叫 API）
   // 在 Registration.vue 中 submitForm 會呼叫此方法並顯示結果
   const submitRegistration = async () => {
     if (!isFormValid.value) {
@@ -724,9 +823,59 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // resetForm：重置整個表單為初始狀態（畫面上的重置按鈕呼叫）
+  // resetForm：重置整個表單為初始狀態（畫面上的重置按鈕呼叫）使用響應式安全的重置方法
   const resetForm = () => {
-    //registrationForm.value = getInitialFormData();
+    try {
+      console.log("開始重置表單...");
+
+      const initialData = getInitialFormData();
+
+      // 方法：逐個屬性重置，保持響應性
+      // 1. 重置頂層屬性
+      registrationForm.value.status = initialData.status;
+      registrationForm.value.createDate = initialData.createDate;
+      registrationForm.value.lastModified = initialData.lastModified;
+      registrationForm.value.formName = initialData.formName;
+      registrationForm.value.formSource = initialData.formSource;
+
+      // 2. 重置 contact 物件
+      registrationForm.value.contact.name = initialData.contact.name;
+      registrationForm.value.contact.phone = initialData.contact.phone;
+      registrationForm.value.contact.mobile = initialData.contact.mobile;
+      registrationForm.value.contact.relationship =
+        initialData.contact.relationship;
+      registrationForm.value.contact.otherRelationship =
+        initialData.contact.otherRelationship;
+
+      // 3. 重置 blessing 物件
+      registrationForm.value.blessing.address = initialData.blessing.address;
+      // 重置 persons 陣列 - 重要：重新賦值整個陣列
+      registrationForm.value.blessing.persons =
+        initialData.blessing.persons.map((person) => ({
+          ...person,
+        }));
+
+      // 4. 重置 salvation 物件
+      registrationForm.value.salvation.address = initialData.salvation.address;
+      registrationForm.value.salvation.ancestors =
+        initialData.salvation.ancestors.map((ancestor) => ({
+          ...ancestor,
+        }));
+      registrationForm.value.salvation.survivors =
+        initialData.salvation.survivors.map((survivor) => ({
+          ...survivor,
+        }));
+
+      // 5. 重置表單陣列
+      formArray.value = [{ ...initialData }];
+      currentFormIndex.value = 0;
+
+      console.log("表單重置完成", registrationForm.value);
+      return true;
+    } catch (error) {
+      console.error("重置表單失敗:", error);
+      return false;
+    }
   };
 
   // loadConfig：模擬從遠端加載配置，未來可改成真正的 API 請求
@@ -750,6 +899,10 @@ export const useRegistrationStore = defineStore("registration", () => {
     registrationForm,
     relationshipOptions,
     zodiacOptions,
+    formArray, // 必須導出
+    currentFormIndex, // 必須導出
+    getFormSummaries, // 必須導出
+    currentFormSummary, // 必須導出
 
     // Getter
     currentHouseholdHeadsCount,
@@ -764,7 +917,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     survivorsWarning,
     isFormValid,
     validationDetails,
-    currentFormSummary,
 
     // Actions
     addBlessingPerson,
@@ -779,7 +931,10 @@ export const useRegistrationStore = defineStore("registration", () => {
     addContactToSurvivors,
     copyBlessingAddress,
     submitRegistration,
-    resetForm,
     loadConfig,
+    resetForm,
+    addNewForm,
+    switchForm,
+    deleteForm,
   };
 });

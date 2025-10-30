@@ -4,6 +4,7 @@ import { useAuthStore } from "../stores/auth";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
+  { path: "/env", component: () => import("../views/Env.vue") },
   { path: "/login", component: () => import("../views/Login.vue") },
   { path: "/contact", component: () => import("../views/Contact.vue") },
   {
@@ -61,14 +62,22 @@ router.beforeEach((to, from, next) => {
   });
 
   // 改為localStorage檢查設定isAuthenticated
-  const savedUser = localStorage.getItem("auth-user");
+  //const savedUser = localStorage.getItem("auth-user");
+  //sessionStorage（關閉瀏覽器就登出）
+  const savedUser = sessionStorage.getItem("auth-user");
+
+  // if (!savedUser) {
+  //   console.log("嘗試從 supabase 用戶數據恢復");
+  //   savedUser = sessionStorage.getItem("supabase-auth-user");
+  // }
+
   if (savedUser) {
     try {
       authStore.user = JSON.parse(savedUser);
       authStore.isAuthenticated = true;
       console.log(
         "index router 從本地存儲恢復用戶會話:",
-        authStore.user.nickname
+        authStore.user.displayName
       );
     } catch (error) {
       console.error("index router 解析保存的用戶數據失敗:", error);

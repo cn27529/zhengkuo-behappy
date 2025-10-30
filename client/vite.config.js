@@ -7,4 +7,5 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  // 确保没有特殊的 envDir 配置
 });

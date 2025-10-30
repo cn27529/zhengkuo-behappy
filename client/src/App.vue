@@ -6,7 +6,7 @@
           <div class="logo-icon">🛕</div>
           <h1>{{ appTitle }}</h1>
           <div class="user-info" v-if="showUserInfo">
-            <span>{{ userNickname }}</span
+            <span>{{ userDisplayName }}</span
             >&nbsp;<span>你好</span>🙏
           </div>
         </div>
@@ -80,6 +80,7 @@ import { useAuthStore } from "./stores/auth";
 import { useMenuStore } from "./stores/menu";
 import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
 import appConfig from "./config/appConfig";
+import { useSupabaseAuthStore } from "./stores/supabase-auth";
 
 export default {
   name: "App",
@@ -103,7 +104,7 @@ export default {
     // layoutReady: 在子組件完成渲染（nextTick）後才變 true，避免先顯示後隱藏的閃爍
     const layoutReady = ref(false);
 
-    const userNickname = ref("");
+    const userDisplayName = ref("");
 
     // 計算是否為列印路由（供判斷用）
     const isPrintRoute = computed(
@@ -190,21 +191,23 @@ export default {
 
     // 在组件挂载前初始化认证状态
     const initializeApp = async () => {
-      // 确保认证状态已恢复
-      if (localStorage.getItem("token")) {
-        authStore.initAuth();
-      }
+      
+      // // 确保认证状态已恢复
+      // if (sessionStorage.getItem("auth-user")) {
+      //   authStore.initializeAuth();
+      // }
 
-      // 检查当前路由是否需要重定向
-      if (route.meta.requiresAuth && !authStore.isAuthenticated) {
-        await router.push("/login");
-        return;
-      }
+      // // 检查当前路由是否需要重定向
+      // if (route.meta.requiresAuth && !authStore.isAuthenticated) {
+      //   await router.push("/login");
+      //   return;
+      // }
 
-      if (route.meta.requiresGuest && authStore.isAuthenticated) {
-        await router.push("/");
-        return;
-      }
+      // if (route.meta.requiresGuest && authStore.isAuthenticated) {
+      //   await router.push("/");
+      //   return;
+      // }
+
       // 初始化菜单
       menuStore.initializeActiveMenu();
       // 更新布局可见性
@@ -213,7 +216,7 @@ export default {
 
     // 监听 authStore.user 的变化
     watch(() => authStore.user, (newUser) => {
-      userNickname.value = newUser ? newUser.nickname : "訪客"
+      userDisplayName.value = newUser ? newUser.displayName : "訪客"
     }, { immediate: true })
 
     onMounted(() => {
@@ -223,7 +226,7 @@ export default {
       menuStore.initializeActiveMenu();
 
       // 修改用户昵称的计算方式
-      userNickname.value = authStore.user ? authStore.user.nickname : "訪客";
+      userDisplayName.value = authStore.user ? authStore.user.displayName : "訪客";
 
       // 初始載入時，在 nextTick 後設定 header/sidebar/footer
       updateLayoutVisibility();
@@ -246,7 +249,7 @@ export default {
       isMenuActive,
       handleMenuClick,
       appTitle: appConfig.title,
-      userNickname,
+      userDisplayName,
     };
   },
 };

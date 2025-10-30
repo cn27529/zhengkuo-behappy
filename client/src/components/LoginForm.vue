@@ -170,24 +170,6 @@ export default {
 
       try {
         await authStore.login(loginForm.username, loginForm.password);
-        //success.value = true
-
-        // const userData = {
-        //   username: loginForm.username,
-        //   nickname: authStore.user.nickname,
-        //   roles: authStore.user.roles,
-        // };
-
-        // console.log("登入使用者資料:", userData);
-
-        // // 根據 rememberMe 選擇存儲方式
-        // if (rememberMe.value) {
-        //   // 使用 localStorage（有安全風險，但方便）
-        //   localStorage.setItem("auth-user", JSON.stringify(userData));
-        // } else {
-        //   // 使用 sessionStorage（關閉瀏覽器就登出）
-        //   sessionStorage.setItem("auth-user", JSON.stringify(userData));
-        // }
 
         ElMessage.success("登录成功！正在跳转...👍👍");
 
@@ -197,7 +179,8 @@ export default {
           router.push("/dashboard");
         }, 1500);
       } catch (error) {
-        alert(error.message);
+        //alert(error.message);
+        ElMessage.error("登入失敗: " + error.message);
         console.error("登入失敗:", error);
       } finally {
         loading.value = false;
