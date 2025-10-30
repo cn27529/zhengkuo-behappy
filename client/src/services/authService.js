@@ -66,6 +66,10 @@ JSON 文件	❌ 很低	很容易找到	不推薦
 Service 硬編碼	⚠️ 低	需要搜索代碼	過渡方案
 環境變數	⚠️ 低	需要搜索代碼	過渡方案
 後端 API	✅ 高	無法看到	唯一安全方案
+
+編譯後可能變成：
+const e={admin:"password!123456",zkuser01:"zk!123456",...}
+
     */
     const passwordMap = {
       admin: "password!123456",
