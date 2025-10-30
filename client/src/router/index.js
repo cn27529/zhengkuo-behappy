@@ -39,6 +39,15 @@ const routes = [
     component: () => import("../views/Placeholder.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/taisui",
+    component: () => import("../views/TaiSui.vue"),
+    props: (route) => ({
+      // 設定預設年份為當前年份，如果 URL 有參數則使用 URL 參數
+      year: route.query.year || new Date().getFullYear(),
+    }),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({
@@ -46,9 +55,10 @@ const router = createRouter({
   routes,
 });
 
-// 路由守卫
+// 全局導航路由守卫
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
+
   // 明確檢查 matched records 中是否有 requiresAuth === true
   const requiresAuth = to.matched.some(
     (record) => record.meta && record.meta.requiresAuth === true
@@ -65,7 +75,6 @@ router.beforeEach((to, from, next) => {
   //const savedUser = localStorage.getItem("auth-user");
   //sessionStorage（關閉瀏覽器就登出）
   const savedUser = sessionStorage.getItem("auth-user");
-
   // if (!savedUser) {
   //   console.log("嘗試從 supabase 用戶數據恢復");
   //   savedUser = sessionStorage.getItem("supabase-auth-user");
