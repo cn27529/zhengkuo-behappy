@@ -1,7 +1,6 @@
 [
     {
         "username": "admin",
-        "password": "password!123456",
         "displayName": "阿德民",
         "role": "admin",
         "permissions": [
@@ -13,7 +12,6 @@
     },
     {
         "username": "zkuser01",
-        "password": "zk!123456",
         "displayName": "廣小明",
         "role": "user",
         "permissions": [
@@ -22,7 +20,6 @@
     },
     {
         "username": "temple_staff",
-        "password": "temple123",
         "displayName": "寺廟工作人員",
         "role": "staff",
         "permissions": [
@@ -33,7 +30,6 @@
     },
     {
         "username": "volunteer",
-        "password": "volunteer123",
         "displayName": "志工",
         "role": "volunteer",
         "permissions": [
@@ -43,7 +39,6 @@
     },
     {
         "username": "user01",
-        "password": "user0123",
         "displayName": "一般用戶01",
         "role": "user",
         "permissions": [

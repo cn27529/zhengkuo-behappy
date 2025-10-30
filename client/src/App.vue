@@ -69,8 +69,9 @@
     </div>
     <!-- 底部-->
     <footer v-if="layoutReady && showFooter">
-      <p>© 2025 {{ appTitle }} | 弘扬佛法，服务众生</p>
+      <p>© 2025 {{ appTitle }} | 弘扬佛法、服务众生</p>
     </footer>
+    <!-- <DevTools /> -->
   </div>
 </template>
 
@@ -80,10 +81,13 @@ import { useAuthStore } from "./stores/auth";
 import { useMenuStore } from "./stores/menu";
 import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
 import appConfig from "./config/appConfig";
-import { useSupabaseAuthStore } from "./stores/supabase-auth";
+import DevTools from '../src/components/DevTools.vue';
 
 export default {
   name: "App",
+  components: {
+    DevTools,
+  },
   setup() {
     const router = useRouter();
     const route = useRoute();

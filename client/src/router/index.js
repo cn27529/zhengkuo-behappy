@@ -48,6 +48,22 @@ const routes = [
     }),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/test",
+    name: "/test",
+    component: () => import("../views/TestPage.vue"),
+    meta: {
+      title: "測試頁面",
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/loginview",
+    component: () => import("../views/LoginView.vue"),
+    meta: {
+      requiresAuth: false,
+    },
+  },
 ];
 
 const router = createRouter({

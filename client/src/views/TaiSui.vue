@@ -38,11 +38,11 @@
 
       <!-- 结果显示区域 -->
       <div v-if="taiSuiStore.analysisResult" class="form-section">
-        <h2>{{ taiSuiStore.analysisResult.year }}年 太歲分析結果</h2>
+        <h2>{{ taiSuiStore.analysisResult.year }}年太歲分析結果</h2>
         
         <!-- 天干地支信息 -->
         <div class="form-section" style="background: #f8f9fa; padding: 1.5rem;">
-          <h3>基本信息</h3>
+          <h3>天干地支基本信息</h3>
           <div class="form-grid">
             <div class="form-group">
               <label>天干</label>
@@ -343,11 +343,11 @@ export default {
   font-weight: bold;
 }
 
-.tai-sui-label.value { background: #dc3545; }
-.tai-sui-label.chong { background: #fd7e14; }
-.tai-sui-label.hai { background: #20c997; }
-.tai-sui-label.po { background: #6f42c1; }
-.tai-sui-label.xing { background: #e83e8c; }
+.tai-sui-label.value { background: #dc3545; color: white;}
+.tai-sui-label.chong { background: #fd7e14; color: white;}
+.tai-sui-label.hai { background: #20c997; color: white;}
+.tai-sui-label.po { background: #6f42c1; color: white;}
+.tai-sui-label.xing { background: #e83e8c; color: white;}
 
 .explanation-text {
   background: white;

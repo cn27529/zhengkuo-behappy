@@ -1,6 +1,7 @@
 // src/main.js
 import { createApp } from "vue";
 import { createPinia } from "pinia";
+import { authService } from "./services/authService";
 
 import App from "./App.vue";
 import ElementPlus from "element-plus";
@@ -14,12 +15,28 @@ import appConfig from "./config/appConfig";
 import { useMenuStore } from "./stores/menu";
 
 // 引入 antd
-import Antd from 'ant-design-vue';
-import 'ant-design-vue/dist/reset.css'; // 方式一：reset 樣式（推薦）
+import Antd from "ant-design-vue";
+import "ant-design-vue/dist/reset.css"; // 方式一：reset 樣式（推薦）
 //import 'ant-design-vue/dist/antd.css'; // 方式二：傳統樣式
 
 // 创建Pinia实例
 const pinia = createPinia();
+
+// 開發模式下的初始化
+if (import.meta.env.VITE_DEV) {
+  // 從 localStorage 讀取保存的模式
+  const savedMode = localStorage.getItem("dev-auth-mode");
+  if (savedMode) {
+    authService.setMode(savedMode);
+  }
+
+  // 在控制台暴露 authService 方便調試
+  window.authService = authService;
+
+  console.log("🔧 開發模式已啟用");
+  console.log("當前認證模式:", authService.getCurrentMode());
+  console.log("使用 window.authService.setMode() 來切換模式");
+}
 
 // 创建Vue应用
 const app = createApp(App);

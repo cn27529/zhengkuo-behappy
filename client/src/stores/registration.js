@@ -259,7 +259,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   // 來顯示上限或決定按鈕是否 disabled。
   const config = ref({
     maxHouseholdHeads: 1, // 最大戶長數
-    maxAncestors: 5, // 最大祖先數
+    maxAncestors: 1, // 最大祖先數
     maxSurvivors: 2, // 最大陽上人數
     defaultSurvivors: 2, // 預設陽上人數（用於初始化）
   });

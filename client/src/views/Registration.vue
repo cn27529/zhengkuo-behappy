@@ -7,8 +7,6 @@
 
     <!-- 在 .form-header div 內新增表單管理區塊 -->
     <div class="form-header">
-      {{ currentFormIndex }}/{{ formArray.length }}
-
       <!-- 表單切換器 -->
       <div class="form-switcher" v-if="formArray && formArray.length > 0">
         <div class="form-tabs">
@@ -19,11 +17,11 @@
             :class="{ active: currentFormIndex === index }"
             @click="handleSwitchForm(index)"
           >
-            <span class="tab-number">表單 {{ index + 1 }}</span>
-            <span class="tab-name">{{
+            <span class="tab-number">第{{ index + 1 }}份表單</span>
+            <span class="tab-name" style="display: none">{{
               form.formName || `表單 ${index + 1}`
             }}</span>
-            <span class="tab-status" :class="form.status">{{
+            <span style="display: none" class="tab-status" :class="form.status">{{
               getStatusText(form.status)
             }}</span>
             <button
@@ -196,7 +194,7 @@
               class="person-item"
             >
               <div class="person-header">
-                <h4>人員 {{ person.id }}</h4>
+                <h4 style="display: none;">人員 {{ person.id }}</h4>
                 <button
                   type="button"
                   class="btn btn-danger btn-sm"
@@ -292,7 +290,7 @@
                 }}
                 位</span
               >
-              <button
+              <button style="display: none;"
                 type="button"
                 class="btn btn-outline btn-sm"
                 @click="addAncestor"
@@ -313,8 +311,8 @@
               class="ancestor-item"
             >
               <div class="person-header">
-                <h4>祖先 {{ ancestor.id }}</h4>
-                <button
+                <h4 style="display: none;">祖先 {{ ancestor.id }}</h4>
+                <button style="display: none;"
                   type="button"
                   class="btn btn-danger btn-sm"
                   @click="removeAncestor(ancestor.id)"
@@ -421,7 +419,7 @@
               class="survivor-item"
             >
               <div class="person-header">
-                <h4>陽上人 {{ survivor.id }}</h4>
+                <h4 style="display: none;">陽上人 {{ survivor.id }}</h4>
                 <button
                   type="button"
                   class="btn btn-danger btn-sm"
