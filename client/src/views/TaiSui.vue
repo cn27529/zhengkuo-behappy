@@ -5,13 +5,15 @@
       <h2>
         {{ taiSuiStore.analysisResult?.year || "加载中..." }}年太歲分析結果
       </h2>
+      <div v-if="isLoading" class="loading-indicator">🔄 分析中...</div>
     </div>
 
     <div class="form-content">
       <!-- 年份输入区域 -->
-      <div class="form-section" style="display: none">
+      <div class="form-section" >
         <h2>查詢年份</h2>
         <div class="form-grid">
+          <!-- 在模板中修改輸入框 -->
           <div class="form-group address-row">
             <label for="yearInput">輸入年份</label>
             <input
@@ -20,14 +22,16 @@
               v-model="taiSuiStore.inputYear"
               placeholder="請輸入年份，如：2025"
               @input="handleYearInput"
-              @keyup.enter="analyzeCurrentYear"
+              @keyup="handleKeyUp"
+              :disabled="isLoading"
             />
-            <button
+            <button style="display: none;"
               type="button"
               class="btn btn-primary btn-sm"
               @click="analyzeCurrentYear"
+              :disabled="isLoading"
             >
-              查詢
+              {{ isLoading ? "分析中..." : "查詢" }}
             </button>
           </div>
           <div class="form-group" v-if="taiSuiStore.urlYear">
@@ -165,7 +169,7 @@
 </template>
 
 <script>
-import { onMounted, watch } from "vue";
+import { onMounted, watch, ref, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTaiSuiStore } from "../stores/taisui";
 
@@ -175,14 +179,13 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const taiSuiStore = useTaiSuiStore();
+    const isLoading = ref(false);
 
     // 從 URL 參數讀取年份
     const getYearFromURL = () => {
       const yearParam = route.query.year;
-      console.log("URL参数:", yearParam); // 调试
       if (yearParam) {
         const year = parseInt(yearParam);
-        console.log("解析后的年份:", year); // 调试
         if (!isNaN(year) && year >= 1900 && year <= 2100) {
           taiSuiStore.setUrlYear(year);
           return year;
@@ -194,30 +197,46 @@ export default {
     // 更新 URL 參數
     const updateURLParameter = (year) => {
       const currentPath = route.path;
-      router.replace({
+      router.push({
         path: currentPath,
         query: { year: year.toString() },
       });
     };
 
-    const analyzeCurrentYear = () => {
-      let yearToAnalyze;
+    const analyzeCurrentYear = async (yearToAnalyze = null) => {
+      let year = yearToAnalyze;
 
-      // 優先使用 URL 參數的年份
-      const urlYearValue = getYearFromURL();
-      if (urlYearValue) {
-        yearToAnalyze = urlYearValue;
-        taiSuiStore.setInputYear(yearToAnalyze);
-      } else {
-        yearToAnalyze = parseInt(taiSuiStore.inputYear);
+      if (!year) {
+        // 優先使用 URL 參數的年份
+        const urlYearValue = getYearFromURL();
+        if (urlYearValue) {
+          year = urlYearValue;
+          taiSuiStore.setInputYear(year);
+        } else {
+          year = parseInt(taiSuiStore.inputYear);
+        }
+      }
+
+      if (!year || isNaN(year)) {
+        console.warn("無效的年份輸入");
+        return;
+      }
+
+      if (year < 1900 || year > 2100) {
+        console.warn("年份超出範圍");
+        return;
       }
 
       try {
-        taiSuiStore.performAnalysis(yearToAnalyze);
-        // 更新 URL 參數
-        updateURLParameter(yearToAnalyze);
+        isLoading.value = true;
+        console.log("開始分析年份:", year);
+        await taiSuiStore.performAnalysis(year);
+        console.log("分析完成，當前結果:", taiSuiStore.analysisResult);
+        await nextTick(); // 確保 DOM 更新
       } catch (error) {
-        alert(error.message);
+        console.error("分析年份失敗:", error);
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -225,13 +244,25 @@ export default {
       const year = parseInt(event.target.value);
       if (year && year >= 1900 && year <= 2100) {
         taiSuiStore.setUrlYear(null);
+        // 立即更新 URL 並重新分析
+        updateURLParameter(year);
+      }
+    };
+
+    // 添加鍵盤事件處理
+    const handleKeyUp = (event) => {
+      if (event.key === "Enter") {
+        const year = parseInt(taiSuiStore.inputYear);
+        if (year && year >= 1900 && year <= 2100) {
+          updateURLParameter(year);
+        }
       }
     };
 
     const handleReset = () => {
       taiSuiStore.resetAnalysis();
       // 清除 URL 參數
-      router.replace({ path: route.path });
+      router.push({ path: route.path });
     };
 
     const generateShareLink = () => {
@@ -239,49 +270,56 @@ export default {
         const currentUrl = window.location.origin + window.location.pathname;
         const shareUrl = `${currentUrl}?year=${taiSuiStore.analysisResult.year}`;
 
-        // 複製到剪貼簿
         navigator.clipboard
           .writeText(shareUrl)
           .then(() => {
             alert(`已複製分享連結：${shareUrl}`);
           })
           .catch(() => {
-            // 如果剪貼簿 API 不可用，顯示連結
             prompt("請複製以下連結分享：", shareUrl);
           });
       }
     };
 
-    // 監聽路由變化
+    // 在 watch 監聽器中添加強制刷新
     watch(
       () => route.query.year,
-      (newYear) => {
+      async (newYear) => {
+        console.log("🔍 監聽到 URL year 參數變化:", newYear);
+
         if (newYear) {
           const year = parseInt(newYear);
           if (!isNaN(year) && year >= 1900 && year <= 2100) {
+            console.log(`🔄 處理年份變化: ${year}`);
             taiSuiStore.setInputYear(year);
-            analyzeCurrentYear();
+            await analyzeCurrentYear(year);
+
+            // 強制重新渲染
+            await nextTick();
           }
+        } else {
+          const currentYear = new Date().getFullYear();
+          console.log("📅 使用當前年份:", currentYear);
+          taiSuiStore.setInputYear(currentYear);
+          await analyzeCurrentYear(currentYear);
+          await nextTick();
         }
-      }
+      },
+      { immediate: true }
     );
 
-    // 页面加载时检查 URL 参数并分析
+    // 頁面加載時初始化
     onMounted(() => {
-      console.log("组件挂载，当前analysisResult:", taiSuiStore.analysisResult);
-      const urlYearValue = getYearFromURL();
-      console.log("从URL获取的年份:", urlYearValue);
-
-      if (urlYearValue) {
-        taiSuiStore.setInputYear(urlYearValue);
-      }
-      analyzeCurrentYear();
+      console.log("🚀 TaiSui 組件掛載完成");
+      // 監聽器已經通過 immediate: true 執行了初始化
     });
 
     return {
       taiSuiStore,
+      isLoading,
       analyzeCurrentYear,
       handleYearInput,
+      handleKeyUp,
       handleReset,
       generateShareLink,
     };
@@ -506,6 +544,26 @@ export default {
 
   .btn {
     width: 100%;
+  }
+
+  .loading-indicator {
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    color: #0066cc;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+
+  input:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 </style>
