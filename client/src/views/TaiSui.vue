@@ -10,7 +10,7 @@
 
     <div class="form-content">
       <!-- 年份输入区域 -->
-      <div class="form-section" >
+      <div id="sticky" class="form-section">
         <h2>查詢年份</h2>
         <div class="form-grid">
           <!-- 在模板中修改輸入框 -->
@@ -25,7 +25,8 @@
               @keyup="handleKeyUp"
               :disabled="isLoading"
             />
-            <button style="display: none;"
+            <button
+              style="display: none"
               type="button"
               class="btn btn-primary btn-sm"
               @click="analyzeCurrentYear"
@@ -308,10 +309,25 @@ export default {
       { immediate: true }
     );
 
+    const handleScroll = () => {
+      const header = document.querySelector("#sticky");
+      if (window.pageYOffset > 0) {
+        header.classList.add("sticky");
+      } else {
+        header.classList.remove("sticky");
+      }
+    };
+
+
     // 頁面加載時初始化
     onMounted(() => {
       console.log("🚀 TaiSui 組件掛載完成");
-      // 監聽器已經通過 immediate: true 執行了初始化
+      window.addEventListener('scroll', handleScroll);
+
+    });
+
+    onMounted(() => {
+      window.removeEventListener('scroll', handleScroll);
     });
 
     return {
@@ -325,12 +341,34 @@ export default {
     };
   },
 };
+
+// window.addEventListener('scroll', function() {
+//     var header = document.querySelector('#sticky');
+//     if (window.pageYOffset > 0) {
+//         header.classList.add('sticky');
+//     } else {
+//         header.classList.remove('sticky');
+//     }
+// });
+
 </script>
 
 <style scoped>
 /* 保持原有的 CSS 样式不变 */
 .form-content {
   margin: 0 auto;
+}
+
+/* 增加粘性标题时的样式 */
+.form-section.sticky {
+  position: fixed;
+  top: 0;
+  /* min-width: auto; */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 可选：添加阴影效果 */
+  /* 透過 left: 50% 和 transform: translateX(-50%) 讓固定元素在視窗水平置中，最大寬度限制與父容器一致。 */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
 }
 
 .form-section {
