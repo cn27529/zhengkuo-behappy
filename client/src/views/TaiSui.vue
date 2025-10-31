@@ -309,6 +309,7 @@ export default {
       { immediate: true }
     );
 
+    // 監聽滾動事件以實現粘性標題
     const handleScroll = () => {
       const header = document.querySelector("#sticky");
       if (window.pageYOffset > 0) {
@@ -322,12 +323,12 @@ export default {
     // 頁面加載時初始化
     onMounted(() => {
       console.log("🚀 TaiSui 組件掛載完成");
-      window.addEventListener('scroll', handleScroll);
+      //window.addEventListener('scroll', handleScroll);
 
     });
 
     onMounted(() => {
-      window.removeEventListener('scroll', handleScroll);
+      //window.removeEventListener('scroll', handleScroll);
     });
 
     return {
