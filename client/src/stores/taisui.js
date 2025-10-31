@@ -165,17 +165,22 @@ ${yearInfo.tiangan}${yearInfo.dizhi}${valueTaiSui}年專屬的祝福與守護，
   };
 
   const performAnalysis = (year) => {
-    if (!year || isNaN(year)) {
-      throw new Error("請輸入有效的年份");
-    }
+    try {
+      if (!year || isNaN(year)) {
+        throw new Error("請輸入有效的年份");
+      }
 
-    if (year < 1900 || year > 2100) {
-      throw new Error("請輸入合理的年份（1900-2100）");
-    }
+      if (year < 1900 || year > 2100) {
+        throw new Error("請輸入合理的年份（1900-2100）");
+      }
 
-    const result = analyzeYear(year);
-    setAnalysisResult(result);
-    return result;
+      const result = analyzeYear(year);
+      setAnalysisResult(result);
+      return result;
+    } catch (error) {
+      console.error("分析错误:", error);
+      throw error;
+    }
   };
 
   const resetAnalysis = () => {

@@ -2,12 +2,14 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>{{ taiSuiStore.analysisResult.year }}年太歲分析結果</h2>
+      <h2>
+        {{ taiSuiStore.analysisResult?.year || "加载中..." }}年太歲分析結果
+      </h2>
     </div>
 
     <div class="form-content">
       <!-- 年份输入区域 -->
-      <div class="form-section" style="display: none;">
+      <div class="form-section" style="display: none">
         <h2>查詢年份</h2>
         <div class="form-grid">
           <div class="form-group address-row">
@@ -39,67 +41,97 @@
       <!-- 结果显示区域 -->
       <div v-if="taiSuiStore.analysisResult" class="form-section">
         <h2>天干地支基本信息</h2>
-        
+
         <!-- 天干地支信息 -->
-        <div class="form-section" style="background: #f8f9fa; padding: 1.5rem;">
+        <div class="form-section" style="background: #f8f9fa; padding: 1.5rem">
           <h3></h3>
           <div class="form-grid">
             <div class="form-group">
               <label>天干</label>
-              <div class="result-value">{{ taiSuiStore.analysisResult.tiangan }}</div>
+              <div class="result-value">
+                {{ taiSuiStore.analysisResult.tiangan }}
+              </div>
             </div>
             <div class="form-group">
               <label>地支</label>
-              <div class="result-value">{{ taiSuiStore.analysisResult.dizhi }}</div>
+              <div class="result-value">
+                {{ taiSuiStore.analysisResult.dizhi }}
+              </div>
             </div>
             <div class="form-group">
               <label>生肖</label>
               <div class="result-value zodiac-display">
-                {{ taiSuiStore.analysisResult.zodiacIcon }} {{ taiSuiStore.analysisResult.zodiac }}
+                {{ taiSuiStore.analysisResult.zodiacIcon }}
+                {{ taiSuiStore.analysisResult.zodiac }}
               </div>
             </div>
           </div>
         </div>
 
         <!-- 太歲類型 -->
-        <div class="form-section" style="background: #fff3cd; padding: 1.5rem;">
+        <div class="form-section" style="background: #fff3cd; padding: 1.5rem">
           <h3>犯太歲生肖</h3>
           <div class="form-grid compact">
             <div class="form-group">
               <label class="tai-sui-label value">值太歲（本命年）</label>
               <div class="result-value zodiac-display">
-                {{ taiSuiStore.getZodiacIcon(taiSuiStore.analysisResult.taiSuiTypes.valueTaiSui) }} {{ taiSuiStore.analysisResult.taiSuiTypes.valueTaiSui }}
+                {{
+                  taiSuiStore.getZodiacIcon(
+                    taiSuiStore.analysisResult.taiSuiTypes.valueTaiSui
+                  )
+                }}
+                {{ taiSuiStore.analysisResult.taiSuiTypes.valueTaiSui }}
               </div>
             </div>
             <div class="form-group">
               <label class="tai-sui-label chong">沖太歲</label>
               <div class="result-value zodiac-display">
-                {{ taiSuiStore.getZodiacIcon(taiSuiStore.analysisResult.taiSuiTypes.chongTaiSui) }} {{ taiSuiStore.analysisResult.taiSuiTypes.chongTaiSui }}
+                {{
+                  taiSuiStore.getZodiacIcon(
+                    taiSuiStore.analysisResult.taiSuiTypes.chongTaiSui
+                  )
+                }}
+                {{ taiSuiStore.analysisResult.taiSuiTypes.chongTaiSui }}
               </div>
             </div>
             <div class="form-group">
               <label class="tai-sui-label hai">害太歲</label>
               <div class="result-value zodiac-display">
-                {{ taiSuiStore.getZodiacIcon(taiSuiStore.analysisResult.taiSuiTypes.haiTaiSui) }} {{ taiSuiStore.analysisResult.taiSuiTypes.haiTaiSui }}
+                {{
+                  taiSuiStore.getZodiacIcon(
+                    taiSuiStore.analysisResult.taiSuiTypes.haiTaiSui
+                  )
+                }}
+                {{ taiSuiStore.analysisResult.taiSuiTypes.haiTaiSui }}
               </div>
             </div>
             <div class="form-group">
               <label class="tai-sui-label po">破太歲</label>
               <div class="result-value zodiac-display">
-                {{ taiSuiStore.getZodiacIcon(taiSuiStore.analysisResult.taiSuiTypes.poTaiSui) }} {{ taiSuiStore.analysisResult.taiSuiTypes.poTaiSui }}
+                {{
+                  taiSuiStore.getZodiacIcon(
+                    taiSuiStore.analysisResult.taiSuiTypes.poTaiSui
+                  )
+                }}
+                {{ taiSuiStore.analysisResult.taiSuiTypes.poTaiSui }}
               </div>
             </div>
             <div class="form-group">
               <label class="tai-sui-label xing">刑太歲</label>
               <div class="result-value zodiac-display">
-                {{ taiSuiStore.getZodiacIcon(taiSuiStore.analysisResult.taiSuiTypes.xingTaiSui) }} {{ taiSuiStore.analysisResult.taiSuiTypes.xingTaiSui }}
+                {{
+                  taiSuiStore.getZodiacIcon(
+                    taiSuiStore.analysisResult.taiSuiTypes.xingTaiSui
+                  )
+                }}
+                {{ taiSuiStore.analysisResult.taiSuiTypes.xingTaiSui }}
               </div>
             </div>
           </div>
         </div>
 
         <!-- 解釋說明 -->
-        <div class="form-section" style="background: #e7f3ff; padding: 1.5rem;">
+        <div class="form-section" style="background: #e7f3ff; padding: 1.5rem">
           <h3>民俗解釋與建議</h3>
           <div class="explanation-text">
             <pre>{{ taiSuiStore.analysisResult.explanation }}</pre>
@@ -108,16 +140,20 @@
       </div>
 
       <!-- 操作按钮 -->
-      <div class="form-actions" style="display: none;">
+      <div class="form-actions" style="display: none">
         <button type="button" class="btn btn-secondary" @click="handleReset">
           重置
         </button>
-        <button type="button" class="btn btn-primary" @click="analyzeCurrentYear">
+        <button
+          type="button"
+          class="btn btn-primary"
+          @click="analyzeCurrentYear"
+        >
           查詢
         </button>
-        <button 
-          type="button" 
-          class="btn btn-outline" 
+        <button
+          type="button"
+          class="btn btn-outline"
           @click="generateShareLink"
           v-if="taiSuiStore.analysisResult"
         >
@@ -129,9 +165,9 @@
 </template>
 
 <script>
-import { onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useTaiSuiStore } from '../stores/taisui';
+import { onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useTaiSuiStore } from "../stores/taisui";
 
 export default {
   name: "TaiSui",
@@ -143,8 +179,10 @@ export default {
     // 從 URL 參數讀取年份
     const getYearFromURL = () => {
       const yearParam = route.query.year;
+      console.log("URL参数:", yearParam); // 调试
       if (yearParam) {
         const year = parseInt(yearParam);
+        console.log("解析后的年份:", year); // 调试
         if (!isNaN(year) && year >= 1900 && year <= 2100) {
           taiSuiStore.setUrlYear(year);
           return year;
@@ -158,13 +196,13 @@ export default {
       const currentPath = route.path;
       router.replace({
         path: currentPath,
-        query: { year: year.toString() }
+        query: { year: year.toString() },
       });
     };
 
     const analyzeCurrentYear = () => {
       let yearToAnalyze;
-      
+
       // 優先使用 URL 參數的年份
       const urlYearValue = getYearFromURL();
       if (urlYearValue) {
@@ -200,14 +238,17 @@ export default {
       if (taiSuiStore.analysisResult) {
         const currentUrl = window.location.origin + window.location.pathname;
         const shareUrl = `${currentUrl}?year=${taiSuiStore.analysisResult.year}`;
-        
+
         // 複製到剪貼簿
-        navigator.clipboard.writeText(shareUrl).then(() => {
-          alert(`已複製分享連結：${shareUrl}`);
-        }).catch(() => {
-          // 如果剪貼簿 API 不可用，顯示連結
-          prompt('請複製以下連結分享：', shareUrl);
-        });
+        navigator.clipboard
+          .writeText(shareUrl)
+          .then(() => {
+            alert(`已複製分享連結：${shareUrl}`);
+          })
+          .catch(() => {
+            // 如果剪貼簿 API 不可用，顯示連結
+            prompt("請複製以下連結分享：", shareUrl);
+          });
       }
     };
 
@@ -227,7 +268,10 @@ export default {
 
     // 页面加载时检查 URL 参数并分析
     onMounted(() => {
+      console.log("组件挂载，当前analysisResult:", taiSuiStore.analysisResult);
       const urlYearValue = getYearFromURL();
+      console.log("从URL获取的年份:", urlYearValue);
+
       if (urlYearValue) {
         taiSuiStore.setInputYear(urlYearValue);
       }
@@ -343,11 +387,26 @@ export default {
   font-weight: bold;
 }
 
-.tai-sui-label.value { background: #dc3545; color: white;}
-.tai-sui-label.chong { background: #fd7e14; color: white;}
-.tai-sui-label.hai { background: #20c997; color: white;}
-.tai-sui-label.po { background: #6f42c1; color: white;}
-.tai-sui-label.xing { background: #e83e8c; color: white;}
+.tai-sui-label.value {
+  background: #dc3545;
+  color: white;
+}
+.tai-sui-label.chong {
+  background: #fd7e14;
+  color: white;
+}
+.tai-sui-label.hai {
+  background: #20c997;
+  color: white;
+}
+.tai-sui-label.po {
+  background: #6f42c1;
+  color: white;
+}
+.tai-sui-label.xing {
+  background: #e83e8c;
+  color: white;
+}
 
 .explanation-text {
   background: white;
