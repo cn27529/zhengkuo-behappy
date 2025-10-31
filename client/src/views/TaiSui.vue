@@ -2,7 +2,7 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>犯太歲</h2>
+      <h2>{{ taiSuiStore.analysisResult.year }}年太歲分析結果</h2>
     </div>
 
     <div class="form-content">
@@ -38,11 +38,11 @@
 
       <!-- 结果显示区域 -->
       <div v-if="taiSuiStore.analysisResult" class="form-section">
-        <h2>{{ taiSuiStore.analysisResult.year }}年太歲分析結果</h2>
+        <h2>天干地支基本信息</h2>
         
         <!-- 天干地支信息 -->
         <div class="form-section" style="background: #f8f9fa; padding: 1.5rem;">
-          <h3>天干地支基本信息</h3>
+          <h3></h3>
           <div class="form-grid">
             <div class="form-group">
               <label>天干</label>
