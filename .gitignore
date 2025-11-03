@@ -141,3 +141,5 @@ vite.config.ts.timestamp-*
 # 环境变量文件
 #.env.local
 #.env.*.local
+
+server拷貝/*
