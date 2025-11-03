@@ -1,5 +1,10 @@
 // 後端認證服務
-import { axiosConfig, getApiUrl } from "../config/axiosConfig.js";
+import {
+  axiosConfig,
+  authConfig,
+  apiEndpoints,
+  getApiUrl,
+} from "../config/axiosConfig.js";
 import { axiosService } from "./axiosService.js";
 import userData from "../data/auth_user.json";
 
@@ -60,6 +65,7 @@ export class AuthService {
       temple_staff: "temple123",
       volunteer: "volunteer123",
       user01: "user0123",
+      test: "password123",
     };
 
     const isValidPassword =
@@ -275,7 +281,9 @@ export class AuthService {
       }
 
       // Directus 使用 /users/me 驗證 token
-      const response = await axiosService.get(axiosConfig.apiEndpoints.validate);
+      const response = await axiosService.get(
+        axiosConfig.apiEndpoints.validate
+      );
 
       if (response.data?.data) {
         const user = response.data.data;

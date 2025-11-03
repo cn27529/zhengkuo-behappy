@@ -44,5 +44,13 @@
         "permissions": [
             "registration"
         ]
+    },
+    {
+        "username": "test",
+        "displayName": "TEST用戶01",
+        "role": "user",
+        "permissions": [
+            "registration"
+        ]
     }
 ]

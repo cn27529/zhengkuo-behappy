@@ -6,36 +6,36 @@
  */
 
 // ========== 基礎配置 ==========
-export const apiConfig = {
+export const axiosConfig = {
   // API 基礎 URL
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
-  
+
   // 請求超時時間（毫秒）
   timeout: 10000,
-  
+
   // 請求重試配置
   retry: {
     maxRetries: 3,
     retryDelay: 1000,
   },
+
+  // Mock 模式的 API 延遲（毫秒）
+  mockDelay: 500,
 };
 
 // ========== 認證配置 ==========
 export const authConfig = {
   // 認證模式: 'mock' 或 'directus'
   mode: import.meta.env.VITE_AUTH_MODE || "mock",
-  
+
   // Token 儲存方式: 'session' 或 'local'
   tokenStorage: "session",
-  
+
   // 是否自動刷新 token
   autoRefresh: true,
-  
+
   // Token 刷新前的時間（秒）- 在過期前 5 分鐘刷新
   refreshBeforeExpiry: 300,
-  
-  // Mock 模式的 API 延遲（毫秒）
-  mockDelay: 100,
 };
 
 // ========== API 端點配置 ==========
@@ -113,11 +113,11 @@ export const apiEndpoints = {
     // 寺廟相關
     temples: "/items/temples",
     templeDetail: (id) => `/items/temples/${id}`,
-    
+
     // 活動相關
     events: "/items/events",
     eventDetail: (id) => `/items/events/${id}`,
-    
+
     // 志工相關
     volunteers: "/items/volunteers",
     volunteerDetail: (id) => `/items/volunteers/${id}`,
@@ -132,17 +132,17 @@ export const apiEndpoints = {
  * @returns {string} 完整的 URL
  */
 export const buildApiUrl = (endpoint, params = null) => {
-  const url = new URL(endpoint, apiConfig.baseURL);
-  
+  const url = new URL(endpoint, axiosConfig.baseURL);
+
   // 添加查詢參數
   if (params) {
-    Object.keys(params).forEach(key => {
+    Object.keys(params).forEach((key) => {
       if (params[key] !== undefined && params[key] !== null) {
         url.searchParams.append(key, params[key]);
       }
     });
   }
-  
+
   return url.toString();
 };
 
@@ -152,7 +152,7 @@ export const buildApiUrl = (endpoint, params = null) => {
  * @returns {string} 完整的 URL
  */
 export const getApiUrl = (endpoint) => {
-  return `${apiConfig.baseURL}${endpoint}`;
+  return `${axiosConfig.baseURL}${endpoint}`;
 };
 
 // ========== Directus 查詢構建器 ==========
@@ -163,46 +163,46 @@ export const getApiUrl = (endpoint) => {
  */
 export const buildDirectusQuery = (options = {}) => {
   const params = {};
-  
+
   // 欄位選擇
   if (options.fields) {
-    params.fields = Array.isArray(options.fields) 
-      ? options.fields.join(',') 
+    params.fields = Array.isArray(options.fields)
+      ? options.fields.join(",")
       : options.fields;
   }
-  
+
   // 過濾條件
   if (options.filter) {
-    Object.keys(options.filter).forEach(key => {
+    Object.keys(options.filter).forEach((key) => {
       params[`filter[${key}]`] = options.filter[key];
     });
   }
-  
+
   // 排序
   if (options.sort) {
-    params.sort = Array.isArray(options.sort) 
-      ? options.sort.join(',') 
+    params.sort = Array.isArray(options.sort)
+      ? options.sort.join(",")
       : options.sort;
   }
-  
+
   // 分頁
   if (options.limit) params.limit = options.limit;
   if (options.offset) params.offset = options.offset;
   if (options.page) params.page = options.page;
-  
+
   // 搜尋
   if (options.search) params.search = options.search;
-  
+
   // 深度查詢（關聯資料）
   if (options.deep) params.deep = options.deep;
-  
+
   return params;
 };
 
 // ========== 預設請求頭 ==========
 export const defaultHeaders = {
   "Content-Type": "application/json",
-  "Accept": "application/json",
+  Accept: "application/json",
 };
 
 // ========== 環境檢查 ==========
@@ -222,7 +222,7 @@ export const loggingConfig = {
 // ========== 導出配置摘要（用於調試） ==========
 export const getConfigSummary = () => {
   return {
-    baseURL: apiConfig.baseURL,
+    baseURL: axiosConfig.baseURL,
     authMode: authConfig.mode,
     environment: import.meta.env.MODE,
     tokenStorage: authConfig.tokenStorage,
