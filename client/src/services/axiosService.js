@@ -1,12 +1,24 @@
-// src/services/axiosService.js
+/*
+Directus 封裝 
+Vue Component
+        ↓
+   AuthService (業務邏輯)
+        ↓
+   AxiosService (HTTP 封裝)
+        ↓
+   axiosConfig.js (URL 配置)
+        ↓
+   Directus API
+   分層清晰
+   */ 
 import axios from "axios";
-import { authConfig, getApiUrl } from "../config/auth.js";
+import { axiosConfig, getApiUrl } from "../config/axiosConfig.js";
 
 class AxiosService {
   constructor() {
     // 創建 axios 實例
     this.instance = axios.create({
-      baseURL: authConfig.apiBaseUrl,
+      baseURL: axiosConfig.apiBaseUrl,
       timeout: 10000,
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +61,7 @@ class AxiosService {
             const refreshToken = this.getRefreshToken();
             if (refreshToken) {
               const response = await this.instance.post(
-                authConfig.apiEndpoints.refresh,
+                axiosConfig.apiEndpoints.refresh,
                 {
                   refresh_token: refreshToken,
                   mode: "json", // Directus 要求
@@ -87,7 +99,7 @@ class AxiosService {
   // Token 管理方法
   getToken() {
     const storage =
-      authConfig.directus.tokenStorage === "local"
+      axiosConfig.directus.tokenStorage === "local"
         ? localStorage
         : sessionStorage;
     return storage.getItem("auth-token");
@@ -95,7 +107,7 @@ class AxiosService {
 
   setToken(token) {
     const storage =
-      authConfig.directus.tokenStorage === "local"
+      axiosConfig.directus.tokenStorage === "local"
         ? localStorage
         : sessionStorage;
     storage.setItem("auth-token", token);
@@ -103,7 +115,7 @@ class AxiosService {
 
   getRefreshToken() {
     const storage =
-      authConfig.directus.tokenStorage === "local"
+      axiosConfig.directus.tokenStorage === "local"
         ? localStorage
         : sessionStorage;
     return storage.getItem("auth-refresh-token");
@@ -111,7 +123,7 @@ class AxiosService {
 
   setRefreshToken(token) {
     const storage =
-      authConfig.directus.tokenStorage === "local"
+      axiosConfig.directus.tokenStorage === "local"
         ? localStorage
         : sessionStorage;
     storage.setItem("auth-refresh-token", token);
@@ -119,7 +131,7 @@ class AxiosService {
 
   clearTokens() {
     const storage =
-      authConfig.directus.tokenStorage === "local"
+      axiosConfig.directus.tokenStorage === "local"
         ? localStorage
         : sessionStorage;
     storage.removeItem("auth-token");

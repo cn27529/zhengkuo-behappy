@@ -1,18 +1,18 @@
-// src/services/authService.js
-import { authConfig, getApiUrl } from "../config/auth.js";
+// 後端認證服務
+import { axiosConfig, getApiUrl } from "../config/axiosConfig.js";
 import { axiosService } from "./axiosService.js";
 import userData from "../data/auth_user.json";
 
 export class AuthService {
   constructor() {
-    console.log(`AuthService 初始化: 當前模式為 ${authConfig.mode}`);
+    console.log(`AuthService 初始化: 當前模式為 ${axiosConfig.mode}`);
   }
 
   async login(username, password) {
-    console.log(`登入請求 - 模式: ${authConfig.mode}, 用戶: ${username}`);
+    console.log(`登入請求 - 模式: ${axiosConfig.mode}, 用戶: ${username}`);
 
     // 在控制台輸出警告
-    if (import.meta.env.VITE_DEV && authConfig.mode === "mock") {
+    if (import.meta.env.VITE_DEV && axiosConfig.mode === "mock") {
       console.warn(
         "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
           "⚠️ 正式環境請切換到 Directus 模式。\n" +
@@ -20,7 +20,7 @@ export class AuthService {
       );
     }
 
-    if (authConfig.mode === "mock") {
+    if (axiosConfig.mode === "mock") {
       return this.mockLogin(username, password);
     } else {
       return this.directusLogin(username, password);
@@ -28,14 +28,14 @@ export class AuthService {
   }
 
   async logout() {
-    if (authConfig.mode === "directus") {
+    if (axiosConfig.mode === "directus") {
       return this.directusLogout();
     }
     return { success: true };
   }
 
   async validateToken() {
-    if (authConfig.mode === "mock") {
+    if (axiosConfig.mode === "mock") {
       return this.mockValidateToken();
     } else {
       return this.directusValidateToken();
@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   async refreshToken() {
-    if (authConfig.mode === "mock") {
+    if (axiosConfig.mode === "mock") {
       return this.mockRefreshToken();
     } else {
       return this.directusRefreshToken();
@@ -139,7 +139,7 @@ export class AuthService {
   async directusLogin(username, password) {
     try {
       // Directus 登入 API: POST /auth/login
-      const response = await axiosService.post(authConfig.apiEndpoints.login, {
+      const response = await axiosService.post(axiosConfig.apiEndpoints.login, {
         email: username, // Directus 使用 email 欄位
         password: password,
       });
@@ -153,13 +153,13 @@ export class AuthService {
 
         // 獲取用戶資料
         const userResponse = await axiosService.get(
-          authConfig.apiEndpoints.profile
+          axiosConfig.apiEndpoints.profile
         );
         const user = userResponse.data?.data;
 
         // 儲存用戶資料
         const storage =
-          authConfig.directus.tokenStorage === "local"
+          axiosConfig.directus.tokenStorage === "local"
             ? localStorage
             : sessionStorage;
         storage.setItem("auth-user", JSON.stringify(user));
@@ -240,7 +240,7 @@ export class AuthService {
 
       if (refreshToken) {
         // Directus 登出 API: POST /auth/logout
-        await axiosService.post(authConfig.apiEndpoints.logout, {
+        await axiosService.post(axiosConfig.apiEndpoints.logout, {
           refresh_token: refreshToken,
         });
       }
@@ -275,14 +275,14 @@ export class AuthService {
       }
 
       // Directus 使用 /users/me 驗證 token
-      const response = await axiosService.get(authConfig.apiEndpoints.validate);
+      const response = await axiosService.get(axiosConfig.apiEndpoints.validate);
 
       if (response.data?.data) {
         const user = response.data.data;
 
         // 更新本地用戶資料
         const storage =
-          authConfig.directus.tokenStorage === "local"
+          axiosConfig.directus.tokenStorage === "local"
             ? localStorage
             : sessionStorage;
         storage.setItem("auth-user", JSON.stringify(user));
@@ -343,7 +343,7 @@ export class AuthService {
 
       // Directus 刷新 token API: POST /auth/refresh
       const response = await axiosService.post(
-        authConfig.apiEndpoints.refresh,
+        axiosConfig.apiEndpoints.refresh,
         {
           refresh_token: refreshToken,
           mode: "json", // Directus 要求指定模式
@@ -393,7 +393,7 @@ export class AuthService {
 
   // ========== 輔助方法 ==========
   async mockDelay() {
-    return new Promise((resolve) => setTimeout(resolve, authConfig.mockDelay));
+    return new Promise((resolve) => setTimeout(resolve, axiosConfig.mockDelay));
   }
 
   // 檢查 Directus 連接狀態
@@ -402,12 +402,12 @@ export class AuthService {
   }
 
   getCurrentMode() {
-    return authConfig.mode;
+    return axiosConfig.mode;
   }
 
   setMode(mode) {
     if (["mock", "directus"].includes(mode)) {
-      authConfig.mode = mode;
+      axiosConfig.mode = mode;
       console.log(`AuthService 模式已切換為: ${mode}`);
 
       // 如果是切換到 Directus 模式，檢查服務狀態
@@ -428,7 +428,7 @@ export class AuthService {
   // 獲取當前用戶
   getCurrentUser() {
     const storage =
-      authConfig.directus.tokenStorage === "local"
+      axiosConfig.directus.tokenStorage === "local"
         ? localStorage
         : sessionStorage;
     const userStr = storage.getItem("auth-user");
