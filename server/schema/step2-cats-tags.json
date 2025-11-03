@@ -1,0 +1,48 @@
+{
+    "collections": [
+        {
+            "collection": "categories",
+            "meta": {
+                "icon": "category",
+                "note": "文章分類"
+            },
+            "schema": {
+                "name": "categories"
+            }
+        },
+        {
+            "collection": "tags",
+            "meta": {
+                "icon": "tag",
+                "note": "文章標籤"
+            },
+            "schema": {
+                "name": "tags"
+            }
+        }
+    ],
+    "fields": [
+        {
+            "collection": "categories",
+            "field": "name",
+            "type": "string",
+            "meta": {
+                "interface": "input"
+            },
+            "schema": {
+                "is_nullable": false
+            }
+        },
+        {
+            "collection": "tags",
+            "field": "name",
+            "type": "string",
+            "meta": {
+                "interface": "input"
+            },
+            "schema": {
+                "is_nullable": false
+            }
+        }
+    ]
+}

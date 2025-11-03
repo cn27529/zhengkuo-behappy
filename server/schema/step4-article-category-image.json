@@ -1,0 +1,33 @@
+{
+    "fields": [
+        {
+            "collection": "articles",
+            "field": "category",
+            "type": "integer",
+            "meta": {
+                "interface": "select-dropdown",
+                "display": "related-values",
+                "note": "分類"
+            },
+            "schema": {
+                "is_nullable": true,
+                "foreign_key_table": "categories",
+                "foreign_key_column": "id"
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "image",
+            "type": "uuid",
+            "meta": {
+                "interface": "file-image",
+                "note": "封面圖片（directus_files）"
+            },
+            "schema": {
+                "is_nullable": true,
+                "foreign_key_table": "directus_files",
+                "foreign_key_column": "id"
+            }
+        }
+    ]
+}

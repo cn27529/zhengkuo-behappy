@@ -1,0 +1,74 @@
+{
+    "collections": [
+        {
+            "collection": "articles",
+            "meta": {
+                "icon": "article",
+                "note": "簡易文章表",
+                "display_template": "{{title}}"
+            },
+            "schema": {
+                "name": "articles"
+            }
+        }
+    ],
+    "fields": [
+        {
+            "collection": "articles",
+            "field": "title",
+            "type": "string",
+            "meta": {
+                "interface": "input",
+                "display": "raw",
+                "required": true
+            },
+            "schema": {
+                "is_nullable": false
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "content",
+            "type": "text",
+            "meta": {
+                "interface": "input-rich-text-html"
+            },
+            "schema": {
+                "is_nullable": true
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "author",
+            "type": "string",
+            "meta": {
+                "interface": "input"
+            },
+            "schema": {
+                "is_nullable": true
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "created_at",
+            "type": "timestamp",
+            "meta": {
+                "interface": "datetime"
+            },
+            "schema": {
+                "is_nullable": true
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "updated_at",
+            "type": "timestamp",
+            "meta": {
+                "interface": "datetime"
+            },
+            "schema": {
+                "is_nullable": true
+            }
+        }
+    ]
+}

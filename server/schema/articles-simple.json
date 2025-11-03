@@ -1,0 +1,91 @@
+{
+    "collections": [
+        {
+            "collection": "articles",
+            "meta": {
+                "icon": "article",
+                "note": "部落格文章表",
+                "display_template": "{{title}}"
+            },
+            "schema": {
+                "name": "articles"
+            }
+        }
+    ],
+    "fields": [
+        {
+            "collection": "articles",
+            "field": "title",
+            "type": "string",
+            "meta": {
+                "interface": "input",
+                "display": "raw",
+                "required": true,
+                "note": "文章標題"
+            },
+            "schema": {
+                "name": "title",
+                "data_type": "varchar",
+                "is_nullable": false
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "content",
+            "type": "text",
+            "meta": {
+                "interface": "input-rich-text-html",
+                "display": "formatted-value",
+                "note": "文章內容"
+            },
+            "schema": {
+                "name": "content",
+                "data_type": "text",
+                "is_nullable": true
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "author",
+            "type": "string",
+            "meta": {
+                "interface": "input",
+                "display": "raw",
+                "note": "作者名稱"
+            },
+            "schema": {
+                "name": "author",
+                "data_type": "varchar",
+                "is_nullable": true
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "created_at",
+            "type": "timestamp",
+            "meta": {
+                "interface": "datetime",
+                "note": "建立時間"
+            },
+            "schema": {
+                "name": "created_at",
+                "data_type": "timestamp",
+                "is_nullable": true
+            }
+        },
+        {
+            "collection": "articles",
+            "field": "updated_at",
+            "type": "timestamp",
+            "meta": {
+                "interface": "datetime",
+                "note": "最後更新時間"
+            },
+            "schema": {
+                "name": "updated_at",
+                "data_type": "timestamp",
+                "is_nullable": true
+            }
+        }
+    ]
+}

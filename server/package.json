@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "directus start",
-    "server": "directus start",
-    "dev": "directus start"
+    "dev": "npx directus start",
+    "build": "npx directus bootstrap",
+    "start": "npx directus start"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@directus/sdk": "^18.0.3",
     "directus": "^11.12.0",
     "sqlite3": "^5.1.7"
   }

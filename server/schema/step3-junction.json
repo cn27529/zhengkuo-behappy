@@ -1,0 +1,44 @@
+{
+    "collections": [
+        {
+            "collection": "articles_tags",
+            "meta": {
+                "icon": "link",
+                "note": "文章-標籤中繼表"
+            },
+            "schema": {
+                "name": "articles_tags"
+            }
+        }
+    ],
+    "fields": [
+        {
+            "collection": "articles_tags",
+            "field": "article",
+            "type": "integer",
+            "meta": {
+                "interface": "select-dropdown",
+                "note": "關聯 articles"
+            },
+            "schema": {
+                "is_nullable": false,
+                "foreign_key_table": "articles",
+                "foreign_key_column": "id"
+            }
+        },
+        {
+            "collection": "articles_tags",
+            "field": "tag",
+            "type": "integer",
+            "meta": {
+                "interface": "select-dropdown",
+                "note": "關聯 tags"
+            },
+            "schema": {
+                "is_nullable": false,
+                "foreign_key_table": "tags",
+                "foreign_key_column": "id"
+            }
+        }
+    ]
+}
