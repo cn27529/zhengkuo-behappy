@@ -1,57 +1,59 @@
-// 後端認證服務
-import {
-  axiosConfig,
-  authConfig,
-  apiEndpoints,
-  getApiUrl,
-} from "../config/axiosConfig.js";
-import { axiosService } from "./axiosService.js";
+// src/services/authService.js
+import { authConfig, getApiUrl } from "../config/auth.js";
 import userData from "../data/auth_user.json";
 
 export class AuthService {
   constructor() {
-    console.log(`AuthService 初始化: 當前模式為 ${axiosConfig.mode}`);
+    console.log(`AuthService 初始化: 當前模式為 ${authConfig.mode}`);
   }
 
   async login(username, password) {
-    console.log(`登入請求 - 模式: ${axiosConfig.mode}, 用戶: ${username}`);
+    console.log(`登入請求 - 模式: ${authConfig.mode}, 用戶: ${username}`);
 
     // 在控制台輸出警告
-    if (import.meta.env.VITE_DEV && axiosConfig.mode === "mock") {
+    if (import.meta.env.VITE_DEV) {
       console.warn(
         "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
-          "⚠️ 正式環境請切換到 Directus 模式。\n" +
+          "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
           "🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01"
       );
     }
 
-    if (axiosConfig.mode === "mock") {
+    if (authConfig.mode === "mock") {
       return this.mockLogin(username, password);
-    } else {
+    } else if (authConfig.mode === "backend") {
+      return this.backendLogin(username, password);
+    } else if (authConfig.mode === "directus") {
       return this.directusLogin(username, password);
     }
   }
 
   async logout() {
-    if (axiosConfig.mode === "directus") {
+    if (authConfig.mode === "backend") {
+      return this.backendLogout();
+    } else if (authConfig.mode === "directus") {
       return this.directusLogout();
     }
     return { success: true };
   }
 
   async validateToken() {
-    if (axiosConfig.mode === "mock") {
+    if (authConfig.mode === "mock") {
       return this.mockValidateToken();
-    } else {
+    } else if (authConfig.mode === "directus") {
       return this.directusValidateToken();
+    } else {
+      return this.backendValidateToken();
     }
   }
 
   async refreshToken() {
-    if (axiosConfig.mode === "mock") {
+    if (authConfig.mode === "mock") {
       return this.mockRefreshToken();
-    } else {
+    } else if (authConfig.mode === "directus") {
       return this.directusRefreshToken();
+    } else {
+      return this.backendRefreshToken();
     }
   }
 
@@ -59,18 +61,31 @@ export class AuthService {
   async mockLogin(username, password) {
     await this.mockDelay();
 
+    // 對密碼進行簡單雜湊
+    const hashPassword = (password) => {
+      // 簡單的 base64 編碼（不是真正的安全，只是增加一點難度）
+      return btoa(unescape(encodeURIComponent(password)));
+    };
+
     const passwordMap = {
       admin: "password!123456",
       zkuser01: "zk!123456",
       temple_staff: "temple123",
       volunteer: "volunteer123",
       user01: "user0123",
-      test: "password123",
     };
+
+    const hashedInput = hashPassword(password);
+    const storedHash = passwordMap[username];
 
     const isValidPassword =
       passwordMap[username] && passwordMap[username] === password;
     const userExists = userData.some((user) => user.username === username);
+
+    //如果有用 passwordMap 的密碼有用 hashPassword 要走這段
+    if (storedHash && storedHash === hashedInput) {
+      // 登入成功
+    }
 
     if (isValidPassword && userExists) {
       const foundUser = userData.find((user) => user.username === username);
@@ -141,306 +156,487 @@ export class AuthService {
     };
   }
 
-  // ========== Directus API 方法 ==========
+  // ========== Directus 方法 ==========
   async directusLogin(username, password) {
     try {
-      // Directus 登入 API: POST /auth/login
-      const response = await axiosService.post(axiosConfig.apiEndpoints.login, {
-        email: username, // Directus 使用 email 欄位
-        password: password,
+      const response = await fetch(`${authConfig.apiBaseUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username, // Directus 通常使用 email
+          password: password,
+        }),
       });
 
-      if (response.data?.data) {
-        const { access_token, refresh_token, expires } = response.data.data;
-
-        // 儲存 tokens
-        axiosService.setToken(access_token);
-        axiosService.setRefreshToken(refresh_token);
-
-        // 獲取用戶資料
-        const userResponse = await axiosService.get(
-          axiosConfig.apiEndpoints.profile
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `Directus 錯誤: ${response.status}`
         );
-        const user = userResponse.data?.data;
+      }
 
-        // 儲存用戶資料
-        const storage =
-          axiosConfig.directus.tokenStorage === "local"
-            ? localStorage
-            : sessionStorage;
-        storage.setItem("auth-user", JSON.stringify(user));
+      const result = await response.json();
+
+      // Directus 返回的數據結構
+      if (result.data) {
+        // Directus 返回的數據
+        console.log("Directus 返回的數據:", result.data);
+
+        const { access_token, refresh_token, expires } = result.data;
+
+        // 獲取用戶資訊
+        const userResponse = await fetch(`${authConfig.apiBaseUrl}/users/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        });
+
+        let userData = null;
+        if (userResponse.ok) {
+          const userResult = await userResponse.json();
+          console.log("Directus 返回的用戶資訊:", userResult.data);
+          userData = userResult.data;
+          // Directus 返回的用戶資訊沒有顯示名稱，displayName使用填寫的email
+          userData.displayName = username;
+        } else {
+          console.error("Directus 獲取用戶資訊失敗:", userResponse.status);
+        }
 
         return {
           success: true,
-          message: `登入成功！歡迎 ${user.first_name || user.email}`,
+          message: "Directus 登入成功",
           data: {
-            user: {
-              id: user.id,
-              username: user.email,
-              email: user.email,
-              displayName: user.first_name
-                ? `${user.first_name} ${user.last_name || ""}`.trim()
-                : user.email,
-              role: user.role?.name || "user",
-              avatar: user.avatar,
-              ...user,
-            },
+            user: userData || { username, displayName: username },
             token: access_token,
             refreshToken: refresh_token,
-            expiresIn: expires,
+            expiresIn: expires || 3600,
           },
+        };
+      } else {
+        throw new Error("Directus 返回數據格式錯誤");
+      }
+    } catch (error) {
+      console.error("Directus 登入請求失敗:", error);
+
+      // 檢查網路錯誤
+      if (
+        error.message.includes("Failed to fetch") ||
+        error.message.includes("NetworkError")
+      ) {
+        return {
+          success: false,
+          message: "Directus 服務未啟動或網路連接失敗",
+          errorCode: "DIRECTUS_NOT_AVAILABLE",
+          details: "請確保 Directus 服務正在運行",
         };
       }
 
       return {
         success: false,
-        message: "登入失敗：無效的響應格式",
-        errorCode: "INVALID_RESPONSE",
+        message: error.message || "Directus 登入失敗",
+        errorCode: "DIRECTUS_LOGIN_ERROR",
+        details: error.message,
       };
-    } catch (error) {
-      console.error("Directus 登入失敗:", error);
-
-      // 處理不同的錯誤情況
-      if (error.response) {
-        // 伺服器返回錯誤
-        const status = error.response.status;
-        const errorData = error.response.data;
-
-        if (status === 401) {
-          return {
-            success: false,
-            message: "用戶名或密碼錯誤",
-            errorCode: "INVALID_CREDENTIALS",
-          };
-        }
-
-        return {
-          success: false,
-          message: errorData?.errors?.[0]?.message || "登入失敗",
-          errorCode: "LOGIN_ERROR",
-          details: errorData,
-        };
-      } else if (error.request) {
-        // 請求發送但沒有收到響應
-        return {
-          success: false,
-          message: "無法連接到 Directus 伺服器",
-          errorCode: "DIRECTUS_NOT_AVAILABLE",
-          details: "請確保 Directus 服務正在運行",
-        };
-      } else {
-        // 其他錯誤
-        return {
-          success: false,
-          message: "登入時發生錯誤",
-          errorCode: "UNKNOWN_ERROR",
-          details: error.message,
-        };
-      }
     }
   }
 
   async directusLogout() {
     try {
-      const refreshToken = axiosService.getRefreshToken();
+      const refreshToken = sessionStorage.getItem("auth-refresh-token");
+      const token = sessionStorage.getItem("auth-token");
 
-      if (refreshToken) {
-        // Directus 登出 API: POST /auth/logout
-        await axiosService.post(axiosConfig.apiEndpoints.logout, {
-          refresh_token: refreshToken,
-        });
+      // 如果沒有 token，直接返回成功
+      if (!token) {
+        return { success: true };
       }
 
-      // 清除本地儲存
-      axiosService.clearTokens();
+      // Directus 登出請求
+      const response = await fetch(`${authConfig.apiBaseUrl}/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          refresh_token: refreshToken,
+        }),
+      });
 
-      return {
-        success: true,
-        message: "登出成功",
-      };
+      // 即使 Directus 登出失敗，也認為成功（因為前端狀態已經清除）
+      if (!response.ok) {
+        console.warn("Directus 登出失敗，但前端狀態已清除");
+      }
+
+      return { success: true };
     } catch (error) {
-      console.error("Directus 登出失敗:", error);
-      // 即使登出失敗，也清除本地 token
-      axiosService.clearTokens();
-      return {
-        success: true,
-        message: "登出成功（本地）",
-      };
+      console.error("Directus 登出請求失敗:", error);
+      // 登出失敗不影響前端狀態清除
+      return { success: true };
     }
   }
 
   async directusValidateToken() {
     try {
-      const token = axiosService.getToken();
+      const token = sessionStorage.getItem("auth-token");
       if (!token) {
-        return {
-          success: false,
-          message: "未找到 Token",
-          errorCode: "NO_TOKEN",
-        };
+        return { success: false, message: "未找到 Token" };
       }
 
-      // Directus 使用 /users/me 驗證 token
-      const response = await axiosService.get(
-        axiosConfig.apiEndpoints.validate
-      );
+      // 使用 /users/me 端點驗證 token
+      const response = await fetch(`${authConfig.apiBaseUrl}/users/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      if (response.data?.data) {
-        const user = response.data.data;
-
-        // 更新本地用戶資料
-        const storage =
-          axiosConfig.directus.tokenStorage === "local"
-            ? localStorage
-            : sessionStorage;
-        storage.setItem("auth-user", JSON.stringify(user));
-
-        return {
-          success: true,
-          data: {
-            user: {
-              id: user.id,
-              username: user.email,
-              email: user.email,
-              displayName: user.first_name
-                ? `${user.first_name} ${user.last_name || ""}`.trim()
-                : user.email,
-              role: user.role?.name || "user",
-              avatar: user.avatar,
-              ...user,
-            },
-          },
-        };
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const result = await response.json();
 
       return {
-        success: false,
-        message: "Token 驗證失敗：無效的響應",
-        errorCode: "INVALID_RESPONSE",
+        success: true,
+        data: {
+          user: result.data,
+        },
       };
     } catch (error) {
-      console.error("Token 驗證失敗:", error);
+      console.error("Directus Token 驗證失敗:", error);
 
-      // 清除無效的 token
-      if (error.response?.status === 401) {
-        axiosService.clearTokens();
+      // 檢查網路錯誤
+      if (error.message.includes("Failed to fetch")) {
+        return {
+          success: false,
+          message: "Directus 服務未啟動，無法驗證 Token",
+          errorCode: "DIRECTUS_NOT_AVAILABLE",
+        };
       }
 
       return {
         success: false,
-        message:
-          error.response?.status === 401
-            ? "Token 已過期或無效"
-            : "Token 驗證失敗",
-        errorCode:
-          error.response?.status === 401 ? "TOKEN_EXPIRED" : "VALIDATION_ERROR",
+        message: "Directus Token 驗證失敗",
+        errorCode: "DIRECTUS_VALIDATION_ERROR",
       };
     }
   }
 
   async directusRefreshToken() {
     try {
-      const refreshToken = axiosService.getRefreshToken();
+      const refreshToken = sessionStorage.getItem("auth-refresh-token");
       if (!refreshToken) {
-        return {
-          success: false,
-          message: "未找到 Refresh Token",
-          errorCode: "NO_REFRESH_TOKEN",
-        };
+        return { success: false, message: "未找到 Refresh Token" };
       }
 
-      // Directus 刷新 token API: POST /auth/refresh
-      const response = await axiosService.post(
-        axiosConfig.apiEndpoints.refresh,
-        {
+      const response = await fetch(`${authConfig.apiBaseUrl}/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           refresh_token: refreshToken,
-          mode: "json", // Directus 要求指定模式
-        }
-      );
+        }),
+      });
 
-      if (response.data?.data) {
-        const { access_token, refresh_token, expires } = response.data.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-        // 更新 tokens
-        axiosService.setToken(access_token);
-        axiosService.setRefreshToken(refresh_token);
+      const result = await response.json();
 
+      if (result.data) {
         return {
           success: true,
           data: {
-            token: access_token,
-            refreshToken: refresh_token,
-            expiresIn: expires,
+            token: result.data.access_token,
+            refreshToken: result.data.refresh_token,
+            expiresIn: result.data.expires || 3600,
           },
+        };
+      } else {
+        throw new Error("Directus 返回數據格式錯誤");
+      }
+    } catch (error) {
+      console.error("Directus Token 刷新失敗:", error);
+
+      if (error.message.includes("Failed to fetch")) {
+        return {
+          success: false,
+          message: "Directus 服務未啟動，無法刷新 Token",
+          errorCode: "DIRECTUS_NOT_AVAILABLE",
         };
       }
 
       return {
         success: false,
-        message: "Token 刷新失敗：無效的響應",
-        errorCode: "INVALID_RESPONSE",
+        message: "Directus Token 刷新失敗",
+        errorCode: "DIRECTUS_REFRESH_ERROR",
       };
+    }
+  }
+
+  // ========== 後端 API 方法 ==========
+  async backendLogin(username, password) {
+    try {
+      const response = await fetch(getApiUrl(authConfig.apiEndpoints.login), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        // 如果後端返回錯誤狀態碼
+        const errorText = await response.text();
+        throw new Error(`後端錯誤: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("後端登入請求失敗:", error);
+
+      // 檢查是否是網路錯誤（後端服務未啟動）
+      if (
+        error.message.includes("Failed to fetch") ||
+        error.message.includes("NetworkError")
+      ) {
+        return {
+          success: false,
+          message: "後端服務未啟動或網路連接失敗",
+          errorCode: "BACKEND_NOT_AVAILABLE",
+          details: "請確保後端服務正在運行，或切換到 Mock 模式進行測試",
+        };
+      }
+
+      return {
+        success: false,
+        message: "後端服務錯誤",
+        errorCode: "BACKEND_ERROR",
+        details: error.message,
+      };
+    }
+  }
+
+  async backendLogout() {
+    try {
+      const token = sessionStorage.getItem("auth-token");
+
+      // 如果沒有 token，直接返回成功
+      if (!token) {
+        return { success: true };
+      }
+
+      const response = await fetch(getApiUrl(authConfig.apiEndpoints.logout), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // 即使後端登出失敗，也認為成功（因為前端狀態已經清除）
+      if (!response.ok) {
+        console.warn("後端登出失敗，但前端狀態已清除");
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("後端登出請求失敗:", error);
+      // 登出失敗不影響前端狀態清除
+      return { success: true };
+    }
+  }
+
+  async backendValidateToken() {
+    try {
+      const token = sessionStorage.getItem("auth-token");
+      if (!token) {
+        return { success: false, message: "未找到 Token" };
+      }
+
+      const response = await fetch(
+        getApiUrl(authConfig.apiEndpoints.validate),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Token 驗證失敗:", error);
+
+      // 如果是網路錯誤，提供更友好的提示
+      if (error.message.includes("Failed to fetch")) {
+        return {
+          success: false,
+          message: "後端服務未啟動，無法驗證 Token",
+          errorCode: "BACKEND_NOT_AVAILABLE",
+        };
+      }
+
+      return {
+        success: false,
+        message: "Token 驗證失敗",
+        errorCode: "VALIDATION_ERROR",
+      };
+    }
+  }
+
+  async backendRefreshToken() {
+    try {
+      const refreshToken = sessionStorage.getItem("auth-refresh-token");
+      if (!refreshToken) {
+        return { success: false, message: "未找到 Refresh Token" };
+      }
+
+      const response = await fetch(getApiUrl(authConfig.apiEndpoints.refresh), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Token 刷新失敗:", error);
 
-      // 如果 refresh token 也失效，清除所有 token
-      if (error.response?.status === 401) {
-        axiosService.clearTokens();
+      if (error.message.includes("Failed to fetch")) {
+        return {
+          success: false,
+          message: "後端服務未啟動，無法刷新 Token",
+          errorCode: "BACKEND_NOT_AVAILABLE",
+        };
       }
 
       return {
         success: false,
         message: "Token 刷新失敗",
-        errorCode:
-          error.response?.status === 401
-            ? "REFRESH_TOKEN_EXPIRED"
-            : "REFRESH_ERROR",
+        errorCode: "REFRESH_ERROR",
       };
     }
   }
 
   // ========== 輔助方法 ==========
   async mockDelay() {
-    return new Promise((resolve) => setTimeout(resolve, axiosConfig.mockDelay));
+    return new Promise((resolve) => setTimeout(resolve, authConfig.mockDelay));
   }
 
-  // 檢查 Directus 連接狀態
-  async checkDirectusHealth() {
-    return await axiosService.checkHealth();
+  // 檢查後端連接狀態
+  async checkBackendHealth() {
+    try {
+      const response = await fetch(getApiUrl("/health"), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      return {
+        available: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+      };
+    } catch (error) {
+      return {
+        available: false,
+        error: error.message,
+      };
+    }
   }
 
   getCurrentMode() {
-    return axiosConfig.mode;
+    return authConfig.mode;
   }
 
+  // 在 AuthService 類別中新增專門的 Directus 健康檢查方法
+  async checkDirectusHealth() {
+    try {
+      // 嘗試幾個 Directus 端點來檢查服務狀態
+      const endpoints = [
+        "/server/info", // 伺服器資訊
+        "/users/me", // 當前用戶（需要認證）
+        "/fields", // 字段資訊
+      ];
+
+      // 使用最簡單的端點檢查
+      const response = await fetch(`${authConfig.apiBaseUrl}/server/info`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          available: true,
+          status: response.status,
+          data: {
+            directusVersion: data.data?.version,
+            nodeVersion: data.data?.node,
+            os: data.data?.os,
+          },
+        };
+      } else {
+        return {
+          available: false,
+          status: response.status,
+          statusText: response.statusText,
+        };
+      }
+    } catch (error) {
+      return {
+        available: false,
+        error: error.message,
+      };
+    }
+  }
+
+  // 修改 setMode 方法中的健康檢查
   setMode(mode) {
-    if (["mock", "directus"].includes(mode)) {
-      axiosConfig.mode = mode;
+    if (["mock", "backend", "directus"].includes(mode)) {
+      authConfig.mode = mode;
       console.log(`AuthService 模式已切換為: ${mode}`);
 
-      // 如果是切換到 Directus 模式，檢查服務狀態
-      if (mode === "directus") {
+      // 健康檢查
+      if (mode === "backend") {
+        this.checkBackendHealth().then((health) => {
+          if (!health.available) {
+            console.warn("⚠️ 後端服務可能未啟動:", health);
+          } else {
+            console.log("✅ 後端服務正常");
+          }
+        });
+      } else if (mode === "directus") {
         this.checkDirectusHealth().then((health) => {
           if (!health.available) {
             console.warn("⚠️ Directus 服務可能未啟動:", health);
           } else {
-            console.log("✅ Directus 服務運行正常");
+            console.log("✅ Directus 服務正常", health.data);
           }
         });
       }
     } else {
-      console.warn('無效的模式，請使用 "mock" 或 "directus"');
+      console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
     }
-  }
-
-  // 獲取當前用戶
-  getCurrentUser() {
-    const storage =
-      axiosConfig.directus.tokenStorage === "local"
-        ? localStorage
-        : sessionStorage;
-    const userStr = storage.getItem("auth-user");
-    return userStr ? JSON.parse(userStr) : null;
   }
 }
 

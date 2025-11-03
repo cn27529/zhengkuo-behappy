@@ -30,7 +30,7 @@ const handleModeChange = (event) => {
   const newMode = event.target.value;
   authService.setMode(newMode);
   authMode.value = newMode;
-  sessionStorage.setItem('dev-auth-mode', newMode);
+  sessionStorage.setItem("auth-mode", newMode);
 };
 
 const clearStorage = () => {
@@ -46,7 +46,7 @@ const reloadPage = () => {
 
 // 初始化時讀取保存的模式
 if (isDevelopment.value) {
-  const savedMode = sessionStorage.getItem('dev-auth-mode');
+  const savedMode = sessionStorage.getItem("auth-mode");
   if (savedMode) {
     authService.setMode(savedMode);
     authMode.value = savedMode;

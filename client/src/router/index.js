@@ -87,7 +87,9 @@ router.beforeEach((to, from, next) => {
     isAuthenticated: authStore.isAuthenticated,
   });
 
-  // 改為sessionStorage檢查設定isAuthenticated
+  // 改為localStorage檢查設定isAuthenticated
+  //const savedUser = sessionStorage.getItem("auth-user");
+  //sessionStorage（關閉瀏覽器就登出）
   const savedUser = sessionStorage.getItem("auth-user");
   // if (!savedUser) {
   //   console.log("嘗試從 supabase 用戶數據恢復");

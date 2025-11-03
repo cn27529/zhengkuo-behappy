@@ -141,12 +141,9 @@ export const useRegistrationStore = defineStore("registration", () => {
       loadFormToRegistration(targetForm);
       currentFormIndex.value = index;
 
-      // 如果表單狀態 submitted，不再變更狀態因為表單已提交至後端
-      if (registrationForm.value.state !== "submitted") {
-        // 更新狀態
-        registrationForm.value.state = "editing";
-        registrationForm.value.lastModified = new Date().toISOString();
-      }
+      // 更新狀態
+      registrationForm.value.state = "editing";
+      registrationForm.value.lastModified = new Date().toISOString();
 
       console.log("傳入的索引:", index);
       console.log("表單切換完成，當前表單索引:", currentFormIndex.value);
@@ -807,7 +804,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       // const response = await api.post('/registrations', registrationForm.value)
 
       console.log(
-        "己提交的報名數據:",
+        "提交的報名數據:",
         JSON.parse(JSON.stringify(registrationForm.value))
       );
 

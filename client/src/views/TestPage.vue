@@ -127,9 +127,9 @@ const testResult = ref(null);
 const backendHealth = ref({ available: false, checked: false });
 
 const storageStatus = computed(() => ({
-  authUser: sessionStorage.getItem('auth-user'),
-  authToken: sessionStorage.getItem('auth-token'),
-  authRefreshToken: sessionStorage.getItem('auth-refresh-token'),
+  authUser: sessionStorage.getItem("auth-user"),
+  authToken: sessionStorage.getItem("auth-token"),
+  authRefreshToken: sessionStorage.getItem("auth-refresh-token"),
   sessionStorageKeys: Object.keys(sessionStorage),
   localStorageKeys: Object.keys(localStorage)
 }));
@@ -144,7 +144,7 @@ const testAccounts = [
 const setMode = async (mode) => {
   authService.setMode(mode);
   authMode.value = mode;
-  sessionStorage.setItem('dev-auth-mode', mode);
+  sessionStorage.setItem("auth-mode", mode);
   
   // 切換到後端模式時檢查健康狀態
   if (mode === 'backend') {
@@ -254,10 +254,10 @@ const clearAll = () => {
   sessionStorage.removeItem('auth-token');
   sessionStorage.removeItem('auth-refresh-token');
   // 保留開發模式設置
-  const devMode = sessionStorage.getItem('dev-auth-mode');
+  const devMode = sessionStorage.getItem("auth-mode");
   sessionStorage.clear();
   if (devMode) {
-    sessionStorage.setItem('dev-auth-mode', devMode);
+    sessionStorage.setItem("auth-mode", devMode);
   }
   window.location.reload();
 };

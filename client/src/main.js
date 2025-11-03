@@ -23,20 +23,22 @@ import "ant-design-vue/dist/reset.css"; // 方式一：reset 樣式（推薦）
 const pinia = createPinia();
 
 // 開發模式下的初始化
-if (import.meta.env.VITE_DEV) {
-  // 從 sessionStorage 讀取保存的模式
-  const savedMode = sessionStorage.getItem("dev-auth-mode");
-  if (savedMode) {
-    authService.setMode(savedMode);
-  }
-
-  // 在控制台暴露 authService 方便調試
-  window.authService = authService;
-
+if (import.meta.env.VITE_AUTH_MODE === "mock") {
   console.log("🔧 開發模式已啟用");
-  console.log("當前認證模式:", authService.getCurrentMode());
   console.log("使用 window.authService.setMode() 來切換模式");
 }
+
+// 切換 VITE_AUTH_MODE 認證模式
+authService.setMode(import.meta.env.VITE_AUTH_MODE);
+// 從 localStorage 讀取保存的模式
+const savedMode = sessionStorage.getItem("auth-mode");
+if (savedMode) {
+  authService.setMode(savedMode);
+}
+console.log("當前認證模式:", authService.getCurrentMode());
+
+// 在控制台暴露 authService 方便調試
+window.authService = authService;
 
 // 创建Vue应用
 const app = createApp(App);

@@ -45,6 +45,8 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const result = await authService.login(username, password);
 
+      console.log("登入結果:", JSON.stringify(result));
+
       if (result.success) {
         const userInfo = result.data.user;
         user.value = userInfo;

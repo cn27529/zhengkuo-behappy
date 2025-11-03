@@ -184,7 +184,7 @@ export default {
       next();
     });
 
-    // 當 menuPosition 改變時，同步到 sessionStorage
+    // 當 menuPosition 改變時，同步到 localStorage
     watch(menuPosition, (val) => {
       try {
         sessionStorage.setItem("menuPosition", val);

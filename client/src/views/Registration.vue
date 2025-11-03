@@ -21,7 +21,7 @@
             <span class="tab-name" style="display: none">{{
               form.formName || `表單 ${index + 1}`
             }}</span>
-            <span style="display: " class="tab-status" :class="form.state">{{
+            <span style="display: none" class="tab-status" :class="form.state">{{
               getStatusText(form.state)
             }}</span>
             <button
@@ -576,9 +576,6 @@ export default {
 
     // 新增：刪除表單處理
     const handleDeleteForm = (index) => {
-
-      //ElMessage.warning("你點擊deleteForm的是index="+ index + "表單"); return
-
       if (registrationStore.formArray.length <= 1) {
         ElMessage.warning("至少需要保留一張表單");
         return;
