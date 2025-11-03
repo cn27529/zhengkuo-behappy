@@ -30,13 +30,13 @@ const handleModeChange = (event) => {
   const newMode = event.target.value;
   authService.setMode(newMode);
   authMode.value = newMode;
-  localStorage.setItem('dev-auth-mode', newMode);
+  sessionStorage.setItem('dev-auth-mode', newMode);
 };
 
 const clearStorage = () => {
   sessionStorage.clear();
-  localStorage.removeItem('auth-user');
-  localStorage.removeItem('auth-token');
+  sessionStorage.removeItem('auth-user');
+  sessionStorage.removeItem('auth-token');
   console.log('儲存已清除');
 };
 
@@ -46,7 +46,7 @@ const reloadPage = () => {
 
 // 初始化時讀取保存的模式
 if (isDevelopment.value) {
-  const savedMode = localStorage.getItem('dev-auth-mode');
+  const savedMode = sessionStorage.getItem('dev-auth-mode');
   if (savedMode) {
     authService.setMode(savedMode);
     authMode.value = savedMode;

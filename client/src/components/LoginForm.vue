@@ -122,8 +122,6 @@ export default {
     // 確認對話框
     const confirmDeviceDialog = () => {
       showDeviceDialog.value = false;
-      // 可選：將用戶選擇存儲在本地，避免每次都要顯示
-      //localStorage.setItem('device-warning-confirmed', 'true');
     };
 
     const loginForm = reactive({
@@ -189,10 +187,6 @@ export default {
     
 
     onMounted(() => {
-      
-      // // 檢查用戶是否已經確認過提示
-      // const hasConfirmed = localStorage.getItem('device-warning-confirmed');
-      
       if (isMobileDevice() || detectDeviceType() === 'mobile') {
         // 延迟显示，确保页面加载完成
         setTimeout(() => {

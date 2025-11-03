@@ -144,7 +144,7 @@ const testAccounts = [
 const setMode = async (mode) => {
   authService.setMode(mode);
   authMode.value = mode;
-  localStorage.setItem('dev-auth-mode', mode);
+  sessionStorage.setItem('dev-auth-mode', mode);
   
   // 切換到後端模式時檢查健康狀態
   if (mode === 'backend') {
@@ -250,14 +250,14 @@ const quickLogin = async (account) => {
 
 const clearAll = () => {
   sessionStorage.clear();
-  localStorage.removeItem('auth-user');
-  localStorage.removeItem('auth-token');
-  localStorage.removeItem('auth-refresh-token');
+  sessionStorage.removeItem('auth-user');
+  sessionStorage.removeItem('auth-token');
+  sessionStorage.removeItem('auth-refresh-token');
   // 保留開發模式設置
-  const devMode = localStorage.getItem('dev-auth-mode');
-  localStorage.clear();
+  const devMode = sessionStorage.getItem('dev-auth-mode');
+  sessionStorage.clear();
   if (devMode) {
-    localStorage.setItem('dev-auth-mode', devMode);
+    sessionStorage.setItem('dev-auth-mode', devMode);
   }
   window.location.reload();
 };

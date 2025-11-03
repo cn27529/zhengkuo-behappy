@@ -50,7 +50,6 @@ export const useSupabaseAuthStore = defineStore("supabaseAuth", () => {
       clearTimeout(inactivityTimer);
     }
 
-    //localStorage.removeItem("supabase-auth-user");
     sessionStorage.removeItem("supabase-auth-user");
 
     console.log("因閒置超時自動登出");
@@ -149,12 +148,8 @@ export const useSupabaseAuthStore = defineStore("supabaseAuth", () => {
     user.value = userInfo;
     isAuthenticated.value = true;
 
-    // sessionStorage（關閉瀏覽器就登出）
+    // sessionStorage（關閉瀏覽器就登出）可選擇localStorage
     sessionStorage.setItem("supabase-auth-user", JSON.stringify(userInfo));
-    //localStorage.setItem("supabase-auth-user", JSON.stringify(userInfo));
-
-    // 可選：保存到localStorage
-    //localStorage.setItem("auth-user", JSON.stringify(userInfo));
 
     resetInactivityTimer();
     setupActivityListeners();
@@ -176,8 +171,8 @@ export const useSupabaseAuthStore = defineStore("supabaseAuth", () => {
         clearTimeout(inactivityTimer);
       }
 
+      // 可選擇localStorage
       sessionStorage.removeItem("supabase-auth-user");
-      //localStorage.removeItem("supabase-auth-user");
 
       console.log("Supabase 用戶已退出登入");
     }
@@ -197,7 +192,6 @@ export const useSupabaseAuthStore = defineStore("supabaseAuth", () => {
       }
 
       // 檢查本地存儲的用戶信息
-      //const savedUser = localStorage.getItem("supabase-auth-user");
       const savedUser = sessionStorage.getItem("supabase-auth-user");
 
       if (savedUser) {
@@ -244,7 +238,7 @@ export const useSupabaseAuthStore = defineStore("supabaseAuth", () => {
     } else if (event === "SIGNED_OUT") {
       user.value = null;
       isAuthenticated.value = false;
-      //localStorage.removeItem("supabase-auth-user");
+      //可選擇localStorage
       sessionStorage.removeItem("supabase-auth-user");
     }
   });

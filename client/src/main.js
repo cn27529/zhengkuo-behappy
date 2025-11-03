@@ -24,8 +24,8 @@ const pinia = createPinia();
 
 // 開發模式下的初始化
 if (import.meta.env.VITE_DEV) {
-  // 從 localStorage 讀取保存的模式
-  const savedMode = localStorage.getItem("dev-auth-mode");
+  // 從 sessionStorage 讀取保存的模式
+  const savedMode = sessionStorage.getItem("dev-auth-mode");
   if (savedMode) {
     authService.setMode(savedMode);
   }

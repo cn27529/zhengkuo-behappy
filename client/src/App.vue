@@ -94,7 +94,7 @@ export default {
     const authStore = useAuthStore();
     const menuStore = useMenuStore();
 
-    const menuPosition = ref(localStorage.getItem("menuPosition") || "left");
+    const menuPosition = ref(sessionStorage.getItem("menuPosition") || "left");
 
     // 顶部导航栏显示控制：在非打印页面显示，將三個 UI 可見性預設為 false，等待子組件載入完成後再設定
     const showHeader = ref(false);
@@ -184,10 +184,10 @@ export default {
       next();
     });
 
-    // 當 menuPosition 改變時，同步到 localStorage
+    // 當 menuPosition 改變時，同步到 sessionStorage
     watch(menuPosition, (val) => {
       try {
-        localStorage.setItem("menuPosition", val);
+        sessionStorage.setItem("menuPosition", val);
       } catch (e) {
         // ignore quota errors
       }
