@@ -1,54 +1,235 @@
-# mock_registrations.json 格式說明
+# Mock Registration Data 格式說明文件
 
-檔案位置：`/src/data/mock_registrations.json`
+## 概述
+本文件說明 `mock_registrations.json` 的資料結構，此 JSON 檔案包含 20 筆消災超度報名表的假資料，用於測試與開發用途。
 
-## 概要
-此檔為測試用的假資料陣列（array），每一筆代表一組完整的報名資料，對應應用程式中的 `registrationForm` 結構（參見 `Registration.vue` 與 `stores/registration.js`）。
+## 整體結構
+`mock_registrations.json` 是一個 JSON 陣列，包含多個報名表物件。
 
-## 最外層
-- 格式：JSON Array
-- 每個元素為一個 registration 物件
+## 單一報名表物件結構
 
-## registration 物件結構
-- contact (object)
-  - name: string（聯絡人姓名，必填）
-  - phone: string（市話，可為空）
-  - mobile: string（手機，可為空）
-  - relationship: string（關係選項，例如 "本家"、"娘家"、"朋友"、"其它"）
-  - otherRelationship: string（若 relationship 為 "其它"，可填寫補充文字）
+### 頂層屬性
 
-- blessing (object)
-  - address: string（消災地址，必填）
-  - persons: array（消災人員清單）
-    - person 物件欄位：
-      - id: number（本清單內唯一 id）
-      - name: string（姓名，若為空則視為未填寫）
-      - zodiac: string（生肖，可為空，對應 zodiacOptions）
-      - notes: string（備註，可為空）
-      - isHouseholdHead: boolean（是否為戶長）
+| 欄位名稱 | 資料型別 | 必填 | 說明 | 範例值 |
+|---------|---------|------|------|--------|
+| `state` | String | 是 | 表單狀態 | `"saved"`, `"creating"`, `"editing"`, `"completed"`, `"submitted"` |
+| `createDate` | String (ISO 8601) | 是 | 表單建立日期時間 | `"2025-10-15T08:30:00.000Z"` |
+| `lastModified` | String (ISO 8601) / null | 是 | 最後修改日期時間 | `"2025-10-15T09:15:00.000Z"` 或 `null` |
+| `formName` | String | 是 | 表單名稱 | `"2025消災超度報名表-王家"` |
+| `formSource` | String | 否 | 來源說明（例如來自哪個活動） | `"中秋法會"` |
 
-- salvation (object)
-  - address: string（超度地址，必填）
-  - ancestors: array（祖先清單）
-    - ancestor 物件欄位：
-      - id: number
-      - surname: string（姓氏）
-      - notes: string
-  - survivors: array（陽上人清單）
-    - survivor 物件欄位：
-      - id: number
-      - name: string
-      - zodiac: string
-      - notes: string
+### contact（聯絡人資訊）
 
-## 注意事項
-- id：建議在同一種類別（persons / ancestors / survivors）內唯一即可，檔案中可從 1 開始。
-- 戶長檢查：應用程式邏輯為「只有在至少有一筆已填姓名的消災人員時，才要求至少指定一位戶長」，並會檢查不超過 `config.maxHouseholdHeads`。
-- 欄位必填檢查在 `stores/registration.js` 的 `validationDetails` 處理（例如聯絡人姓名、消災/超度地址等）。
-- 若要匯入到應用程式，可使用 `fetch` 或 `import` 讀取此 JSON，然後把物件賦值給 store 的 `registrationForm` 或作為建立多筆測試資料使用。
+包含報名者的聯絡資訊物件。
 
-## 範例（單筆註解）
-- 檔案中的每筆資料已用真實感測試值填寫，可直接用於開發與測試。
+| 欄位名稱 | 資料型別 | 必填 | 說明 | 範例值 |
+|---------|---------|------|------|--------|
+| `name` | String | 是 | 聯絡人姓名 | `"王小明"` |
+| `phone` | String | 條件必填* | 聯絡電話（市話） | `"02-12345678"` |
+| `mobile` | String | 條件必填* | 行動電話 | `"0912-345-678"` |
+| `relationship` | String | 是 | 與報名者的關係 | `"本家"`, `"娘家"`, `"朋友"`, `"其它"` |
+| `otherRelationship` | String | 條件必填** | 當 relationship 為 "其它" 時的說明 | `"鄰居"`, `"同事"` |
 
----
-若需我新增一個頁面按鈕以自動載入 `mock_registrations.json` 中某筆資料到表單，或提供匯入範例程式碼，請告訴我。
+> *註：`phone` 和 `mobile` 至少需填寫其中一個  
+> **註：當 `relationship` 為 `"其它"` 時，`otherRelationship` 為必填
+
+### blessing（消災資訊）
+
+包含消災祈福相關資訊的物件。
+
+#### blessing 屬性
+
+| 欄位名稱 | 資料型別 | 必填 | 說明 | 範例值 |
+|---------|---------|------|------|--------|
+| `address` | String | 條件必填*** | 消災地址 | `"台北市中正區重慶南路一段100號"` |
+| `persons` | Array | 是 | 消災人員陣列 | 見下方 Person 物件說明 |
+
+> ***註：當 `persons` 陣列中有已填寫姓名的人員時，`address` 為必填
+
+#### Person 物件（消災人員）
+
+| 欄位名稱 | 資料型別 | 必填 | 說明 | 範例值 | 限制 |
+|---------|---------|------|------|--------|------|
+| `id` | Number | 是 | 人員唯一識別碼 | `1`, `2`, `3` | 正整數 |
+| `name` | String | 是 | 姓名 | `"王小明"` | - |
+| `zodiac` | String | 否 | 生肖 | `"龍"`, `"蛇"`, `"馬"` | 十二生肖之一 |
+| `notes` | String | 否 | 備註說明 | `"戶長"`, `"配偶"` | - |
+| `isHouseholdHead` | Boolean | 是 | 是否為戶長 | `true`, `false` | 最多 1 位戶長 |
+
+**生肖選項**：鼠、牛、虎、兔、龍、蛇、馬、羊、猴、雞、狗、豬
+
+### salvation（超度資訊）
+
+包含超度相關資訊的物件。
+
+#### salvation 屬性
+
+| 欄位名稱 | 資料型別 | 必填 | 說明 | 範例值 |
+|---------|---------|------|------|--------|
+| `address` | String | 條件必填**** | 超度地址 | `"台北市中正區重慶南路一段100號"` |
+| `ancestors` | Array | 是 | 歷代祖先陣列 | 見下方 Ancestor 物件說明 |
+| `survivors` | Array | 是 | 陽上人陣列 | 見下方 Survivor 物件說明 |
+
+> ****註：當 `ancestors` 或 `survivors` 陣列中有已填寫資料時，`address` 為必填
+
+#### Ancestor 物件（歷代祖先）
+
+| 欄位名稱 | 資料型別 | 必填 | 說明 | 範例值 | 限制 |
+|---------|---------|------|------|--------|------|
+| `id` | Number | 是 | 祖先唯一識別碼 | `1` | 正整數 |
+| `surname` | String | 是 | 姓氏 | `"王氏"`, `"李氏"` | - |
+| `notes` | String | 否 | 備註說明 | `"歷代祖先"`, `"父母親"` | - |
+
+**限制**：最多 1 筆祖先記錄
+
+#### Survivor 物件（陽上人）
+
+| 欄位名稱 | 資料型別 | 必填 | 說明 | 範例值 | 限制 |
+|---------|---------|------|------|--------|------|
+| `id` | Number | 是 | 陽上人唯一識別碼 | `1`, `2` | 正整數 |
+| `name` | String | 是 | 姓名 | `"王小明"` | - |
+| `zodiac` | String | 否 | 生肖 | `"龍"`, `"蛇"` | 十二生肖之一 |
+| `notes` | String | 否 | 備註說明 | `"長子"`, `"次子"` | - |
+
+**限制**：最多 2 位陽上人
+
+## 資料驗證規則
+
+### 必填欄位規則
+
+1. **聯絡人資訊**
+   - `name` 必填
+   - `phone` 和 `mobile` 至少填寫一個
+   - 當 `relationship` 為 `"其它"` 時，`otherRelationship` 必填
+
+2. **消災資訊**
+   - 若有填寫消災人員，則 `address` 必填
+   - 若有填寫 `address`，則至少需有一位消災人員
+   - 至少需指定一位戶長（當有消災人員時）
+
+3. **超度資訊**
+   - 若有填寫祖先或陽上人，則 `address` 必填
+   - 若有填寫 `address`，則至少需有一筆祖先記錄
+   - 若有填寫祖先，則至少需有一位陽上人
+
+4. **整體規則**
+   - 消災人員或祖先至少需填寫其中一項
+
+### 數量限制
+
+| 項目 | 最大數量 |
+|-----|---------|
+| 戶長 | 1 位 |
+| 消災人員 | 無限制 |
+| 歷代祖先 | 1 筆 |
+| 陽上人 | 2 位 |
+
+### 表單狀態說明
+
+| 狀態值 | 說明 |
+|-------|------|
+| `creating` | 建立中（新表單，尚未保存） |
+| `editing` | 編輯中 |
+| `saved` | 已保存 |
+| `completed` | 已完成（未提交） |
+| `submitted` | 已提交 |
+
+## 範例資料
+
+### 完整範例
+
+```json
+{
+  "state": "saved",
+  "createDate": "2025-10-15T08:30:00.000Z",
+  "lastModified": "2025-10-15T09:15:00.000Z",
+  "formName": "2025消災超度報名表-王家",
+  "formSource": "中秋法會",
+  "contact": {
+    "name": "王小明",
+    "phone": "02-12345678",
+    "mobile": "0912-345-678",
+    "relationship": "本家",
+    "otherRelationship": ""
+  },
+  "blessing": {
+    "address": "台北市中正區重慶南路一段100號",
+    "persons": [
+      {
+        "id": 1,
+        "name": "王小明",
+        "zodiac": "龍",
+        "notes": "戶長",
+        "isHouseholdHead": true
+      },
+      {
+        "id": 2,
+        "name": "王小華",
+        "zodiac": "蛇",
+        "notes": "",
+        "isHouseholdHead": false
+      }
+    ]
+  },
+  "salvation": {
+    "address": "台北市中正區重慶南路一段100號",
+    "ancestors": [
+      {
+        "id": 1,
+        "surname": "王氏",
+        "notes": "歷代祖先"
+      }
+    ],
+    "survivors": [
+      {
+        "id": 1,
+        "name": "王小明",
+        "zodiac": "龍",
+        "notes": "長子"
+      },
+      {
+        "id": 2,
+        "name": "王小華",
+        "zodiac": "蛇",
+        "notes": "次子"
+      }
+    ]
+  }
+}
+```
+
+## 資料使用注意事項
+
+1. **日期時間格式**：所有日期時間使用 ISO 8601 格式（UTC 時區）
+2. **ID 唯一性**：同一表單內的 ID 必須唯一，但不同表單間可以重複
+3. **字串處理**：所有字串欄位需進行 trim() 處理以移除前後空白
+4. **空值處理**：
+   - `lastModified` 在表單首次建立時為 `null`
+   - `otherRelationship` 在非 "其它" 關係時為空字串 `""`
+5. **陣列最小值**：
+   - `persons` 至少包含 1 個元素
+   - `ancestors` 至少包含 1 個元素
+   - `survivors` 初始包含 2 個元素（可設定）
+
+## 測試場景涵蓋
+
+本假資料集包含以下測試場景：
+
+1. ✅ 不同表單狀態（creating, editing, saved, submitted）
+2. ✅ 不同聯絡關係（本家、娘家、朋友、其它）
+3. ✅ 只填電話 / 只填手機 / 兩者都填
+4. ✅ 單人消災 / 多人消災
+5. ✅ 消災地址與超度地址相同 / 不同
+6. ✅ 不同生肖組合
+7. ✅ 台灣各縣市地址（含離島）
+8. ✅ 不同法會來源
+9. ✅ 有/無 lastModified 的情況
+10. ✅ 各種備註內容
+
+## 版本資訊
+
+- **版本**：1.0
+- **建立日期**：2025-11-03
+- **資料筆數**：20 筆
+- **對應 Store**：registration.js (Pinia Store)
+- **Vue 版本**：Vue 3 with Composition API
