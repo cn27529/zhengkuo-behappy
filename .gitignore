@@ -142,4 +142,5 @@ vite.config.ts.timestamp-*
 #.env.local
 #.env.*.local
 
+client拷貝/*
 server拷貝/*
