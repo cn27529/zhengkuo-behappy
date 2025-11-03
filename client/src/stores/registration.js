@@ -16,7 +16,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       console.log("🚀 開始新增表單...");
 
       //當前表單標記為已保存
-      registrationForm.value.status = "saved";
+      registrationForm.value.state = "saved";
 
       // 🎯 關鍵：先確保當前表單已保存到陣列
       if (formArray.value.length === 0) {
@@ -142,7 +142,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       currentFormIndex.value = index;
 
       // 更新狀態
-      registrationForm.value.status = "editing";
+      registrationForm.value.state = "editing";
       registrationForm.value.lastModified = new Date().toISOString();
 
       console.log("傳入的索引:", index);
@@ -184,7 +184,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     return formArray.value.map((form, index) => ({
       index,
       formName: form.formName || `表單 ${index + 1}`,
-      status: form.status,
+      status: form.state,
       createDate: form.createDate,
       lastModified: form.lastModified,
       contactName: form.contact.name,
@@ -203,7 +203,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   const getInitialFormData = () => {
     return JSON.parse(
       JSON.stringify({
-        status: "creating", // saved, creating, editing, completed, submitted
+        state: "creating", // saved, creating, editing, completed, submitted
         createDate: new Date().toISOString(),
         lastModified: null,
         formName: "", // 2025消災超度報名表
@@ -796,7 +796,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     try {
-      registrationForm.value.status = "submitted"; // 更新狀態為已提交
+      registrationForm.value.state = "submitted"; // 更新狀態為已提交
       registrationForm.value.lastModified = new Date().toISOString(); // 更新最後修改時間
 
       // 模擬API調用
@@ -832,7 +832,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 方法：逐個屬性重置，保持響應性
       // 1. 重置頂層屬性
-      registrationForm.value.status = initialData.status;
+      registrationForm.value.state = initialData.status;
       registrationForm.value.createDate = initialData.createDate;
       registrationForm.value.lastModified = initialData.lastModified;
       registrationForm.value.formName = initialData.formName;

@@ -21,8 +21,8 @@
             <span class="tab-name" style="display: none">{{
               form.formName || `表單 ${index + 1}`
             }}</span>
-            <span style="display: none" class="tab-status" :class="form.status">{{
-              getStatusText(form.status)
+            <span style="display: none" class="tab-status" :class="form.state">{{
+              getStatusText(form.state)
             }}</span>
             <button
               v-if="formArray.length > 1"
@@ -40,7 +40,7 @@
           <span>聯絡人: {{ currentFormSummary.contactName || "未填寫" }}</span>
           <span>消災人員: {{ currentFormSummary.personsCount }} 位</span>
           <span>祖先: {{ currentFormSummary.ancestorsCount }} 位</span>
-          <span>狀態: {{ getStatusText(currentFormSummary.status) }}</span>
+          <span>狀態: {{ getStatusText(currentFormSummary.state) }}</span>
         </div>
       </div>
     </div>
@@ -603,14 +603,14 @@ export default {
     };
 
     // 新增：狀態文字轉換
-    const getStatusText = (status) => {
+    const getStatusText = (state) => {
       const statusMap = {
         creating: "建立中",
         editing: "編輯中",
         saved: "已儲存",
         submitted: "已提交",
       };
-      return statusMap[status] || status;
+      return statusMap[state] || state;
     };
 
     // 重置表單處理
