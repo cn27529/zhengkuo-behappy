@@ -1,0 +1,8 @@
+# 检查 Directus 服务是否运行
+curl -s "http://localhost:3000/server/info" | jq '.'
+
+# 查看 mydata
+curl -s "http://localhost:3000/items/mydata" | jq '.'
+# 帶欄位的
+curl -s "http://localhost:3000/items/mydata?fields=id,formName,state,contact.name,contact.phone" | jq '.'
+curl -s "http://localhost:3000/items/mydata?fields=*,contact.*" | jq '.'
