@@ -65,7 +65,17 @@ export const useMenuStore = defineStore("menu", () => {
       icon: "📥",
       component: "TaiSui",
       requiredAuth: true,
-      order: 5,
+      order: 6,
+      enabled: true,
+    },
+    {
+      id: 7,
+      name: "Mydata",
+      path: "/mydata",
+      icon: "📥",
+      component: "MydataList",
+      requiredAuth: true,
+      order: 0,
       enabled: true,
     },
   ]);

@@ -64,6 +64,14 @@ const routes = [
       requiresAuth: false,
     },
   },
+  {
+    path: "/mydata",
+    name: "MydataList",
+    component: () => import("../views/MydataList.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({
