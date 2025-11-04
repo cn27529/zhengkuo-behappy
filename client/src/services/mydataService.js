@@ -1,9 +1,9 @@
 // src/services/mydataService.js
-import { apiConfig, getDirectusUrl } from "../config/apiConfig.js";
+import { serviceConfig, getApiUrl } from "../config/serviceConfig.js";
 
 export class MydataService {
   constructor() {
-    console.log(`MydataService 初始化: 當前模式為 ${apiConfig.mode}`);
+    console.log(`MydataService 初始化: 當前模式為 ${serviceConfig.mode}`);
   }
 
   // ========== 通用方法 ==========
@@ -18,9 +18,7 @@ export class MydataService {
   async handleDirectusResponse(response) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `Directus 錯誤: ${response.status}`
-      );
+      throw new Error(errorData.message || `Directus 錯誤: ${response.status}`);
     }
 
     const result = await response.json();
@@ -29,7 +27,7 @@ export class MydataService {
 
   // ========== CRUD 操作 ==========
   async getAllMydata(params = {}) {
-    if (apiConfig.mode !== "directus") {
+    if (serviceConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -37,22 +35,22 @@ export class MydataService {
     try {
       // 構建查詢參數
       const queryParams = new URLSearchParams();
-      
+
       // 添加 fields 參數來指定返回的字段
       queryParams.append("fields", "*,contact.*");
-      
+
       // 添加篩選條件
       if (params.filter) {
-        Object.keys(params.filter).forEach(key => {
+        Object.keys(params.filter).forEach((key) => {
           queryParams.append(`filter[${key}]`, params.filter[key]);
         });
       }
-      
+
       // 添加排序
       if (params.sort) {
         queryParams.append("sort", params.sort);
       }
-      
+
       // 添加分頁
       if (params.limit) {
         queryParams.append("limit", params.limit);
@@ -62,7 +60,9 @@ export class MydataService {
       }
 
       const response = await fetch(
-        `${getDirectusUrl("/items/Mydata")}?${queryParams.toString()}`,
+        `${getApiUrl(
+          serviceConfig.apiEndpoints.itemsMydata
+        )}?${queryParams.toString()}`,
         {
           method: "GET",
           headers: await this.getAuthHeaders(),
@@ -83,14 +83,16 @@ export class MydataService {
   }
 
   async getMydataById(id) {
-    if (apiConfig.mode !== "directus") {
+    if (serviceConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
       const response = await fetch(
-        `${getDirectusUrl("/items/Mydata")}/${id}?fields=*,contact.*`,
+        `${getApiUrl(
+          serviceConfig.apiEndpoints.itemsMydata
+        )}/${id}?fields=*,contact.*`,
         {
           method: "GET",
           headers: await this.getAuthHeaders(),
@@ -111,7 +113,7 @@ export class MydataService {
   }
 
   async createMydata(mydataData) {
-    if (apiConfig.mode !== "directus") {
+    if (serviceConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法創建數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -138,11 +140,14 @@ export class MydataService {
         state: mydataData.state || "draft",
       };
 
-      const response = await fetch(getDirectusUrl("/items/Mydata"), {
-        method: "POST",
-        headers: await this.getAuthHeaders(),
-        body: JSON.stringify(processedData),
-      });
+      const response = await fetch(
+        getApiUrl(serviceConfig.apiEndpoints.itemsMydata),
+        {
+          method: "POST",
+          headers: await this.getAuthHeaders(),
+          body: JSON.stringify(processedData),
+        }
+      );
 
       const data = await this.handleDirectusResponse(response);
 
@@ -158,14 +163,14 @@ export class MydataService {
   }
 
   async updateMydata(id, mydataData) {
-    if (apiConfig.mode !== "directus") {
+    if (serviceConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
       const response = await fetch(
-        `${getDirectusUrl("/items/Mydata")}/${id}`,
+        `${getApiUrl(serviceConfig.apiEndpoints.itemsMydata)}/${id}`,
         {
           method: "PATCH",
           headers: await this.getAuthHeaders(),
@@ -187,14 +192,14 @@ export class MydataService {
   }
 
   async deleteMydata(id) {
-    if (apiConfig.mode !== "directus") {
+    if (serviceConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
       const response = await fetch(
-        `${getDirectusUrl("/items/Mydata")}/${id}`,
+        `${getApiUrl(serviceConfig.apiEndpoints.itemsMydata)}/${id}`,
         {
           method: "DELETE",
           headers: await this.getAuthHeaders(),
@@ -292,7 +297,7 @@ export class MydataService {
   // ========== 健康檢查 ==========
   async checkDirectusHealth() {
     try {
-      const response = await fetch(`${apiConfig.apiBaseUrl}/server/info`, {
+      const response = await fetch(`${serviceConfig.apiBaseUrl}/server/info`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -327,12 +332,12 @@ export class MydataService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
-    return apiConfig.mode;
+    return serviceConfig.mode;
   }
 
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
-      apiConfig.mode = mode;
+      serviceConfig.mode = mode;
       console.log(`MydataService 模式已切換為: ${mode}`);
 
       // 健康檢查

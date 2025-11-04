@@ -1,4 +1,4 @@
-// src/stores/apiConfig.js
+// src/stores/auth.js
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authService } from "../services/authService.js";

@@ -105,7 +105,7 @@
       <h4>⚠️ 後端服務警告</h4>
       <p>後端服務可能未啟動或無法連接。請確保：</p>
       <ul>
-        <li>後端服務正在運行在 {{ apiConfig.apiBaseUrl }}</li>
+        <li>後端服務正在運行在 {{ serviceConfig.apiBaseUrl }}</li>
         <li>沒有 CORS 問題</li>
         <li>網路連接正常</li>
       </ul>
@@ -116,9 +116,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { authService } from '../services/authService';
-import { apiConfig } from '../config/auth'; 
-import { useAuthStore } from '../stores/auth';
+import { authService } from '../services/authService.js';
+import { serviceConfig } from '../config/serviceConfig.js';
+import { useAuthStore } from '../stores/auth.js';
 
 const authStore = useAuthStore();
 const authMode = ref(authService.getCurrentMode());
