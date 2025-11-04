@@ -13,6 +13,15 @@ export const authConfig = {
     refresh: "/auth/refresh",
     profile: "/auth/profile",
     validate: "/auth/validate",
+
+    // Directus 端點
+    directus: {
+      auth: "/auth/login",
+      logout: "/auth/logout",
+      refresh: "/auth/refresh",
+      me: "/users/me",
+    },
+
   },
 
   // 模擬 API 延遲（毫秒）
@@ -22,4 +31,9 @@ export const authConfig = {
 // 獲取完整的 API URL
 export const getApiUrl = (endpoint) => {
   return `${authConfig.apiBaseUrl}${endpoint}`;
+};
+
+// 獲取 Directus API URL
+export const getDirectusUrl = (endpoint) => {
+  return `${authConfig.directus.baseUrl}${endpoint}`;
 };

@@ -1,5 +1,5 @@
 // src/services/authService.js
-import { authConfig, getApiUrl } from "../config/auth.js";
+import { authConfig, getApiUrl, getDirectusUrl  } from "../config/auth.js";
 import userData from "../data/auth_user.json";
 
 export class AuthService {
@@ -159,7 +159,7 @@ export class AuthService {
   // ========== Directus 方法 ==========
   async directusLogin(username, password) {
     try {
-      const response = await fetch(`${authConfig.apiBaseUrl}/auth/login`, {
+      const response = await fetch(getDirectusUrl(authConfig.apiEndpoints.directus.login), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -254,7 +254,7 @@ export class AuthService {
       }
 
       // Directus 登出請求
-      const response = await fetch(`${authConfig.apiBaseUrl}/auth/logout`, {
+      const response = await fetch(getDirectusUrl(authConfig.apiEndpoints.directus.logout), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -286,7 +286,7 @@ export class AuthService {
       }
 
       // 使用 /users/me 端點驗證 token
-      const response = await fetch(`${authConfig.apiBaseUrl}/users/me`, {
+      const response = await fetch(getDirectusUrl(authConfig.apiEndpoints.directus.me), {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -332,7 +332,7 @@ export class AuthService {
         return { success: false, message: "未找到 Refresh Token" };
       }
 
-      const response = await fetch(`${authConfig.apiBaseUrl}/auth/refresh`, {
+      const response = await fetch(getDirectusUrl(authConfig.apiEndpoints.directus.refresh), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
