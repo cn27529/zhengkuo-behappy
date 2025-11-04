@@ -72,6 +72,14 @@ const routes = [
       requiresAuth: true,
     },
   },
+  {
+    path: "/mydataform",
+    name: "MydataForm",
+    component: () => import("../views/MydataForm.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({

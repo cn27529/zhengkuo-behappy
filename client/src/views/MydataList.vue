@@ -41,6 +41,8 @@
 
 <script>
 import { mydataService } from "../services/mydataService.js";
+import { ElMessage, ElMessageBox } from "element-plus";
+import MockDataHelper from "../utils/mockDataHelper.js";
 
 export default {
   name: "MydataList",
@@ -95,6 +97,12 @@ export default {
       this.creating = true;
 
       try {
+        const randomData = MockDataHelper.getRandomMydata();
+        this.newForm = {
+          ...this.newForm,
+          ...randomData,
+        };
+        
         const result = await mydataService.createMydata(this.newForm);
 
         if (result.success) {
@@ -103,12 +111,15 @@ export default {
           this.newForm.state = "draft";
           // 重新載入列表
           await this.loadMydata();
-          alert("創建成功！");
+          //alert("創建成功！");
+          ElMessage.success(` ${this.newForm.formName} 己創建成功！${JSON.stringify(this.newForm.contact)}`);
         } else {
-          alert(`創建失敗: ${result.message}`);
+          //alert(`創建失敗: ${result.message}`);
+          ElMessage.error(`創建失敗: ${result.message}`);
         }
       } catch (error) {
-        alert("創建時發生錯誤");
+        //alert("創建時發生錯誤");
+        ElMessage.error(`創建時發生錯誤: ${error}`);
         console.error("創建錯誤:", error);
       } finally {
         this.creating = false;
@@ -117,7 +128,19 @@ export default {
 
     // 刪除項目
     async deleteItem(id) {
-      if (!confirm("確定要刪除這個項目嗎？")) return;
+      //if (!confirm("確定要刪除這個項目嗎？")) return;
+
+      await ElMessageBox.confirm(
+          '確定要刪除這個項目嗎？此操作無法撤銷。',
+          '確認刪除',
+          {
+            confirmButtonText: '確定刪除',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+          }
+        )
+
 
       this.deletingId = id;
 
@@ -127,13 +150,16 @@ export default {
         if (result.success) {
           // 從本地列表移除
           this.mydataList = this.mydataList.filter((item) => item.id !== id);
-          alert("刪除成功！");
+          //alert("刪除成功！");
+          ElMessage.success("刪除成功！");
         } else {
-          alert(`刪除失敗: ${result.message}`);
+          //alert(`刪除失敗: ${result.message}`);
+          ElMessage.error(`刪除失敗: ${result.message}`);
         }
       } catch (error) {
-        alert("刪除時發生錯誤");
+        //alert("刪除時發生錯誤");
         console.error("刪除錯誤:", error);
+        ElMessage.error(`刪除時發生錯誤: ${error}`);
       } finally {
         this.deletingId = null;
       }
