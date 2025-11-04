@@ -1,14 +1,14 @@
 // src/services/authService.js
-import { authConfig, getApiUrl, getDirectusUrl  } from "../config/auth.js";
+import { apiConfig, getApiUrl, getDirectusUrl  } from "../config/apiConfig.js";
 import userData from "../data/auth_user.json";
 
 export class AuthService {
   constructor() {
-    console.log(`AuthService 初始化: 當前模式為 ${authConfig.mode}`);
+    console.log(`AuthService 初始化: 當前模式為 ${apiConfig.mode}`);
   }
 
   async login(username, password) {
-    console.log(`登入請求 - 模式: ${authConfig.mode}, 用戶: ${username}`);
+    console.log(`登入請求 - 模式: ${apiConfig.mode}, 用戶: ${username}`);
 
     // 在控制台輸出警告
     if (import.meta.env.VITE_DEV) {
@@ -19,28 +19,28 @@ export class AuthService {
       );
     }
 
-    if (authConfig.mode === "mock") {
+    if (apiConfig.mode === "mock") {
       return this.mockLogin(username, password);
-    } else if (authConfig.mode === "backend") {
+    } else if (apiConfig.mode === "backend") {
       return this.backendLogin(username, password);
-    } else if (authConfig.mode === "directus") {
+    } else if (apiConfig.mode === "directus") {
       return this.directusLogin(username, password);
     }
   }
 
   async logout() {
-    if (authConfig.mode === "backend") {
+    if (apiConfig.mode === "backend") {
       return this.backendLogout();
-    } else if (authConfig.mode === "directus") {
+    } else if (apiConfig.mode === "directus") {
       return this.directusLogout();
     }
     return { success: true };
   }
 
   async validateToken() {
-    if (authConfig.mode === "mock") {
+    if (apiConfig.mode === "mock") {
       return this.mockValidateToken();
-    } else if (authConfig.mode === "directus") {
+    } else if (apiConfig.mode === "directus") {
       return this.directusValidateToken();
     } else {
       return this.backendValidateToken();
@@ -48,9 +48,9 @@ export class AuthService {
   }
 
   async refreshToken() {
-    if (authConfig.mode === "mock") {
+    if (apiConfig.mode === "mock") {
       return this.mockRefreshToken();
-    } else if (authConfig.mode === "directus") {
+    } else if (apiConfig.mode === "directus") {
       return this.directusRefreshToken();
     } else {
       return this.backendRefreshToken();
@@ -159,7 +159,7 @@ export class AuthService {
   // ========== Directus 方法 ==========
   async directusLogin(username, password) {
     try {
-      const response = await fetch(getDirectusUrl(authConfig.apiEndpoints.directus.login), {
+      const response = await fetch(getDirectusUrl(apiConfig.apiEndpoints.directus.login), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,7 +187,7 @@ export class AuthService {
         const { access_token, refresh_token, expires } = result.data;
 
         // 獲取用戶資訊
-        const userResponse = await fetch(`${authConfig.apiBaseUrl}/users/me`, {
+        const userResponse = await fetch(`${apiConfig.apiBaseUrl}/users/me`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -254,7 +254,7 @@ export class AuthService {
       }
 
       // Directus 登出請求
-      const response = await fetch(getDirectusUrl(authConfig.apiEndpoints.directus.logout), {
+      const response = await fetch(getDirectusUrl(apiConfig.apiEndpoints.directus.logout), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -286,7 +286,7 @@ export class AuthService {
       }
 
       // 使用 /users/me 端點驗證 token
-      const response = await fetch(getDirectusUrl(authConfig.apiEndpoints.directus.me), {
+      const response = await fetch(getDirectusUrl(apiConfig.apiEndpoints.directus.me), {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -332,7 +332,7 @@ export class AuthService {
         return { success: false, message: "未找到 Refresh Token" };
       }
 
-      const response = await fetch(getDirectusUrl(authConfig.apiEndpoints.directus.refresh), {
+      const response = await fetch(getDirectusUrl(apiConfig.apiEndpoints.directus.refresh), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -382,7 +382,7 @@ export class AuthService {
   // ========== 後端 API 方法 ==========
   async backendLogin(username, password) {
     try {
-      const response = await fetch(getApiUrl(authConfig.apiEndpoints.login), {
+      const response = await fetch(getApiUrl(apiConfig.apiEndpoints.login), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -432,7 +432,7 @@ export class AuthService {
         return { success: true };
       }
 
-      const response = await fetch(getApiUrl(authConfig.apiEndpoints.logout), {
+      const response = await fetch(getApiUrl(apiConfig.apiEndpoints.logout), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -461,7 +461,7 @@ export class AuthService {
       }
 
       const response = await fetch(
-        getApiUrl(authConfig.apiEndpoints.validate),
+        getApiUrl(apiConfig.apiEndpoints.validate),
         {
           method: "GET",
           headers: {
@@ -502,7 +502,7 @@ export class AuthService {
         return { success: false, message: "未找到 Refresh Token" };
       }
 
-      const response = await fetch(getApiUrl(authConfig.apiEndpoints.refresh), {
+      const response = await fetch(getApiUrl(apiConfig.apiEndpoints.refresh), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -536,7 +536,7 @@ export class AuthService {
 
   // ========== 輔助方法 ==========
   async mockDelay() {
-    return new Promise((resolve) => setTimeout(resolve, authConfig.mockDelay));
+    return new Promise((resolve) => setTimeout(resolve, apiConfig.mockDelay));
   }
 
   // 檢查後端連接狀態
@@ -563,7 +563,7 @@ export class AuthService {
   }
 
   getCurrentMode() {
-    return authConfig.mode;
+    return apiConfig.mode;
   }
 
   // 在 AuthService 類別中新增專門的 Directus 健康檢查方法
@@ -577,7 +577,7 @@ export class AuthService {
       ];
 
       // 使用最簡單的端點檢查
-      const response = await fetch(`${authConfig.apiBaseUrl}/server/info`, {
+      const response = await fetch(`${apiConfig.apiBaseUrl}/server/info`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -613,7 +613,7 @@ export class AuthService {
   // 修改 setMode 方法中的健康檢查
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
-      authConfig.mode = mode;
+      apiConfig.mode = mode;
       console.log(`AuthService 模式已切換為: ${mode}`);
 
       // 健康檢查

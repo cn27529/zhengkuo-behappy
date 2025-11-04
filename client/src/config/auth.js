@@ -1,5 +1,5 @@
-// src/config/auth.js
-export const authConfig = {
+// src/config/apiConfig.js
+export const apiConfig = {
   // 可切換模式: 'mock' 或 'backend'
   mode: import.meta.env.VITE_AUTH_MODE || "mock",
 
@@ -30,10 +30,10 @@ export const authConfig = {
 
 // 獲取完整的 API URL
 export const getApiUrl = (endpoint) => {
-  return `${authConfig.apiBaseUrl}${endpoint}`;
+  return `${apiConfig.apiBaseUrl}${endpoint}`;
 };
 
 // 獲取 Directus API URL
 export const getDirectusUrl = (endpoint) => {
-  return `${authConfig.directus.baseUrl}${endpoint}`;
+  return `${apiConfig.directus.baseUrl}${endpoint}`;
 };

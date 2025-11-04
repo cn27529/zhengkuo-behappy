@@ -1,9 +1,9 @@
 // src/services/mydataService.js
-import { authConfig, getDirectusUrl } from "../config/auth.js";
+import { apiConfig, getDirectusUrl } from "../config/apiConfig.js";
 
 export class MydataService {
   constructor() {
-    console.log(`MydataService 初始化: 當前模式為 ${authConfig.mode}`);
+    console.log(`MydataService 初始化: 當前模式為 ${apiConfig.mode}`);
   }
 
   // ========== 通用方法 ==========
@@ -29,7 +29,7 @@ export class MydataService {
 
   // ========== CRUD 操作 ==========
   async getAllMydata(params = {}) {
-    if (authConfig.mode !== "directus") {
+    if (apiConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -83,7 +83,7 @@ export class MydataService {
   }
 
   async getMydataById(id) {
-    if (authConfig.mode !== "directus") {
+    if (apiConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -111,7 +111,7 @@ export class MydataService {
   }
 
   async createMydata(mydataData) {
-    if (authConfig.mode !== "directus") {
+    if (apiConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法創建數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -158,7 +158,7 @@ export class MydataService {
   }
 
   async updateMydata(id, mydataData) {
-    if (authConfig.mode !== "directus") {
+    if (apiConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -187,7 +187,7 @@ export class MydataService {
   }
 
   async deleteMydata(id) {
-    if (authConfig.mode !== "directus") {
+    if (apiConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -292,7 +292,7 @@ export class MydataService {
   // ========== 健康檢查 ==========
   async checkDirectusHealth() {
     try {
-      const response = await fetch(`${authConfig.apiBaseUrl}/server/info`, {
+      const response = await fetch(`${apiConfig.apiBaseUrl}/server/info`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -327,12 +327,12 @@ export class MydataService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
-    return authConfig.mode;
+    return apiConfig.mode;
   }
 
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
-      authConfig.mode = mode;
+      apiConfig.mode = mode;
       console.log(`MydataService 模式已切換為: ${mode}`);
 
       // 健康檢查
