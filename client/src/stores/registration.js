@@ -243,10 +243,13 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 獲取初始表單資料（深拷貝）
   const getInitialFormData = () => {
+    const createISOTime = new Date().toISOString();
+    const timestamp = Date.now().toString();
+
     const initForm = {
       state: "creating", // saved, creating, editing, completed, submitted
-      createDate: Date.now().toString(),
-      lastModified: null,
+      createDate: createISOTime,
+      lastModified: "",
       formName: "", // 2025消災超度報名表
       formId: "", // 在提交表單時產生
       formSource: "", // 來源說明，例如「來自哪個活動」
