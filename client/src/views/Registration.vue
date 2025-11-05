@@ -630,7 +630,7 @@ export default {
     const getStatusIcon = (state) => {
   const statusMap = {
     creating: "🛠️",     // 建立中
-    editing: "✏️",      // 編輯中
+    editing: "✍🏽",      // 編輯中
     saved: "💾",        // 已儲存
     submitted: "✅",    // 已提交
   };
