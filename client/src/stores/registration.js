@@ -141,8 +141,12 @@ export const useRegistrationStore = defineStore("registration", () => {
       loadFormToRegistration(targetForm);
       currentFormIndex.value = index;
 
-      // 更新狀態
+      // 如果表單已提交，不更新狀態
+      if(registrationForm.value.state !== "submitted") {
+// 更新狀態
       registrationForm.value.state = "editing";
+      }
+      
       registrationForm.value.lastModified = new Date().toISOString();
 
       console.log("傳入的索引:", index);
@@ -796,8 +800,11 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     try {
+
       registrationForm.value.state = "submitted"; // 更新狀態為已提交
       registrationForm.value.lastModified = new Date().toISOString(); // 更新最後修改時間
+
+      
 
       // 模擬API調用
       // 這裡將來可以替換為真實的API調用

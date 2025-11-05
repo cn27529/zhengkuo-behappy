@@ -35,7 +35,8 @@ const isDevelopment = computed(() => import.meta.env.VITE_DEV);
 const authMode = ref(authService.getCurrentMode());
 
 const testAccounts = [
-  { username: 'admin', password: 'password!123456', displayName: '阿德民', role: 'admin' },
+  { username: 'admin', password: '123456', displayName: '阿德民', role: 'admin' },
+  { username: 'zkuser01', password: 'zk!123456', displayName: '廣小明', role: 'staff' },
   { username: 'temple_staff', password: 'temple123', displayName: '寺廟工作人員', role: 'staff' },
   { username: 'volunteer', password: 'volunteer123', displayName: '志工', role: 'volunteer' },
   { username: 'user01', password: 'user0123', displayName: '一般用戶01', role: 'user' }

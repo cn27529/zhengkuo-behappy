@@ -68,11 +68,11 @@ export class AuthService {
     };
 
     const passwordMap = {
-      admin: "password!123456",
+      admin: "123456",
       zkuser01: "zk!123456",
-      temple_staff: "temple123",
-      volunteer: "volunteer123",
-      user01: "user0123",
+      temple_staff: "zk!123456",
+      volunteer: "zk!123456",
+      user01: "zk!123456",
     };
 
     const hashedInput = hashPassword(password);

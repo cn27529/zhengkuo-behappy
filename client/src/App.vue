@@ -489,5 +489,35 @@ export default {
   transition: all 0.3s ease;
 }
 
-/* 其他原有样式保持不变 */
+/* 胶囊样式按钮 */
+.capsule-btn {
+  border-radius: 50px !important;
+  padding: 12px 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .dialog-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .warning-icon {
+    align-self: center;
+  }
+
+  /* 自訂對話框樣式 */
+  :deep(.custom-dialog .el-dialog__title) {
+    color: white !important;
+    
+  }
+
+  /* 移动端按钮样式调整 */
+  .capsule-btn {
+    padding: 14px 30px;
+    font-size: 16px;
+  }
+}
 </style>

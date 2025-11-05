@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,5 +8,10 @@ export default defineConfig({
   server: {
     port: 5173,
   },
-  // 确保没有特殊的 envDir 配置
+  // 配置别名
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'), // 设置 `@` 指向 `src` 目录
+    },
+  },
 });
