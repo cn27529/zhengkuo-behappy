@@ -6,21 +6,11 @@
     
     <main class="page-content">
       
-      <p>生成类似Git提交哈希（hash）的5位代码</p>
+      <p>生成类似Git提交哈希（hash）的7位代码</p>
       <!-- 使用示例区域 -->
       <div class="usage-examples">
         <h2>使用示例</h2>
         <div class="examples-grid">
-          
-          <div class="example-card">
-            <h3>在组件中使用</h3>
-            <pre><code>
-import { useGitHash } from '@/composables/useGitHash'
-
-const { generateSingleHash } = useGitHash()
-const commitHash = generateSingleHash()
-            </code></pre>
-          </div>
           
           <div class="example-card">
             <h3>直接使用工具函数</h3>
@@ -28,7 +18,7 @@ const commitHash = generateSingleHash()
 import { generateGitHash } from '@/utils/generateGitHash'
 
 const hash = generateGitHash()
-console.log(hash) // 例如: "fd0d4"
+console.log(hash) // 例如: "688a19e"
             </code></pre>
           </div>
         </div>
