@@ -8,8 +8,10 @@
     "install:netlify": "cd client && npm install",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:mydata": "node scripts/testMydata.js",
-    "test:mydata-create": "node scripts/testMydata.js --create"
+    "test:mydata-create": "node scripts/testMydata.js --create",
+    "test:hash": "node scripts/testGitHash.js",
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC"

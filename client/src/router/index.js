@@ -80,6 +80,15 @@ const routes = [
       requiresAuth: true,
     },
   },
+
+  {
+    path: "/hash",
+    name: "Hash",
+    component: () => import("../views/generatorHash.vue"),
+    meta: {
+      requiresAuth: false,
+    },
+  },
 ];
 
 const router = createRouter({
