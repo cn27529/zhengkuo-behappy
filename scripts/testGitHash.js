@@ -9,6 +9,7 @@ async function testHashGeneration() {
     testUniqueness,
   } = await import("../client/src/utils/generateGitHash.js");
   const hash_count = 100;
+  const hash_length = 7;
   console.log("=== 測試4碼Git哈希（hash）生成 ===");
 
   // 測試單個哈希（hash）

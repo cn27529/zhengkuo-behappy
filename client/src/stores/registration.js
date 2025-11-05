@@ -3,6 +3,7 @@
 // 註解會說明每個變數與方法在 Registration.vue 中的用途與對應位置。
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { generateGitHash } from "@/utils/generateGitHash.js";
 
 export const useRegistrationStore = defineStore("registration", () => {
   // 支援多張表單的陣列
@@ -87,6 +88,13 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // switchForm：安全的表單切換方法
   const switchForm = (index) => {
+    // const createTime = new Date().toISOString();
+    // const timestamp = Date.now().toString();
+    // console.log("ISO 時間:", createTime);
+    // console.log("時間戳:", timestamp);
+    // const hash = generateGitHash();
+    // console.log(`hash:${hash}`);
+
     try {
       if (index < 0 || index >= formArray.value.length) {
         console.error("❌ 切換表單索引無效:", index);
@@ -161,7 +169,6 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 刪除表單
   const deleteForm = (index) => {
-
     console.log("🗑️ 開始刪除表單，索引:", index);
     console.log("刪除前表單陣列長度:", formArray.value.length);
     console.log("刪除前當前索引:", currentFormIndex.value);
@@ -177,7 +184,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         JSON.stringify(registrationForm.value)
       );
     }
-    
+
     // 執行刪除
     formArray.value.splice(index, 1);
     console.log("刪除後表單陣列長度:", formArray.value.length);
@@ -197,7 +204,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     // 切換到正確的表單
     const resultIndex = switchForm(currentFormIndex.value);
     console.log("最終切換結果索引:", resultIndex);
-    
+
     return true;
   };
 
@@ -236,57 +243,57 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 獲取初始表單資料（深拷貝）
   const getInitialFormData = () => {
-    return JSON.parse(
-      JSON.stringify({
-        state: "creating", // saved, creating, editing, completed, submitted
-        createDate: new Date().toISOString(),
-        lastModified: null,
-        formName: "", // 2025消災超度報名表
-        formSource: "", // 來源說明，例如「來自哪個活動」
-        contact: {
-          name: "",
-          phone: "",
-          mobile: "",
-          relationship: "本家", // 本家、娘家、朋友、其它（對應畫面上的 radio）
-          otherRelationship: "",
-        },
-        blessing: {
-          // 消災地址
-          address: "",
-          // 消災人員
-          persons: [
-            {
-              id: 1,
-              name: "",
-              zodiac: "",
-              notes: "",
-              isHouseholdHead: true, // 是否為戶長，畫面用 checkbox 控制
-            },
-          ],
-        },
-        salvation: {
-          // 超度地址
-          address: "",
-          // 祖先清單
-          ancestors: [
-            {
-              id: 1,
-              surname: "",
-              notes: "",
-            },
-          ],
-          // 陽上人清單
-          survivors: [
-            {
-              id: 1,
-              name: "",
-              zodiac: "",
-              notes: "",
-            },
-          ],
-        },
-      })
-    );
+    const initForm = {
+      state: "creating", // saved, creating, editing, completed, submitted
+      createDate: Date.now().toString(),
+      lastModified: null,
+      formName: "", // 2025消災超度報名表
+      formId: null, // 在提交表單時產生
+      formSource: "", // 來源說明，例如「來自哪個活動」
+      contact: {
+        name: "",
+        phone: "",
+        mobile: "",
+        relationship: "本家", // 本家、娘家、朋友、其它（對應畫面上的 radio）
+        otherRelationship: "",
+      },
+      blessing: {
+        // 消災地址
+        address: "",
+        // 消災人員
+        persons: [
+          {
+            id: 1,
+            name: "",
+            zodiac: "",
+            notes: "",
+            isHouseholdHead: true, // 是否為戶長，畫面用 checkbox 控制
+          },
+        ],
+      },
+      salvation: {
+        // 超度地址
+        address: "",
+        // 祖先清單
+        ancestors: [
+          {
+            id: 1,
+            surname: "",
+            notes: "",
+          },
+        ],
+        // 陽上人清單
+        survivors: [
+          {
+            id: 1,
+            name: "",
+            zodiac: "",
+            notes: "",
+          },
+        ],
+      },
+    };
+    return JSON.parse(JSON.stringify(initForm));
   };
 
   // config：全域配置，決定表單的限制值（例如最大戶長數、最大祖先數等）。
@@ -831,8 +838,17 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     try {
+      // 這裡將來可以替換為真實的表單提交邏輯
+      const createTime = new Date().toISOString();
+      const timestamp = Date.now().toString();
+      console.log("ISO 時間:", createTime);
+      console.log("時間戳:", timestamp);
+      const hash = generateGitHash(createTime);
+      console.log(`hash:${hash}`);
+
+      registrationForm.value.formId = hash;
+      registrationForm.value.createDate = createTime;
       registrationForm.value.state = "submitted"; // 更新狀態為已提交
-      registrationForm.value.lastModified = new Date().toISOString(); // 更新最後修改時間
 
       // 模擬API調用
       // 這裡將來可以替換為真實的API調用
