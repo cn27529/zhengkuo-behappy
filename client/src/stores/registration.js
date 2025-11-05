@@ -161,13 +161,44 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 刪除表單
   const deleteForm = (index) => {
-    if (formArray.value.length <= 1) return false; // 至少保留一張
 
-    formArray.value.splice(index, 1);
-    if (currentFormIndex.value >= index) {
-      currentFormIndex.value = Math.max(0, currentFormIndex.value - 1);
+    console.log("🗑️ 開始刪除表單，索引:", index);
+    console.log("刪除前表單陣列長度:", formArray.value.length);
+    console.log("刪除前當前索引:", currentFormIndex.value);
+
+    if (formArray.value.length <= 1) {
+      console.log("❌ 至少需要保留一張表單");
+      return false;
     }
+
+    // 🎯 關鍵修復：先保存當前表單狀態
+    if (formArray.value.length > 0 && currentFormIndex.value >= 0) {
+      formArray.value[currentFormIndex.value] = JSON.parse(
+        JSON.stringify(registrationForm.value)
+      );
+    }
+    
+    // 執行刪除
+    formArray.value.splice(index, 1);
+    console.log("刪除後表單陣列長度:", formArray.value.length);
+
+    // 🎯 關鍵修復：正確處理當前索引
+    if (currentFormIndex.value === index) {
+      // 如果刪除的是當前表單，切換到前一個或第一個
+      currentFormIndex.value = Math.max(0, index - 1);
+    } else if (currentFormIndex.value > index) {
+      // 如果刪除的表單在當前表單之前，當前索引減1
+      currentFormIndex.value = currentFormIndex.value - 1;
+    }
+    // 如果刪除的表單在當前表單之後，當前索引保持不變
+
+    console.log("刪除後調整的當前索引:", currentFormIndex.value);
+
+    // 切換到正確的表單
     const resultIndex = switchForm(currentFormIndex.value);
+    console.log("最終切換結果索引:", resultIndex);
+    
+    return true;
   };
 
   // 複製表單

@@ -7,6 +7,17 @@
 
     <!-- 在 .form-header div 內新增表單切換區塊 -->
     <div class="form-header">
+      <!-- 在 template 添加調試信息 -->
+      <div v-if="true" style="background: #f5f5f5; padding: 10px; margin-top: 20px; font-size: 12px;">
+        <h4>調試信息:</h4>
+        <p>表單陣列長度: {{ formArray.length }}</p>
+        <p>當前索引: {{ currentFormIndex }}</p>
+        <p>表單狀態: 
+          <span v-for="(form, idx) in formArray" :key="idx">
+            [{{ idx }}:{{ form.state }}] 
+          </span>
+        </p>
+      </div>
       <!-- 表單切換器 -->
       <div class="form-switcher" v-if="formArray && formArray.length > 0">
         <div class="form-tabs">
@@ -586,6 +597,12 @@ export default {
 
     // 新增：刪除表單處理
     const handleDeleteForm = (index) => {
+
+      console.log("🔍 刪除表單調試信息:");
+      console.log("傳入的索引:", index);
+      console.log("當前表單陣列:", formArray.value);
+      console.log("當前表單索引:", currentFormIndex.value);
+
       if (registrationStore.formArray.length <= 1) {
         ElMessage.warning("至少需要保留一張表單");
         return;
@@ -604,8 +621,15 @@ export default {
         }
       )
         .then(() => {
+          console.log("執行刪除，索引:", index);
           registrationStore.deleteForm(index);
           ElMessage.success("表單已刪除");
+
+          // 添加刪除後的調試
+          setTimeout(() => {
+            console.log("刪除後的表單陣列:", formArray.value);
+            console.log("刪除後的當前索引:", currentFormIndex.value);
+          }, 100);
         })
         .catch(() => {
           ElMessage.info("已取消刪除操作");
