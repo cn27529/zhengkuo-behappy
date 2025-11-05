@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import LoginForm from '../components/LoginForm.vue'
-import appConfig from '../config/appConfig'
+import LoginForm from '@/components/LoginForm.vue'
+import appConfig from '@/config/appConfig'
 
 export default {
   name: 'Login',

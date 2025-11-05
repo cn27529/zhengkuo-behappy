@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { mydataService } from '../services/mydataService.js'
+import { mydataService } from '@/services/mydataService.js'
 
 export default {
   name: 'MydataForm',

@@ -128,11 +128,11 @@
 </template>
 
 <script>
-import { useRegistrationStore } from '../stores/registration'
+import { useRegistrationStore } from '@/stores/registration'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus';
-import BlessingSection from '../components/BlessingSection2.vue'
-import SalvationSection from '../components/SalvationSection2.vue'
+import BlessingSection from '@/components/BlessingSection2.vue'
+import SalvationSection from '@/components/SalvationSection2.vue'
 
 export default {
   name: 'Registration',

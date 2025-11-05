@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import EnvForm from '../components/EnvTest.vue'
+import EnvForm from '@/components/EnvTest.vue'
 
 export default {
   name: 'Env',

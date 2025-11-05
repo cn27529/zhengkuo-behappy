@@ -51,8 +51,8 @@
 <script>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-import { useActivitiesStore } from '../stores/activities'
+import { useAuthStore } from '@/stores/auth'
+import { useActivitiesStore } from '@/stores/activities'
 
 export default {
   name: 'Dashboard',

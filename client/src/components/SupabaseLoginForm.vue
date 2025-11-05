@@ -120,7 +120,7 @@
 
 <script>
 import { ref, computed } from 'vue'
-import { useSupabaseAuthStore } from '../stores/supabase-auth'
+import { useSupabaseAuthStore } from '@/stores/supabase-auth'
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 

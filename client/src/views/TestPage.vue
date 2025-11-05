@@ -116,9 +116,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { authService } from '../services/authService.js';
-import { serviceConfig } from '../config/serviceConfig.js';
-import { useAuthStore } from '../stores/auth.js';
+import { authService } from '@/services/authService.js';
+import { serviceConfig } from '@/config/serviceConfig.js';
+import { useAuthStore } from '@/stores/auth.js';
 
 const authStore = useAuthStore();
 const authMode = ref(authService.getCurrentMode());
