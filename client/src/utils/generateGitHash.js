@@ -3,7 +3,7 @@ import crypto from "crypto";
 // 用於確保唯一性的計數器
 let sequenceCounter = 0;
 const MAX_SEQUENCE = 65535;
-const hash_length = 5;
+const hash_length = 7;
 
 /**
  * 生成类似Git提交哈希（hash）的4位代码
