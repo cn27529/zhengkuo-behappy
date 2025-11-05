@@ -5,7 +5,7 @@
       <h2>消災超度登記表</h2>
     </div>
 
-    <!-- 在 .form-header div 內新增表單管理區塊 -->
+    <!-- 在 .form-header div 內新增表單切換區塊 -->
     <div class="form-header">
       <!-- 表單切換器 -->
       <div class="form-switcher" v-if="formArray && formArray.length > 0">
@@ -17,13 +17,10 @@
             :class="{ active: currentFormIndex === index }"
             @click="handleSwitchForm(index)"
           >
-            <span class="tab-number">第{{ index + 1 }}份表單</span>            
-            <span
-              style="display: ;"
-              class="tab-status"
-              :class="form.state"
-              >{{ getStatusText(form.state) }}</span
-            >
+            <span class="tab-number">第{{ index + 1 }}張表單</span>
+            <span style="display: " class="tab-status" :class="form.state">{{
+              getStatusText(form.state)
+            }}</span>
             <button
               v-if="formArray.length > 1"
               class="tab-close"
@@ -36,7 +33,7 @@
         </div>
 
         <!-- 當前表單資訊 -->
-        <div class="current-form-info" v-if="currentFormSummary">
+        <div class="current-form-info" v-if="currentFormSummary" style="display: none">
           <span>聯絡人: {{ currentFormSummary.contactName || "未填寫" }}</span>
           <span>消災人員: {{ currentFormSummary.personsCount }} 位</span>
           <span>祖先: {{ currentFormSummary.ancestorsCount }} 位</span>
@@ -266,17 +263,7 @@
             placeholder="請輸入地址"
             required
           />
-          <button
-            v-if="
-              registrationForm.blessing.address &&
-              registrationForm.blessing.address.trim()
-            "
-            type="button"
-            class="btn btn-outline btn-sm copy-address-btn"
-            @click="copyBlessingAddress"
-          >
-            同消災地址
-          </button>
+          
         </div>
 
         <!-- 祖先資料 -->
@@ -297,6 +284,15 @@
                 @click="addAncestor"
               >
                 + 增加祖先
+              </button>
+
+              <button 
+                v-if="registrationForm.blessing.address && registrationForm.blessing.address.trim()"
+                type="button"
+                class="btn btn-outline btn-sm copy-address-btn"
+                @click="copyBlessingAddress"
+              >
+                同消災地址
               </button>
             </div>
           </div>
@@ -485,20 +481,21 @@
 
         <button
           type="button"
-          class="btn btn-outline capsule-btn"
-          @click="handleAddNewForm"
-        >
-          📄 多填一張
-        </button>
-
-        <button
-          type="button"
           class="btn btn-primary"
           @click="submitForm"
           :disabled="submitting"
         >
           {{ submitting ? "提交中..." : "提交報名" }}
         </button>
+
+        <button
+          type="button"
+          class="btn btn-outline capsule-btn"
+          @click="handleAddNewForm"
+        >
+          📄 再填一張
+        </button>
+        
 
         <button
           type="button"
@@ -627,15 +624,16 @@ export default {
     // };
 
     // 狀態圖標（Emoji版）轉換
-    const getStatusIcon = (state) => {
-  const statusMap = {
-    creating: "🛠️",     // 建立中
-    editing: "✍🏽",      // 編輯中
-    saved: "💾",        // 已儲存
-    submitted: "✅",    // 已提交
-  };
-  return statusMap[state] || "❓";
-};
+    const getStatusText = (state) => {
+
+      const statusMap = {
+        creating: "🛠️", // 建立中
+        editing: "✍🏽", // 編輯中
+        saved: "💾", // 已儲存
+        submitted: "✔︎", // 已提交
+      };
+      return statusMap[state] || "❓";
+    };
 
     // 重置表單處理
     const handleResetForm = () => {
@@ -709,17 +707,24 @@ export default {
 
       try {
         
-        // await ElMessageBox.confirm(
-        //   `確定要提交表單「${formInfo}」嗎？此操作只有一次機會，不重覆提交！`,
-        //   {
+        // await ElMessageBox.confirm(`確定要提交表單嗎？不可重覆提交！`,{
         //     confirmButtonText: "確認提交",
         //     cancelButtonText: "取消",
         //     type: "warning",
         //   }
-        // );
+        // ).then(() => {
+        //   const result = registrationStore.submitRegistration();
+        //   setTimeout(() => {
+        //     ElMessage.success(result.message);
+        //   }, 1500)  
+        // })
+        // .catch(() => {
+        //   ElMessage.info("已取消提交操作")
+        // });
 
         const result = await registrationStore.submitRegistration();
-        ElMessage.success(result.message);
+        ElMessage.success(result.message)
+
         
       } catch (error) {
         ElMessage.error("提交失敗: " + error.message);
@@ -1137,10 +1142,10 @@ select:focus {
 /* 表單切換器樣式 */
 .form-switcher {
   background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  border: 0px solid #e9ecef;
   border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 2rem;
+  padding: 0rem;
+  margin-bottom: 0rem;
 }
 
 .form-tabs {
@@ -1157,7 +1162,7 @@ select:focus {
   padding: 0.5rem 1rem;
   background: white;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -1172,7 +1177,7 @@ select:focus {
   border-color: var(--primary-color);
 }
 
-/* .tab-number {
+.tab-number {
   font-weight: bold;
 }
 
@@ -1180,13 +1185,13 @@ select:focus {
   max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;  
+  white-space: nowrap;
 }
 
 .tab-status {
   font-size: 0.75rem;
   padding: 0.125rem 0.5rem;
-  border-radius: 12px;
+  border-radius: 50px;
   background: #e9ecef;
 }
 
@@ -1224,103 +1229,6 @@ select:focus {
 
 .tab-close:hover {
   color: #dc3545;
-} */
-
-/* 胶囊样式 - tab-number */
-.tab-number {
-  font-weight: bold;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 50px;
-  font-size: 0.875rem;
-  min-width: 60px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.form-tab.active .tab-number {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* 胶囊样式 - tab-name */
-.tab-name {
-  background: #f8f9fa;
-  color: #333;
-  padding: 4px 16px;
-  border-radius: 50px;
-  font-size: 0.875rem;
-  border: 1px solid #e9ecef;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: all 0.3s ease;
-}
-
-.form-tab.active .tab-name {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.form-tab:hover .tab-name {
-  border-color: var(--primary-color);
-  transform: translateY(-1px);
-}
-
-.form-tab:hover .tab-number {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.tab-status {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 12px;
-  background: #e9ecef;
-}
-
-.tab-status.creating {
-  background: #fff3cd;
-  color: #856404;
-}
-.tab-status.editing {
-  background: #d1ecf1;
-  color: #0c5460;
-}
-.tab-status.saved {
-  background: #d4edda;
-  color: #155724;
-}
-.tab-status.submitted {
-  background: #d1ecf1;
-  color: #0c5460;
-}
-
-.tab-close {
-  background: none;
-  border: none;
-  color: #999;
-  cursor: pointer;
-  font-size: 1.2rem;
-  line-height: 1;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.tab-close:hover {
-  background: #dc3545;
-  color: white;
-  border-radius: 50%;
-  transform: scale(1.1);
 }
 
 .form-tab-add {
@@ -1384,12 +1292,11 @@ select:focus {
     font-size: 0.8rem;
     padding: 3px 8px;
   }
-  
+
   .tab-name {
     max-width: 80px;
     font-size: 0.8rem;
     padding: 3px 12px;
   }
-  
 }
 </style>
