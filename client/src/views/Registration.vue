@@ -510,7 +510,7 @@
 </template>
 
 <script>
-import { useRegistrationStore } from "../stores/registration";
+import { useRegistrationStore } from "@/stores/registration";
 import { ref, onMounted, computed, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 

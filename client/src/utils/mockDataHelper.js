@@ -1,5 +1,5 @@
 // src/utils/mockDataHelper.js
-import mockRegistrations from "../data/mock_registrations.json";
+import mockRegistrations from "@/data/mock_registrations.json";
 
 export class MockDataHelper {
   // 獲取隨機一筆報名數據

@@ -1,6 +1,6 @@
 // src/services/authService.js
-import { serviceConfig, getApiUrl } from "../config/serviceConfig.js";
-import userData from "../data/auth_user.json";
+import { serviceConfig, getApiUrl } from "@/config/serviceConfig.js";
+import userData from "@/data/auth_user.json";
 
 export class AuthService {
   constructor() {

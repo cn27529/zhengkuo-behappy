@@ -40,9 +40,9 @@
 </template>
 
 <script>
-import { mydataService } from "../services/mydataService.js";
+import { mydataService } from "@/services/mydataService.js";
 import { ElMessage, ElMessageBox } from "element-plus";
-import MockDataHelper from "../utils/mockDataHelper.js";
+import MockDataHelper from "@/utils/mockDataHelper.js";
 
 export default {
   name: "MydataList",

@@ -172,7 +172,7 @@
 <script>
 import { onMounted, watch, ref, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useTaiSuiStore } from "../stores/taisui.js";
+import { useTaiSuiStore } from "@/stores/taisui.js";
 
 export default {
   name: "TaiSui",
