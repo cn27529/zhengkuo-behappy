@@ -839,16 +839,16 @@ export const useRegistrationStore = defineStore("registration", () => {
 
     try {
       // 這裡將來可以替換為真實的表單提交邏輯
-      const createTime = new Date().toISOString();
+      const createISOTime = new Date().toISOString();
       const timestamp = Date.now().toString();
-      console.log("ISO 時間:", createTime);
+      console.log("ISO 時間:", createISOTime);
       console.log("時間戳:", timestamp);
-      const hash = generateGitHash(createTime);
+      const hash = generateGitHash(createISOTime);
       console.log(`hash:${hash}`);
 
       // formId這時才產生為hash值，並儲存
       registrationForm.value.formId = hash;
-      registrationForm.value.createDate = createTime;
+      registrationForm.value.createDate = createISOTime;
       registrationForm.value.state = "submitted"; // 更新狀態為已提交
 
       // 模擬API調用
