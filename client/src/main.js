@@ -1,18 +1,18 @@
 // src/main.js
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { authService } from "./services/authService";
+import { authService } from "@/services/authService";
 
 import App from "./App.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
-import "./style.css";
+import "@/style.css";
 
 // 导入路由配置
-import router from "./router";
+import router from "@/router";
 // 引入 appConfig
-import appConfig from "./config/appConfig";
-import { useMenuStore } from "./stores/menu";
+import appConfig from "@/config/appConfig";
+import { useMenuStore } from "@/stores/menu";
 
 // 引入 antd
 import Antd from "ant-design-vue";
