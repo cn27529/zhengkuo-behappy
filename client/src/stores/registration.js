@@ -605,7 +605,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       name: "",
       zodiac: "",
       notes: "",
-      isHouseholdHead: true, //戶長預設為 true
+      isHouseholdHead: false,
     });
   };
 
