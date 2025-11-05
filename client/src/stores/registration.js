@@ -212,8 +212,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   const duplicateForm = (index) => {
     const duplicated = JSON.parse(JSON.stringify(formArray.value[index]));
     duplicated.createDate = new Date().toISOString();
-    duplicated.formName = `${duplicated.formName} - 複本`;
-
+    duplicated.formName = `${duplicated.formName} - 複製`;
     formArray.value.push(duplicated);
     const resultIndex = switchForm(formArray.value.length - 1);
   };
@@ -226,6 +225,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     return formArray.value.map((form, index) => ({
       index,
       formName: form.formName || `表單 ${index + 1}`,
+      formId: form.formId,
       status: form.state,
       createDate: form.createDate,
       lastModified: form.lastModified,
@@ -248,7 +248,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       createDate: Date.now().toString(),
       lastModified: null,
       formName: "", // 2025消災超度報名表
-      formId: null, // 在提交表單時產生
+      formId: "", // 在提交表單時產生
       formSource: "", // 來源說明，例如「來自哪個活動」
       contact: {
         name: "",
@@ -846,6 +846,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       const hash = generateGitHash(createTime);
       console.log(`hash:${hash}`);
 
+      // formId這時才產生為hash值，並儲存
       registrationForm.value.formId = hash;
       registrationForm.value.createDate = createTime;
       registrationForm.value.state = "submitted"; // 更新狀態為已提交
@@ -887,6 +888,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       registrationForm.value.createDate = initialData.createDate;
       registrationForm.value.lastModified = initialData.lastModified;
       registrationForm.value.formName = initialData.formName;
+      registrationForm.value.formId = initialData.formId;
       registrationForm.value.formSource = initialData.formSource;
 
       // 2. 重置 contact 物件
