@@ -1,294 +1,78 @@
 <template>
-  <div class="generator-page">
-    <header class="page-header">
-      <h1>Git Flow 哈希生成器</h1>
-      <p>生成类似Git提交哈希的7位代码</p>
-    </header>
-    
-    <main class="page-content">
-      <!-- 控制按鈕 -->
-      <div class="controls">
-        <button @click="generateHash" class="btn btn-primary">生成哈希</button>
-        <button @click="generateMultiple" class="btn btn-secondary">生成5個哈希</button>
-      </div>
-      
-      <!-- 顯示當前生成的哈希 -->
-      <div v-if="currentHash" class="result-card">
-        <h3>當前生成的哈希:</h3>
-        <code class="hash-display">{{ currentHash }}</code>
-        <button @click="copyHash(currentHash)" class="btn btn-copy">📋 複製</button>
-      </div>
-      
-      <!-- 顯示多個哈希 -->
-      <div v-if="multipleHashes.length" class="result-card">
-        <h3>多個哈希:</h3>
-        <div v-for="(hash, index) in multipleHashes" :key="index" class="hash-item">
-          <span class="hash-index">#{{ index + 1 }}</span>
-          <code class="hash-value">{{ hash }}</code>
-          <button @click="copyHash(hash)" class="btn btn-copy">📋</button>
-        </div>
-      </div>
-      
-      <!-- 使用示例区域 -->
-      <div class="usage-examples">
-        <h2>使用示例</h2>
-        <div class="examples-grid">
-          <div class="example-card">
-            <h3>直接使用工具函数</h3>
-            <pre><code>
-import { generateGitHash } from '@/utils/generateGitHash'
+  <div class="p-6 max-w-3xl mx-auto space-y-4">
+    <h1 class="text-2xl font-bold text-blue-700">🔹 Generate Git Hash 測試頁面</h1>
 
-const hash = generateGitHash()
-console.log(hash) // 例如: "{{ currentHash || '4a1c5d6' }}"
-            </code></pre>
-          </div>
-          
-          <div class="example-card">
-            <h3>批量生成</h3>
-            <pre><code>
-import { generateMultipleHashes } from '@/utils/generateGitHash'
+    <div class="space-y-2">
+      <p>目前環境：<strong>{{ environment }}</strong></p>
+      <button
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        @click="generateHashes"
+      >
+        重新生成哈希
+      </button>
+      <button
+        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+        @click="testUniquenessAsync"
+      >
+        測試唯一性 (瀏覽器版)
+      </button>
+    </div>
 
-const hashes = generateMultipleHashes(5)
-console.log(hashes) // {{ multipleHashes.length ? `["${multipleHashes[0]}", ...]` : '["4a1c5d6", "8e9f2a1", ...]' }}
-            </code></pre>
-          </div>
-        </div>
-      </div>
-    </main>
+    <div class="border p-4 rounded bg-gray-50">
+      <h2 class="text-lg font-semibold mb-2">生成結果：</h2>
+      <ul class="space-y-1">
+        <li v-for="(hash, idx) in hashes" :key="idx" class="font-mono text-gray-700">
+          {{ idx + 1 }}. {{ hash }}
+        </li>
+      </ul>
+    </div>
+
+    <div v-if="testResult" class="border p-4 rounded bg-green-50">
+      <h2 class="text-lg font-semibold mb-2">唯一性測試結果：</h2>
+      <pre class="text-sm">{{ testResult }}</pre>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { 
-  generateGitHash, 
-  generateMultipleHashes, 
-} from '@/utils/generateGitHash';
+import { ref } from "vue";
+import {
+  generateGitHash,
+  generateGitHashBrowser,
+  testUniqueness,
+} from "@/utils/generateGitHash.js"; // ✅ 根據你的實際路徑調整
 
-const currentHash = ref('');
-const multipleHashes = ref([]);
+const hashes = ref([]);
+const testResult = ref(null);
 
-const generateHash = () => {
-  currentHash.value = generateGitHash();
-  console.log('生成的哈希:', currentHash.value);
-};
+const environment =
+  typeof window !== "undefined" && typeof window.document !== "undefined"
+    ? "Browser"
+    : "Node.js";
 
-const generateMultiple = () => {
-  multipleHashes.value = generateMultipleHashes(5);
-  console.log('生成的多個哈希:', multipleHashes.value);
-};
-
-const copyHash = async (hash) => {
-  try {
-    await navigator.clipboard.writeText(hash);
-    alert('已複製哈希: ' + hash);
-  } catch (err) {
-    console.error('複製失敗:', err);
-    // 降級方案
-    const textArea = document.createElement('textarea');
-    textArea.value = hash;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    alert('已複製: ' + hash);
+// 生成多個哈希
+async function generateHashes() {
+  hashes.value = [];
+  for (let i = 0; i < 10; i++) {
+    // 使用瀏覽器的異步版本確保兼容
+    const hash = await generateGitHashBrowser("data-" + i);
+    hashes.value.push(hash);
   }
-};
+}
+
+// 測試唯一性（瀏覽器版）
+async function testUniquenessAsync() {
+  testResult.value = "測試中...";
+  const result = await testUniqueness(200, true);
+  testResult.value = JSON.stringify(result, null, 2);
+}
+
+// 頁面初始化自動生成
+generateHashes();
 </script>
 
 <style scoped>
-.generator-page {
-  min-height: 100vh;
-  background: #f5f5f5;
-}
-
-.page-header {
-  text-align: center;
-  padding: 40px 20px;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.page-header h1 {
-  margin-bottom: 8px;
-  font-size: 2rem;
-  color: #333;
-}
-
-.page-header p {
-  color: #666;
-  font-size: 1.1rem;
-}
-
-.page-content {
-  padding: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.controls {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.btn-primary {
-  background: #007bff;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #0056b3;
-}
-
-.btn-secondary {
-  background: #6c757d;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background: #545b62;
-}
-
-.btn-copy {
-  background: #28a745;
-  color: white;
-  padding: 6px 12px;
-  font-size: 12px;
-}
-
-.btn-copy:hover {
-  background: #1e7e34;
-}
-
-.result-card {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.result-card h3 {
-  margin-bottom: 12px;
-  color: #333;
-  font-size: 1.2rem;
-}
-
-.hash-display {
-  display: inline-block;
-  background: #f8f9fa;
-  padding: 12px 16px;
-  border-radius: 6px;
-  font-family: 'Courier New', monospace;
-  font-size: 18px;
-  font-weight: bold;
-  color: #e83e8c;
-  border: 2px solid #e9ecef;
-  margin-right: 12px;
-}
-
-.hash-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  margin-bottom: 6px;
-  background: #f8f9fa;
-  border-radius: 4px;
-}
-
-.hash-index {
-  color: #6c757d;
-  font-size: 12px;
-  min-width: 30px;
-}
-
-.hash-value {
-  font-family: 'Courier New', monospace;
-  color: #28a745;
-  font-weight: bold;
-  flex: 1;
-}
-
-.usage-examples {
-  background: white;
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.usage-examples h2 {
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 1.5rem;
-}
-
-.examples-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.example-card {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 6px;
-  border-left: 4px solid #007bff;
-}
-
-.example-card h3 {
-  margin-bottom: 12px;
-  color: #495057;
-  font-size: 1.1rem;
-}
-
-pre {
-  background: #2d2d2d;
-  color: #f8f9fa;
-  padding: 16px;
-  border-radius: 4px;
-  overflow-x: auto;
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-code {
-  font-family: 'Courier New', monospace;
-}
-
-@media (max-width: 768px) {
-  .examples-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .controls {
-    flex-direction: column;
-  }
-  
-  .btn {
-    width: 100%;
-  }
-  
-  .page-header h1 {
-    font-size: 1.5rem;
-  }
+button {
+  transition: background-color 0.2s ease;
 }
 </style>

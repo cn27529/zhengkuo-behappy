@@ -1,29 +1,17 @@
-// generateGitHash.js
-// 同時支援 Node.js + 瀏覽器環境的版本
+import crypto from "crypto";
 
-// 嘗試載入 Node.js crypto，如失敗則改用 Web Crypto 或簡單哈希
-let cryptoLib = null;
+// 用於確保唯一性的計數器
+let sequenceCounter = 0;
+const MAX_SEQUENCE = 65535;
+const hash_length = 7;
 
-try {
-  // 嘗試載入 Node 的 crypto（Node 18+ 支援動態 import）
-  const nodeCrypto = await import("crypto");
-  cryptoLib = nodeCrypto.default || nodeCrypto;
-} catch {
-  // 瀏覽器環境：使用 window.crypto 或空物件
-  cryptoLib = typeof window !== "undefined" ? window.crypto || {} : {};
-}
-
-// 運行環境判斷
+// 檢測運行環境
 const isBrowser =
   typeof window !== "undefined" && typeof window.document !== "undefined";
 const isNode =
   typeof process !== "undefined" &&
   process.versions != null &&
   process.versions.node != null;
-
-const hash_length = 7;
-let sequenceCounter = 0;
-const MAX_SEQUENCE = 65535;
 
 /**
  * 簡單的字符串哈希函數 (瀏覽器環境備用)
@@ -33,7 +21,7 @@ function simpleHash(input) {
   for (let i = 0; i < input.length; i++) {
     const char = input.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash |= 0; // 轉為32位整數
+    hash = hash & hash; // 轉換為32位整數
   }
   return Math.abs(hash);
 }
@@ -42,37 +30,31 @@ function simpleHash(input) {
  * 簡單隨機生成哈希（備用方案）
  */
 function generateSimpleHash() {
-  const chars = "0123456789abcdef";
-  return Array.from({ length: hash_length })
-    .map(() => chars[Math.floor(Math.random() * chars.length)])
-    .join("");
+  const characters = "0123456789abcdef";
+  let result = "";
+
+  for (let i = 0; i < hash_length; i++) {
+    result += characters[Math.floor(Math.random() * characters.length)];
+  }
+
+  return result;
 }
 
 /**
- * Node.js 環境哈希
- */
-function generateHashNode(input) {
-  const hash = cryptoLib.createHash("sha1");
-  hash.update(input);
-  return hash.digest("hex").substring(0, hash_length);
-}
-
-/**
- * 瀏覽器異步哈希 (使用 Web Crypto API)
+ * 瀏覽器環境的哈希生成
  */
 async function generateHashBrowser(input) {
   try {
-    if (!cryptoLib.subtle) throw new Error("No subtle crypto");
     const encoder = new TextEncoder();
-    const data = encoder.encode(input);
-    const hashBuffer = await cryptoLib.subtle.digest("SHA-1", data);
+    const inputData = encoder.encode(input);
+    const hashBuffer = await crypto.subtle.digest("SHA-1", inputData);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
     return hashHex.substring(0, hash_length);
-  } catch {
-    // 若 Web Crypto API 不可用
+  } catch (error) {
+    // 如果 Web Crypto API 失敗，使用簡單哈希
     const hashValue = simpleHash(input);
     return hashValue
       .toString(16)
@@ -82,61 +64,78 @@ async function generateHashBrowser(input) {
 }
 
 /**
- * 通用 Git Hash 生成（同步）
+ * Node.js 環境的哈希生成
+ */
+function generateHashNode(input) {
+  const hash = crypto.createHash("sha1");
+  hash.update(input);
+  const fullHash = hash.digest("hex");
+  return fullHash.substring(0, hash_length);
+}
+
+/**
+ * 生成类似Git提交哈希的代码
+ * @param {string} data - 可选的输入数据
+ * @returns {string} 哈希值
  */
 export function generateGitHash(data = "") {
   const input = data + Date.now().toString() + Math.random().toString();
 
-  if (isNode && cryptoLib?.createHash) {
+  if (isNode) {
     return generateHashNode(input);
   } else if (isBrowser) {
-    // 瀏覽器用同步簡單哈希（避免 async）
+    // 在瀏覽器環境中，我們使用同步的簡單哈希以避免異步問題
     const hashValue = simpleHash(input);
     return hashValue
       .toString(16)
       .padStart(hash_length, "0")
       .substring(0, hash_length);
   } else {
+    // 未知環境使用簡單哈希
     return generateSimpleHash();
   }
 }
 
 /**
- * 瀏覽器專用異步版本
+ * 瀏覽器專用的異步版本
  */
 export async function generateGitHashBrowser(data = "") {
   const input = data + Date.now().toString() + Math.random().toString();
-  if (isNode && cryptoLib?.createHash) {
-    return generateHashNode(input);
-  } else {
-    return await generateHashBrowser(input);
-  }
+  return await generateHashBrowser(input);
 }
 
 /**
- * 產生多個哈希
+ * 生成多个哈希
+ * @param {number} count - 要生成的哈希数量
+ * @returns {string[]} 哈希数组
  */
 export function generateMultipleHashes(count = 5) {
-  return Array.from({ length: count }, () => generateGitHash());
-}
-
-/**
- * 瀏覽器異步多哈希生成
- */
-export async function generateMultipleHashesBrowser(count = 5) {
   const hashes = [];
   for (let i = 0; i < count; i++) {
-    hashes.push(await generateGitHashBrowser());
+    hashes.push(generateGitHash());
   }
   return hashes;
 }
 
 /**
- * 基於種子生成可重現的哈希
+ * 瀏覽器專用的異步多哈希生成
+ */
+export async function generateMultipleHashesBrowser(count = 5) {
+  const promises = [];
+  for (let i = 0; i < count; i++) {
+    promises.push(generateGitHashBrowser());
+  }
+  return Promise.all(promises);
+}
+
+/**
+ * 基于种子数据生成确定性哈希
+ * @param {string} seed - 种子数据
+ * @returns {string} 哈希
  */
 export function generateHashFromSeed(seed) {
-  if (isNode && cryptoLib?.createHash) {
-    const hash = cryptoLib.createHash("sha1");
+  if (isNode) {
+    const hash = crypto.createHash("sha1");
     hash.update(seed);
     return hash.digest("hex").substring(0, hash_length);
   } else {
@@ -149,22 +148,23 @@ export function generateHashFromSeed(seed) {
 }
 
 /**
- * 隨機哈希
+ * 傳統的完全隨機哈希（無順序性）
  */
 export function generateRandomHash() {
   return generateSimpleHash();
 }
 
 /**
- * 時間序列哈希（有序唯一）
+ * 基於時間戳生成有序但唯一的哈希
  */
 export function generateSequentialHash() {
   const timestamp = Date.now();
   const randomSuffix = Math.floor(Math.random() * 16);
   sequenceCounter = (sequenceCounter + 1) % MAX_SEQUENCE;
+
   const uniqueInput = `${timestamp}-${sequenceCounter}-${randomSuffix}`;
 
-  if (isNode && cryptoLib?.createHash) {
+  if (isNode) {
     return generateHashNode(uniqueInput);
   } else {
     const hashValue = simpleHash(uniqueInput);
@@ -176,38 +176,47 @@ export function generateSequentialHash() {
 }
 
 /**
- * Git哈希生成器類
+ * Git哈希生成器类
  */
 export class GitHashGenerator {
   constructor() {
     this.commitCount = 0;
   }
 
+  /**
+   * 生成带计数器的哈希
+   * @returns {string} 哈希
+   */
   generate() {
     this.commitCount++;
     return generateGitHash(`commit-${this.commitCount}`);
   }
 
+  /**
+   * 重置计数器
+   */
   reset() {
     this.commitCount = 0;
   }
 
+  /**
+   * 获取当前计数
+   * @returns {number}
+   */
   getCount() {
     return this.commitCount;
   }
 }
 
-/**
- * 延遲函式
- */
+// 基本的sleep函數
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
- * 測試唯一性（Node + Browser 通用）
+ * 測試哈希生成器的唯一性
  */
-export async function testUniqueness(sampleSize = 100, useAsync = false) {
+export function testUniqueness(sampleSize = 100) {
   const hashes = new Set();
   const duplicates = [];
 
@@ -215,23 +224,23 @@ export async function testUniqueness(sampleSize = 100, useAsync = false) {
 
   const startTime = Date.now();
 
-  for (let i = 0; i < sampleSize; i++) {
-    const hash = useAsync
-      ? await generateGitHashBrowser(i)
-      : generateGitHash(i);
+  const array = [...Array(sampleSize).keys()];
 
+  array.forEach((data) => {
+    const hash = generateGitHash(data);
     if (hashes.has(hash)) {
       duplicates.push(hash);
-      console.warn(`重複哈希: ${hash} (第 ${i + 1} 次)`);
+      console.warn(`發現重複哈希（hash）: ${hash} (第 ${data + 1} 次)`);
     }
     hashes.add(hash);
-  }
+  });
 
   const endTime = Date.now();
-  console.log(`完成:
-    - 總生成: ${sampleSize}
-    - 唯一: ${hashes.size}
-    - 重複: ${duplicates.length}
+
+  console.log(`測試完成:
+    - 總生成: ${sampleSize} 個哈希
+    - 唯一哈希: ${hashes.size} 個
+    - 重複數量: ${duplicates.length}
     - 重複率: ${((duplicates.length / sampleSize) * 100).toFixed(4)}%
     - 耗時: ${endTime - startTime}ms
     - 環境: ${isNode ? "Node.js" : isBrowser ? "Browser" : "Unknown"}
