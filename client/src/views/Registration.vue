@@ -616,15 +616,26 @@ export default {
     };
 
     // 新增：狀態文字轉換
-    const getStatusText = (state) => {
-      const statusMap = {
-        creating: "建立中",
-        editing: "編輯中",
-        saved: "已儲存",
-        submitted: "已提交",
-      };
-      return statusMap[state] || state;
-    };
+    // const getStatusText = (state) => {
+    //   const statusMap = {
+    //     creating: "建立中",
+    //     editing: "編輯中",
+    //     saved: "已儲存",
+    //     submitted: "已提交",
+    //   };
+    //   return statusMap[state] || state;
+    // };
+
+    // 狀態圖標（Emoji版）轉換
+    const getStatusIcon = (state) => {
+  const statusMap = {
+    creating: "🛠️",     // 建立中
+    editing: "✏️",      // 編輯中
+    saved: "💾",        // 已儲存
+    submitted: "✅",    // 已提交
+  };
+  return statusMap[state] || "❓";
+};
 
     // 重置表單處理
     const handleResetForm = () => {
