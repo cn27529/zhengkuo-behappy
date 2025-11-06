@@ -34,6 +34,13 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 建立新表單
       const newForm = getInitialFormData();
+
+      // 將newForm.contact給值，資料來自當前表單
+      newForm.contact = JSON.parse(
+        JSON.stringify(registrationForm.value.contact)
+      );
+
+      // 將新表單添加到陣列
       formArray.value.push(newForm);
 
       // 切換到新表單
@@ -247,6 +254,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     const createISOTime = new Date().toISOString();
     const timestamp = Date.now().toString();
 
+    //聯絡人
     const myContact = {
       name: "",
       phone: "",
@@ -255,6 +263,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       otherRelationship: "",
     };
 
+    // 消災人員
     const myBlessing = {
       // 消災地址
       address: "",
@@ -270,6 +279,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       ],
     };
 
+    // 超度的祖先與陽上人
     const mySalvation = {
       // 超度地址
       address: "",
@@ -302,8 +312,8 @@ export const useRegistrationStore = defineStore("registration", () => {
       formId: "", // 在提交表單時產生
       formSource: "", // 來源說明，例如「來自哪個活動」
       contact: myContact,
-      blessing: myBlessing,
-      salvation: mySalvation,
+      blessing: myBlessing, //
+      salvation: mySalvation, // 超度的祖先與陽上人
     };
     return JSON.parse(JSON.stringify(initForm));
   };
