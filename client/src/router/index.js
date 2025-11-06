@@ -86,7 +86,7 @@ const routes = [
     name: "Hash",
     component: () => import("../views/generatorHash.vue"),
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
 ];
