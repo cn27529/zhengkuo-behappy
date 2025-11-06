@@ -155,7 +155,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         registrationForm.value.state = "editing";
       }
 
-      registrationForm.value.lastModified = new Date().toISOString();
+      //registrationForm.value.updatedAt = new Date().toISOString();
 
       console.log("傳入的索引:", index);
       console.log("表單切換完成，當前表單索引:", currentFormIndex.value);
@@ -211,7 +211,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   // 複製表單
   const duplicateForm = (index) => {
     const duplicated = JSON.parse(JSON.stringify(formArray.value[index]));
-    duplicated.createDate = new Date().toISOString();
+    duplicated.createdAt = new Date().toISOString();
     duplicated.formName = `${duplicated.formName} - 複製`;
     formArray.value.push(duplicated);
     const resultIndex = switchForm(formArray.value.length - 1);
@@ -227,8 +227,8 @@ export const useRegistrationStore = defineStore("registration", () => {
       formName: form.formName || `表單 ${index + 1}`,
       formId: form.formId,
       status: form.state,
-      createDate: form.createDate,
-      lastModified: form.lastModified,
+      createdAt: form.createdAt,
+      updatedAt: form.updatedAt,
       contactName: form.contact.name,
       personsCount: form.blessing.persons.filter((p) => p.name.trim()).length,
       ancestorsCount: form.salvation.ancestors.filter((a) => a.surname.trim())
@@ -246,55 +246,63 @@ export const useRegistrationStore = defineStore("registration", () => {
     const createISOTime = new Date().toISOString();
     const timestamp = Date.now().toString();
 
+    const myContact = {
+      name: "",
+      phone: "",
+      mobile: "",
+      relationship: "", // 本家、娘家、朋友、其它（對應畫面上的 radio）
+      otherRelationship: "",
+    };
+
+    const myBlessing = {
+      // 消災地址
+      address: "",
+      // 消災人員
+      persons: [
+        {
+          id: 1,
+          name: "",
+          zodiac: "",
+          notes: "",
+          isHouseholdHead: true, // 是否為戶長，畫面用 checkbox 控制
+        },
+      ],
+    };
+
+    const mySalvation = {
+      // 超度地址
+      address: "",
+      // 祖先清單
+      ancestors: [
+        {
+          id: 1,
+          surname: "",
+          notes: "",
+        },
+      ],
+      // 陽上人清單
+      survivors: [
+        {
+          id: 1,
+          name: "",
+          zodiac: "",
+          notes: "",
+        },
+      ],
+    };
+
     const initForm = {
       state: "creating", // saved, creating, editing, completed, submitted
-      createDate: createISOTime,
-      lastModified: "",
+      createdAt: "", // 在提交表單時產生
+      createdUser: "", //
+      updatedAt: "", // 更新表單時更新
+      updatedUser: "", //
       formName: "", // 2025消災超度報名表
       formId: "", // 在提交表單時產生
       formSource: "", // 來源說明，例如「來自哪個活動」
-      contact: {
-        name: "",
-        phone: "",
-        mobile: "",
-        relationship: "本家", // 本家、娘家、朋友、其它（對應畫面上的 radio）
-        otherRelationship: "",
-      },
-      blessing: {
-        // 消災地址
-        address: "",
-        // 消災人員
-        persons: [
-          {
-            id: 1,
-            name: "",
-            zodiac: "",
-            notes: "",
-            isHouseholdHead: true, // 是否為戶長，畫面用 checkbox 控制
-          },
-        ],
-      },
-      salvation: {
-        // 超度地址
-        address: "",
-        // 祖先清單
-        ancestors: [
-          {
-            id: 1,
-            surname: "",
-            notes: "",
-          },
-        ],
-        // 陽上人清單
-        survivors: [
-          {
-            id: 1,
-            name: "",
-            zodiac: "",
-            notes: "",
-          },
-        ],
-      },
+      contact: myContact,
+      blessing: myBlessing,
+      salvation: mySalvation,
     };
     return JSON.parse(JSON.stringify(initForm));
   };
@@ -851,7 +859,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // formId這時才產生為hash值，並儲存
       registrationForm.value.formId = hash;
-      registrationForm.value.createDate = createISOTime;
+      registrationForm.value.createdAt = createISOTime;
       registrationForm.value.state = "submitted"; // 更新狀態為已提交
 
       // 模擬API調用
@@ -888,8 +896,8 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 方法：逐個屬性重置，保持響應性
       // 1. 重置頂層屬性
       registrationForm.value.state = initialData.status;
-      registrationForm.value.createDate = initialData.createDate;
-      registrationForm.value.lastModified = initialData.lastModified;
+      registrationForm.value.createdAt = initialData.createdAt;
+      registrationForm.value.updatedAt = initialData.updatedAt;
       registrationForm.value.formName = initialData.formName;
       registrationForm.value.formId = initialData.formId;
       registrationForm.value.formSource = initialData.formSource;
