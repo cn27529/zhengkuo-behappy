@@ -294,7 +294,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
     const initForm = {
       state: "creating", // saved, creating, editing, completed, submitted
-      createdAt: "", // 在提交表單時產生
+      createdAt: createISOTime, // 建立表單時產生的ISO時間
       createdUser: "", //
       updatedAt: "", // 更新表單時更新
       updatedUser: "", //
@@ -860,7 +860,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // formId這時才產生為hash值，並儲存
       registrationForm.value.formId = hash;
-      registrationForm.value.createdAt = createISOTime;
+      registrationForm.value.createdAt = createISOTime; // 建立表單時產生的ISO時間
       registrationForm.value.state = "submitted"; // 更新狀態為已提交
 
       // 模擬API調用
