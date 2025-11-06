@@ -15,6 +15,7 @@ export const serviceConfig = {
     validate: "/auth/validate", // supabase token 驗證
     me: "/users/me", // Directus 端點
     itemsMydata: "/items/mydata", // Directus mydata
+    itemsRegistration: "/items/registrationDB", // 新增 registrationDB 端點
   },
 
   // 模擬 API 延遲（毫秒）

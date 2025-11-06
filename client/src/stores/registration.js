@@ -267,7 +267,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     const myBlessing = {
       // 消災地址
       address: "",
-      // 消災人員
       persons: [
         {
           id: 1,
@@ -288,6 +287,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         {
           id: 1,
           surname: "",
+          zodiac: "",
           notes: "",
         },
       ],
@@ -305,14 +305,14 @@ export const useRegistrationStore = defineStore("registration", () => {
     const initForm = {
       state: "creating", // saved, creating, editing, completed, submitted
       createdAt: createISOTime, // 建立表單時產生的ISO時間
-      createdUser: "", //
+      createdUser: "", // 建立者
       updatedAt: "", // 更新表單時更新
-      updatedUser: "", //
+      updatedUser: "", // 更新者
       formName: "", // 2025消災超度報名表
       formId: "", // 在提交表單時產生
       formSource: "", // 來源說明，例如「來自哪個活動」
-      contact: myContact,
-      blessing: myBlessing, //
+      contact: myContact, // 聯絡人
+      blessing: myBlessing, // 消災人員
       salvation: mySalvation, // 超度的祖先與陽上人
     };
     return JSON.parse(JSON.stringify(initForm));
