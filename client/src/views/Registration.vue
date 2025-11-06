@@ -8,18 +8,27 @@
     <!-- 在 .form-header div 內新增表單切換區塊 -->
     <div class="form-header">
       <!-- 在 template 添加調試信息 -->
-      <div v-if="true" style="background: #f5f5f5; padding: 10px; margin-top: 20px; font-size: 12px;">
+      <div
+        v-if="false"
+        style="
+          background: #f5f5f5;
+          padding: 10px;
+          margin-top: 20px;
+          font-size: 12px;
+        "
+      >
         <h4>調試信息:</h4>
         <p>表單陣列長度: {{ formArray.length }}</p>
         <p>當前索引: {{ currentFormIndex }}</p>
-        <p>表單狀態: 
+        <p>
+          表單狀態:
           <span v-for="(form, idx) in formArray" :key="idx">
-            [{{ idx }}:{{ form.state }}] 
+            [{{ idx }}:{{ form.state }}]
           </span>
         </p>
       </div>
       <!-- 表單切換器 -->
-      <div class="form-switcher" v-if="formArray && formArray.length > 0">
+      <div class="form-switcher" v-if="formArray && formArray.length > 1">
         <div class="form-tabs">
           <div
             v-for="(form, index) in formArray"
@@ -44,7 +53,11 @@
         </div>
 
         <!-- 當前表單資訊 -->
-        <div class="current-form-info" v-if="currentFormSummary" style="display: none">
+        <div
+          class="current-form-info"
+          v-if="currentFormSummary"
+          style="display: none"
+        >
           <span>聯絡人: {{ currentFormSummary.contactName || "未填寫" }}</span>
           <span>消災人員: {{ currentFormSummary.personsCount }} 位</span>
           <span>祖先: {{ currentFormSummary.ancestorsCount }} 位</span>
@@ -274,7 +287,6 @@
             placeholder="請輸入地址"
             required
           />
-          
         </div>
 
         <!-- 祖先資料 -->
@@ -297,8 +309,11 @@
                 + 增加祖先
               </button>
 
-              <button 
-                v-if="registrationForm.blessing.address && registrationForm.blessing.address.trim()"
+              <button
+                v-if="
+                  registrationForm.blessing.address &&
+                  registrationForm.blessing.address.trim()
+                "
                 type="button"
                 class="btn btn-outline btn-sm copy-address-btn"
                 @click="copyBlessingAddress"
@@ -506,7 +521,6 @@
         >
           📄 再填一張
         </button>
-        
 
         <button
           type="button"
@@ -521,7 +535,7 @@
 </template>
 
 <script>
-import { useRegistrationStore } from "@/stores/registration";
+import { useRegistrationStore } from "@/stores/registration.js";
 import { ref, onMounted, computed, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 
@@ -558,33 +572,6 @@ export default {
 
       // 檢查當前表單是否有未保存的變更
       const currentForm = registrationStore.registrationForm;
-      // const hasChanges =
-      //   currentForm.contact.name.trim() !== "" ||
-      //   currentForm.contact.mobile.trim() !== "" ||
-      //   currentForm.contact.phone.trim() !== "" ||
-      //   currentForm.blessing.address.trim() !== "" ||
-      //   currentForm.salvation.address.trim() !== "" ||
-      //   currentForm.blessing.persons.some((p) => p.name.trim() !== "") ||
-      //   currentForm.salvation.ancestors.some((a) => a.surname.trim() !== "") ||
-      //   currentForm.salvation.survivors.some((s) => s.name.trim() !== "");
-
-      // if (hasChanges && registrationStore.currentFormIndex !== -1) {
-      //   try {
-      //     await ElMessageBox.confirm(
-      //       "當前表單有未保存的變更，是否先保存？",
-      //       "確認切換",
-      //       {
-      //         confirmButtonText: "保存並切換",
-      //         cancelButtonText: "直接切換",
-      //         type: "warning",
-      //       }
-      //     );
-      //     // 用戶選擇保存，繼續切換（switchForm 會自動保存）
-      //   } catch {
-      //     // 用戶選擇直接切換，不保存
-      //     console.log("用戶選擇不保存直接切換");
-      //   }
-      // }
 
       const resultIndex = registrationStore.switchForm(index);
       if (resultIndex >= 0) {
@@ -597,14 +584,21 @@ export default {
 
     // 新增：刪除表單處理
     const handleDeleteForm = (index) => {
-
       console.log("🔍 刪除表單調試信息:");
       console.log("傳入的索引:", index);
       console.log("當前表單陣列:", formArray.value);
       console.log("當前表單索引:", currentFormIndex.value);
 
+
+      
+
       if (registrationStore.formArray.length <= 1) {
         ElMessage.warning("至少需要保留一張表單");
+        return;
+      }
+
+      if(registrationStore.formArray.length>=2 &&  index === currentFormIndex.value){
+        ElMessage.warning("編輯中的檔案己經鎖定，請先跳到其它表單再做刪除！");
         return;
       }
 
@@ -612,7 +606,7 @@ export default {
       const formInfo = formToDelete.formName || `表單 ${index + 1}`;
 
       ElMessageBox.confirm(
-        `確定要刪除「${formInfo}」嗎？此操作無法復原！`,
+        `確定要刪除「第${index + 1}張表單」嗎？此操作無法復原！`,
         "確認刪除",
         {
           confirmButtonText: "確定刪除",
@@ -649,7 +643,6 @@ export default {
 
     // 狀態圖標（Emoji版）轉換
     const getStatusText = (state) => {
-
       const statusMap = {
         creating: "🛠️", // 建立中
         editing: "✍🏽", // 編輯中
@@ -730,7 +723,6 @@ export default {
       submitting.value = true;
 
       try {
-        
         // await ElMessageBox.confirm(`確定要提交表單嗎？不可重覆提交！`,{
         //     confirmButtonText: "確認提交",
         //     cancelButtonText: "取消",
@@ -740,16 +732,24 @@ export default {
         //   const result = registrationStore.submitRegistration();
         //   setTimeout(() => {
         //     ElMessage.success(result.message);
-        //   }, 1500)  
+        //   }, 1500)
         // })
         // .catch(() => {
         //   ElMessage.info("已取消提交操作")
         // });
 
         const result = await registrationStore.submitRegistration();
-        ElMessage.success(result.message)
-
-        
+        if (result.success) {
+          console.log(
+            `formId己產生，registrationStore.registrationForm.formId=${result.formId}`
+          );
+          registrationStore.registrationForm.formId = result.formId; // formId己產生
+        } else {
+          ElMessage.error(result.message);
+          return;
+        }
+        ElMessage.success(result.message);
+        console.log(result.result);
       } catch (error) {
         ElMessage.error("提交失敗: " + error.message);
       } finally {

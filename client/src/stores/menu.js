@@ -78,6 +78,16 @@ export const useMenuStore = defineStore("menu", () => {
       order: 0,
       enabled: true,
     },
+    {
+      id: 8,
+      name: "登記列表",
+      path: "/registrationlist",
+      icon: "📥",
+      component: "RegistrationList",
+      requiredAuth: true,
+      order: 0,
+      enabled: true,
+    },
   ]);
 
   // 当前激活的菜单项

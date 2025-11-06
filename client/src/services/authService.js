@@ -185,7 +185,7 @@ export class AuthService {
       // Directus 返回的數據結構
       if (result.data) {
         // Directus 返回的數據
-        console.log("Directus 返回的數據:", result.data);
+        //console.log("Directus 返回的數據:", result.data);
 
         const { access_token, refresh_token, expires } = result.data;
 
@@ -203,16 +203,16 @@ export class AuthService {
         let userData = null;
         if (userResponse.ok) {
           const userResult = await userResponse.json();
-          console.log("Directus 返回的用戶資訊:", userResult.data);
+          console.log("Directus 返回用戶資訊:", userResult.data);
           userData = userResult.data;
           // Directus 返回的用戶資訊沒有顯示名稱，displayName使用填寫的email
-          userData.displayName = username;
+          userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
         } else {
-          console.error("Directus 獲取用戶資訊失敗:", userResponse.status);
+          console.error("Directus 返回用戶資訊發生錯誤:", ...userResponse);
         }
 
         return {
-          success: true,
+          success: userResponse.ok,
           message: "Directus 登入成功",
           data: {
             user: userData || { username, displayName: username },

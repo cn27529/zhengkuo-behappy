@@ -99,13 +99,6 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // switchForm：安全的表單切換方法
   const switchForm = (index) => {
-    // const createTime = new Date().toISOString();
-    // const timestamp = Date.now().toString();
-    // console.log("ISO 時間:", createTime);
-    // console.log("時間戳:", timestamp);
-    // const hash = generateGitHash();
-    // console.log(`hash:${hash}`);
-
     try {
       if (index < 0 || index >= formArray.value.length) {
         console.error("❌ 切換表單索引無效:", index);
@@ -126,9 +119,6 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 使用相同的載入邏輯
       const loadFormToRegistration = (formData) => {
-        // 重置當前表單
-        const initialData = getInitialFormData();
-
         // 載入所有屬性...
         Object.keys(formData).forEach((key) => {
           if (key !== "contact" && key !== "blessing" && key !== "salvation") {
@@ -541,15 +531,35 @@ export const useRegistrationStore = defineStore("registration", () => {
 
     // 檢查消災人員是否有未填寫必要欄位（姓名）
     const allBlessingPersons = registrationForm.value.blessing.persons || [];
+
     // 只有當清單中有 2 筆或以上時，才提示未填空白條目（避免預設一筆造成誤報）
     if (allBlessingPersons.length >= 2) {
       const hasIncompletePerson = allBlessingPersons.some(
         (p) => !p.name || !p.name.trim()
       );
+
       if (hasIncompletePerson) {
         details.valid = false;
         details.errors.blessingPersonIncomplete =
           "消災人員中有未填寫姓名的條目，請填寫或刪除空白條目";
+        details.messages.push(details.errors.blessingPersonIncomplete);
+      } else {
+        details.errors.blessingPersonIncomplete = null;
+      }
+    } else {
+      details.errors.blessingPersonIncomplete = null;
+    }
+
+    // 檢查消災人員是否有未填寫必要欄位（生肖）
+    if (allBlessingPersons.length >= 2) {
+      const hasIncompletePerson = allBlessingPersons.some(
+        (p) => !p.zodiac || !p.zodiac.trim()
+      );
+
+      if (hasIncompletePerson) {
+        details.valid = false;
+        details.errors.blessingPersonIncomplete =
+          "消災人員中有未填寫生肖的條目，請填寫生肖";
         details.messages.push(details.errors.blessingPersonIncomplete);
       } else {
         details.errors.blessingPersonIncomplete = null;
@@ -859,7 +869,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   const getCurrentUser = () => {
     // 從 sessionStorage 或 localStorage 獲取用戶信息
     const userInfo = sessionStorage.getItem("auth-user");
-    console.log("獲取到的用戶信息:", JSON.stringify(userInfo));
+    console.log("獲取到的用戶信息:", userInfo);
     if (userInfo) {
       const user = JSON.parse(userInfo);
       return user.id || user.username || user.displayName || "unknown";
@@ -885,60 +895,84 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 設置當前用戶信息（根據實際情況調整）
       const currentUser = getCurrentUser();
-      this.formData.createdUser = currentUser;
+      registrationForm.value.createdUser = currentUser;
 
       // formId這時才產生為hash值，並儲存
       registrationForm.value.formId = hash;
       registrationForm.value.createdAt = createISOTime; // 建立表單時產生的ISO時間
       registrationForm.value.state = "submitted"; // 更新狀態為已提交
 
+      const exampleData = JSON.parse(
+        JSON.stringify({
+          formId: hash,
+          formName: `表單${hash}`,
+          formSource: "",
+          createdAt: createISOTime,
+          createdUser: currentUser,
+          state: "creating",
+          contact: {
+            name: hash,
+            phone: "",
+            mobile: "0988111111",
+            relationship: "",
+            otherRelationship: "",
+          },
+          blessing: {
+            persons: [],
+          },
+          salvation: {
+            ancestors: [],
+            livingPersons: [],
+          },
+        })
+      );
+
+      const dbData = JSON.parse(JSON.stringify(registrationForm.value));
+
       if (serviceConfig.mode !== "directus") {
-        console.warn("⚠️ 當前模式不是 directus，無法創建數據");
-        //return { success: false, message: "請切換到 directus 模式" };
+        console.warn(
+          "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
+        );
+
+        console.log("exampleForm:", exampleForm);
 
         // 模擬成功響應
         return {
           success: true,
-          message: "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據",
+          message:
+            "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式",
           data: {
             id: Date.now(),
-            ...registrationForm.value,
+            ...exampleForm,
           },
         };
       }
 
       // 模擬API調用
       // 這裡將來可以替換為真實的API調用，提交到後端
-      const result = await registrationService.createRegistration(
-        registrationForm.value
-      );
+      const result = await registrationService.createRegistration(dbData);
 
+      // 檢查響應
       if (result.success) {
-        console.log(
-          "報名提交成功！提交的報名數據:",
-          JSON.parse(JSON.stringify(registrationForm.value))
-        );
+        console.log("報名提交成功！回傳數據:", result.data);
+
         // 成功響應
         return {
           success: result.success,
-          message:
-            "報名提交成功！提交的報名數據:" +
-            JSON.parse(JSON.stringify(registrationForm.value)),
+          message: "報名提交成功！",
+          formId: result.formId,
           data: {
-            id: Date.now(),
-            ...registrationForm.value,
+            dbName: "registrationDB",
+            ...result.data,
           },
         };
       } else {
         console.error("報名提交失敗！", result.message);
         // 失敗響應
-        return {
-          success: result.success,
-          message: "報名提交失敗！" + result.message,
-        };
+        return { ...result };
       }
     } catch (error) {
-      console.error("提交報名報錯:", error);
+      console.error("報名提交error", error);
       throw error;
     }
   };

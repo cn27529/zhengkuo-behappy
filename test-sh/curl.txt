@@ -6,3 +6,7 @@ curl -s "http://localhost:3000/items/mydata" | jq '.'
 # 帶欄位的
 curl -s "http://localhost:3000/items/mydata?fields=id,formName,state,contact.name,contact.phone" | jq '.'
 curl -s "http://localhost:3000/items/mydata?fields=*,contact.*" | jq '.'
+
+
+Registration DB
+curl -s "http://localhost:3000/items/registrationDB" | jq '.'

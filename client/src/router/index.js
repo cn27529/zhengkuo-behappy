@@ -73,9 +73,9 @@ const routes = [
     },
   },
   {
-    path: "/mydataform",
-    name: "MydataForm",
-    component: () => import("../views/MydataForm.vue"),
+    path: "/registrationList",
+    name: "RegistrationList",
+    component: () => import("../views/RegistrationList.vue"),
     meta: {
       requiresAuth: true,
     },
