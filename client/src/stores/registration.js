@@ -4,12 +4,16 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { generateGitHash } from "@/utils/generateGitHash.js";
+import { registrationService } from "@/services/registrationService.js";
+import { serviceConfig, getApiUrl } from "@/config/serviceConfig.js";
 
 export const useRegistrationStore = defineStore("registration", () => {
   // 支援多張表單的陣列
   const formArray = ref([]);
   // 當前編輯的表單索引
   const currentFormIndex = ref(0);
+
+  // 獲取當前用戶（根據實際情況實現）
 
   // addNewForm：安全的新增表單方法
   const addNewForm = () => {
@@ -852,6 +856,17 @@ export const useRegistrationStore = defineStore("registration", () => {
     return false;
   };
 
+  const getCurrentUser = () => {
+    // 從 sessionStorage 或 localStorage 獲取用戶信息
+    const userInfo = sessionStorage.getItem("auth-user");
+    console.log("獲取到的用戶信息:", JSON.stringify(userInfo));
+    if (userInfo) {
+      const user = JSON.parse(userInfo);
+      return user.id || user.username || user.displayName || "unknown";
+    }
+    return "anonymous";
+  };
+
   // 提交表單（此處為模擬，實際可呼叫 API）
   // 在 Registration.vue 中 submitForm 會呼叫此方法並顯示結果
   const submitRegistration = async () => {
@@ -868,31 +883,62 @@ export const useRegistrationStore = defineStore("registration", () => {
       const hash = generateGitHash(createISOTime);
       console.log(`hash:${hash}`);
 
+      // 設置當前用戶信息（根據實際情況調整）
+      const currentUser = getCurrentUser();
+      this.formData.createdUser = currentUser;
+
       // formId這時才產生為hash值，並儲存
       registrationForm.value.formId = hash;
       registrationForm.value.createdAt = createISOTime; // 建立表單時產生的ISO時間
       registrationForm.value.state = "submitted"; // 更新狀態為已提交
 
-      // 模擬API調用
-      // 這裡將來可以替換為真實的API調用
-      // const response = await api.post('/registrations', registrationForm.value)
+      if (serviceConfig.mode !== "directus") {
+        console.warn("⚠️ 當前模式不是 directus，無法創建數據");
+        //return { success: false, message: "請切換到 directus 模式" };
 
-      console.log(
-        "提交的報名數據:",
-        JSON.parse(JSON.stringify(registrationForm.value))
+        // 模擬成功響應
+        return {
+          success: true,
+          message: "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據",
+          data: {
+            id: Date.now(),
+            ...registrationForm.value,
+          },
+        };
+      }
+
+      // 模擬API調用
+      // 這裡將來可以替換為真實的API調用，提交到後端
+      const result = await registrationService.createRegistration(
+        registrationForm.value
       );
 
-      // 模擬成功響應
-      return {
-        success: true,
-        message: "報名提交成功！",
-        data: {
-          id: Date.now(),
-          ...registrationForm.value,
-        },
-      };
+      if (result.success) {
+        console.log(
+          "報名提交成功！提交的報名數據:",
+          JSON.parse(JSON.stringify(registrationForm.value))
+        );
+        // 成功響應
+        return {
+          success: result.success,
+          message:
+            "報名提交成功！提交的報名數據:" +
+            JSON.parse(JSON.stringify(registrationForm.value)),
+          data: {
+            id: Date.now(),
+            ...registrationForm.value,
+          },
+        };
+      } else {
+        console.error("報名提交失敗！", result.message);
+        // 失敗響應
+        return {
+          success: result.success,
+          message: "報名提交失敗！" + result.message,
+        };
+      }
     } catch (error) {
-      console.error("提交報名失敗:", error);
+      console.error("提交報名報錯:", error);
       throw error;
     }
   };
