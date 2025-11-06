@@ -211,7 +211,6 @@ export const useRegistrationStore = defineStore("registration", () => {
   // 複製表單
   const duplicateForm = (index) => {
     const duplicated = JSON.parse(JSON.stringify(formArray.value[index]));
-    duplicated.createdAt = new Date().toISOString();
     duplicated.formName = `${duplicated.formName} - 複製`;
     formArray.value.push(duplicated);
     const resultIndex = switchForm(formArray.value.length - 1);
@@ -228,7 +227,9 @@ export const useRegistrationStore = defineStore("registration", () => {
       formId: form.formId,
       status: form.state,
       createdAt: form.createdAt,
+      createdUser: form.createdUser,
       updatedAt: form.updatedAt,
+      updatedUser: form.updatedUser,
       contactName: form.contact.name,
       personsCount: form.blessing.persons.filter((p) => p.name.trim()).length,
       ancestorsCount: form.salvation.ancestors.filter((a) => a.surname.trim())
@@ -897,7 +898,9 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 1. 重置頂層屬性
       registrationForm.value.state = initialData.status;
       registrationForm.value.createdAt = initialData.createdAt;
+      registrationForm.value.createdUser = initialData.createdUser;
       registrationForm.value.updatedAt = initialData.updatedAt;
+      registrationForm.value.updatedUser = initialData.updatedUser;
       registrationForm.value.formName = initialData.formName;
       registrationForm.value.formId = initialData.formId;
       registrationForm.value.formSource = initialData.formSource;
