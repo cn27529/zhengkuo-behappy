@@ -53,7 +53,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 🎯 關鍵：安全地載入新表單數據到當前響應式物件
       const loadFormToRegistration = (formData) => {
         // 重置當前表單
-        const initialData = getInitialFormData();
 
         // 1. 載入頂層屬性
         Object.keys(formData).forEach((key) => {
@@ -86,10 +85,14 @@ export const useRegistrationStore = defineStore("registration", () => {
         });
       };
 
-      // 載入新表單
-      loadFormToRegistration(newForm);
-
       console.log("✅ 新增表單完成，當前索引:", currentFormIndex.value);
+      const resultIndex = switchForm(currentFormIndex.value);
+      console.log("切換表單到索引:", resultIndex);
+
+      // 載入新表單
+      //loadFormToRegistration(newForm);
+      loadFormToRegistration(formArray.value[currentFormIndex.value]);
+
       return currentFormIndex.value;
     } catch (error) {
       console.error("❌ 新增表單失敗:", error);
@@ -98,7 +101,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // switchForm：安全的表單切換方法
-  const switchForm = (index) => {
+  const switchForm = (index, formId = "") => {
     try {
       if (index < 0 || index >= formArray.value.length) {
         console.error("❌ 切換表單索引無效:", index);
@@ -109,6 +112,10 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 🎯 關鍵：先保存當前表單
       if (formArray.value.length > 0) {
+        if (formId.trim() !== "") {
+          registrationForm.value.formId = formId;
+          registrationForm.value.state = "submitted";
+        }
         formArray.value[currentFormIndex.value] = JSON.parse(
           JSON.stringify(registrationForm.value)
         );
@@ -151,7 +158,10 @@ export const useRegistrationStore = defineStore("registration", () => {
       currentFormIndex.value = index;
 
       // 如果表單已提交，不更新狀態
-      if (registrationForm.value.state !== "submitted") {
+      if (
+        targetForm.state !== "submitted" ||
+        registrationForm.value.state !== "submitted"
+      ) {
         // 更新狀態
         registrationForm.value.state = "editing";
       }
@@ -553,7 +563,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     // 檢查消災人員是否有未填寫必要欄位（生肖）
     if (allBlessingPersons.length >= 2) {
       const hasIncompletePerson = allBlessingPersons.some(
-        (p) => !p.zodiac || !p.zodiac.trim()
+        (p) => p.name && (!p.zodiac || !p.zodiac.trim())
       );
 
       if (hasIncompletePerson) {
@@ -884,6 +894,10 @@ export const useRegistrationStore = defineStore("registration", () => {
       throw new Error("表單驗證失敗，請檢查所有必填欄位");
     }
 
+    if (registrationForm.value.formId.trim() !== "") {
+      throw new Error("表單已提交，請勿重複提交");
+    }
+
     try {
       // 這裡將來可以替換為真實的表單提交邏輯
       const createISOTime = new Date().toISOString();
@@ -955,6 +969,8 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 檢查響應
       if (result.success) {
         console.log("報名提交成功！回傳數據:", result.data);
+
+        switchForm(currentFormIndex.value, result.formId);
 
         // 成功響應
         return {

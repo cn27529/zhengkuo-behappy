@@ -567,7 +567,7 @@ export default {
 
       if (index === currentFormIndex.value) {
         console.log("已經是當前表單，不處理");
-        return;
+        //return;
       }
 
       // 檢查當前表單是否有未保存的變更
@@ -723,20 +723,13 @@ export default {
       submitting.value = true;
 
       try {
-        // await ElMessageBox.confirm(`確定要提交表單嗎？不可重覆提交！`,{
-        //     confirmButtonText: "確認提交",
-        //     cancelButtonText: "取消",
-        //     type: "warning",
-        //   }
-        // ).then(() => {
-        //   const result = registrationStore.submitRegistration();
-        //   setTimeout(() => {
-        //     ElMessage.success(result.message);
-        //   }, 1500)
-        // })
-        // .catch(() => {
-        //   ElMessage.info("已取消提交操作")
-        // });
+        
+        const currentFormId = registrationStore.formArray[currentFormIndex.value].formId;
+        if (currentFormId) {
+          ElMessage.warning("當前表單已提交過，請勿重複提交");
+          submitting.value = false;
+          return;
+        }
 
         const result = await registrationStore.submitRegistration();
         if (result.success) {
