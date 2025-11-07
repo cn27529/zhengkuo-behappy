@@ -589,6 +589,10 @@ export class AuthService {
     return serviceConfig.mode;
   }
 
+  getCurrentDev() {
+    return serviceConfig.isDev;
+  }
+
   // 在 AuthService 類別中新增專門的 Directus 健康檢查方法
   async checkDirectusHealth() {
     try {
@@ -630,6 +634,16 @@ export class AuthService {
         available: false,
         error: error.message,
       };
+    }
+  }
+
+  // 修改 setDev 方法 ,用於設置是否為開發模式，可開啟調試模式
+  setDev(isDev) {
+    serviceConfig.isDev = isDev;
+    if (isDev) {
+      console.log(`AuthService 開發模式已切換為: ${isDev} 打開調試信息`);
+    } else {
+      console.log(`AuthService 開發模式已切換為: ${isDev} 關閉調試信息`);
     }
   }
 

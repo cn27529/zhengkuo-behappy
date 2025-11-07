@@ -9,7 +9,7 @@
     <div class="form-header">
       <!-- 在 template 添加調試信息 -->
       <div
-        v-if="true"
+        v-if="isDev"
         style="
           background: #f5f5f5;
           padding: 10px;
@@ -17,7 +17,7 @@
           font-size: 12px;
         "
       >
-        <h4>調試信息:</h4>
+        <h4>調試信息: {{ isDev }}</h4>
         <p>表單陣列長度: {{ formArray.length }}</p>
         <p>當前索引: {{ currentFormIndex }}</p>
         <p>
@@ -538,6 +538,7 @@
 import { useRegistrationStore } from "@/stores/registration.js";
 import { ref, onMounted, computed, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { authService } from '@/services/authService.js';
 
 export default {
   name: "Registration",
@@ -545,13 +546,17 @@ export default {
     const registrationStore = useRegistrationStore();
 
     const submitting = ref(false);
+    const isDev = ref(false);
 
     onMounted(async () => {
       await registrationStore.loadConfig()
       // 啟動自動同步機制
       registrationStore.initializeFormArray()
+      isDev.value = authService.getCurrentDev(); // 取得是否為開發模式
       console.log("[v0] 表單同步已啟動")
     });
+
+    const myDev = computed(() => authService.getCurrentDev());  
 
     // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
     const currentFormIndex = computed(() => registrationStore.currentFormIndex);
@@ -573,9 +578,6 @@ export default {
         //return;
       }
 
-      // 檢查當前表單是否有未保存的變更
-      const currentForm = registrationStore.registrationForm;
-
       const resultIndex = registrationStore.switchForm(index);
       if (resultIndex >= 0) {
         await nextTick(); // 等待 DOM 更新
@@ -591,9 +593,6 @@ export default {
       console.log("傳入的索引:", index);
       console.log("當前表單陣列:", formArray.value);
       console.log("當前表單索引:", currentFormIndex.value);
-
-
-      
 
       if (registrationStore.formArray.length <= 1) {
         ElMessage.warning("至少需要保留一張表單");
@@ -819,6 +818,7 @@ export default {
       formArray,
       currentFormSummary,
       formSummaries,
+      isDev,
     };
   },
 };
