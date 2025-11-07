@@ -44,12 +44,7 @@ if (savedMode) {
 console.log("當前認證模式:", authService.getCurrentMode());
 
 // 切換 VITE_DEV 開發模式
-authService.setDev(import.meta.env.VITE_DEV);
-// 從 sessionStorage 讀取保存的模式
-const savedDev = sessionStorage.getItem("auth-dev");
-if (savedDev) {
-  authService.setDev(savedDev);
-}
+authService.setDev(false);
 console.log("當前開發模式:", authService.getCurrentDev());
 
 // 在控制台暴露 authService 方便調試

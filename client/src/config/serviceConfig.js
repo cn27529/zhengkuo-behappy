@@ -4,7 +4,7 @@ export const serviceConfig = {
   mode: import.meta.env.VITE_AUTH_MODE || "mock",
 
   // 是否為開發模式
-  isDev: import.meta.env.VITE_DEV || true,
+  isDev: import.meta.env.VITE_DEV || false,
 
   // Directus|supabase 後端 API 基礎 URL
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
