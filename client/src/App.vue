@@ -408,44 +408,7 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .dashboard-content {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    order: 1;
-    max-height: 300px;
-  }
-
-  .main-content {
-    order: 0;
-    padding: 1rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chart-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .header-right {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .dashboard-header {
-    padding: 1rem;
-  }
-
-  .nav-link:hover,
-  .nav-link.active {
-    transform: translateY(2px);
-  }
+  
 }
 
 /* 滚动条样式 */
@@ -510,6 +473,46 @@ export default {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
+
+  .dashboard-content {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    order: 1;
+    max-height: 300px;
+  }
+
+  .main-content {
+    order: 0;
+    padding: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-right {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .dashboard-header {
+    padding: 1rem;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    transform: translateY(2px);
+  }
+  
   .dialog-content {
     flex-direction: column;
     text-align: center;

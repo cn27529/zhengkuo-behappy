@@ -551,12 +551,20 @@ export default {
     onMounted(async () => {
       await registrationStore.loadConfig()
       // 啟動自動同步機制
-      registrationStore.initializeFormArray()
-      isDev.value = authService.getCurrentDev(); // 取得是否為開發模式
+      registrationStore.initializeFormArray()      
+      isDev.value = getDev();
+      console.log("🔍 isDev typeof=", typeof(isDev.value));
       console.log("[v0] 表單同步已啟動")
     });
 
-    const myDev = computed(() => authService.getCurrentDev());  
+    const getDev = () => {
+      const myDev = authService.getCurrentDev(); // 取得是否為開發模式
+      console.log(`getIsDev🔍 myDev=${myDev}, typeof=${typeof(myDev)}`);
+      if(myDev.trim()==="true") 
+        return true; 
+      else 
+        return false
+    };  
 
     // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
     const currentFormIndex = computed(() => registrationStore.currentFormIndex);
@@ -819,6 +827,7 @@ export default {
       currentFormSummary,
       formSummaries,
       isDev,
+      getDev, // 新增方法
     };
   },
 };

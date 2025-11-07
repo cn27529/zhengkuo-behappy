@@ -8,6 +8,9 @@ export const useAuthStore = defineStore("auth", () => {
   const isAuthenticated = ref(false);
   const isLoading = ref(false);
 
+  const authMode = ref(authService.getCurrentMode());
+  const isDev = ref(authService.getCurrentDev());
+
   const lastActivity = ref(null);
   let inactivityTimer = null;
 
@@ -194,10 +197,16 @@ export const useAuthStore = defineStore("auth", () => {
     return authService.getCurrentMode();
   };
 
+  const getDev = () => {
+    return authService.getCurrentDev();
+  };
+
   return {
     user,
     isAuthenticated,
     isLoading,
+    authMode,
+    isDev,
     login,
     logout,
     hasPermission,
@@ -206,6 +215,7 @@ export const useAuthStore = defineStore("auth", () => {
     initializeAuth,
     resetInactivityTimer,
     getAuthMode,
+    getDev,
   };
 });
 

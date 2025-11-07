@@ -96,7 +96,7 @@ const router = createRouter({
   routes,
 });
 
-// 全局導航路由守卫
+// 全局導航路由守衛
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
@@ -125,10 +125,7 @@ router.beforeEach((to, from, next) => {
     try {
       authStore.user = JSON.parse(savedUser);
       authStore.isAuthenticated = true;
-      console.log(
-        "index router 從本地存儲恢復用戶會話:",
-        authStore.user.displayName
-      );
+      console.log("router 從本地存儲恢復用戶會話:", authStore.user.displayName);
     } catch (error) {
       console.error("index router 解析保存的用戶數據失敗:", error);
       authStore.logout();
@@ -137,7 +134,7 @@ router.beforeEach((to, from, next) => {
 
   // 如果需要驗證且未登入
   if (requiresAuth && !authStore.isAuthenticated) {
-    console.log("index router 需要驗證但未登入，跳轉到登入頁");
+    console.log("router 需要驗證但未登入，跳轉到登入頁");
     next("/login");
   } else {
     next();

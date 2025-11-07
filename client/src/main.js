@@ -44,7 +44,7 @@ if (savedMode) {
 console.log("當前認證模式:", authService.getCurrentMode());
 
 // 切換 VITE_DEV 開發模式
-authService.setDev(false);
+//authService.setDev(false);
 console.log("當前開發模式:", authService.getCurrentDev());
 
 // 在控制台暴露 authService 方便調試
