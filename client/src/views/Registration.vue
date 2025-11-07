@@ -22,8 +22,12 @@
         <p>當前索引: {{ currentFormIndex }}</p>
         <p>
           <span v-for="(form, idx) in formArray" :key="idx">
-            <hr>
-            第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{ form.formId }}, contact={{ JSON.stringify(form.contact) }}, blessing={{ JSON.stringify(form.blessing) }}]
+            <hr />
+            第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{
+              form.formId
+            }}, contact={{ JSON.stringify(form.contact) }}, blessing={{
+              JSON.stringify(form.blessing)
+            }}]
           </span>
         </p>
       </div>
@@ -538,33 +542,23 @@
 import { useRegistrationStore } from "@/stores/registration.js";
 import { ref, onMounted, computed, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { authService } from '@/services/authService.js';
+import { authService } from "../services/authService";
 
 export default {
   name: "Registration",
   setup() {
     const registrationStore = useRegistrationStore();
-
     const submitting = ref(false);
     const isDev = ref(false);
 
     onMounted(async () => {
-      await registrationStore.loadConfig()
+      await registrationStore.loadConfig();
       // 啟動自動同步機制
-      registrationStore.initializeFormArray()      
-      isDev.value = getDev();
-      console.log("🔍 isDev typeof=", typeof(isDev.value));
-      console.log("[v0] 表單同步已啟動")
-    });
+      registrationStore.initializeFormArray();
+      console.log("[v0] 表單同步已啟動");
 
-    const getDev = () => {
-      const myDev = authService.getCurrentDev(); // 取得是否為開發模式
-      console.log(`getIsDev🔍 myDev=${myDev}, typeof=${typeof(myDev)}`);
-      if(myDev.trim()==="true") 
-        return true; 
-      else 
-        return false
-    };  
+      isDev.value = authService.getCurrentDev();
+    });
 
     // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
     const currentFormIndex = computed(() => registrationStore.currentFormIndex);
@@ -607,13 +601,15 @@ export default {
         return;
       }
 
-      if(registrationStore.formArray.length>=2 &&  index === currentFormIndex.value){
+      if (
+        registrationStore.formArray.length >= 2 &&
+        index === currentFormIndex.value
+      ) {
         ElMessage.warning("編輯中的檔案己經鎖定，請先切換其它表單再做刪除！");
         return;
       }
 
       const formToDelete = registrationStore.formArray[index];
-      const formInfo = formToDelete.formName || `表單 ${index + 1}`;
 
       ElMessageBox.confirm(
         `確定要刪除「第${index + 1}張表單」嗎？此操作無法復原！`,
@@ -733,9 +729,8 @@ export default {
       submitting.value = true;
 
       try {
-        
         const result = await registrationStore.submitRegistration();
-        
+
         ElMessage.success(result.message);
         console.log(result.result);
       } catch (error) {
@@ -807,8 +802,49 @@ export default {
       }
     };
 
+    // return {
+    //   ...registrationStore,
+    //   submitting,
+    //   submitForm,
+    //   addContactAsBlessing,
+    //   addContactAsSurvivor,
+    //   importFromBlessing,
+    //   openPrintPage,
+    //   handleAddNewForm,
+    //   handleResetForm,
+    //   handleSwitchForm, // 新增
+    //   handleDeleteForm, // 新增
+    //   handleDuplicateForm,
+    //   getStatusText, // 新增
+    //   // 🎯 關鍵：覆蓋原有的值，使用計算屬性
+    //   currentFormIndex,
+    //   formArray,
+    //   currentFormSummary,
+    //   formSummaries,
+    //   isDev,
+    // };
+
+    // 修改後：
     return {
-      ...registrationStore,
+      // 只暴露需要的屬性和方法，不要使用展開運算符
+      registrationForm: registrationStore.registrationForm,
+      config: registrationStore.config,
+      currentFormIndex: registrationStore.currentFormIndex,
+      formArray: registrationStore.formArray,
+      currentFormSummary: registrationStore.currentFormSummary,
+      formSummaries: registrationStore.formSummaries,
+      validationDetails: registrationStore.validationDetails,
+      // 方法
+      addBlessingPerson: registrationStore.addBlessingPerson,
+      removeBlessingPerson: registrationStore.removeBlessingPerson,
+      addAncestor: registrationStore.addAncestor,
+      removeAncestor: registrationStore.removeAncestor,
+      addSurvivor: registrationStore.addSurvivor,
+      removeSurvivor: registrationStore.removeSurvivor,
+      copyBlessingAddress: registrationStore.copyBlessingAddress,
+      // 其他需要的 store 方法...
+
+      // 本地變數和方法
       submitting,
       submitForm,
       addContactAsBlessing,
@@ -817,17 +853,27 @@ export default {
       openPrintPage,
       handleAddNewForm,
       handleResetForm,
-      handleSwitchForm, // 新增
-      handleDeleteForm, // 新增
+      handleSwitchForm,
+      handleDeleteForm,
       handleDuplicateForm,
-      getStatusText, // 新增
-      // 🎯 關鍵：覆蓋原有的值，使用計算屬性
+      getStatusText,
+      // 計算屬性
       currentFormIndex,
       formArray,
       currentFormSummary,
       formSummaries,
       isDev,
-      getDev, // 新增方法
+      // 其他計算屬性...
+      availableBlessingPersons: registrationStore.availableBlessingPersons,
+      currentHouseholdHeadsCount: registrationStore.currentHouseholdHeadsCount,
+      householdHeadWarning: registrationStore.householdHeadWarning,
+      currentAncestorsCount: registrationStore.currentAncestorsCount,
+      ancestorsWarning: registrationStore.ancestorsWarning,
+      currentSurvivorsCount: registrationStore.currentSurvivorsCount,
+      survivorsWarning: registrationStore.survivorsWarning,
+      availableSurvivors: registrationStore.availableSurvivors,
+      relationshipOptions: registrationStore.relationshipOptions,
+      zodiacOptions: registrationStore.zodiacOptions,
     };
   },
 };

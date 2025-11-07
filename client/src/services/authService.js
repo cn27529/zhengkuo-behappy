@@ -4,22 +4,25 @@ import userData from "@/data/auth_user.json";
 
 export class AuthService {
   constructor() {
-    console.log(`AuthService 初始化: 當前模式為 ${serviceConfig.mode}`);
+    console.log(
+      `AuthService 初始化: serviceConfig.mode 當前模式為 ${serviceConfig.mode}`
+    );
+    console.log(
+      `AuthService 初始化: serviceConfig.isDev 當前開發模式為 ${serviceConfig.isDev}`
+    );
   }
 
   async login(username, password) {
     console.log(`登入請求 - 模式: ${serviceConfig.mode}, 用戶: ${username}`);
 
     // 在控制台輸出警告
-    if (import.meta.env.VITE_DEV) {
+    if (serviceConfig.mode === "mock") {
       console.warn(
         "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
           "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
           "🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01"
       );
-    }
 
-    if (serviceConfig.mode === "mock") {
       return this.mockLogin(username, password);
     } else if (serviceConfig.mode === "backend") {
       return this.backendLogin(username, password);
@@ -585,14 +588,6 @@ export class AuthService {
     }
   }
 
-  getCurrentMode() {
-    return serviceConfig.mode;
-  }
-
-  getCurrentDev() {
-    return serviceConfig.isDev;
-  }
-
   // 在 AuthService 類別中新增專門的 Directus 健康檢查方法
   async checkDirectusHealth() {
     try {
@@ -637,22 +632,40 @@ export class AuthService {
     }
   }
 
+  getCurrentMode() {
+    if (sessionStorage.getItem("auth-mode") !== null) {
+      serviceConfig.mode = sessionStorage.getItem("auth-mode");
+    }
+    console.log("AuthService getCurrentMode()", serviceConfig.mode);
+    return serviceConfig.mode;
+  }
+
+  getCurrentDev() {
+    if (sessionStorage.getItem("auth-dev") !== null) {
+      serviceConfig.isDev = sessionStorage.getItem("auth-dev");
+    }
+    console.log("AuthService getCurrentDev()", serviceConfig.isDev);
+    return serviceConfig.isDev === "true" ? true : false;
+  }
+
   // 修改 setDev 方法 ,用於設置是否為開發模式，可開啟調試模式
   setDev(isDev) {
+    console.log("AuthService setDev()", isDev);
     serviceConfig.isDev = isDev;
-    if (isDev) {
-      console.log(`AuthService 開發模式已切換為: ${isDev} 打開調試信息`);
-    } else {
-      console.log(`AuthService 開發模式已切換為: ${isDev} 關閉調試信息`);
-    }
+    sessionStorage.setItem("auth-dev", isDev);
+    console.log(
+      `AuthService serviceConfig.isDev 開發模式調試信息已切換為: ${serviceConfig.isDev} `
+    );
   }
 
   // 修改 setMode 方法中的健康檢查
   setMode(mode) {
-    if (["mock", "backend", "directus"].includes(mode)) {
-      serviceConfig.mode = mode;
-      console.log(`AuthService 模式已切換為: ${mode}`);
+    console.log("AuthService setMode()", mode);
+    serviceConfig.mode = mode;
+    console.log(`AuthService serviceConfig.mode 模式已切換為: ${mode}`);
+    sessionStorage.setItem("auth-mode", mode);
 
+    if (["mock", "backend", "directus"].includes(mode)) {
       // 健康檢查
       if (mode === "backend") {
         this.checkBackendHealth().then((health) => {
