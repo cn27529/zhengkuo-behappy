@@ -1,4 +1,4 @@
-// scripts/testGitHash.js - 使用異步版本
+// scripts/testGitHash.js - 使用異步版本generateGitHashAsync.js
 
 async function testHashGeneration() {
   // 使用動態導入

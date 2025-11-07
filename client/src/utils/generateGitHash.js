@@ -1,5 +1,5 @@
-// generateGitHash.js
-// 同時支援 Node.js + 瀏覽器環境的版本
+// 瀏覽器環境的版本 generateGitHash.js
+// Nodejs 環境使用異步版本 generateGitHashAsync.js
 
 // 運行環境判斷
 const isBrowser =
