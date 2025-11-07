@@ -9,7 +9,7 @@
     <div class="form-header">
       <!-- 在 template 添加調試信息 -->
       <div
-        v-if="false"
+        v-if="true"
         style="
           background: #f5f5f5;
           padding: 10px;
@@ -21,9 +21,9 @@
         <p>表單陣列長度: {{ formArray.length }}</p>
         <p>當前索引: {{ currentFormIndex }}</p>
         <p>
-          表單狀態:
           <span v-for="(form, idx) in formArray" :key="idx">
-            [{{ idx }}:{{ form.state }}]
+            <hr>
+            第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{ form.formId }}, contact={{ JSON.stringify(form.contact) }}, blessing={{ JSON.stringify(form.blessing) }}]
           </span>
         </p>
       </div>
@@ -431,7 +431,7 @@
                   availableSurvivors.length >= config.maxSurvivors
                 "
               >
-                陽上人 {{ person.name }}
+                {{ person.name }}
               </button>
             </div>
           </div>
@@ -547,7 +547,10 @@ export default {
     const submitting = ref(false);
 
     onMounted(async () => {
-      await registrationStore.loadConfig();
+      await registrationStore.loadConfig()
+      // 啟動自動同步機制
+      registrationStore.initializeFormArray()
+      console.log("[v0] 表單同步已啟動")
     });
 
     // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
@@ -598,7 +601,7 @@ export default {
       }
 
       if(registrationStore.formArray.length>=2 &&  index === currentFormIndex.value){
-        ElMessage.warning("編輯中的檔案己經鎖定，請先跳到其它表單再做刪除！");
+        ElMessage.warning("編輯中的檔案己經鎖定，請先切換其它表單再做刪除！");
         return;
       }
 
@@ -724,23 +727,8 @@ export default {
 
       try {
         
-        const currentFormId = registrationStore.formArray[currentFormIndex.value].formId;
-        if (currentFormId) {
-          ElMessage.warning("當前表單已提交過，請勿重複提交");
-          submitting.value = false;
-          return;
-        }
-
         const result = await registrationStore.submitRegistration();
-        if (result.success) {
-          console.log(
-            `formId己產生，registrationStore.registrationForm.formId=${result.formId}`
-          );
-          registrationStore.registrationForm.formId = result.formId; // formId己產生
-        } else {
-          ElMessage.error(result.message);
-          return;
-        }
+        
         ElMessage.success(result.message);
         console.log(result.result);
       } catch (error) {

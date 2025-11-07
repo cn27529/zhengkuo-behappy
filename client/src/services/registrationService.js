@@ -1,5 +1,9 @@
 // src/services/registrationService.js
 import { serviceConfig, getApiUrl } from "@/config/serviceConfig.js";
+import {
+  generateGitHash,
+  generateMultipleHashes,
+} from "@/utils/generateGitHash.js";
 
 export class RegistrationService {
   constructor() {
@@ -27,9 +31,7 @@ export class RegistrationService {
 
   // ========== 生成表單 ID ==========
   generateFormId() {
-    const timestamp = new Date().getTime();
-    const random = Math.random().toString(36).substring(2, 8);
-    return `FORM-${timestamp}-${random}`;
+    return generateGitHash();
   }
 
   // ========== CRUD 操作 ==========
@@ -57,7 +59,7 @@ export class RegistrationService {
         createdUser: registrationData.createdUser || "system",
         updatedAt: new Date().toISOString(),
         updatedUser: registrationData.updatedUser || "system",
-        formName: registrationData.formName || "2025消災超度報名表",
+        formName: registrationData.formName || "消災超度報名表OnService",
         formId: registrationData.formId || this.generateFormId(),
         formSource: registrationData.formSource || "",
         contact: registrationData.contact || {

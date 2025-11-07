@@ -257,6 +257,17 @@ export default {
     };
   },
 };
+
+// 增加粘性标题时的样式
+// window.addEventListener('scroll', function() {
+//     var header = document.querySelector('.form-header');
+//     if (window.pageYOffset > 0) {
+//         header.classList.add('sticky');
+//     } else {
+//         header.classList.remove('sticky');
+//     }
+// });
+
 </script>
 
 <style>
@@ -395,47 +406,6 @@ export default {
   background-color: #f8f9fa;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .dashboard-content {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    order: 1;
-    max-height: 300px;
-  }
-
-  .main-content {
-    order: 0;
-    padding: 1rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chart-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .header-right {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .dashboard-header {
-    padding: 1rem;
-  }
-
-  .nav-link:hover,
-  .nav-link.active {
-    transform: translateY(2px);
-  }
-}
 
 /* 滚动条样式 */
 .sidebar-nav::-webkit-scrollbar {
@@ -497,6 +467,21 @@ export default {
   transition: all 0.3s ease;
 }
 
+/* 增加粘性标题时的样式 */
+/* .form-header {
+    position: sticky;
+    top: 0;
+}
+
+
+.form-header.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+} */
+
+
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .dialog-content {
@@ -519,5 +504,43 @@ export default {
     padding: 14px 30px;
     font-size: 16px;
   }
+
+  .sidebar {
+    width: 100%;
+    order: 1;
+    max-height: 300px;
+  }
+
+  .main-content {
+    order: 0;
+    padding: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-right {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .dashboard-header {
+    padding: 1rem;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    transform: translateY(2px);
+  }
+
 }
+
+
 </style>
