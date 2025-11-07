@@ -23,6 +23,10 @@ let cryptoInitialized = false;
 async function initializeCrypto() {
   if (cryptoInitialized) return;
 
+  console.log(
+    `初始化 Crypto 庫...目前環境: isBrowser=${isBrowser}, isNode=${isNode}`
+  );
+
   try {
     if (isNode) {
       // Node.js 環境使用 require 替代動態 import

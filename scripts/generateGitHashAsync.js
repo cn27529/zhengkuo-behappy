@@ -25,15 +25,16 @@ async function initializeCrypto() {
 
   try {
     if (isNode) {
-      // Node.js 環境使用 require 替代動態 import
-      const nodeCrypto = require("crypto");
-      cryptoLib = nodeCrypto;
+      // 使用動態 import 替代 require
+      const nodeCrypto = await import("crypto");
+      cryptoLib = nodeCrypto.default || nodeCrypto;
     } else {
       // 瀏覽器環境
       cryptoLib = typeof window !== "undefined" ? window.crypto || {} : {};
     }
+    console.log("Crypto 庫初始化成功");
   } catch (error) {
-    console.warn("Crypto initialization failed:", error);
+    console.warn("Crypto initialization failed:", error.message);
     cryptoLib = {};
   }
 
@@ -75,9 +76,18 @@ function generateHashNode(input) {
       .substring(0, hash_length);
   }
 
-  const hash = cryptoLib.createHash("sha1");
-  hash.update(input);
-  return hash.digest("hex").substring(0, hash_length);
+  try {
+    const hash = cryptoLib.createHash("sha1");
+    hash.update(input);
+    return hash.digest("hex").substring(0, hash_length);
+  } catch (error) {
+    console.warn("Node crypto failed, using simple hash:", error.message);
+    const hashValue = simpleHash(input);
+    return hashValue
+      .toString(16)
+      .padStart(hash_length, "0")
+      .substring(0, hash_length);
+  }
 }
 
 /**
@@ -105,14 +115,14 @@ async function generateHashBrowser(input) {
 }
 
 /**
- * 通用 Git Hash 生成（同步）
+ * 通用 Git Hash 生成（同步）- 不推薦在 Node 環境使用
  */
 export function generateGitHash(data = "") {
   const input = data + Date.now().toString() + Math.random().toString();
 
   if (isNode) {
-    // 確保 crypto 已初始化（同步環境下使用備用方案）
-    if (!cryptoInitialized) {
+    // 在 Node 環境中，如果 crypto 未初始化，使用同步備用方案
+    if (!cryptoInitialized || !cryptoLib?.createHash) {
       const hashValue = simpleHash(input);
       return hashValue
         .toString(16)
@@ -121,7 +131,7 @@ export function generateGitHash(data = "") {
     }
     return generateHashNode(input);
   } else if (isBrowser) {
-    // 瀏覽器用同步簡單哈希（避免 async）
+    // 瀏覽器用同步簡單哈希
     const hashValue = simpleHash(input);
     return hashValue
       .toString(16)
@@ -133,9 +143,9 @@ export function generateGitHash(data = "") {
 }
 
 /**
- * 瀏覽器專用異步版本
+ * 推薦的異步版本（Node + Browser 通用）
  */
-export async function generateGitHashBrowser(data = "") {
+export async function generateGitHashAsync(data = "") {
   await initializeCrypto();
   const input = data + Date.now().toString() + Math.random().toString();
 
@@ -147,20 +157,20 @@ export async function generateGitHashBrowser(data = "") {
 }
 
 /**
- * 產生多個哈希
+ * 產生多個哈希（同步）
  */
 export function generateMultipleHashes(count = 5) {
   return Array.from({ length: count }, () => generateGitHash());
 }
 
 /**
- * 瀏覽器異步多哈希生成
+ * 推薦的異步多哈希生成
  */
-export async function generateMultipleHashesBrowser(count = 5) {
+export async function generateMultipleHashesAsync(count = 5) {
   await initializeCrypto();
   const hashes = [];
   for (let i = 0; i < count; i++) {
-    hashes.push(await generateGitHashBrowser());
+    hashes.push(await generateGitHashAsync());
   }
   return hashes;
 }
@@ -220,9 +230,9 @@ export class GitHashGenerator {
     this.commitCount = 0;
   }
 
-  generate() {
+  async generate() {
     this.commitCount++;
-    return generateGitHash(`commit-${this.commitCount}`);
+    return await generateGitHashAsync(`commit-${this.commitCount}`);
   }
 
   reset() {
@@ -242,9 +252,12 @@ export function sleep(ms) {
 }
 
 /**
- * 測試唯一性（Node + Browser 通用）
+ * 測試唯一性（推薦使用異步版本）
  */
-export async function testUniqueness(sampleSize = 100, useAsync = false) {
+export async function testUniqueness(sampleSize = 100, useAsync = true) {
+  console.log(
+    `初始化 Crypto 庫...目前環境: isBrowser=${isBrowser}, isNode=${isNode}`
+  );
   await initializeCrypto();
 
   const hashes = new Set();
@@ -256,11 +269,11 @@ export async function testUniqueness(sampleSize = 100, useAsync = false) {
 
   for (let i = 0; i < sampleSize; i++) {
     const hash = useAsync
-      ? await generateGitHashBrowser(i)
-      : generateGitHash(i);
+      ? await generateGitHashAsync(i.toString())
+      : generateGitHash(i.toString());
 
     if (hashes.has(hash)) {
-      duplicates.push(hash);
+      duplicates.push({ hash, index: i + 1 });
       console.warn(`重複哈希: ${hash} (第 ${i + 1} 次)`);
     }
     hashes.add(hash);
@@ -281,10 +294,11 @@ export async function testUniqueness(sampleSize = 100, useAsync = false) {
     unique: hashes.size,
     duplicates: duplicates.length,
     duplicateRate: (duplicates.length / sampleSize) * 100,
+    duplicateList: duplicates,
   };
 }
 
-// 導出初始化函數供使用者需要時調用
+// 導出初始化函數
 export { initializeCrypto };
 
 export default generateGitHash;

@@ -17,7 +17,7 @@
       <div class="form-section">
         <h2>顯示當前生成的哈希</h2>
         <div class="form-actions">
-          <button @click="handle_generateHash" class="btn btn-primary">生成哈希</button>
+          <button @click="handleGenerateHash" class="btn btn-primary">生成哈希</button>
           <button style="display: none;" @click="copyHash(currentHash)" class="btn btn-copy">📋 複製</button>
         </div>
         <div class="form-grid">
@@ -31,7 +31,7 @@
       <div class="form-section">
         <h2>顯示多個哈希</h2>
         <div class="form-actions">
-          <button @click="handle_generateMultiple" class="btn btn-secondary">生成5個哈希</button>          
+          <button @click="handleGenerateMultiple" class="btn btn-secondary">生成5個哈希</button>          
           <button style="display: none;" @click="copyHash(hash)" class="btn btn-copy">📋 複製</button>
         </div>
         <div class="form-grid">
@@ -75,11 +75,6 @@ console.log(hashes) // {{ multipleHashes.length ? `[${multipleHashes.map((hash) 
         </div>
       </div>
 
-      <!-- 操作按钮 -->
-      <div class="form-actions">
-        <button @click="handle_generateHash" class="btn btn-primary">生成哈希</button>
-        <button @click="handle_generateMultiple" class="btn btn-secondary">生成5個哈希</button>
-      </div>
     </div>
   </div>
 </template>
@@ -94,12 +89,12 @@ import {
 const currentHash = ref('');
 const multipleHashes = ref([]);
 
-const handle_generateHash = () => {
+const handleGenerateHash = () => {
   currentHash.value = generateGitHash();
   console.log('生成的哈希:', currentHash.value);
 };
 
-const handle_generateMultiple = () => {
+const handleGenerateMultiple = () => {
   multipleHashes.value = generateMultipleHashes(5);
   console.log('生成的多個哈希:', multipleHashes.value);
 };
