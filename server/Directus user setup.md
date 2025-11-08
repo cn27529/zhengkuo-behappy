@@ -4,7 +4,7 @@
 
 啟動 Directus 後，訪問：
 ```
-http://localhost:3000/admin
+http://localhost:8055/admin
 ```
 
 使用初始化時設置的管理員帳號登入。
@@ -48,7 +48,7 @@ http://localhost:3000/admin
 CORS_ENABLED=true
 CORS_ORIGIN=http://localhost:5173
 # 多個來源用逗號分隔
-# CORS_ORIGIN=http://localhost:5173,http://localhost:3000
+# CORS_ORIGIN=http://localhost:5173,http://localhost:8055
 ```
 
 ## 5. 自定義用戶欄位（可選）
@@ -101,12 +101,12 @@ Directus 提供以下認證端點：
 
 ```javascript
 // 測試健康檢查
-fetch('http://localhost:3000/server/health')
+fetch('http://localhost:8055/server/health')
   .then(r => r.json())
   .then(console.log);
 
 // 測試登入
-fetch('http://localhost:3000/auth/login', {
+fetch('http://localhost:8055/auth/login', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({

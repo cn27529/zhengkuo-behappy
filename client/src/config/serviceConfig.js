@@ -7,7 +7,7 @@ export const serviceConfig = {
   isDev: import.meta.env.VITE_DEV || false,
 
   // Directus|supabase 後端 API 基礎 URL
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:8055",
 
   // API 端點
   apiEndpoints: {

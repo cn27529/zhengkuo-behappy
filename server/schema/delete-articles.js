@@ -1,7 +1,7 @@
 // delete-articles.js (CommonJS 版本)
 const { createDirectus, rest, deleteCollection } = require("@directus/sdk");
 
-const client = createDirectus("http://localhost:3000").with(rest());
+const client = createDirectus("http://localhost:8055").with(rest());
 
 async function deleteArticlesCollection() {
   try {

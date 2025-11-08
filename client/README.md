@@ -56,7 +56,7 @@ src/components/registration/
 
 运行 npm run dev 启动开发服务器
 
-访问 http://localhost:3000 查看应用
+访问 http://localhost:8055 查看应用
 
 功能特点
 使用Vue 3 Composition API

@@ -133,7 +133,7 @@ class DirectusTester {
 
 // 主測試函數
 async function main() {
-  const directusUrl = process.env.DIRECTUS_URL || "http://localhost:3000";
+  const directusUrl = process.env.DIRECTUS_URL || "http://localhost:8055";
   const token = process.env.DIRECTUS_TOKEN; // 可選的靜態令牌
 
   const tester = new DirectusTester(directusUrl, token);
