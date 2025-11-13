@@ -35,15 +35,7 @@
     <button 
       @click="loadMockData" 
       class="btn btn-outline btn-sm"
-      style="margin-right: 10px;"
-    >
-      🎲 載入 Mock 數據
-    </button>
-    <button 
-      @click="clearMockData" 
-      class="btn btn-outline btn-sm"
-    >
-      🗑️ 清除 Mock 數據
+      style="margin-right: 10px;">🎲 載入 Mock 數據
     </button>
   </div>
       </div>
@@ -576,40 +568,20 @@ export default {
       isDev.value = authService.getCurrentDev();
     });
 
-    // 載入 Mock 數據
-const loadMockData = async () => {
-  try {
-    const success = await registrationStore.loadMockData();
-    if (success) {
-      ElMessage.success('Mock 數據載入成功');
-    } else {
-      ElMessage.error('載入 Mock 數據失敗');
-    }
-  } catch (error) {
-    console.error('載入 Mock 數據錯誤:', error);
-    ElMessage.error('載入 Mock 數據時發生錯誤');
-  }
-};
-
-// 清除 Mock 數據
-const clearMockData = () => {
-  ElMessageBox.confirm(
-    '確定要清除當前表單的 Mock 數據嗎？',
-    '確認清除',
-    {
-      confirmButtonText: '確定清除',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  )
-  .then(() => {
-    registrationStore.clearCurrentForm();
-    ElMessage.success('Mock 數據已清除');
-  })
-  .catch(() => {
-    ElMessage.info('已取消清除操作');
-  });
-};
+    // 載入測試 Mock 數據，進行快速測試
+    const loadMockData = async () => {
+      try {
+        const success = await registrationStore.loadMockData();
+        if (success) {
+          ElMessage.success('Mock 數據載入成功');
+        } else {
+          ElMessage.error('載入 Mock 數據失敗');
+        }
+      } catch (error) {
+        console.error('載入 Mock 數據錯誤:', error);
+        ElMessage.error('載入 Mock 數據時發生錯誤');
+      }
+    };
 
     // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
     const currentFormIndex = computed(() => registrationStore.currentFormIndex);
@@ -875,26 +847,8 @@ const clearMockData = () => {
 
     // 修改後：
     return {
-      // 只暴露需要的屬性和方法，不要使用展開運算符
-      registrationForm: registrationStore.registrationForm,
-      config: registrationStore.config,
-      currentFormIndex: registrationStore.currentFormIndex,
-      formArray: registrationStore.formArray,
-      currentFormSummary: registrationStore.currentFormSummary,
-      formSummaries: registrationStore.formSummaries,
-      validationDetails: registrationStore.validationDetails,
-      // 方法
-      addBlessingPerson: registrationStore.addBlessingPerson,
-      removeBlessingPerson: registrationStore.removeBlessingPerson,
-      addAncestor: registrationStore.addAncestor,
-      removeAncestor: registrationStore.removeAncestor,
-      addSurvivor: registrationStore.addSurvivor,
-      removeSurvivor: registrationStore.removeSurvivor,
-      copyBlessingAddress: registrationStore.copyBlessingAddress,
-      // 其他需要的 store 方法...
 
-      // 本地變數和方法
-      submitting,
+      // 本地變數、方法、計算屬性
       submitForm,
       addContactAsBlessing,
       addContactAsSurvivor,
@@ -906,13 +860,34 @@ const clearMockData = () => {
       handleDeleteForm,
       handleDuplicateForm,
       getStatusText,
+      loadMockData, // 載入測試 Mock 數據，進行快速測試
+      
       // 計算屬性
       currentFormIndex,
+      submitting,
       formArray,
       currentFormSummary,
       formSummaries,
       isDev,
-      // 其他計算屬性...
+      // store 中只暴露需要的屬性和方法，不要使用展開運算符
+      registrationForm: registrationStore.registrationForm,
+      config: registrationStore.config,
+      currentFormIndex: registrationStore.currentFormIndex,
+      formArray: registrationStore.formArray,
+      currentFormSummary: registrationStore.currentFormSummary,
+      formSummaries: registrationStore.formSummaries,
+      validationDetails: registrationStore.validationDetails,
+      // store 中方法
+      addBlessingPerson: registrationStore.addBlessingPerson,
+      removeBlessingPerson: registrationStore.removeBlessingPerson,
+      addAncestor: registrationStore.addAncestor,
+      removeAncestor: registrationStore.removeAncestor,
+      addSurvivor: registrationStore.addSurvivor,
+      removeSurvivor: registrationStore.removeSurvivor,
+      copyBlessingAddress: registrationStore.copyBlessingAddress,
+      
+      
+      // store 中其他計算屬性...
       availableBlessingPersons: registrationStore.availableBlessingPersons,
       currentHouseholdHeadsCount: registrationStore.currentHouseholdHeadsCount,
       householdHeadWarning: registrationStore.householdHeadWarning,
@@ -923,9 +898,7 @@ const clearMockData = () => {
       availableSurvivors: registrationStore.availableSurvivors,
       relationshipOptions: registrationStore.relationshipOptions,
       zodiacOptions: registrationStore.zodiacOptions,
-      // 新增的 Mock 方法
-  loadMockData,
-  clearMockData,
+      
     };
   },
 };
