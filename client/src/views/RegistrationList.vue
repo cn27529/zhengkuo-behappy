@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import { registrationService } from "@/services/registrationService.js";
+import { registrationService } from "../services/registrationService.js";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {

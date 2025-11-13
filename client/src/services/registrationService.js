@@ -1,9 +1,9 @@
 // src/services/registrationService.js
-import { serviceConfig, getApiUrl } from "@/config/serviceConfig.js";
+import { serviceConfig, getApiUrl } from "../config/serviceConfig.js";
 import {
   generateGitHash,
   generateMultipleHashes,
-} from "@/utils/generateGitHash.js";
+} from "../utils/generateGitHash.js";
 
 export class RegistrationService {
   constructor() {

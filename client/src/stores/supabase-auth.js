@@ -1,7 +1,7 @@
 // src/stores/supabase-auth.js
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { supabase } from "@/config/supabase";
+import { supabase } from "../config/supabase";
 
 export const useSupabaseAuthStore = defineStore("supabaseAuth", () => {
   const user = ref(null);
@@ -151,10 +151,6 @@ export const useSupabaseAuthStore = defineStore("supabaseAuth", () => {
 
     // sessionStorage（關閉瀏覽器就登出）
     sessionStorage.setItem("supabase-auth-user", JSON.stringify(userInfo));
-    //sessionStorage.setItem("supabase-auth-user", JSON.stringify(userInfo));
-
-    // 可選：保存到localStorage
-    //sessionStorage.setItem("auth-user", JSON.stringify(userInfo));
 
     resetInactivityTimer();
     setupActivityListeners();

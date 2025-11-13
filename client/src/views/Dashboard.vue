@@ -49,10 +49,10 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { useActivitiesStore } from '@/stores/activities'
+import { ref, onMounted, onUnmounted } from "vue"
+import { useRouter } from "vue-router"
+import { useAuthStore } from "../stores/auth.js"
+import { useActivitiesStore } from "../stores/activities.js"
 
 export default {
   name: 'Dashboard',

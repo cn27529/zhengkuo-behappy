@@ -28,8 +28,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { authService } from '@/services/authService';
+import { ref, computed } from "vue";
+import { authService } from "../services/authService.js";
 
 const isDevelopment = computed(() => import.meta.env.VITE_DEV);
 const authMode = ref(authService.getCurrentMode());

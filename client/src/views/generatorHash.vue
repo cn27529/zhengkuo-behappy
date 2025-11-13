@@ -51,7 +51,7 @@
           <div class="form-group">
             <label>直接使用工具函数</label>
             <pre><code>
-import { generateGitHash } from '@/utils/generateGitHash'
+import { generateGitHash } from "../utils/generateGitHash"
 
 const hash = generateGitHash()
 console.log(hash) // 例如: "{{ currentHash || '4a1c5d6' }}"
@@ -66,7 +66,7 @@ console.log(hash) // 例如: "{{ currentHash || '4a1c5d6' }}"
           <div class="form-group">
             <label>批量生成</label>
             <pre><code>
-import { generateMultipleHashes } from '@/utils/generateGitHash'
+import { generateMultipleHashes } from "../utils/generateGitHash"
 
 const hashes = generateMultipleHashes(5)
 console.log(hashes) // {{ multipleHashes.length ? `[${multipleHashes.map((hash) => `"${hash}"`).join(', ')}]` : '["4a1c5d6", "8e9f2a1", ...]' }}
@@ -84,7 +84,7 @@ import { ref } from 'vue';
 import { 
   generateGitHash, 
   generateMultipleHashes, 
-} from '@/utils/generateGitHash';
+} from "../utils/generateGitHash";
 
 const currentHash = ref('');
 const multipleHashes = ref([]);

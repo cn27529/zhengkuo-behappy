@@ -57,7 +57,7 @@
             :class="{ active: currentFormIndex === index }"
             @click="handleSwitchForm(index)"
           >
-            <span class="tab-number">第{{ index + 1 }}張表單</span>
+            <span class="tab-number">表單{{ index + 1 }}</span>
             <span style="display: " class="tab-status" :class="form.state">{{
               getStatusText(form.state)
             }}</span>
@@ -76,7 +76,7 @@
         <div
           class="current-form-info"
           v-if="currentFormSummary"
-          style="display: none"
+          style="display: none;"
         >
           <span>聯絡人: {{ currentFormSummary.contactName || "未填寫" }}</span>
           <span>消災人員: {{ currentFormSummary.personsCount }} 位</span>
@@ -723,19 +723,17 @@ const clearMockData = () => {
         .then(async () => {
           console.log("🔄 使用者觸發重置表單");
 
-          const success = registrationStore.resetForm();
+          const success = registrationStore.clearCurrentForm();
 
           if (success) {
-            // 使用 nextTick 確保 DOM 更新
-            await nextTick();
             ElMessage.success("表單已重置");
 
             // 額外確保：觸發輸入框更新
-            setTimeout(() => {
-              document.querySelectorAll("input").forEach((input) => {
-                input.dispatchEvent(new Event("input", { bubbles: true }));
-              });
-            }, 100);
+            // setTimeout(() => {
+            //   document.querySelectorAll("input").forEach((input) => {
+            //     input.dispatchEvent(new Event("input", { bubbles: true }));
+            //   });
+            // }, 100);
           } else {
             ElMessage.error("重置表單失敗");
           }

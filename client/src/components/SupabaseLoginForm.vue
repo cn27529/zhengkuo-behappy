@@ -119,8 +119,8 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
-import { useSupabaseAuthStore } from '@/stores/supabase-auth'
+import { ref, computed } from "vue"
+import { useSupabaseAuthStore } from "../stores/supabase-auth.js"
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 

@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import SupabaseLoginForm from '@/components/SupabaseLoginForm.vue'
-import appConfig from '@/config/appConfig'
+import SupabaseLoginForm from "../components/SupabaseLoginForm.vue"
+import appConfig from "../config/appConfig"
 
 export default {
   name: 'SupabaseLogin',

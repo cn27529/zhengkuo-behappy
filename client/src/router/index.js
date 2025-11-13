@@ -1,6 +1,6 @@
 // src/router/index.js 更新版本
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "../stores/auth.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
@@ -112,14 +112,8 @@ router.beforeEach((to, from, next) => {
     isAuthenticated: authStore.isAuthenticated,
   });
 
-  // 改為localStorage檢查設定isAuthenticated
-  //const savedUser = sessionStorage.getItem("auth-user");
   //sessionStorage（關閉瀏覽器就登出）
   const savedUser = sessionStorage.getItem("auth-user");
-  // if (!savedUser) {
-  //   console.log("嘗試從 supabase 用戶數據恢復");
-  //   savedUser = sessionStorage.getItem("supabase-auth-user");
-  // }
 
   if (savedUser) {
     try {

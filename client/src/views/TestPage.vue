@@ -115,10 +115,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { authService } from '@/services/authService.js';
-import { serviceConfig } from '@/config/serviceConfig.js';
-import { useAuthStore } from '@/stores/auth.js';
+import { ref, computed, onMounted } from "vue";
+import { authService } from "../services/authService.js";
+import { serviceConfig } from "../config/serviceConfig.js";
+import { useAuthStore } from "../stores/auth.js";
 
 const authStore = useAuthStore();
 const authMode = ref(authService.getCurrentMode());
@@ -131,7 +131,7 @@ const storageStatus = computed(() => ({
   authToken: sessionStorage.getItem("auth-token"),
   authRefreshToken: sessionStorage.getItem("auth-refresh-token"),
   sessionStorageKeys: Object.keys(sessionStorage),
-  localStorageKeys: Object.keys(localStorage)
+
 }));
 
 const testAccounts = [

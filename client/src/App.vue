@@ -77,11 +77,11 @@
 
 <script>
 import { useRouter, useRoute } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
-import { useMenuStore } from "@/stores/menu";
+import { useAuthStore } from "./stores/auth";
+import { useMenuStore } from "./stores/menu";
 import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
-import appConfig from "@/config/appConfig";
-import DevTools from "@/components/DevTools.vue";
+import appConfig from "./config/appConfig";
+import DevTools from "./components/DevTools.vue";
 
 export default {
   name: "App",
@@ -184,7 +184,7 @@ export default {
       next();
     });
 
-    // 當 menuPosition 改變時，同步到 localStorage
+    // 當 menuPosition 改變時，同步到 sessionStorage
     watch(menuPosition, (val) => {
       try {
         sessionStorage.setItem("menuPosition", val);

@@ -1,23 +1,24 @@
 // src/main.js
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { authService } from "@/services/authService.js";
+import { authService } from "./services/authService.js";
 
-import App from "@/App.vue";
+import App from "./App.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
-import "@/style.css";
+import "./style.css";
 
 // 导入路由配置
-import router from "@/router";
+import router from "./router";
 // 引入 appConfig
-import appConfig from "@/config/appConfig.js";
-import { useMenuStore } from "@/stores/menu.js";
+import appConfig from "./config/appConfig.js";
+import { useMenuStore } from "./stores/menu.js";
 
 // 引入 antd
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css"; // 方式一：reset 樣式（推薦）
-//import 'ant-design-vue/dist/antd.css'; // 方式二：傳統樣式
+
+import { useRegistrationStore } from "./stores/registration.js";
 
 // 创建Pinia实例
 const pinia = createPinia();
@@ -53,7 +54,7 @@ if (savedDev) {
 console.log("當前開發模式:", authService.getCurrentDev());
 
 // 在控制台暴露 authService 方便調試
-window.authService = authService;
+window.$authService = authService;
 
 // 创建Vue应用
 const app = createApp(App);
@@ -67,6 +68,9 @@ app.use(Antd); // 使用 Ant Design Vue 组件库
 
 // 挂载应用
 app.mount("#app");
+
+// 在控制台暴露 regiStore
+window.$regiStore = useRegistrationStore();
 
 // 設定初始 document.title（若存在設定）
 if (appConfig && appConfig.title) {

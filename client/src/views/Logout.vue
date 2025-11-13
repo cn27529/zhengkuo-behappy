@@ -13,15 +13,15 @@
 </template>
 
 <script>
-import { onMounted,ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { useSupabaseAuthStore } from '@/stores/supabase-auth'
-import { ElMessage } from 'element-plus'
-import appConfig from '@/config/appConfig'
+import { onMounted,ref, reactive } from "vue"
+import { useRouter } from "vue-router"
+import { useAuthStore } from "../stores/auth.js"
+import { useSupabaseAuthStore } from "../stores/supabase-auth.js"
+import { ElMessage } from "element-plus"
+import appConfig from "../config/appConfig"
 
 export default {
-  name: 'Logout',
+  name: "Logout",
   setup() {
     
     const router = useRouter()
