@@ -35,7 +35,13 @@
     <button 
       @click="loadMockData" 
       class="btn btn-outline btn-sm"
+<<<<<<< HEAD
       style="margin-right: 10px;">🎲 載入 Mock 數據
+=======
+      style="margin-right: 10px;"
+    >
+      🎲 載入 Mock 數據
+>>>>>>> c6cd859e64993b30e4b11ac012dda823a6ac8ba1
     </button>
   </div>
       </div>
@@ -568,6 +574,7 @@ export default {
       isDev.value = authService.getCurrentDev();
     });
 
+<<<<<<< HEAD
     // 載入測試 Mock 數據，進行快速測試
     const loadMockData = async () => {
       try {
@@ -582,6 +589,23 @@ export default {
         ElMessage.error('載入 Mock 數據時發生錯誤');
       }
     };
+=======
+    // 載入 Mock 數據
+const loadMockData = async () => {
+  try {
+    const success = await registrationStore.loadMockData();
+    if (success) {
+      ElMessage.success('Mock 數據載入成功');
+    } else {
+      ElMessage.error('載入 Mock 數據失敗');
+    }
+  } catch (error) {
+    console.error('載入 Mock 數據錯誤:', error);
+    ElMessage.error('載入 Mock 數據時發生錯誤');
+  }
+};
+
+>>>>>>> c6cd859e64993b30e4b11ac012dda823a6ac8ba1
 
     // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
     const currentFormIndex = computed(() => registrationStore.currentFormIndex);
@@ -898,7 +922,11 @@ export default {
       availableSurvivors: registrationStore.availableSurvivors,
       relationshipOptions: registrationStore.relationshipOptions,
       zodiacOptions: registrationStore.zodiacOptions,
+<<<<<<< HEAD
       
+=======
+      loadMockData,
+>>>>>>> c6cd859e64993b30e4b11ac012dda823a6ac8ba1
     };
   },
 };
