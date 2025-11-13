@@ -904,6 +904,123 @@ export const useRegistrationStore = defineStore("registration", () => {
     console.log("✅ 自動同步已啟動");
   };
 
+  // 載入 Mock 數據
+const  loadMockData = async()=> {
+  try {
+    // 動態導入 mock 數據
+    const mockModule = await import('../data/mock_registrations.json');
+    const mockRegistrations = mockModule.default || mockModule;
+    
+    if (!mockRegistrations || mockRegistrations.length === 0) {
+      console.error('Mock 數據為空或未找到');
+      return false;
+    }
+    
+    // 隨機選擇一筆數據
+    const randomIndex = Math.floor(Math.random() * mockRegistrations.length);
+    const mockData = mockRegistrations[randomIndex];
+    
+    console.log('載入 Mock 數據:', mockData);
+    
+    // 更新當前表單數據，但保留表單的狀態和 ID
+    const currentForm = this.formArray[this.currentFormIndex];
+    
+    // 只更新數據字段，不改變表單狀態和 ID
+    if (mockData.contact) {
+      currentForm.contact = { ...mockData.contact };
+    }
+    
+    if (mockData.blessing) {
+      currentForm.blessing = { 
+        ...mockData.blessing,
+        persons: mockData.blessing.persons ? [...mockData.blessing.persons] : []
+      };
+    }
+    
+    if (mockData.salvation) {
+      currentForm.salvation = {
+        ...mockData.salvation,
+        ancestors: mockData.salvation.ancestors ? [...mockData.salvation.ancestors] : [],
+        survivors: mockData.salvation.survivors ? [...mockData.salvation.survivors] : []
+      };
+    }
+    
+    // 更新表單名稱（可選）
+    if (mockData.formName) {
+      currentForm.formName = mockData.formName;
+    }
+    
+    // 設置表單狀態為編輯中
+    currentForm.state = 'editing';
+    
+    // 觸發響應式更新
+    this.formArray[this.currentFormIndex] = { ...currentForm };
+    
+    console.log('Mock 數據載入完成，當前表單:', currentForm);
+    return true;
+    
+  } catch (error) {
+    console.error('載入 Mock 數據失敗:', error);
+    return false;
+  }
+}
+
+// 清除當前表單數據
+const clearCurrentForm =()=> {
+  const currentForm = this.formArray[this.currentFormIndex];
+  
+  // 重置聯絡人信息
+  currentForm.contact = {
+    name: '',
+    phone: '',
+    mobile: '',
+    relationship: '本家',
+    otherRelationship: ''
+  };
+  
+  // 重置消災信息
+  currentForm.blessing = {
+    address: '',
+    persons: [
+      {
+        id: 1,
+        name: '',
+        zodiac: '',
+        notes: '',
+        isHouseholdHead: true
+      }
+    ]
+  };
+  
+  // 重置超度信息
+  currentForm.salvation = {
+    address: '',
+    ancestors: [
+      {
+        id: 1,
+        surname: '',
+        notes: ''
+      }
+    ],
+    survivors: [
+      {
+        id: 1,
+        name: '',
+        zodiac: '',
+        notes: ''
+      }
+    ]
+  };
+  
+  // 設置表單狀態為編輯中
+  currentForm.state = 'editing';
+  
+  // 觸發響應式更新
+  this.formArray[this.currentFormIndex] = { ...currentForm };
+  
+  console.log('表單數據已清除');
+}
+
   return {
     config,
     registrationForm,

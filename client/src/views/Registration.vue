@@ -30,6 +30,22 @@
             }}]
           </span>
         </p>
+        <!-- 添加 Mock 按钮 -->
+  <div style="margin: 10px 0;">
+    <button 
+      @click="loadMockData" 
+      class="btn btn-outline btn-sm"
+      style="margin-right: 10px;"
+    >
+      🎲 載入 Mock 數據
+    </button>
+    <button 
+      @click="clearMockData" 
+      class="btn btn-outline btn-sm"
+    >
+      🗑️ 清除 Mock 數據
+    </button>
+  </div>
       </div>
       <!-- 表單切換器 -->
       <div class="form-switcher" v-if="formArray && formArray.length > 1">
@@ -539,7 +555,7 @@
 </template>
 
 <script>
-import { useRegistrationStore } from "@/stores/registration.js";
+import { useRegistrationStore } from "../stores/registration.js";
 import { ref, onMounted, computed, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { authService } from "../services/authService";
@@ -559,6 +575,41 @@ export default {
 
       isDev.value = authService.getCurrentDev();
     });
+
+    // 載入 Mock 數據
+const loadMockData = async () => {
+  try {
+    const success = await registrationStore.loadMockData();
+    if (success) {
+      ElMessage.success('Mock 數據載入成功');
+    } else {
+      ElMessage.error('載入 Mock 數據失敗');
+    }
+  } catch (error) {
+    console.error('載入 Mock 數據錯誤:', error);
+    ElMessage.error('載入 Mock 數據時發生錯誤');
+  }
+};
+
+// 清除 Mock 數據
+const clearMockData = () => {
+  ElMessageBox.confirm(
+    '確定要清除當前表單的 Mock 數據嗎？',
+    '確認清除',
+    {
+      confirmButtonText: '確定清除',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+  .then(() => {
+    registrationStore.clearCurrentForm();
+    ElMessage.success('Mock 數據已清除');
+  })
+  .catch(() => {
+    ElMessage.info('已取消清除操作');
+  });
+};
 
     // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
     const currentFormIndex = computed(() => registrationStore.currentFormIndex);
@@ -874,6 +925,9 @@ export default {
       availableSurvivors: registrationStore.availableSurvivors,
       relationshipOptions: registrationStore.relationshipOptions,
       zodiacOptions: registrationStore.zodiacOptions,
+      // 新增的 Mock 方法
+  loadMockData,
+  clearMockData,
     };
   },
 };
