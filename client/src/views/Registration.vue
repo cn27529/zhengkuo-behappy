@@ -508,14 +508,7 @@
 
       <!-- 修正後的提交按鈕區塊 -->
       <div class="form-actions">
-        <button
-          style="display: none"
-          type="button"
-          class="btn btn-secondary"
-          @click="handleResetForm"
-        >
-          清空表單重新填寫
-        </button>
+        
 
         <button
           type="button"
@@ -681,40 +674,6 @@ export default {
       return statusMap[state] || "❓";
     };
 
-    // 重置表單處理
-    const handleResetForm = () => {
-      ElMessageBox.confirm(
-        "確定要清空所有表單資料嗎？此操作無法復原！",
-        "確認清空",
-        {
-          confirmButtonText: "確定清空",
-          cancelButtonText: "取消",
-          type: "warning",
-        }
-      )
-        .then(async () => {
-          console.log("🔄 使用者觸發重置表單");
-
-          const success = registrationStore.clearCurrentForm();
-
-          if (success) {
-            ElMessage.success("表單已重置");
-
-            // 額外確保：觸發輸入框更新
-            // setTimeout(() => {
-            //   document.querySelectorAll("input").forEach((input) => {
-            //     input.dispatchEvent(new Event("input", { bubbles: true }));
-            //   });
-            // }, 100);
-          } else {
-            ElMessage.error("重置表單失敗");
-          }
-        })
-        .catch(() => {
-          ElMessage.info("已取消清空操作");
-        });
-    };
-
     // 新增：複製表單處理
     const handleDuplicateForm = (index) => {
       registrationStore.duplicateForm(index);
@@ -832,7 +791,6 @@ export default {
     //   importFromBlessing,
     //   openPrintPage,
     //   handleAddNewForm,
-    //   handleResetForm,
     //   handleSwitchForm, // 新增
     //   handleDeleteForm, // 新增
     //   handleDuplicateForm,
@@ -855,7 +813,6 @@ export default {
       importFromBlessing,
       openPrintPage,
       handleAddNewForm,
-      handleResetForm,
       handleSwitchForm,
       handleDeleteForm,
       handleDuplicateForm,

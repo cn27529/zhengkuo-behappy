@@ -835,56 +835,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  const resetForm = () => {
-    try {
-      console.log("開始重置表單...");
-
-      const initialData = getInitialFormData();
-
-      registrationForm.value.state = initialData.state;
-      registrationForm.value.createdAt = initialData.createdAt;
-      registrationForm.value.createdUser = initialData.createdUser;
-      registrationForm.value.updatedAt = initialData.updatedAt;
-      registrationForm.value.updatedUser = initialData.updatedUser;
-      registrationForm.value.formName = initialData.formName;
-      registrationForm.value.formId = initialData.formId;
-      registrationForm.value.formSource = initialData.formSource;
-
-      registrationForm.value.contact.name = initialData.contact.name;
-      registrationForm.value.contact.phone = initialData.contact.phone;
-      registrationForm.value.contact.mobile = initialData.contact.mobile;
-      registrationForm.value.contact.relationship =
-        initialData.contact.relationship;
-      registrationForm.value.contact.otherRelationship =
-        initialData.contact.otherRelationship;
-
-      registrationForm.value.blessing.address = initialData.blessing.address;
-      registrationForm.value.blessing.persons =
-        initialData.blessing.persons.map((person) => ({
-          ...person,
-        }));
-
-      registrationForm.value.salvation.address = initialData.salvation.address;
-      registrationForm.value.salvation.ancestors =
-        initialData.salvation.ancestors.map((ancestor) => ({
-          ...ancestor,
-        }));
-      registrationForm.value.salvation.survivors =
-        initialData.salvation.survivors.map((survivor) => ({
-          ...survivor,
-        }));
-
-      formArray.value = [{ ...initialData }];
-      currentFormIndex.value = 0;
-
-      console.log("表單重置完成", registrationForm.value);
-      return true;
-    } catch (error) {
-      console.error("重置表單失敗:", error);
-      return false;
-    }
-  };
-
   const loadConfig = async () => {
     try {
       console.log("加載配置成功");
@@ -1030,7 +980,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     copyBlessingAddress,
     submitRegistration,
     loadConfig,
-    resetForm,
     addNewForm,
     switchForm,
     deleteForm,
