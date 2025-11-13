@@ -1,60 +1,115 @@
 // src/stores/registration.js
 // 本檔為報名表單的 Pinia store，管理整個消災超度登記表的狀態與操作。
-// 註解會說明每個變數與方法在 Registration.vue 中的用途與對應位置。
-
+// 🔄 重構重點：實現 registrationForm 和 formArray[currentFormIndex] 的雙向實時同步
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
+import { generateGitHash } from "../utils/generateGitHash.js";
+import { registrationService } from "../services/registrationService.js";
+import { serviceConfig } from "../config/serviceConfig.js";
+import mockRegistrations from "../data/mock_registrations.json";
 
 export const useRegistrationStore = defineStore("registration", () => {
-  // config：全域配置，決定表單的限制值（例如最大戶長數、最大祖先數等）。
-  // 在 Registration.vue 中會用到 config.maxHouseholdHeads、config.maxAncestors、config.maxSurvivors
-  // 來顯示上限或決定按鈕是否 disabled。
-  const config = ref({
-    maxHouseholdHeads: 1, // 最大戶長數
-    maxAncestors: 5, // 最大祖先數
-    maxSurvivors: 2, // 最大陽上人數
-    defaultSurvivors: 2, // 預設陽上人數（用於初始化）
-  });
+  // 支援多張表單的陣列
+  const formArray = ref([]);
+  // 當前編輯的表單索引
+  const currentFormIndex = ref(0);
 
-  // registrationForm：整個表單的核心資料結構，對應 Registration.vue 裡各輸入欄位的 v-model。
-  // - contact: 聯絡人資訊（name, phone, mobile, relationship, otherRelationship）
-  // - blessing: 消災區塊（address, persons[]）
-  // - salvation: 超度區塊（address, ancestors[], survivors[]）
-  // 在畫面上會直接使用 registrationForm.contact.name、registrationForm.blessing.address 等。
-  const registrationForm = ref({
-    contact: {
+  // 提取為顶层共用函数（在 setupFormSync 之前定义）
+  const loadFormToRegistration = (formData) => {
+    Object.keys(formData).forEach((key) => {
+      if (key !== "contact" && key !== "blessing" && key !== "salvation") {
+        registrationForm.value[key] = formData[key];
+      }
+    });
+
+    Object.keys(formData.contact).forEach((key) => {
+      registrationForm.value.contact[key] = formData.contact[key];
+    });
+
+    registrationForm.value.blessing.address = formData.blessing.address;
+    registrationForm.value.blessing.persons.length = 0;
+    formData.blessing.persons.forEach((person) => {
+      registrationForm.value.blessing.persons.push({ ...person });
+    });
+
+    registrationForm.value.salvation.address = formData.salvation.address;
+    registrationForm.value.salvation.ancestors.length = 0;
+    formData.salvation.ancestors.forEach((ancestor) => {
+      registrationForm.value.salvation.ancestors.push({ ...ancestor });
+    });
+    registrationForm.value.salvation.survivors.length = 0;
+    formData.salvation.survivors.forEach((survivor) => {
+      registrationForm.value.salvation.survivors.push({ ...survivor });
+    });
+  };
+
+  // 當用戶編輯頁面時，自動同步回 formArray
+  let syncWatcher = null;
+
+  const setupFormSync = () => {
+    // 如果已有 watcher，先移除（防止重複監聽）
+    if (syncWatcher) syncWatcher();
+
+    // 這是解決「資料更新慢一步」的核心
+    syncWatcher = watch(
+      () => registrationForm.value,
+      (newValue) => {
+        // 只在有表單陣列且當前索引有效時同步
+        if (
+          formArray.value.length > 0 &&
+          currentFormIndex.value >= 0 &&
+          currentFormIndex.value < formArray.value.length
+        ) {
+          // 進行深拷貝，避免引用問題
+          formArray.value[currentFormIndex.value] = JSON.parse(
+            JSON.stringify(newValue)
+          );
+          console.log(
+            `[v0] Sync: registrationForm → formArray[${currentFormIndex.value}]`
+          );
+        }
+      },
+      { deep: true } // 🔑 關鍵：deep: true 監聽所有深層屬性變化（包括嵌套物件和陣列）
+    );
+  };
+
+  // 獲取初始表單資料（深拷貝）
+  const getInitialFormData = () => {
+    const createISOTime = new Date().toISOString();
+    const timestamp = Date.now().toString();
+    // 聯絡人
+    const myContact = {
       name: "",
       phone: "",
       mobile: "",
-      relationship: "本家", // 本家、娘家、朋友、其它（對應畫面上的 radio）
+      relationship: "",
       otherRelationship: "",
-    },
-    blessing: {
-      // 消災地址
+    };
+
+    // 消災人員
+    const myBlessing = {
       address: "",
-      // 消災人員
       persons: [
         {
           id: 1,
           name: "",
           zodiac: "",
           notes: "",
-          isHouseholdHead: true, // 是否為戶長，畫面用 checkbox 控制
+          isHouseholdHead: true,
         },
       ],
-    },
-    salvation: {
-      // 超度地址
+    };
+    // 祖先及陽上人
+    const mySalvation = {
       address: "",
-      // 祖先清單
       ancestors: [
         {
           id: 1,
           surname: "",
+          zodiac: "",
           notes: "",
         },
       ],
-      // 陽上人清單
       survivors: [
         {
           id: 1,
@@ -63,12 +118,157 @@ export const useRegistrationStore = defineStore("registration", () => {
           notes: "",
         },
       ],
-    },
+    };
+
+    const initForm = {
+      state: "creating",
+      createdAt: createISOTime,
+      createdUser: "",
+      updatedAt: "",
+      updatedUser: "",
+      formName: "",
+      formId: "",
+      formSource: "",
+      contact: myContact,
+      blessing: myBlessing,
+      salvation: mySalvation,
+    };
+    return JSON.parse(JSON.stringify(initForm));
+  };
+
+  const addNewForm = () => {
+    try {
+      console.log("🚀 開始新增表單...");
+
+      const newForm = getInitialFormData();
+      // 將新表單預設填入聯絡人資料
+      newForm.state = "editing";
+      newForm.contact = JSON.parse(
+        JSON.stringify(registrationForm.value.contact)
+      );
+      // 將新表單推入陣列
+      formArray.value.push(newForm);
+      currentFormIndex.value = formArray.value.length - 1;
+
+      setupFormSync();
+
+      loadFormToRegistration(formArray.value[currentFormIndex.value]);
+      console.log("✅ 新增表單完成，當前索引:", currentFormIndex.value);
+      return currentFormIndex.value;
+    } catch (error) {
+      console.error("❌ 新增表單失敗:", error);
+      return -1;
+    }
+  };
+
+  const switchForm = (index) => {
+    try {
+      if (index < 0 || index >= formArray.value.length) {
+        console.error("❌ 切換表單索引無效:", index);
+        return false;
+      }
+
+      console.log("🔄 切換表單從", currentFormIndex.value, "到", index);
+
+      // 如果formId存在，不切換狀態
+      if (formArray.value[currentFormIndex.value].formId === "") {
+        formArray.value[currentFormIndex.value].state = "saved";
+      }
+
+      // 切換目標表單
+      const targetForm = formArray.value[index];
+      // 如果formId存在，不切換狀態
+      if (targetForm.formId === "") {
+        targetForm.state = "editing";
+      }
+      loadFormToRegistration(targetForm);
+      currentFormIndex.value = index;
+
+      setupFormSync();
+
+      console.log("表單切換完成，當前表單索引:", currentFormIndex.value);
+      return currentFormIndex.value;
+    } catch (error) {
+      console.error("❌ 表單切換失敗:", error);
+      return -1;
+    }
+  };
+
+  // 刪除表單
+  const deleteForm = (index) => {
+    console.log("🗑️ 開始刪除表單，索引:", index);
+    console.log("刪除前表單陣列長度:", formArray.value.length);
+    console.log("刪除前當前索引:", currentFormIndex.value);
+
+    if (formArray.value.length <= 1) {
+      console.log("❌ 至少需要保留一張表單");
+      return false;
+    }
+
+    if (formArray.value.length > 0 && currentFormIndex.value >= 0) {
+      formArray.value[currentFormIndex.value] = JSON.parse(
+        JSON.stringify(registrationForm.value)
+      );
+    }
+
+    formArray.value.splice(index, 1);
+    console.log("刪除後表單陣列長度:", formArray.value.length);
+
+    if (currentFormIndex.value === index) {
+      currentFormIndex.value = Math.max(0, index - 1);
+    } else if (currentFormIndex.value > index) {
+      currentFormIndex.value = currentFormIndex.value - 1;
+    }
+
+    console.log("刪除後調整的當前索引:", currentFormIndex.value);
+    const resultIndex = switchForm(currentFormIndex.value);
+    console.log("最終切換結果索引:", resultIndex);
+
+    return true;
+  };
+
+  // 複製表單
+  const duplicateForm = (index) => {
+    const duplicated = JSON.parse(JSON.stringify(formArray.value[index]));
+    duplicated.formName = `${duplicated.formName} - 複製`;
+    formArray.value.push(duplicated);
+    const resultIndex = switchForm(formArray.value.length - 1);
+  };
+
+  const getFormSummaries = computed(() => {
+    if (currentFormIndex.value === 0 && formArray.value.length === 0) {
+      return [];
+    }
+    return formArray.value.map((form, index) => ({
+      index,
+      formName: form.formName || `表單 ${index + 1}`,
+      formId: form.formId,
+      status: form.state,
+      createdAt: form.createdAt,
+      createdUser: form.createdUser,
+      updatedAt: form.updatedAt,
+      updatedUser: form.updatedUser,
+      contactName: form.contact.name,
+      personsCount: form.blessing.persons.filter((p) => p.name.trim()).length,
+      ancestorsCount: form.salvation.ancestors.filter((a) => a.surname.trim())
+        .length,
+    }));
   });
 
-  // UI 選項資料（對應 Registration.vue 的下拉/選項）
-  const relationshipOptions = ref(["本家", "娘家", "朋友", "其它"]);
+  const currentFormSummary = computed(
+    () => getFormSummaries.value[currentFormIndex.value]
+  );
 
+  const config = ref({
+    maxHouseholdHeads: 1,
+    maxAncestors: 1,
+    maxSurvivors: 2,
+    defaultSurvivors: 2,
+  });
+
+  const registrationForm = ref(getInitialFormData());
+
+  const relationshipOptions = ref(["本家", "娘家", "朋友", "其它"]);
   const zodiacOptions = ref([
     "鼠",
     "牛",
@@ -84,25 +284,20 @@ export const useRegistrationStore = defineStore("registration", () => {
     "豬",
   ]);
 
-  // --- computed getters ---
-  // currentHouseholdHeadsCount：計算目前被標記為戶長的人數（用於限制戶長數量）
   const currentHouseholdHeadsCount = computed(() => {
     return registrationForm.value.blessing.persons.filter(
       (person) => person.isHouseholdHead
     ).length;
   });
 
-  // currentAncestorsCount：目前祖先條目數，用於顯示與限制
   const currentAncestorsCount = computed(() => {
     return registrationForm.value.salvation.ancestors.length;
   });
 
-  // currentSurvivorsCount：目前陽上人數，用於顯示與限制
   const currentSurvivorsCount = computed(() => {
     return registrationForm.value.salvation.survivors.length;
   });
 
-  // availableBlessingPersons：過濾出已填寫姓名的消災人員，畫面可用這個來 "從消災人員載入" 陽上人
   const availableBlessingPersons = computed(() => {
     return registrationForm.value.blessing.persons.filter((person) => {
       const name = (person.name || "").toString().trim();
@@ -110,7 +305,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     });
   });
 
-  // availableAncestors：過濾出已填寫姓氏的祖先，供驗證使用（只有有填寫祖先時才要求超度地址）
   const availableAncestors = computed(() => {
     return registrationForm.value.salvation.ancestors.filter((a) => {
       const s = (a.surname || "").toString().trim();
@@ -118,7 +312,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     });
   });
 
-  // availableSurvivors：過濾出已填寫姓名的陽上人，供驗證使用
   const availableSurvivors = computed(() => {
     return registrationForm.value.salvation.survivors.filter((s) => {
       const name = (s.name || "").toString().trim();
@@ -126,22 +319,19 @@ export const useRegistrationStore = defineStore("registration", () => {
     });
   });
 
-  // actionMessage：store 內部提供的單一訊息物件，供 UI 讀取並顯示
   const actionMessage = ref({ type: null, text: "" });
   const setActionMessage = (type, text) => {
     actionMessage.value = { type, text };
     return actionMessage.value;
   };
 
-  // 提示訊息 computed：如果超出限制或缺少必要戶長，回傳警告字串，供畫面顯示
   const householdHeadWarning = computed(() => {
     const count = currentHouseholdHeadsCount.value;
-    const max = config.value.maxHouseholdHeads; // 最大戶長數
-    const filledCount = availableBlessingPersons.value.length; // 已填姓名的人數
+    const max = config.value.maxHouseholdHeads;
+    const filledCount = availableBlessingPersons.value.length;
     if (count > max) {
       return `戶長數量超過限制 (${count}/${max})`;
     } else if (filledCount > 0 && count === 0) {
-      // 只有當至少有一筆已填寫的消災人員時，才提示需指定戶長
       return "請至少指定一位戶長";
     }
     return null;
@@ -165,8 +355,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     return null;
   });
 
-  // validationDetails：回傳完整的驗證結果物件，包含每個欄位的狀態與錯誤訊息
-  // 這樣 Registration.vue 可以顯示更細的錯誤內容，例如提示哪個欄位未通過驗證
   const validationDetails = computed(() => {
     const details = {
       valid: true,
@@ -174,14 +362,12 @@ export const useRegistrationStore = defineStore("registration", () => {
       messages: [],
     };
 
-    // 戶長相關檢查
     const hhCount = currentHouseholdHeadsCount.value;
     if (hhCount > config.value.maxHouseholdHeads) {
       details.valid = false;
       details.errors.householdHead = `戶長數量超過限制 (${hhCount}/${config.value.maxHouseholdHeads})`;
       details.messages.push(details.errors.householdHead);
     } else if (availableBlessingPersons.value.length > 0 && hhCount === 0) {
-      // 只有當有已填寫的消災人員時，才要求至少指定一位戶長
       details.valid = false;
       details.errors.householdHead = "請至少指定一位戶長";
       details.messages.push(details.errors.householdHead);
@@ -189,7 +375,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.householdHead = null;
     }
 
-    // 祖先檢查
     const ancCount = currentAncestorsCount.value;
     if (ancCount > config.value.maxAncestors) {
       details.valid = false;
@@ -199,7 +384,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.ancestors = null;
     }
 
-    // 陽上人檢查
     const svCount = currentSurvivorsCount.value;
     if (svCount > config.value.maxSurvivors) {
       details.valid = false;
@@ -209,7 +393,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.survivors = null;
     }
 
-    // 聯絡人姓名
     if (!registrationForm.value.contact.name.trim()) {
       details.valid = false;
       details.errors.contactName = "聯絡人姓名為必填";
@@ -218,7 +401,14 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.contactName = null;
     }
 
-    // 電話或手機至少一個
+    if (!registrationForm.value.contact.relationship.trim()) {
+      details.valid = false;
+      details.errors.contactRelationship = "資料表屬性為必填";
+      details.messages.push(details.errors.contactRelationship);
+    } else {
+      details.errors.contactRelationship = null;
+    }
+
     if (
       !registrationForm.value.contact.phone.trim() &&
       !registrationForm.value.contact.mobile.trim()
@@ -230,7 +420,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.contactPhone = null;
     }
 
-    // 當 relationship 選擇為 '其它' 時，otherRelationship 必填
     if (
       registrationForm.value.contact.relationship === "其它" &&
       !registrationForm.value.contact.otherRelationship.trim()
@@ -242,13 +431,11 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.otherRelationship = null;
     }
 
-    // 消災地址
     const blessingAddrFilled =
       registrationForm.value.blessing.address &&
       registrationForm.value.blessing.address.trim();
     const filledBlessingPersons = availableBlessingPersons.value.length;
 
-    // 若已填寫至少一筆消災人員，則消災地址為必填
     if (filledBlessingPersons > 0 && !blessingAddrFilled) {
       details.valid = false;
       details.errors.blessingAddress = "已填寫消災人員，消災地址為必填";
@@ -257,7 +444,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.blessingAddress = null;
     }
 
-    // 當消災地址有填寫時，至少要有一筆已填寫的消災人員（保留對稱檢查）
     if (blessingAddrFilled && filledBlessingPersons === 0) {
       details.valid = false;
       details.errors.blessingPersons = "消災地址已填寫，請至少填寫一筆消災人員";
@@ -266,9 +452,22 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.blessingPersons = null;
     }
 
-    // 檢查消災人員是否有未填寫必要欄位（姓名）
     const allBlessingPersons = registrationForm.value.blessing.persons || [];
-    // 只有當清單中有 2 筆或以上時，才提示未填空白條目（避免預設一筆造成誤報）
+
+    if (filledBlessingPersons > 0 && blessingAddrFilled) {
+      const hasIncompletePerson = allBlessingPersons.some(
+        (p) => !p.zodiac || !p.zodiac.trim()
+      );
+      if (hasIncompletePerson) {
+        details.valid = false;
+        details.errors.blessingPersonIncomplete =
+          "消災人員中有未填寫生肖的條目，請填寫或刪除空白條目";
+        details.messages.push(details.errors.blessingPersonIncomplete);
+      } else {
+        details.errors.blessingPersonIncomplete = null;
+      }
+    }
+
     if (allBlessingPersons.length >= 2) {
       const hasIncompletePerson = allBlessingPersons.some(
         (p) => !p.name || !p.name.trim()
@@ -281,13 +480,9 @@ export const useRegistrationStore = defineStore("registration", () => {
       } else {
         details.errors.blessingPersonIncomplete = null;
       }
-    } else {
-      details.errors.blessingPersonIncomplete = null;
     }
 
-    // 檢查祖先名單是否有未填寫必要欄位（姓氏）
     const allAncestors = registrationForm.value.salvation.ancestors || [];
-    // 只有當祖先清單多於或等於 2 筆時才檢查
     if (allAncestors.length >= 2) {
       const hasIncompleteAncestor = allAncestors.some(
         (a) => !a.surname || !a.surname.trim()
@@ -304,9 +499,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.ancestorIncomplete = null;
     }
 
-    // 檢查陽上人名單是否有未填寫必要欄位（姓名）
     const allSurvivors = registrationForm.value.salvation.survivors || [];
-    // 只有當陽上人清單多於或等於 2 筆時才檢查
     if (allSurvivors.length >= 2) {
       const hasIncompleteSurvivor = allSurvivors.some(
         (s) => !s.name || !s.name.trim()
@@ -323,7 +516,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.survivorIncomplete = null;
     }
 
-    // 超度地址驗證：若已填寫祖先或陽上人，超度地址必填；若超度地址有填時，要求至少有祖先，且有祖先時需有陽上人
     const salvationAddrFilled = (registrationForm.value.salvation.address || "")
       .toString()
       .trim();
@@ -338,14 +530,12 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.salvationAddress = "已填寫祖先或陽上人，超度地址為必填";
       details.messages.push(details.errors.salvationAddress);
     } else if (salvationAddrFilled) {
-      // 超度地址已填情況：必須至少填寫一筆祖先
       if (filledAncestorsCount === 0) {
         details.valid = false;
         details.errors.salvationAddress =
           "超度地址已填寫，請至少填寫一筆歷代祖先";
         details.messages.push(details.errors.salvationAddress);
       } else if (filledSurvivorsCount === 0) {
-        // 有祖先但沒有陽上人
         details.valid = false;
         details.errors.survivorsRequiredForAncestors =
           "已填寫祖先，請至少填寫一位陽上人";
@@ -357,7 +547,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.salvationAddress = null;
     }
 
-    // 新規則：若有已填寫的祖先，但沒有任何已填寫的陽上人，視為不完整
     if (filledAncestorsCount > 0 && filledSurvivorsCount === 0) {
       details.valid = false;
       details.errors.survivorsRequiredForAncestors =
@@ -367,7 +556,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.survivorsRequiredForAncestors = null;
     }
 
-    // 新增檢查：消災人員或祖先必須至少有一項被填寫，避免兩邊都為空
     const hasFilledBlessing = availableBlessingPersons.value.length > 0;
     const hasFilledAncestors = availableAncestors.value.length > 0;
     if (!hasFilledBlessing && !hasFilledAncestors) {
@@ -382,11 +570,8 @@ export const useRegistrationStore = defineStore("registration", () => {
     return details;
   });
 
-  // isFormValid：維持布林值，但改由 validationDetails 計算，便於向下相容
   const isFormValid = computed(() => validationDetails.value.valid);
 
-  // --- Actions: 消災區塊相關操作 ---
-  // addBlessingPerson：新增一個消災人員條目（對應畫面上的 + 增加人員）
   const addBlessingPerson = () => {
     const newId =
       Math.max(...registrationForm.value.blessing.persons.map((p) => p.id), 0) +
@@ -400,7 +585,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     });
   };
 
-  // removeBlessingPerson：刪除消災人員（畫面有刪除按鈕），保護至少保留一筆
   const removeBlessingPerson = (id) => {
     const index = registrationForm.value.blessing.persons.findIndex(
       (p) => p.id === id
@@ -410,8 +594,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // toggleHouseholdHead：切換某人是否為戶長，並檢查不超過限制
-  // 當畫面上 checkbox 變動時會呼叫此函式
   const toggleHouseholdHead = (id) => {
     const person = registrationForm.value.blessing.persons.find(
       (p) => p.id === id
@@ -420,7 +602,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       if (person.isHouseholdHead) {
         person.isHouseholdHead = false;
       } else {
-        // 確保不超過最大戶長數
         if (currentHouseholdHeadsCount.value < config.value.maxHouseholdHeads) {
           person.isHouseholdHead = true;
         }
@@ -428,8 +609,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // --- Actions: 超度區塊相關操作 ---
-  // addAncestor / removeAncestor：管理祖先清單（畫面上的 + 增加祖先 / 刪除）
   const addAncestor = () => {
     const newId =
       Math.max(
@@ -452,7 +631,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // addSurvivor / removeSurvivor：管理陽上人名單
   const addSurvivor = () => {
     const newId =
       Math.max(
@@ -476,18 +654,13 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // importSurvivorFromBlessing：將已填寫的消災人員匯入為陽上人（畫面上有載入按鈕）
-  // 會檢查目前陽上人數是否已達上限，並避免重複匯入
   const importSurvivorFromBlessing = (person) => {
     const name = (person.name || "").trim();
     if (!name) {
       setActionMessage("warning", "此人資料無效，無法匯入");
       return { status: "invalid", message: "此人資料無效，無法匯入" };
     }
-    // if (currentSurvivorsCount.value >= config.value.maxSurvivors) {
-    //   setActionMessage("warning", "陽上人名單已達上限");
-    //   return { status: "max", message: "陽上人名單已達上限" };
-    // }
+
     const exists = registrationForm.value.salvation.survivors.some(
       (s) => s.name && s.name.trim() === name
     );
@@ -512,13 +685,13 @@ export const useRegistrationStore = defineStore("registration", () => {
     return { status: "ok", message: "已匯入陽上人" };
   };
 
-  // 將聯絡人加入消災人員（避免重複）
   const addContactToBlessing = () => {
     const name = (registrationForm.value.contact.name || "").trim();
     if (!name) {
       setActionMessage("warning", "聯絡人姓名為空，無法加入消災人員");
       return { status: "invalid", message: "聯絡人姓名為空" };
     }
+
     const exists = registrationForm.value.blessing.persons.some(
       (p) => p.name && p.name.trim() === name
     );
@@ -526,6 +699,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       setActionMessage("warning", "聯絡人已在消災人員名單中");
       return { status: "duplicate", message: "聯絡人已在消災人員名單中" };
     }
+
     const newId =
       Math.max(...registrationForm.value.blessing.persons.map((p) => p.id), 0) +
       1;
@@ -536,21 +710,23 @@ export const useRegistrationStore = defineStore("registration", () => {
       notes: "",
       isHouseholdHead: false,
     });
+
     setActionMessage("success", "已將聯絡人加入消災人員");
     return { status: "ok", message: "已將聯絡人加入消災人員" };
   };
 
-  // 將聯絡人加入陽上人（避免重複，並檢查上限）
   const addContactToSurvivors = () => {
     const name = (registrationForm.value.contact.name || "").trim();
     if (!name) {
       setActionMessage("warning", "聯絡人姓名為空，無法加入陽上人");
       return { status: "invalid", message: "聯絡人姓名為空" };
     }
+
     if (currentSurvivorsCount.value >= config.value.maxSurvivors) {
       setActionMessage("warning", "陽上人名單已達上限");
       return { status: "max", message: "陽上人名單已達上限" };
     }
+
     const exists = registrationForm.value.salvation.survivors.some(
       (s) => s.name && s.name.trim() === name
     );
@@ -558,6 +734,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       setActionMessage("warning", "聯絡人已在陽上人名單中");
       return { status: "duplicate", message: "聯絡人已在陽上人名單中" };
     }
+
     const newId =
       Math.max(
         ...registrationForm.value.salvation.survivors.map((s) => s.id),
@@ -569,11 +746,11 @@ export const useRegistrationStore = defineStore("registration", () => {
       zodiac: "",
       notes: "",
     });
+
     setActionMessage("success", "已將聯絡人加入陽上人名單");
     return { status: "ok", message: "已將聯絡人加入陽上人名單" };
   };
 
-  // 複製消災地址到超度地址（回傳 boolean，供 UI 顯示訊息）
   const copyBlessingAddress = () => {
     const src = (registrationForm.value.blessing.address || "").trim();
     if (src) {
@@ -583,97 +760,133 @@ export const useRegistrationStore = defineStore("registration", () => {
     return false;
   };
 
-  // submitRegistration：提交表單（此處為模擬，實際可呼叫 API）
-  // 在 Registration.vue 中 submitForm 會呼叫此方法並顯示結果
+  const getCurrentUser = () => {
+    const userInfo = sessionStorage.getItem("auth-user");
+    console.log("獲取到的用戶信息:", userInfo);
+    if (userInfo) {
+      const user = JSON.parse(userInfo);
+      return user.id || user.username || user.displayName || "unknown";
+    }
+    return "anonymous";
+  };
+
   const submitRegistration = async () => {
     if (!isFormValid.value) {
       throw new Error("表單驗證失敗，請檢查所有必填欄位");
     }
 
-    try {
-      // 模擬API調用
-      // 這裡將來可以替換為真實的API調用
-      // const response = await api.post('/registrations', registrationForm.value)
+    if (registrationForm.value.formId.trim() !== "") {
+      throw new Error("當前表單已提交過，請勿重複提交");
+    }
 
-      console.log(
-        "提交的報名數據:",
-        JSON.parse(JSON.stringify(registrationForm.value))
+    try {
+      const createISOTime = new Date().toISOString();
+      const timestamp = Date.now().toString();
+      console.log("ISO 時間:", createISOTime);
+      console.log("時間戳:", timestamp);
+      const hash = generateGitHash(createISOTime);
+      console.log(`hash:${hash}`);
+
+      const currentUser = getCurrentUser();
+      registrationForm.value.createdUser = currentUser;
+      registrationForm.value.formId = hash;
+      registrationForm.value.createdAt = createISOTime;
+      registrationForm.value.state = "submitted";
+
+      if (serviceConfig.mode !== "directus") {
+        console.warn(
+          "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
+        );
+
+        return {
+          success: true,
+          message:
+            "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式",
+          data: {
+            id: Date.now(),
+            ...registrationForm.value,
+          },
+        };
+      }
+
+      const result = await registrationService.createRegistration(
+        registrationForm.value
       );
 
-      // 模擬成功響應
-      // 在成功時先重置表單
-      resetForm();
+      if (result.success) {
+        console.log("報名提交成功！回傳數據:", result.data);
 
-      return {
-        success: true,
-        message: "報名提交成功！",
-        data: {
-          id: Date.now(),
-          ...registrationForm.value,
-        },
-      };
+        return {
+          success: result.success,
+          message: "報名提交成功！",
+          formId: result.formId,
+          data: {
+            dbName: "registrationDB",
+            ...result.data,
+          },
+        };
+      } else {
+        console.error("報名提交失敗！", result.message);
+        return { ...result };
+      }
     } catch (error) {
-      console.error("提交報名失敗:", error);
+      console.error("報名提交error", error);
       throw error;
     }
   };
 
-  // resetForm：重置整個表單為初始狀態（畫面上的重置按鈕呼叫）
   const resetForm = () => {
-    registrationForm.value = {
-      contact: {
-        name: "",
-        phone: "",
-        mobile: "",
-        relationship: "本家",
-        otherRelationship: "",
-      },
-      blessing: {
-        address: "",
-        persons: [
-          {
-            id: 1,
-            name: "",
-            zodiac: "",
-            notes: "",
-            isHouseholdHead: true,
-          },
-        ],
-      },
-      salvation: {
-        address: "",
-        ancestors: [
-          {
-            id: 1,
-            surname: "",
-            notes: "",
-          },
-        ],
-        survivors: [
-          {
-            id: 1,
-            name: "",
-            zodiac: "",
-            notes: "",
-          },
-          {
-            id: 2,
-            name: "",
-            zodiac: "",
-            notes: "",
-          },
-        ],
-      },
-    };
+    try {
+      console.log("開始重置表單...");
+
+      const initialData = getInitialFormData();
+
+      registrationForm.value.state = initialData.state;
+      registrationForm.value.createdAt = initialData.createdAt;
+      registrationForm.value.createdUser = initialData.createdUser;
+      registrationForm.value.updatedAt = initialData.updatedAt;
+      registrationForm.value.updatedUser = initialData.updatedUser;
+      registrationForm.value.formName = initialData.formName;
+      registrationForm.value.formId = initialData.formId;
+      registrationForm.value.formSource = initialData.formSource;
+
+      registrationForm.value.contact.name = initialData.contact.name;
+      registrationForm.value.contact.phone = initialData.contact.phone;
+      registrationForm.value.contact.mobile = initialData.contact.mobile;
+      registrationForm.value.contact.relationship =
+        initialData.contact.relationship;
+      registrationForm.value.contact.otherRelationship =
+        initialData.contact.otherRelationship;
+
+      registrationForm.value.blessing.address = initialData.blessing.address;
+      registrationForm.value.blessing.persons =
+        initialData.blessing.persons.map((person) => ({
+          ...person,
+        }));
+
+      registrationForm.value.salvation.address = initialData.salvation.address;
+      registrationForm.value.salvation.ancestors =
+        initialData.salvation.ancestors.map((ancestor) => ({
+          ...ancestor,
+        }));
+      registrationForm.value.salvation.survivors =
+        initialData.salvation.survivors.map((survivor) => ({
+          ...survivor,
+        }));
+
+      formArray.value = [{ ...initialData }];
+      currentFormIndex.value = 0;
+
+      console.log("表單重置完成", registrationForm.value);
+      return true;
+    } catch (error) {
+      console.error("重置表單失敗:", error);
+      return false;
+    }
   };
 
-  // loadConfig：模擬從遠端加載配置，未來可改成真正的 API 請求
   const loadConfig = async () => {
     try {
-      // 模擬從API加載配置
-      // const response = await api.get('/registration-config')
-      // config.value = response.data
-
       console.log("加載配置成功");
       return config.value;
     } catch (error) {
@@ -682,14 +895,101 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  const initializeFormArray = () => {
+    if (formArray.value.length === 0) {
+      formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
+      console.log("✅ 表單陣列已初始化");
+    }
+    // 設定自動同步機制
+    setupFormSync();
+    console.log("✅ 自動同步已啟動");
+  };
+
+  // 載入 Mock 數據
+  const loadMockData = async () => {
+    try {
+      // 動態導入 mock 數據
+      //const mockModule = await import('../data/mock_registrations.json');
+      //const mockRegistrations = mockModule.default || mockModule;
+
+      if (!mockRegistrations || mockRegistrations.length === 0) {
+        console.error("Mock 數據為空或未找到");
+        return false;
+      }
+
+      // 隨機選擇一筆數據
+      const randomIndex = Math.floor(Math.random() * mockRegistrations.length);
+      const mockData = mockRegistrations[randomIndex];
+
+      console.log("載入 Mock 數據:", mockData);
+
+      // 更新當前表單數據，但保留表單的狀態和 ID
+      //const currentForm = formArray[currentFormIndex.value];
+      const currentForm = getInitialFormData();
+
+      // 只更新數據字段，不改變表單狀態和 ID
+      if (mockData.contact) {
+        currentForm.contact = { ...mockData.contact };
+        console.log("載入 Mock contact 數據:", currentForm.contact);
+      }
+
+      if (mockData.blessing) {
+        currentForm.blessing = {
+          ...mockData.blessing,
+          persons: mockData.blessing.persons
+            ? [...mockData.blessing.persons]
+            : [],
+        };
+        console.log("載入 Mock blessing 數據:", currentForm.blessing);
+      }
+
+      if (mockData.salvation) {
+        currentForm.salvation = {
+          ...mockData.salvation,
+          ancestors: mockData.salvation.ancestors
+            ? [...mockData.salvation.ancestors]
+            : [],
+          survivors: mockData.salvation.survivors
+            ? [...mockData.salvation.survivors]
+            : [],
+        };
+        console.log("載入 Mock salvation 數據:", currentForm.salvation);
+      }
+
+      // 更新表單名稱（可選）
+      if (mockData.formName) {
+        currentForm.formName = mockData.formName;
+      }
+
+      // 設置表單狀態為編輯中
+      currentForm.state = "editing";
+
+      // 觸發響應式更新
+      formArray.value[currentFormIndex.value] = JSON.parse(
+        JSON.stringify(currentForm)
+      );
+
+      console.log("Mock 數據載入完成，當前表單:", currentForm);
+
+      // 更新當前表單數據
+      loadFormToRegistration(formArray.value[currentFormIndex.value]);
+
+      return true;
+    } catch (error) {
+      console.error("載入 Mock 數據失敗:", error);
+      return false;
+    }
+  };
+
   return {
-    // 狀態
     config,
     registrationForm,
     relationshipOptions,
     zodiacOptions,
-
-    // Getter
+    formArray,
+    currentFormIndex,
+    getFormSummaries,
+    currentFormSummary,
     currentHouseholdHeadsCount,
     currentAncestorsCount,
     currentSurvivorsCount,
@@ -702,8 +1002,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     survivorsWarning,
     isFormValid,
     validationDetails,
-
-    // Actions
     addBlessingPerson,
     removeBlessingPerson,
     toggleHouseholdHead,
@@ -716,7 +1014,15 @@ export const useRegistrationStore = defineStore("registration", () => {
     addContactToSurvivors,
     copyBlessingAddress,
     submitRegistration,
-    resetForm,
     loadConfig,
+    resetForm,
+    addNewForm,
+    switchForm,
+    deleteForm,
+    duplicateForm,
+    initializeFormArray, // 🆕 供 Vue 組件調用
+    setupFormSync, // 🆕 供外部使用
+    loadFormToRegistration, // 🆕 供外部使用
+    loadMockData, // 🆕 供外部使用
   };
 });

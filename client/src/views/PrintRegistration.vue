@@ -5,7 +5,7 @@
     <div class="print-controls" v-if="!isPrinting">
       <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
       <button @click="handleClose" class="close-btn">✖️ 關閉</button>
-      <span class="print-tips">提示：建議使用橫向列印以獲得最佳效果</span>
+      <span style="display: none;" class="print-tips">提示：建議使用橫向列印以獲得最佳效果</span>
     </div>
 
     <!-- 列印內容 -->

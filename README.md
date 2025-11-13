@@ -1,10 +1,11 @@
 # zhengkuo-behappy
-An zhengkuo-behappy app for eform app
+A zhengkuo-behappy project for client and server apps
 
 ## frontent
-deepseek
-gpt
-perplexity
+/client 消災超度登記系統
 
 ## backend
-server
+/server 資料串接API
+
+## dev:full in root folder
+npm run dev:full

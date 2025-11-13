@@ -1,0 +1,18 @@
+./server
+├── Directus user setup.md
+├── README.md
+├── data.db
+├── package-lock.json
+├── package.json
+└── schema
+    ├── articles-schema.json
+    ├── articles-simple.json
+    ├── delete-articles.js
+    ├── delete-articles.mjs
+    ├── step1-articles.json
+    ├── step2-cats-tags.json
+    ├── step3-junction.json
+    ├── step4-article-category-image.json
+    └── step5-article-tags-alias.json
+
+2 directories, 14 files

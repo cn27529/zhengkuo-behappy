@@ -6,7 +6,7 @@
           <div class="logo-icon">🛕</div>
           <h1>{{ appTitle }}</h1>
           <div class="user-info" v-if="showUserInfo">
-            <span>{{ userNickname }}</span
+            <span>{{ userDisplayName }}</span
             >&nbsp;<span>你好</span>🙏
           </div>
         </div>
@@ -69,8 +69,9 @@
     </div>
     <!-- 底部-->
     <footer v-if="layoutReady && showFooter">
-      <p>© 2025 {{ appTitle }} | 弘扬佛法，服务众生</p>
+      <p>© 2025 {{ appTitle }} | 弘扬佛法、服务众生</p>
     </footer>
+    <!-- <DevTools /> -->
   </div>
 </template>
 
@@ -80,16 +81,20 @@ import { useAuthStore } from "./stores/auth";
 import { useMenuStore } from "./stores/menu";
 import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
 import appConfig from "./config/appConfig";
+import DevTools from "./components/DevTools.vue";
 
 export default {
   name: "App",
+  components: {
+    DevTools,
+  },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const authStore = useAuthStore();
     const menuStore = useMenuStore();
 
-    const menuPosition = ref(localStorage.getItem("menuPosition") || "left");
+    const menuPosition = ref(sessionStorage.getItem("menuPosition") || "left");
 
     // 顶部导航栏显示控制：在非打印页面显示，將三個 UI 可見性預設為 false，等待子組件載入完成後再設定
     const showHeader = ref(false);
@@ -103,7 +108,7 @@ export default {
     // layoutReady: 在子組件完成渲染（nextTick）後才變 true，避免先顯示後隱藏的閃爍
     const layoutReady = ref(false);
 
-    const userNickname = ref("");
+    const userDisplayName = ref("");
 
     // 計算是否為列印路由（供判斷用）
     const isPrintRoute = computed(
@@ -179,10 +184,10 @@ export default {
       next();
     });
 
-    // 當 menuPosition 改變時，同步到 localStorage
+    // 當 menuPosition 改變時，同步到 sessionStorage
     watch(menuPosition, (val) => {
       try {
-        localStorage.setItem("menuPosition", val);
+        sessionStorage.setItem("menuPosition", val);
       } catch (e) {
         // ignore quota errors
       }
@@ -190,21 +195,23 @@ export default {
 
     // 在组件挂载前初始化认证状态
     const initializeApp = async () => {
-      // 确保认证状态已恢复
-      if (localStorage.getItem("token")) {
-        authStore.initAuth();
-      }
+      
+      // // 确保认证状态已恢复
+      // if (sessionStorage.getItem("auth-user")) {
+      //   authStore.initializeAuth();
+      // }
 
-      // 检查当前路由是否需要重定向
-      if (route.meta.requiresAuth && !authStore.isAuthenticated) {
-        await router.push("/login");
-        return;
-      }
+      // // 检查当前路由是否需要重定向
+      // if (route.meta.requiresAuth && !authStore.isAuthenticated) {
+      //   await router.push("/login");
+      //   return;
+      // }
 
-      if (route.meta.requiresGuest && authStore.isAuthenticated) {
-        await router.push("/");
-        return;
-      }
+      // if (route.meta.requiresGuest && authStore.isAuthenticated) {
+      //   await router.push("/");
+      //   return;
+      // }
+
       // 初始化菜单
       menuStore.initializeActiveMenu();
       // 更新布局可见性
@@ -213,7 +220,7 @@ export default {
 
     // 监听 authStore.user 的变化
     watch(() => authStore.user, (newUser) => {
-      userNickname.value = newUser ? newUser.nickname : "訪客"
+      userDisplayName.value = newUser ? newUser.displayName : "訪客"
     }, { immediate: true })
 
     onMounted(() => {
@@ -223,7 +230,7 @@ export default {
       menuStore.initializeActiveMenu();
 
       // 修改用户昵称的计算方式
-      userNickname.value = authStore.user ? authStore.user.nickname : "訪客";
+      userDisplayName.value = authStore.user ? authStore.user.displayName : "訪客";
 
       // 初始載入時，在 nextTick 後設定 header/sidebar/footer
       updateLayoutVisibility();
@@ -246,10 +253,21 @@ export default {
       isMenuActive,
       handleMenuClick,
       appTitle: appConfig.title,
-      userNickname,
+      userDisplayName,
     };
   },
 };
+
+// 增加粘性标题时的样式
+// window.addEventListener('scroll', function() {
+//     var header = document.querySelector('.form-header');
+//     if (window.pageYOffset > 0) {
+//         header.classList.add('sticky');
+//     } else {
+//         header.classList.remove('sticky');
+//     }
+// });
+
 </script>
 
 <style>
@@ -390,44 +408,7 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .dashboard-content {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    order: 1;
-    max-height: 300px;
-  }
-
-  .main-content {
-    order: 0;
-    padding: 1rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chart-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .header-right {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .dashboard-header {
-    padding: 1rem;
-  }
-
-  .nav-link:hover,
-  .nav-link.active {
-    transform: translateY(2px);
-  }
+  
 }
 
 /* 滚动条样式 */
@@ -482,5 +463,76 @@ export default {
   transition: all 0.3s ease;
 }
 
-/* 其他原有样式保持不变 */
+/* 胶囊样式按钮 */
+.capsule-btn {
+  border-radius: 50px !important;
+  padding: 12px 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+
+  .dashboard-content {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    order: 1;
+    max-height: 300px;
+  }
+
+  .main-content {
+    order: 0;
+    padding: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-right {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .dashboard-header {
+    padding: 1rem;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    transform: translateY(2px);
+  }
+  
+  .dialog-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .warning-icon {
+    align-self: center;
+  }
+
+  /* 自訂對話框樣式 */
+  :deep(.custom-dialog .el-dialog__title) {
+    color: white !important;
+    
+  }
+
+  /* 移动端按钮样式调整 */
+  .capsule-btn {
+    padding: 14px 30px;
+    font-size: 16px;
+  }
+}
+
 </style>
