@@ -39,12 +39,6 @@
     >
       🎲 載入 Mock 數據
     </button>
-    <button 
-      @click="clearMockData" 
-      class="btn btn-outline btn-sm"
-    >
-      🗑️ 清除 Mock 數據
-    </button>
   </div>
       </div>
       <!-- 表單切換器 -->
@@ -591,25 +585,6 @@ const loadMockData = async () => {
   }
 };
 
-// 清除 Mock 數據
-const clearMockData = () => {
-  ElMessageBox.confirm(
-    '確定要清除當前表單的 Mock 數據嗎？',
-    '確認清除',
-    {
-      confirmButtonText: '確定清除',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  )
-  .then(() => {
-    registrationStore.clearCurrentForm();
-    ElMessage.success('Mock 數據已清除');
-  })
-  .catch(() => {
-    ElMessage.info('已取消清除操作');
-  });
-};
 
     // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
     const currentFormIndex = computed(() => registrationStore.currentFormIndex);
@@ -923,9 +898,7 @@ const clearMockData = () => {
       availableSurvivors: registrationStore.availableSurvivors,
       relationshipOptions: registrationStore.relationshipOptions,
       zodiacOptions: registrationStore.zodiacOptions,
-      // 新增的 Mock 方法
-  loadMockData,
-  clearMockData,
+      loadMockData,
     };
   },
 };
