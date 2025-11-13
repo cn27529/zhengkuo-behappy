@@ -20,7 +20,7 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 2,
-      name: "活动报名",
+      name: "登記报名",
       path: "/registration", // 修改路徑
       icon: "📝",
       component: "Registration", // 修改組件名稱

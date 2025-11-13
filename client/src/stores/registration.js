@@ -981,6 +981,21 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  const queryRegistrationData = async (queryData) => {
+    try {
+      if (!mockRegistrations || mockRegistrations.length === 0) {
+        console.error("Mock 數據為空或未找到");
+        return false;
+      }
+
+      console.log("查詢 Mock 數據:", queryData);
+      return mockRegistrations;
+    } catch (error) {
+      console.error("載入 Mock 數據失敗:", error);
+      return false;
+    }
+  };
+
   return {
     config,
     registrationForm,
@@ -1024,5 +1039,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     setupFormSync, // 🆕 供外部使用
     loadFormToRegistration, // 🆕 供外部使用
     loadMockData, // 🆕 供外部使用
+    queryRegistrationData, // 🆕 供外部使用
   };
 });

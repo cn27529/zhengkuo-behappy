@@ -12,7 +12,7 @@
     "test:hash": "node scripts/testGitHash.js",
     "start:server": "cd server && npm run dev",
     "start:client": "cd client && npm run dev",
-    "dev:full": "concurrently \"npm:start:server\" \"npm:start:client\" "
+    "dev": "concurrently \"npm:start:server\" \"npm:start:client\" "
   },
   "keywords": [],
   "author": "",

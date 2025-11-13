@@ -3,7 +3,7 @@
       <main class="main-content">
         <div class="page-header">
           <h2>活动统计仪表板</h2>
-          <p>查看活动报名情况和统计数据</p>
+          <p>查看登記报名情况和统计数据</p>
           <div class="total-participants">
             年度总参与人数: <strong>{{ totalParticipants }}</strong> 人
           </div>
