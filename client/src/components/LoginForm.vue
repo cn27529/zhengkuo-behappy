@@ -74,7 +74,7 @@
 
 <script>
 import { ref, reactive, onMounted } from "vue";
-import { useAuthStore } from "../stores/auth";
+import { useAuthStore } from "../stores/auth.js";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 
@@ -123,7 +123,7 @@ export default {
     const confirmDeviceDialog = () => {
       showDeviceDialog.value = false;
       // 可選：將用戶選擇存儲在本地，避免每次都要顯示
-      //localStorage.setItem('device-warning-confirmed', 'true');
+      //sessionStorage.setItem('device-warning-confirmed', 'true');
     };
 
     const loginForm = reactive({
@@ -170,26 +170,8 @@ export default {
 
       try {
         await authStore.login(loginForm.username, loginForm.password);
-        //success.value = true
 
-        // const userData = {
-        //   username: loginForm.username,
-        //   nickname: authStore.user.nickname,
-        //   roles: authStore.user.roles,
-        // };
-
-        // console.log("登入使用者資料:", userData);
-
-        // // 根據 rememberMe 選擇存儲方式
-        // if (rememberMe.value) {
-        //   // 使用 localStorage（有安全風險，但方便）
-        //   localStorage.setItem("auth-user", JSON.stringify(userData));
-        // } else {
-        //   // 使用 sessionStorage（關閉瀏覽器就登出）
-        //   sessionStorage.setItem("auth-user", JSON.stringify(userData));
-        // }
-
-        ElMessage.success("登录成功！正在跳转...👍👍");
+        ElMessage.success("登录成功！正在跳转至主页...👍👍");
 
         // 模拟跳转延迟
         setTimeout(() => {
@@ -197,7 +179,8 @@ export default {
           router.push("/dashboard");
         }, 1500);
       } catch (error) {
-        alert(error.message);
+        //alert(error.message);
+        ElMessage.error("登入失敗: " + error.message);
         console.error("登入失敗:", error);
       } finally {
         loading.value = false;
@@ -208,7 +191,7 @@ export default {
     onMounted(() => {
       
       // // 檢查用戶是否已經確認過提示
-      // const hasConfirmed = localStorage.getItem('device-warning-confirmed');
+      // const hasConfirmed = sessionStorage.getItem('device-warning-confirmed');
       
       if (isMobileDevice() || detectDeviceType() === 'mobile') {
         // 延迟显示，确保页面加载完成

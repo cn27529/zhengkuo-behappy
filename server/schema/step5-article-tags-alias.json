@@ -1,0 +1,20 @@
+{
+    "fields": [
+        {
+            "collection": "articles",
+            "field": "tags",
+            "type": "alias",
+            "meta": {
+                "interface": "list-m2m",
+                "note": "文章的多對多標籤",
+                "options": {
+                    "junction_collection": "articles_tags",
+                    "junction_field": "article",
+                    "related_collection": "tags",
+                    "related_field": "tag"
+                }
+            },
+            "schema": null
+        }
+    ]
+}

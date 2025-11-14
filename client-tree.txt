@@ -1,0 +1,72 @@
+─(base) ⠠⠵ tree -I "node_modules|.git|dist" ./client > client-tree.txt 
+./client
+├── README.md
+├── index.html
+├── package.json
+├── public
+│   ├── temple-icon.png
+│   ├── vite.svg
+│   └── vue.svg
+├── src
+│   ├── App.vue
+│   ├── assets
+│   │   └── vue.svg
+│   ├── components
+│   │   ├── BlessingSection.vue
+│   │   ├── BlessingSection2.vue
+│   │   ├── ContactForm.vue
+│   │   ├── DevTools.vue
+│   │   ├── EnvTest.vue
+│   │   ├── LoginForm.vue
+│   │   ├── PersonForm.vue
+│   │   ├── SalvationSection.vue
+│   │   ├── SalvationSection2.vue
+│   │   └── SupabaseLoginForm.vue
+│   ├── config
+│   │   ├── appConfig.js
+│   │   ├── serviceConfig.js
+│   │   └── supabase.js
+│   ├── data
+│   │   ├── auth_user.json
+│   │   ├── mock_registrations.json
+│   │   └── mock_registrations.md
+│   ├── main.js
+│   ├── router
+│   │   └── index.js
+│   ├── services
+│   │   ├── authService.js
+│   │   ├── mydataService.js
+│   │   └── registrationService.js
+│   ├── stores
+│   │   ├── activities.js
+│   │   ├── auth.js
+│   │   ├── menu.js
+│   │   ├── registration.js
+│   │   ├── supabase-auth.js
+│   │   └── taisui.js
+│   ├── style.css
+│   ├── utils
+│   │   ├── generateGitHash.js
+│   │   ├── generateGitHashAsync.js
+│   │   └── mockDataHelper.js
+│   └── views
+│       ├── Contact.vue
+│       ├── Dashboard.vue
+│       ├── Empty.vue
+│       ├── Env.vue
+│       ├── Login.vue
+│       ├── LoginView.vue
+│       ├── Logout.vue
+│       ├── MydataForm.vue
+│       ├── MydataList.vue
+│       ├── Placeholder.vue
+│       ├── PrintRegistration.vue
+│       ├── Registration.vue
+│       ├── RegistrationList.vue
+│       ├── SupabaseLogin.vue
+│       ├── TaiSui.vue
+│       ├── TestPage.vue
+│       └── generatorHash.vue
+└── vite.config.js
+
+12 directories, 57 files
