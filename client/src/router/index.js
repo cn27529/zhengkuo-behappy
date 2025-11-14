@@ -73,7 +73,7 @@ const routes = [
     },
   },
   {
-    path: "/registrationList",
+    path: "/registration-list",
     name: "RegistrationList",
     component: () => import("../views/RegistrationList.vue"),
     meta: {

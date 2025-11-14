@@ -11,11 +11,12 @@
     <div class="form-content">
       <!-- 年份输入区域 -->
       <div id="sticky" class="form-section">
-        <h2>查詢年份</h2>
         <div class="form-grid">
           <!-- 在模板中修改輸入框 -->
           <div class="form-group address-row">
-            <label for="yearInput">輸入年份</label>
+            <label for="yearInput">
+              <h3>查詢年份</h3>
+            </label>
             <input
               type="number"
               id="yearInput"

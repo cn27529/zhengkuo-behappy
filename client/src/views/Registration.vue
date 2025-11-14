@@ -2,7 +2,7 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>{{ appTitle }}表</h2>
+      <h2>消災超度登記</h2>
     </div>
 
     <!-- 在 .form-header div 內新增表單切換區塊 -->

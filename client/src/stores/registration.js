@@ -835,6 +835,71 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  const queryRegistrationData = async (queryData) => {
+    try {
+      if (!mockRegistrations || mockRegistrations.length === 0) {
+        console.error("Mock 數據為空或未找到");
+        return {
+          success: false,
+          message: "Mock 數據為空或未找到",
+          data: [],
+        };
+      }
+
+      // 如果有查詢條件，進行過濾
+      let filteredData = mockRegistrations;
+      if (queryData && queryData.query && queryData.query.trim()) {
+        const query = queryData.query.trim().toLowerCase();
+        filteredData = mockRegistrations.filter((item) => {
+          // 搜尋聯絡人姓名
+          if (item.contact?.name?.toLowerCase().includes(query)) return true;
+          // 搜尋手機號碼
+          if (item.contact?.mobile?.toLowerCase().includes(query)) return true;
+          // 搜尋家用電話
+          if (item.contact?.phone?.toLowerCase().includes(query)) return true;
+          // 搜尋消災人員姓名
+          if (
+            item.blessing?.persons?.some((person) =>
+              person.name?.toLowerCase().includes(query)
+            )
+          )
+            return true;
+          // 搜尋消災地址
+          if (item.blessing?.address?.toLowerCase().includes(query))
+            return true;
+          // 搜尋超度地址
+          if (item.salvation?.address?.toLowerCase().includes(query))
+            return true;
+          // 搜尋陽上人姓名
+          if (
+            item.salvation?.survivors?.some((survivor) =>
+              survivor.name?.toLowerCase().includes(query)
+            )
+          )
+            return true;
+          return false;
+        });
+      }
+
+      console.log("查詢結果數據:", filteredData);
+      console.log("查詢結果數據類型:", typeof filteredData);
+      console.log("查詢結果數據長度:", filteredData.length);
+
+      return {
+        success: true,
+        message: `找到 ${filteredData.length} 筆資料`,
+        data: filteredData, // 這裡直接返回陣列
+      };
+    } catch (error) {
+      console.error("報名查詢錯誤:", error);
+      return {
+        success: false,
+        message: "查詢過程中發生錯誤",
+        data: [],
+      };
+    }
+  };
+
   const loadConfig = async () => {
     try {
       console.log("加載配置成功");
@@ -925,21 +990,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       loadFormToRegistration(formArray.value[currentFormIndex.value]);
 
       return true;
-    } catch (error) {
-      console.error("載入 Mock 數據失敗:", error);
-      return false;
-    }
-  };
-
-  const queryRegistrationData = async (queryData) => {
-    try {
-      if (!mockRegistrations || mockRegistrations.length === 0) {
-        console.error("Mock 數據為空或未找到");
-        return false;
-      }
-
-      console.log("查詢 Mock 數據:", queryData);
-      return mockRegistrations;
     } catch (error) {
       console.error("載入 Mock 數據失敗:", error);
       return false;
