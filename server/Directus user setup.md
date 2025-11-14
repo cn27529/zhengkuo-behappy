@@ -139,7 +139,7 @@ fetch('http://localhost:8055/auth/login', {
 ## 9. 故障排除
 
 ### Directus 無法啟動
-- 檢查端口 3000 是否被占用
+- 檢查端口 5173 是否被占用
 - 確認資料庫連接正常
 - 查看 `server/logs` 目錄的錯誤日誌
 
