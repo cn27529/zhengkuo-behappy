@@ -1,11 +1,17 @@
 <!-- src/views/Placeholder.vue -->
 <template>
-  <div class="placeholder-container">
-    <div class="placeholder-content">
-      <h2>環境測試</h2>
-    <EnvForm />
+  <div class="main-content">
+      <div class="page-header">
+        <h2>環境檢查</h2>
+      </div>
+      <div class="form-header">
+      </div>
+      <div class="form-content">
+        <div class="form-section">
+          <EnvForm />
+        </div>
+      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -20,23 +26,7 @@ export default {
 </script>
 
 <style scoped>
-.placeholder-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  padding: 2rem;
-}
 
-.placeholder-content {
-  text-align: center;
-  background: white;
-  padding: 3rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 960px;
-  width: 100%;
-}
 
 .placeholder-icon {
   font-size: 4rem;

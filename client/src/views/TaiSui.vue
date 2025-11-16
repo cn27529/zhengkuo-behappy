@@ -356,10 +356,6 @@ export default {
 </script>
 
 <style scoped>
-/* 保持原有的 CSS 样式不变 */
-.form-content {
-  margin: 0 auto;
-}
 
 /* 增加粘性标题时的样式 */
 .form-section.sticky {
@@ -371,26 +367,6 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-}
-
-.form-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.form-section h2 {
-  color: var(--primary-color);
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--light-color);
-}
-
-.form-section h3 {
-  color: #333;
-  margin-bottom: 1rem;
 }
 
 .form-grid {

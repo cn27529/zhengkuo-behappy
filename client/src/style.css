@@ -40,6 +40,7 @@ header {
 }
 
 .page-header {
+  text-align: left;
   margin-bottom: 2rem;
 }
 
@@ -98,9 +99,9 @@ nav a.router-link-active {
 }
 
 main {
-  flex: 1;
+  /* flex: 1;
   padding: 1rem;
-  max-width: 1200px;
+  max-width: 1200px; */
   margin: 0 auto;
   width: 100%;
 }
@@ -241,6 +242,10 @@ footer {
   .page {
     padding: 1.5rem;
   }
+
+  .logo h1 {
+    display: none;
+  }
 }
 
 /* 添加按钮样式 20251016加
@@ -260,6 +265,15 @@ canvas {
   height: auto !important;
 }
 
+/* 主内容区域 */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  order: 0;
+}
+
 /* 滚动条样式 */
 .main-content::-webkit-scrollbar {
   width: 6px;
@@ -276,4 +290,34 @@ canvas {
 
 .main-content::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+.form-content {
+  margin: 0 auto;
+}
+
+.form-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.form-section h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--light-color);
+}
+
+.form-section h3 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.form-section input,
+.form-section select {
+  margin-right: 0.5rem;
+  padding: 0.5rem;
 }

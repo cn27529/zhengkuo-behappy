@@ -862,49 +862,13 @@ export default {
 </script>
 
 <style scoped>
-/* .registration-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem;
-}
 
-.page-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.page-header h1 {
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-}
-
-.page-header p {
-  color: #666;
-  font-size: 1.1rem;
-} */
-
-.form-content {
-  margin: 0 auto;
-}
 
 .ancestors-section {
   margin-bottom: 20px;
 }
 
-.form-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
 
-.form-section h2 {
-  color: var(--primary-color);
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--light-color);
-}
 
 .form-grid {
   display: grid;
@@ -1306,7 +1270,6 @@ select:focus {
   .form-section {
     padding: 1.5rem;
   }
-
   .form-grid {
     grid-template-columns: 1fr;
   }

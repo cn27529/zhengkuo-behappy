@@ -20,26 +20,26 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 2,
-      name: "祈福登記",
-      path: "/registration", // 修改路徑
+      name: "登記查詢",
+      path: "/registration-list", //路徑
       icon: "📝",
-      component: "Registration", // 修改組件名稱
+      component: "RegistrationList",
       requiredAuth: true,
       order: 2,
       enabled: true,
     },
     {
       id: 3,
-      name: "登記查詢",
-      path: "/registration-list", //路徑
+      name: "祈福登記",
+      path: "/registration", // 修改路徑
       icon: "📝",
-      component: "RegistrationList",
+      component: "Registration", // 修改組件名稱
       requiredAuth: true,
       order: 3,
       enabled: true,
     },
     {
-      id: 6,
+      id: 4,
       name: "太歲分析",
       path: "/taisui",
       icon: "📥",
@@ -69,13 +69,13 @@ export const useMenuStore = defineStore("menu", () => {
       enabled: true,
     },
     {
-      id: 5,
+      id: 99,
       name: "数据导入",
       path: "/data-import",
       icon: "📥",
       component: "DataImport",
       requiredAuth: false,
-      order: 5,
+      order: 99,
       enabled: true,
     },
 

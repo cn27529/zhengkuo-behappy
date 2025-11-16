@@ -190,16 +190,7 @@ export default {
   border-radius: 4px;
 }
 
-.form-section {
-  margin-bottom: 2rem;
-  padding: 1rem;
-  border: 1px solid #eee;
-  border-radius: 4px;
-}
 
-.form-section input,
-.form-section select {
-  margin-right: 0.5rem;
-  padding: 0.5rem;
-}
+
+
 </style>

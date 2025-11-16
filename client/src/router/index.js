@@ -4,6 +4,7 @@ import { useAuthStore } from "../stores/auth.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
+  { path: "/empty", component: () => import("../views/Empty.vue") },
   { path: "/env", component: () => import("../views/Env.vue") },
   { path: "/login", component: () => import("../views/Login.vue") },
   { path: "/contact", component: () => import("../views/Contact.vue") },
@@ -58,8 +59,8 @@ const routes = [
     },
   },
   {
-    path: "/loginview",
-    component: () => import("../views/LoginView.vue"),
+    path: "/mocklogin",
+    component: () => import("../views/MockLogin.vue"),
     meta: {
       requiresAuth: false,
     },

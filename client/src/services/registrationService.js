@@ -6,6 +6,7 @@ import {
 } from "../utils/generateGitHash.js";
 
 export class RegistrationService {
+  // ========== 建構函式 ==========
   constructor() {
     console.log(`RegistrationService 初始化: 當前模式為 ${serviceConfig.mode}`);
   }
@@ -36,6 +37,10 @@ export class RegistrationService {
 
   // ========== CRUD 操作 ==========
   async createRegistration(registrationData) {
+    // 在 registrationService.js 頂部添加時間工具函數
+    const getCurrentISOTime = () => new Date().toISOString();
+    const createISOTime = new Date().toISOString();
+
     if (serviceConfig.mode !== "directus") {
       console.warn(
         "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
@@ -55,9 +60,9 @@ export class RegistrationService {
       // 準備提交數據
       const processedData = {
         state: registrationData.state || "creating",
-        createdAt: new Date().toISOString(),
+        createdAt: createISOTime,
         createdUser: registrationData.createdUser || "system",
-        updatedAt: new Date().toISOString(),
+        updatedAt: "",
         updatedUser: registrationData.updatedUser || "system",
         formName: registrationData.formName || "消災超度報名表OnService",
         formId: registrationData.formId || this.generateFormId(),
@@ -164,6 +169,49 @@ export class RegistrationService {
     }
   }
 
+  // async getAllRegistrations(params = {}) {
+  //   if (serviceConfig.mode !== "directus") {
+  //     console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
+  //     return { success: false, message: "請切換到 directus 模式" };
+  //   }
+
+  //   try {
+  //     const queryParams = new URLSearchParams();
+  //     queryParams.append("fields", "*");
+
+  //     // 添加篩選條件
+  //     if (params.filter) {
+  //       Object.keys(params.filter).forEach((key) => {
+  //         queryParams.append(`filter[${key}]`, params.filter[key]);
+  //       });
+  //     }
+
+  //     // 添加排序
+  //     if (params.sort) {
+  //       queryParams.append("sort", params.sort);
+  //     }
+
+  //     const response = await fetch(
+  //       `${getApiUrl("/items/registrationDB")}?${queryParams.toString()}`,
+  //       {
+  //         method: "GET",
+  //         headers: await this.getAuthHeaders(),
+  //       }
+  //     );
+
+  //     const data = await this.handleDirectusResponse(response);
+
+  //     return {
+  //       success: true,
+  //       data: data,
+  //       message: "成功獲取所有報名表",
+  //     };
+  //   } catch (error) {
+  //     console.error("獲取報名表列表失敗:", error);
+  //     return this.handleDirectusError(error);
+  //   }
+  // }
+
   async getAllRegistrations(params = {}) {
     if (serviceConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
@@ -186,15 +234,40 @@ export class RegistrationService {
         queryParams.append("sort", params.sort);
       }
 
-      const response = await fetch(
-        `${getApiUrl("/items/registrationDB")}?${queryParams.toString()}`,
-        {
-          method: "GET",
-          headers: await this.getAuthHeaders(),
-        }
-      );
+      const apiUrl = `${getApiUrl(
+        "/items/registrationDB"
+      )}?${queryParams.toString()}`;
+      console.log("📡 查詢 URL:", apiUrl);
+
+      const headers = await this.getAuthHeaders();
+      console.log("🔑 請求頭:", headers);
+
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: headers,
+      });
+
+      console.log("📊 響應狀態:", response.status, response.statusText);
+
+      // 詳細的 HTTP 狀態碼處理
+      if (response.status === 403) {
+        const errorText = await response.text();
+        console.error("❌ 403 權限拒絕詳細信息:", errorText);
+        throw new Error(`權限拒絕 (403): ${errorText}`);
+      }
+
+      if (response.status === 401) {
+        throw new Error("未經授權 (401): 請檢查認證令牌");
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ 響應錯誤數據:", errorData);
+        throw new Error(errorData.message || `HTTP ${response.status} 錯誤`);
+      }
 
       const data = await this.handleDirectusResponse(response);
+      console.log("✅ 查詢成功，數據數量:", data?.length || 0);
 
       return {
         success: true,
@@ -202,8 +275,39 @@ export class RegistrationService {
         message: "成功獲取所有報名表",
       };
     } catch (error) {
-      console.error("獲取報名表列表失敗:", error);
+      console.error("❌ 獲取報名表列表失敗:", error);
       return this.handleDirectusError(error);
+    }
+  }
+
+  // 在 registrationService.js 中添加測試方法
+  async testSimpleQuery() {
+    try {
+      console.log("🧪 開始簡單查詢測試...");
+
+      // 測試 1: 最簡單的查詢
+      const simpleUrl = `${getApiUrl("/items/registrationDB")}?limit=1`;
+      console.log("測試 URL:", simpleUrl);
+
+      const response = await fetch(simpleUrl, {
+        method: "GET",
+        headers: await this.getAuthHeaders(),
+      });
+
+      console.log("測試響應狀態:", response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ 簡單查詢成功:", data);
+        return { success: true, data: data };
+      } else {
+        const errorText = await response.text();
+        console.error("❌ 簡單查詢失敗:", errorText);
+        return { success: false, error: errorText };
+      }
+    } catch (error) {
+      console.error("❌ 測試查詢異常:", error);
+      return { success: false, error: error.message };
     }
   }
 

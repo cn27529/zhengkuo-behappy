@@ -1,9 +1,10 @@
 <!-- src/components/EnvTest.vue -->
 <template>
   <div>
-    <h3>环境变量检查</h3>
+    <h3>環境變量參數</h3>
     <p>VITE_SUPABASE_URL: {{ env.supabaseUrl }}</p>
-    <p>VITE_SUPABASE_ANON_KEY: {{ env.supabaseAnonKey }}</p>
+    <p>VITE_SUPABASE_ANON_KEY:</p>
+    <input type="text-area" v-model="env.supabaseAnonKey" />
     <p>VITE_SUPABASE_PUBLIC_KEY: {{ env.supabasePublicKey }}</p>
     <p>MODE: {{ env.mode }}</p>
     <p>应用标题: {{ env.appTitle }}</p>

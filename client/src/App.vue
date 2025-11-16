@@ -15,17 +15,14 @@
           <ul>
             <li>
               <router-link to="/logout" v-if="showLogoutLink"
-                >退出登录</router-link
-              >
+                >退出登录</router-link>
             </li>
           </ul>
         </nav>
       </div>
     </header>
-
-    <!-- 主要内容区 -->
-    <div class="dashboard-container">
-      <div class="dashboard-content">
+    <!-- 父内容区 -->
+    <div class="app-content">
         <!-- 侧边菜单栏 -->
         <aside
           v-if="layoutReady && showSidebar"
@@ -61,12 +58,11 @@
             </ul>
           </nav>
         </aside>
-
+        <!-- 主要内容区 -->
         <main>
           <router-view></router-view>
         </main>
       </div>
-    </div>
     <!-- 底部-->
     <footer v-if="layoutReady && showFooter">
       <p>© 2025 {{ appTitle }} | 弘扬佛法、服务众生</p>
@@ -272,7 +268,7 @@ export default {
 
 <style>
 /* 全局样式 */
-.dashboard-container {
+.app-container {
   min-height: 100vh;
   background-color: #f5f7fa;
 }
@@ -307,7 +303,7 @@ export default {
   gap: 1.5rem;
 }
 
-.dashboard-content {
+.app-content {
   display: flex;
   min-height: calc(100vh - 80px);
 }
@@ -404,6 +400,20 @@ export default {
   padding: 2rem;
   overflow-y: auto;
   background-color: #f8f9fa;
+  order: 0;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 /* 响应式设计 */
@@ -433,18 +443,7 @@ export default {
   width: 6px;
 }
 
-.main-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
 
-.main-content::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.main-content::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
 
 /* 保持原有的样式不变，只添加active状态的样式增强 */
 .nav-link.active {
@@ -474,7 +473,7 @@ export default {
 /* 響應式設計 */
 @media (max-width: 768px) {
 
-  .dashboard-content {
+  .app-content {
     flex-direction: column;
   }
 
@@ -484,10 +483,7 @@ export default {
     max-height: 300px;
   }
 
-  .main-content {
-    order: 0;
-    padding: 1rem;
-  }
+  
 
   .stats-grid {
     grid-template-columns: 1fr;

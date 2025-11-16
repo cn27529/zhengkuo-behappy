@@ -18,6 +18,7 @@
               v-model="searchQuery"
               placeholder="表單名、聯絡人、手機、電話、消災人員、地址、陽上人"
               @keyup.enter="handleSearch"
+              autocomplete="off"
             />
             <button
               type="button"
@@ -28,95 +29,41 @@
               {{ searching ? "查詢中..." : "查詢" }}
             </button>
             <button
-              style="display: none;"  
               type="button"
               class="btn btn-outline"
               @click="handleClear"
-              :disabled="searching"
-            >
-              清除
+              :disabled="searching">
+              清空
             </button>
           </div>
-          <p style="display: none;" class="search-hint">
+          <p class="search-hint">
             💡 提示：搜尋關鍵字，系統會自動匹配相關欄位
           </p>
         </div>
       </div>
     </div>
 
-    <!-- 快速搜尋選項 -->
-    <div class="quick-search" v-if="!hasSearched">
-      <h4>快速搜尋</h4>
-      <div class="quick-search-buttons">
-        <button
-          v-for="quickOption in quickSearchOptions"
-          :key="quickOption.label"
-          class="btn btn-outline btn-sm"
-          @click="applyQuickSearch(quickOption.query)"
-        >
-          {{ quickOption.label }}
-        </button>
-      </div>
-    </div>
-
     <!-- 查詢結果 -->
     <div class="results-section" v-if="searchResults.length > 0">
+      
       <div class="results-header">
         <h3>查詢結果 (共 {{ totalItems }} 筆)</h3>
-
-        <!-- 分頁控件 -->
-      <div class="pagination" v-if="totalPages > 1">
-        <div class="pagination-controls">
-          <button
-            class="pagination-btn"
-            :disabled="currentPage === 1"
-            @click="changePage(currentPage - 1)"
-          >
-            ←
-          </button>
-
-          <div class="page-numbers">
-            <button
-              v-for="page in visiblePages"
-              :key="page"
-              class="page-number"
-              :class="{ active: page === currentPage }"
-              @click="changePage(page)"
-              :disabled="page === '...'"
-            >
-              {{ page }}
-            </button>
+        
+        <div class="pagination">
+          <!-- Element Plus 分頁控件 -->
+          <div class="pagination-top" v-if="totalItems > 0">
+            <el-pagination
+              v-model:current-page="currentPage"
+              v-model:page-size="pageSize"
+              :total="totalItems"
+              :page-sizes="[10, 20, 50, 100]"
+              layout="total, sizes, prev, pager, next, jumper"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
           </div>
-
-          <button
-            class="pagination-btn"
-            :disabled="currentPage === totalPages"
-            @click="changePage(currentPage + 1)"
-          >
-            →
-          </button>
         </div>
-
-        <div class="pagination-info">
-          <span>第 {{ currentPage }} 頁 / 共 {{ totalPages }} 頁</span>
-          <span class="page-size-selector">
-            <select v-model="pageSize" @change="handlePageSizeChange">
-              <option value="10">10 筆</option>
-              <option value="20">20 筆</option>
-              <option value="50">50 筆</option>
-              <option value="100">100 筆</option>
-            </select>
-          </span>
-        </div>
-      </div>
-
-        <div style="display: none;" class="results-info">
-          <span>顯示第 {{ startItem }} - {{ endItem }} 筆</span>
-          <span class="results-summary">
-            找到 {{ totalItems }} 筆符合「<strong>{{ lastSearchQuery }}</strong
-            >」的資料
-          </span>
-        </div>
+        
       </div>
 
       <!-- 資料表格 -->
@@ -124,35 +71,37 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>表單名稱</th>
+              <th style="display: none;">表單名稱</th>
               <th>聯絡人</th>
-              <th>手機</th>
-              <th>電話</th>
+              <th>手機、電話</th>
               <th style="display: none;">關係</th>
-              <th style="display: none;">消災地址</th>
               <th style="display: none;">超度地址</th>
               <th style="display: none;">狀態</th>
+              <th>消災人員</th>
+              <th>陽上人</th>
               <th>建立時間</th>
               <th style="text-align: center;">操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in paginatedResults" :key="item.formName">
-              <td>
+            <tr v-for="item in paginatedResults" :key="item.formId || item.id">
+              <td style="display: none;">
                 <span class="form-name">{{ item.formName }}</span>
                 <br />
                 <small class="form-source">{{ item.formSource }}</small>
               </td>
               <td>
-                <strong>{{ item.contact.name }}</strong>
+                <strong>{{ item.contact?.name || '-' }}</strong>
               </td>
-              <td>{{ item.contact.mobile || "-" }}</td>
-              <td>{{ item.contact.phone || "-" }}</td>
+              <td>
+                <div>{{ item.contact?.mobile || "-" }}</div>
+                <div>{{ item.contact?.phone || "-" }}</div>
+              </td>
               <td style="display: none;">
                 <span class="relationship">
-                  {{ item.contact.relationship }}
+                  {{ item.contact?.relationship || '-' }}
                   <span
-                    v-if="item.contact.otherRelationship"
+                    v-if="item.contact?.otherRelationship"
                     class="other-relationship"
                   >
                     ({{ item.contact.otherRelationship }})
@@ -160,13 +109,8 @@
                 </span>
               </td>
               <td style="display: none;">
-                <div class="address-truncate" :title="item.blessing.address">
-                  {{ truncateAddress(item.blessing.address) }}
-                </div>
-              </td>
-              <td style="display: none;">
-                <div class="address-truncate" :title="item.salvation.address">
-                  {{ truncateAddress(item.salvation.address) }}
+                <div class="address-truncate" :title="item.salvation?.address">
+                  {{ truncateAddress(item.salvation?.address) }}
                 </div>
               </td>
               <td style="display: none;">
@@ -175,25 +119,45 @@
                 </span>
               </td>
               <td>
+                <div class="address-truncate" :title="item.blessing?.address">
+                  {{ truncateAddress(item.blessing?.address) }}
+                </div>
+                <div v-for="person in item.blessing?.persons || []" :key="person.id">
+                  <p v-if="person.name">
+                    {{ person.name }}({{ person.zodiac || '未填' }})
+                  </p>
+                </div>
+              </td>
+              <td>
+                 <div v-for="survivor in item.salvation?.survivors || []" :key="survivor.id">
+                  <p v-if="survivor.name">
+                    {{ survivor.name }}({{ survivor.zodiac || '未填' }})
+                  </p>
+                </div>
+              </td>
+              <td>
                 <span class="date-time">{{ formatDate(item.createdAt) }}</span>
               </td>
               <td>
                 <div class="action-buttons">
-                  <button
-                    type="button"
-                    class="btn btn-outline btn-sm"
+                  <el-button
+                    type="primary"
+                    link
+                    size="small"
                     @click="viewDetails(item)"
                   >
                     詳情
-                  </button>
-                  <button style="display: none;"
-                    type="button"
-                    class="btn btn-outline btn-sm"
+                  </el-button>
+                  <el-button
+                    style="display: none;"
+                    type="primary"
+                    link
+                    size="small"
                     @click="handlePrint(item)"
                     title="列印表單"
                   >
                     🖨️
-                  </button>
+                  </el-button>
                 </div>
               </td>
             </tr>
@@ -201,256 +165,207 @@
         </table>
       </div>
 
-      <!-- 分頁控件 -->
-      <div class="pagination" v-if="totalPages > 1">
-        <div class="pagination-controls">
-          <button
-            class="pagination-btn"
-            :disabled="currentPage === 1"
-            @click="changePage(currentPage - 1)"
-          >
-            ←
-          </button>
+      
+    </div>
 
-          <div class="page-numbers">
-            <button
-              v-for="page in visiblePages"
-              :key="page"
-              class="page-number"
-              :class="{ active: page === currentPage }"
-              @click="changePage(page)"
-              :disabled="page === '...'"
-            >
-              {{ page }}
-            </button>
-          </div>
-
-          <button
-            class="pagination-btn"
-            :disabled="currentPage === totalPages"
-            @click="changePage(currentPage + 1)"
-          >
-            →
-          </button>
-        </div>
-
-        <div class="pagination-info">
-          <span>第 {{ currentPage }} 頁 / 共 {{ totalPages }} 頁</span>
-          <span class="page-size-selector">
-            <select v-model="pageSize" @change="handlePageSizeChange">
-              <option value="10">10 筆</option>
-              <option value="20">20 筆</option>
-              <option value="50">50 筆</option>
-              <option value="100">100 筆</option>
-            </select>
-          </span>
-        </div>
+    <div class="pagination">
+      <!-- 底部分頁控件 -->
+      <div class="pagination-bottom" v-if="totalItems > 0">
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total="totalItems"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
     </div>
+    
+    
 
     <!-- 載入狀態 -->
     <div class="loading-state" v-if="searching">
-      <div class="loading-spinner"></div>
-      <p>搜尋中...</p>
+      <el-result icon="info" title="搜尋中">
+        <template #extra>
+          <el-button type="primary" :loading="true">載入中</el-button>
+        </template>
+      </el-result>
     </div>
 
     <!-- 無結果提示 -->
     <div
-      class="no-results"
+      class="no-results" 
       v-else-if="hasSearched && searchResults.length === 0"
     >
-      <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <h4>查無符合條件的資料</h4>
-        <p class="empty-hint">請嘗試：</p>
-        <ul class="empty-suggestions">
-          <li>檢查關鍵字是否拼寫正確</li>
-          <li>使用更簡單的關鍵字</li>
-          <li>嘗試搜尋部分姓名或地址</li>
-        </ul>
-        <button class="btn btn-outline" @click="handleClear">重新搜尋</button>
-      </div>
+      <el-empty description="查無符合條件的資料">
+        <template #image>
+          <div class="empty-icon">🔍</div>
+        </template>
+        <template #description>
+          <div class="empty-content">
+            <p class="empty-hint">請嘗試：</p>
+            <ul class="empty-suggestions">
+              <li>檢查關鍵字是否拼寫正確</li>
+              <li>使用更簡單的關鍵字</li>
+              <li>嘗試搜尋部分姓名或地址</li>
+            </ul>
+          </div>
+        </template>
+        <el-button @click="handleClear">重新搜尋</el-button>
+      </el-empty>
     </div>
 
-    <!-- 初始狀態提示 -->
-    <div class="initial-state" v-else-if="!hasSearched">
-      <div class="empty-state">
-        <div class="empty-icon">📋</div>
-        <h4>消災登記查詢系統</h4>
-        <p class="empty-hint">請輸入查詢條件來搜尋消災登記資料</p>
-        <div class="search-examples">
-          <p>搜尋範例：</p>
-          <ul>
-            <li>聯絡人姓名：<code>王大明</code></li>
-            <li>手機號碼：<code>0912-345-678</code></li>
-            <li>地址關鍵字：<code>台北市</code> 或 <code>中正區</code></li>
-            <li>消災人員：<code>李小華</code></li>
-          </ul>
-        </div>
-      </div>
+    <!-- 初始提示 -->
+    <div
+      class="initial-state" 
+      v-else-if="!hasSearched"
+    >
+      <el-empty description="請輸入查詢條件開始搜尋">
+        <el-button type="primary" @click="handleSearch">查詢所有資料</el-button>
+      </el-empty>
     </div>
 
-    <!-- 詳細資訊彈窗 -->
-    <div v-if="selectedItem" class="modal-overlay" @click="closeModal">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h3>表單詳細資訊 - {{ selectedItem.formName }}</h3>
-          <button class="modal-close" @click="closeModal">×</button>
+    <!-- 詳情資訊彈窗 -->
+    <el-dialog
+      v-model="showModal"
+      :title="`表單詳情資訊 - ${selectedItem?.formName || ''}`"
+      width="90%"
+      :close-on-click-modal="false"
+    >
+      <div class="modal-body" v-if="selectedItem">
+        <!-- 詳細資訊內容 -->
+        <div class="detail-section">
+          <h4>基本資訊</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>表單名稱:</label>
+              <span>{{ selectedItem.formName }}</span>
+            </div>
+            <div class="detail-item">
+              <label>狀態:</label>
+              <span class="status-badge" :class="selectedItem.state">
+                {{ getStatusText(selectedItem.state) }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <label>建立時間:</label>
+              <span>{{ formatDate(selectedItem.createdAt) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>更新時間:</label>
+              <span>{{ formatDate(selectedItem.updatedAt) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>來源:</label>
+              <span>{{ selectedItem.formSource || '-' }}</span>
+            </div>
+          </div>
         </div>
-        <div class="modal-body">
-          <!-- 詳細資訊內容保持不變 -->
-          <div class="detail-section">
-            <h4>基本資訊</h4>
-            <div class="detail-grid">
-              <div class="detail-item">
-                <label>表單名稱:</label>
-                <span>{{ selectedItem.formName }}</span>
-              </div>
-              <div class="detail-item">
-                <label>狀態:</label>
-                <span class="status-badge" :class="selectedItem.state">
-                  {{ getStatusText(selectedItem.state) }}
+
+        <div class="detail-section">
+          <h4>聯絡人資訊</h4>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>姓名:</label>
+              <span>{{ selectedItem.contact?.name || '-' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>手機:</label>
+              <span>{{ selectedItem.contact?.mobile || "-" }}</span>
+            </div>
+            <div class="detail-item">
+              <label>電話:</label>
+              <span>{{ selectedItem.contact?.phone || "-" }}</span>
+            </div>
+            <div class="detail-item">
+              <label>關係:</label>
+              <span>
+                {{ selectedItem.contact?.relationship || '-' }}
+                <span v-if="selectedItem.contact?.otherRelationship">
+                  ({{ selectedItem.contact.otherRelationship }})
                 </span>
-              </div>
-              <div class="detail-item">
-                <label>建立時間:</label>
-                <span>{{ formatDate(selectedItem.createdAt) }}</span>
-              </div>
-              <div class="detail-item">
-                <label>更新時間:</label>
-                <span>{{ formatDate(selectedItem.updatedAt) }}</span>
-              </div>
-              <div class="detail-item">
-                <label>來源:</label>
-                <span>{{ selectedItem.formSource }}</span>
-              </div>
+              </span>
             </div>
           </div>
+        </div>
 
-          <div class="detail-section">
-            <h4>聯絡人資訊</h4>
-            <div class="detail-grid">
-              <div class="detail-item">
-                <label>姓名:</label>
-                <span>{{ selectedItem.contact.name }}</span>
-              </div>
-              <div class="detail-item">
-                <label>手機:</label>
-                <span>{{ selectedItem.contact.mobile || "-" }}</span>
-              </div>
-              <div class="detail-item">
-                <label>電話:</label>
-                <span>{{ selectedItem.contact.phone || "-" }}</span>
-              </div>
-              <div class="detail-item">
-                <label>關係:</label>
-                <span>
-                  {{ selectedItem.contact.relationship }}
-                  <span v-if="selectedItem.contact.otherRelationship">
-                    ({{ selectedItem.contact.otherRelationship }})
-                  </span>
-                </span>
-              </div>
-            </div>
+        <div class="detail-section">
+          <h4>消災祈福</h4>
+          <div class="detail-item full-width">
+            <label>地址:</label>
+            <span>{{ selectedItem.blessing?.address || '-' }}</span>
           </div>
-
-          <div class="detail-section">
-            <h4>消災祈福</h4>
-            <div class="detail-item full-width">
-              <label>地址:</label>
-              <span>{{ selectedItem.blessing.address }}</span>
-            </div>
-            <div class="detail-item full-width">
-              <label
-                >消災人員 ({{
-                  selectedItem.blessing.persons.length
-                }}
-                位):</label
+          <div class="detail-item full-width">
+            <label>消災人員 ({{ selectedItem.blessing?.persons?.length || 0 }} 位):</label>
+            <div class="persons-list">
+              <div
+                v-for="person in selectedItem.blessing?.persons || []"
+                :key="person.id"
+                class="person-tag"
+                :class="{ 'household-head-tag': person.isHouseholdHead }"
               >
-              <div class="persons-list">
-                <div
-                  v-for="person in selectedItem.blessing.persons"
-                  :key="person.id"
-                  class="person-tag"
-                  :class="{ 'household-head-tag': person.isHouseholdHead }"
-                >
-                  {{ person.name }}
-                  <span v-if="person.zodiac" class="zodiac"
-                    >({{ person.zodiac }})</span
-                  >
-                  <span v-if="person.isHouseholdHead" class="household-head"
-                    >戶長</span
-                  >
-                  <span v-if="person.notes" class="person-notes">{{
-                    person.notes
-                  }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="detail-section">
-            <h4>超度祈福</h4>
-            <div class="detail-item full-width">
-              <label>地址:</label>
-              <span>{{ selectedItem.salvation.address }}</span>
-            </div>
-            <div class="detail-item full-width">
-              <label
-                >祖先 ({{ selectedItem.salvation.ancestors.length }} 位):</label
-              >
-              <div class="persons-list">
-                <div
-                  v-for="ancestor in selectedItem.salvation.ancestors"
-                  :key="ancestor.id"
-                  class="person-tag ancestor-tag"
-                >
-                  {{ ancestor.surname }}氏歷代祖先
-                  <span v-if="ancestor.notes" class="ancestor-notes"
-                    >({{ ancestor.notes }})</span
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="detail-item full-width">
-              <label
-                >陽上人 ({{
-                  selectedItem.salvation.survivors.length
-                }}
-                位):</label
-              >
-              <div class="persons-list">
-                <div
-                  v-for="survivor in selectedItem.salvation.survivors"
-                  :key="survivor.id"
-                  class="person-tag survivor-tag"
-                >
-                  {{ survivor.name }}
-                  <span v-if="survivor.zodiac" class="zodiac"
-                    >({{ survivor.zodiac }})</span
-                  >
-                  <span v-if="survivor.notes" class="survivor-notes">{{
-                    survivor.notes
-                  }}</span>
-                </div>
+                {{ person.name || '未填寫' }}
+                <span v-if="person.zodiac" class="zodiac">({{ person.zodiac }})</span>
+                <span v-if="person.isHouseholdHead" class="household-head">戶長</span>
+                <span v-if="person.notes" class="person-notes">{{ person.notes }}</span>
               </div>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline" @click="handlePrint(selectedItem)">
+
+        <div class="detail-section">
+          <h4>超度祈福</h4>
+          <div class="detail-item full-width">
+            <label>地址:</label>
+            <span>{{ selectedItem.salvation?.address || '-' }}</span>
+          </div>
+          <div class="detail-item full-width">
+            <label>祖先 ({{ selectedItem.salvation?.ancestors?.length || 0 }} 位):</label>
+            <div class="persons-list">
+              <div
+                v-for="ancestor in selectedItem.salvation?.ancestors || []"
+                :key="ancestor.id"
+                class="person-tag ancestor-tag"
+              >
+                {{ ancestor.surname || '未填寫' }}氏歷代祖先
+                <span v-if="ancestor.notes" class="ancestor-notes">({{ ancestor.notes }})</span>
+              </div>
+            </div>
+          </div>
+          <div class="detail-item full-width">
+            <label>陽上人 ({{ selectedItem.salvation?.survivors?.length || 0 }} 位):</label>
+            <div class="persons-list">
+              <div
+                v-for="survivor in selectedItem.salvation?.survivors || []"
+                :key="survivor.id"
+                class="person-tag survivor-tag"
+              >
+                {{ survivor.name || '未填寫' }}
+                <span v-if="survivor.zodiac" class="zodiac">({{ survivor.zodiac }})</span>
+                <span v-if="survivor.notes" class="survivor-notes">{{ survivor.notes }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeModal">關閉</el-button>
+          <el-button type="primary" @click="handlePrint(selectedItem)" v-if="selectedItem">
             🖨️ 列印表單
-          </button>
-          <button class="btn btn-primary" @click="closeModal">關閉</button>
-        </div>
-      </div>
-    </div>
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { ref, computed, onMounted } from "vue";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { useRegistrationStore } from "../stores/registration.js";
 
 export default {
@@ -464,91 +379,39 @@ export default {
     const searching = ref(false);
     const hasSearched = ref(false);
     const selectedItem = ref(null);
+    const showModal = ref(false);
     const currentPage = ref(1);
     const pageSize = ref(10);
-    const lastSearchQuery = ref("");
-
-    // 快速搜尋選項
-    const quickSearchOptions = ref([
-      { label: "📞 僅搜尋手機號碼", query: "0912" },
-      { label: "🏠 台北市資料", query: "台北市" },
-      { label: "👥 本家關係", query: "本家" },
-      { label: "✅ 已提交表單", query: "submitted" },
-    ]);
 
     // 計算屬性
     const totalItems = computed(() => searchResults.value.length);
-    const totalPages = computed(() =>
-      Math.ceil(totalItems.value / pageSize.value)
-    );
-    const startItem = computed(
-      () => (currentPage.value - 1) * pageSize.value + 1
-    );
-    const endItem = computed(() => {
-      const end = currentPage.value * pageSize.value;
-      return end > totalItems.value ? totalItems.value : end;
-    });
-
+    
     const paginatedResults = computed(() => {
       const start = (currentPage.value - 1) * pageSize.value;
       const end = start + pageSize.value;
       return searchResults.value.slice(start, end);
     });
 
-    const visiblePages = computed(() => {
-      const pages = [];
-      const maxVisible = 5;
-
-      if (totalPages.value <= maxVisible) {
-        for (let i = 1; i <= totalPages.value; i++) {
-          pages.push(i);
-        }
-      } else {
-        const start = Math.max(1, currentPage.value - 2);
-        const end = Math.min(totalPages.value, start + maxVisible - 1);
-
-        if (start > 1) {
-          pages.push(1);
-          if (start > 2) pages.push("...");
-        }
-
-        for (let i = start; i <= end; i++) {
-          pages.push(i);
-        }
-
-        if (end < totalPages.value) {
-          if (end < totalPages.value - 1) pages.push("...");
-          pages.push(totalPages.value);
-        }
-      }
-
-      return pages;
-    });
-
     // 方法
     const handleSearch = async () => {
+      
       // if (!searchQuery.value.trim()) {
       //   ElMessage.warning("請輸入查詢條件");
       //   return;
       // }
-
+      
       searching.value = true;
       hasSearched.value = true;
-      lastSearchQuery.value = searchQuery.value.trim();
 
       try {
         const queryData = {
           query: searchQuery.value.trim(),
-          pageSize: pageSize.value,
         };
 
         const result = await registrationStore.queryRegistrationData(queryData);
 
         if (result.success) {
           searchResults.value = result.data || [];
-
-          console.log("查詢結果:", searchResults.value);
-
           currentPage.value = 1; // 重置到第一頁
 
           if (searchResults.value.length === 0) {
@@ -571,43 +434,38 @@ export default {
 
     const handleClear = () => {
       searchQuery.value = "";
-      // searchResults.value = [];
-      // hasSearched.value = false;
-      // currentPage.value = 1;
-      // lastSearchQuery.value = "";
-    };
-
-    const applyQuickSearch = (query) => {
-      searchQuery.value = query;
-      handleSearch();
-    };
-
-    const changePage = (page) => {
-      if (page >= 1 && page <= totalPages.value) {
-        currentPage.value = page;
-        // 滾動到頂部
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    };
-
-    const handlePageSizeChange = () => {
+      searchResults.value = [];
+      hasSearched.value = false;
       currentPage.value = 1;
-      if (hasSearched.value && searchResults.value.length > 0) {
-        // 如果已經有搜尋結果，重新整理分頁
-        // 這裡可以選擇是否要重新搜尋，或者只是重新分頁
+    };
+
+    const handleSizeChange = (newSize) => {
+      pageSize.value = newSize;
+      currentPage.value = 1;
+    };
+
+    const handleCurrentChange = (newPage) => {
+      currentPage.value = newPage;
+
+      // 可選：滾動到表格頂部
+      const tableContainer = document.querySelector('.table-container');
+      if (tableContainer) {
+        tableContainer.scrollTo({ top: 0, behavior: 'smooth' });
       }
+
     };
 
     const viewDetails = (item) => {
       selectedItem.value = item;
+      showModal.value = true;
     };
 
     const closeModal = () => {
+      showModal.value = false;
       selectedItem.value = null;
     };
 
     const handlePrint = (item) => {
-      // 這裡可以實現列印功能
       ElMessage.info(`準備列印表單: ${item.formName}`);
       console.log("列印表單:", item);
     };
@@ -641,35 +499,13 @@ export default {
 
     const truncateAddress = (address) => {
       if (!address) return "-";
-      return address.length > 20 ? address.substring(0, 20) + "..." : address;
+      return address.length > 10 ? address.substring(0, 10) + "..." : address;
     };
 
     // 初始化
     onMounted(() => {
       console.log("RegistrationList 組件已載入");
-      // 可以在這裡載入預設資料或進行其他初始化操作
-
-      // 示例：載入一些初始資料進行展示（可選）
-      loadInitialData();
     });
-
-    // 可選的初始化資料載入
-    const loadInitialData = async () => {
-      try {
-        const result = await registrationStore.queryRegistrationData({});
-        if (result.success) {
-          searchResults.value = result.data || [];
-          console.log("初始資料載入完成", searchResults.value);
-          hasSearched.value = true;
-        } else {
-          console.error("初始資料載入失敗:", result.message);
-          searchResults.value = [];
-        }
-      } catch (error) {
-        console.error("初始資料載入錯誤:", error);
-        searchResults.value = [];
-      }
-    };
 
     return {
       // 響應式數據
@@ -678,25 +514,19 @@ export default {
       searching,
       hasSearched,
       selectedItem,
+      showModal,
       currentPage,
       pageSize,
-      lastSearchQuery,
-      quickSearchOptions,
-
+      
       // 計算屬性
       totalItems,
-      totalPages,
-      startItem,
-      endItem,
       paginatedResults,
-      visiblePages,
 
       // 方法
       handleSearch,
       handleClear,
-      applyQuickSearch,
-      changePage,
-      handlePageSizeChange,
+      handleSizeChange,
+      handleCurrentChange,
       viewDetails,
       closeModal,
       handlePrint,
@@ -708,31 +538,13 @@ export default {
 };
 </script>
 
+
 <style scoped>
 /* 樣式部分保持不變，但添加一些新的樣式類別 */
 .search-hint {
   margin-top: 0.5rem;
   color: #666;
   font-size: 0.875rem;
-}
-
-.quick-search {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.quick-search h4 {
-  margin: 0 0 1rem 0;
-  color: #333;
-}
-
-.quick-search-buttons {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
 }
 
 .results-summary {
@@ -860,20 +672,6 @@ export default {
   margin: 1rem auto;
 }
 
-.search-examples {
-  margin-top: 1.5rem;
-  text-align: left;
-  max-width: 400px;
-  margin: 1.5rem auto 0;
-}
-
-.search-examples code {
-  background: #f4f4f4;
-  padding: 0.125rem 0.25rem;
-  border-radius: 3px;
-  font-family: monospace;
-}
-
 .household-head-tag {
   border-left: 3px solid var(--primary-color);
   
@@ -894,22 +692,6 @@ export default {
   font-size: 0.75rem;
   color: #666;
   margin-left: 0.25rem;
-}
-
-.main-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.page-header {
-  text-align: left;
-  margin-bottom: 2rem;
-}
-
-.page-header h2 {
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
 }
 
 /* 查詢區域樣式 */
@@ -960,6 +742,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   background: #f8f9fa;
+  height: 80px;
 }
 
 .results-header h3 {
@@ -1041,7 +824,7 @@ export default {
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  border-top: 1px solid #e9ecef;
+  /* border-top: 1px solid #e9ecef; */
 }
 
 .pagination-btn {
@@ -1070,8 +853,7 @@ export default {
 }
 
 /* 空狀態樣式 */
-.no-results,
-.initial-state {
+.no-results {
   background: white;
   padding: 3rem;
   border-radius: 10px;
@@ -1220,20 +1002,59 @@ export default {
   margin-left: 0.5rem;
 }
 
+/* 分頁樣式 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  /* border-top: 1px solid #e9ecef; */
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
+
+  .date-time {
+    font-size: 0.5rem;
+  }
+
   .main-content {
+    padding: 0.5rem;
+  }
+
+  .search-section {
     padding: 1rem;
+    margin-bottom: 1rem;
   }
 
   .search-input-group {
     flex-direction: column;
   }
 
+  .search-input-group input {
+    width: 100%;
+  }
+
+  .search-input-group button {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+
   .results-header {
     flex-direction: column;
     gap: 1rem;
-    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .pagination-top,
+  .pagination-bottom {
+    padding: 0.5rem;
+  }
+
+  /* 手機版：隱藏表格，改用卡片佈局 */
+  .table-container {
+    overflow-x: visible;
   }
 
   .pagination {
@@ -1246,12 +1067,14 @@ export default {
   }
 
   .data-table {
-    font-size: 0.875rem;
+    font-size: 0.5rem;
   }
 
   .data-table th,
   .data-table td {
     padding: 0.5rem;
   }
+
+  
 }
 </style>
