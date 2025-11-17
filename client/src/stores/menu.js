@@ -1,4 +1,4 @@
-// src/stores/menu.js
+// src/stores/menu.js.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
@@ -20,20 +20,20 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 2,
-      name: "登記查詢",
-      path: "/registration-list", //路徑
+      name: "祈福登記",
+      path: "/registration", // 修改路徑
       icon: "📝",
-      component: "RegistrationList",
+      component: "Registration", // 修改組件名稱
       requiredAuth: true,
       order: 2,
       enabled: true,
     },
     {
       id: 3,
-      name: "祈福登記",
-      path: "/registration", // 修改路徑
+      name: "登記查詢",
+      path: "/registration-list", //路徑
       icon: "📝",
-      component: "Registration", // 修改組件名稱
+      component: "RegistrationList",
       requiredAuth: true,
       order: 3,
       enabled: true,

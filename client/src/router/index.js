@@ -1,6 +1,6 @@
 // src/router/index.js 更新版本
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "../stores/auth.js";
+import { useAuthStore } from "../stores/authStore.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },

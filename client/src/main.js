@@ -18,7 +18,7 @@ import { useMenuStore } from "./stores/menu.js";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css"; // 方式一：reset 樣式（推薦）
 
-import { useRegistrationStore } from "./stores/registration.js";
+import { useRegistrationStore } from "./stores/registrationStore.js";
 
 // 创建Pinia实例
 const pinia = createPinia();

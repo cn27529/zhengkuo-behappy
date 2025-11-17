@@ -15,7 +15,7 @@
 <script>
 import { onMounted,ref, reactive } from "vue"
 import { useRouter } from "vue-router"
-import { useAuthStore } from "../stores/auth.js"
+import { useAuthStore } from "../stores/authStore.js"
 import { useSupabaseAuthStore } from "../stores/supabase-auth.js"
 import { ElMessage } from "element-plus"
 import appConfig from "../config/appConfig"

@@ -189,7 +189,7 @@
               >
               <span style="display: none" class="count-badge"
                 >戶長: {{ currentHouseholdHeadsCount }}/{{
-                  config.maxHouseholdHeads
+                  formConfig.maxHouseholdHeads
                 }}
                 位</span
               >
@@ -308,7 +308,7 @@
             <div class="section-info">
               <span style="display: none" class="count-badge"
                 >已填寫: {{ currentAncestorsCount }}/{{
-                  config.maxAncestors
+                  formConfig.maxAncestors
                 }}
                 位</span
               >
@@ -391,7 +391,7 @@
             <div class="section-info">
               <span style="display: none" class="count-badge"
                 >已填寫: {{ currentSurvivorsCount }}/{{
-                  config.maxSurvivors
+                  formConfig.maxSurvivors
                 }}
                 位</span
               >
@@ -440,7 +440,7 @@
                 @click="importFromBlessing(person)"
                 :disabled="
                   availableSurvivors &&
-                  availableSurvivors.length >= config.maxSurvivors
+                  availableSurvivors.length >= formConfig.maxSurvivors
                 "
               >
                 {{ person.name }}
@@ -540,19 +540,22 @@
 </template>
 
 <script>
-import { useRegistrationStore } from "../stores/registration.js";
+import { useRegistrationStore } from "../stores/registrationStore.js";
 import { ref, onMounted, computed, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { authService } from "../services/authService";
+import { useConfigStore } from "../stores/configStore.js";
 
 export default {
   name: "Registration",
   setup() {
+    const configStore = useConfigStore();
     const registrationStore = useRegistrationStore();
     const submitting = ref(false);
     const isDev = ref(false);
 
     onMounted(async () => {
+
       await registrationStore.loadConfig();
       // 啟動自動同步機制
       registrationStore.initializeFormArray();
@@ -782,27 +785,6 @@ export default {
       }
     };
 
-    // return {
-    //   ...registrationStore,
-    //   submitting,
-    //   submitForm,
-    //   addContactAsBlessing,
-    //   addContactAsSurvivor,
-    //   importFromBlessing,
-    //   openPrintPage,
-    //   handleAddNewForm,
-    //   handleSwitchForm, // 新增
-    //   handleDeleteForm, // 新增
-    //   handleDuplicateForm,
-    //   getStatusText, // 新增
-    //   // 🎯 關鍵：覆蓋原有的值，使用計算屬性
-    //   currentFormIndex,
-    //   formArray,
-    //   currentFormSummary,
-    //   formSummaries,
-    //   isDev,
-    // };
-
     // 修改後：
     return {
 
@@ -828,7 +810,7 @@ export default {
       isDev,
       // store 中只暴露需要的屬性和方法，不要使用展開運算符
       registrationForm: registrationStore.registrationForm,
-      config: registrationStore.config,
+      formConfig: configStore.formConfig,
       currentFormIndex: registrationStore.currentFormIndex,
       formArray: registrationStore.formArray,
       currentFormSummary: registrationStore.currentFormSummary,
@@ -853,8 +835,8 @@ export default {
       currentSurvivorsCount: registrationStore.currentSurvivorsCount,
       survivorsWarning: registrationStore.survivorsWarning,
       availableSurvivors: registrationStore.availableSurvivors,
-      relationshipOptions: registrationStore.relationshipOptions,
-      zodiacOptions: registrationStore.zodiacOptions,
+      relationshipOptions: configStore.relationshipOptions,
+      zodiacOptions: configStore.zodiacOptions,
       
     };
   },

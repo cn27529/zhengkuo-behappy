@@ -73,8 +73,8 @@
 
 <script>
 import { useRouter, useRoute } from "vue-router";
-import { useAuthStore } from "./stores/auth";
-import { useMenuStore } from "./stores/menu";
+import { useAuthStore } from "./stores/authStore.js";
+import { useMenuStore } from "./stores/menu.js";
 import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
 import appConfig from "./config/appConfig";
 import DevTools from "./components/DevTools.vue";

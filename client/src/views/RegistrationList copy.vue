@@ -431,13 +431,14 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import { useRegistrationStore } from "../stores/registration.js";
+//import { useRegistrationStore } from "../stores/registrationStore.js";
+import { useQueryStore } from "../stores/queryStore.js";
 
 export default {
   name: "RegistrationList",
   setup() {
     const registrationStore = useRegistrationStore();
-
+    const queryStore = useQueryStore();
     // 響應式數據
     const searchQuery = ref("");
     const searchResults = ref([]);
@@ -517,7 +518,7 @@ export default {
           pageSize: pageSize.value,
         };
 
-        const result = await registrationStore.queryRegistrationData(queryData);
+        const result = await queryStore.queryRegistrationData(queryData);
 
         if (result.success) {
           searchResults.value = result.data || [];
@@ -627,7 +628,7 @@ export default {
     // 可選的初始化資料載入
     const loadInitialData = async () => {
       try {
-        const result = await registrationStore.queryRegistrationData({});
+        const result = await queryStore.queryRegistrationData({});
         if (result.success) {
           searchResults.value = result.data || [];
           console.log("初始資料載入完成", searchResults.value);

@@ -3,14 +3,16 @@
   <div class="main-content">
     <div class="page-header">
       <h2>消災超度登記查詢</h2>
-      <p class="page-subtitle" style="display: none;">查詢已提交的消災超度報名資料</p>
+      <p class="page-subtitle" style="display: none">
+        查詢已提交的消災超度報名資料
+      </p>
     </div>
 
     <!-- 查詢表單 -->
     <div class="search-section">
       <div class="search-form">
         <div class="form-group">
-          <label style="display: none;" for="searchQuery">查詢條件</label>
+          <label style="display: none" for="searchQuery">查詢條件</label>
           <div class="search-input-group">
             <input
               type="text"
@@ -19,36 +21,58 @@
               placeholder="表單名、聯絡人、手機、電話、消災人員、地址、陽上人"
               @keyup.enter="handleSearch"
               autocomplete="off"
+              :disabled="isLoading"
             />
+            <!-- 加載時禁用輸入框 -->
+
             <button
               type="button"
               class="btn btn-primary"
               @click="handleSearch"
-              :disabled="searching"
+              :disabled="isLoading"
             >
-              {{ searching ? "查詢中..." : "查詢" }}
+              <!-- 加載時禁用輸入框 -->
+              {{ isLoading ? "查詢中..." : "查詢" }}
             </button>
             <button
               type="button"
               class="btn btn-outline"
               @click="handleClear"
-              :disabled="searching">
+              :disabled="isLoading"
+            >
+              <!-- 使用 isLoading -->
               清空
             </button>
           </div>
-          <p class="search-hint">
-            💡 提示：搜尋關鍵字，系統會自動匹配相關欄位
-          </p>
+          <p class="search-hint">💡 提示：搜尋關鍵字，系統會自動匹配相關欄位</p>
         </div>
       </div>
     </div>
 
+    <!-- 在查詢表單後面添加調試信息 -->
+    <div
+      v-if="isDev"
+      class="debug-info"
+      style="
+        background: #f8f9fa;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        font-size: 12px;
+      "
+    >
+      <div>調試信息:</div>
+      <div>searchResults.length: {{ searchResults.length }}</div>
+      <div>paginatedResults.length: {{ paginatedResults.length }}</div>
+      <div>hasSearched: {{ hasSearched }}</div>
+      <div>isLoading: {{ isLoading }}</div>
+    </div>
+
     <!-- 查詢結果 -->
     <div class="results-section" v-if="searchResults.length > 0">
-      
       <div class="results-header">
         <h3>查詢結果 (共 {{ totalItems }} 筆)</h3>
-        
+
         <div class="pagination">
           <!-- Element Plus 分頁控件 -->
           <div class="pagination-top" v-if="totalItems > 0">
@@ -63,7 +87,6 @@
             />
           </div>
         </div>
-        
       </div>
 
       <!-- 資料表格 -->
@@ -71,35 +94,35 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th style="display: none;">表單名稱</th>
+              <th style="display: none">表單名稱</th>
               <th>聯絡人</th>
               <th>手機、電話</th>
-              <th style="display: none;">關係</th>
-              <th style="display: none;">超度地址</th>
-              <th style="display: none;">狀態</th>
+              <th style="display: none">關係</th>
+              <th style="display: none">超度地址</th>
+              <th style="display: none">狀態</th>
               <th>消災人員</th>
               <th>陽上人</th>
               <th>建立時間</th>
-              <th style="text-align: center;">操作</th>
+              <th style="text-align: center">操作</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in paginatedResults" :key="item.formId || item.id">
-              <td style="display: none;">
+              <td style="display: none">
                 <span class="form-name">{{ item.formName }}</span>
                 <br />
                 <small class="form-source">{{ item.formSource }}</small>
               </td>
               <td>
-                <strong>{{ item.contact?.name || '-' }}</strong>
+                <strong>{{ item.contact?.name || "-" }}</strong>
               </td>
               <td>
                 <div>{{ item.contact?.mobile || "-" }}</div>
                 <div>{{ item.contact?.phone || "-" }}</div>
               </td>
-              <td style="display: none;">
+              <td style="display: none">
                 <span class="relationship">
-                  {{ item.contact?.relationship || '-' }}
+                  {{ item.contact?.relationship || "-" }}
                   <span
                     v-if="item.contact?.otherRelationship"
                     class="other-relationship"
@@ -108,12 +131,12 @@
                   </span>
                 </span>
               </td>
-              <td style="display: none;">
+              <td style="display: none">
                 <div class="address-truncate" :title="item.salvation?.address">
                   {{ truncateAddress(item.salvation?.address) }}
                 </div>
               </td>
-              <td style="display: none;">
+              <td style="display: none">
                 <span class="status-badge" :class="item.state">
                   {{ getStatusText(item.state) }}
                 </span>
@@ -122,16 +145,22 @@
                 <div class="address-truncate" :title="item.blessing?.address">
                   {{ truncateAddress(item.blessing?.address) }}
                 </div>
-                <div v-for="person in item.blessing?.persons || []" :key="person.id">
+                <div
+                  v-for="person in item.blessing?.persons || []"
+                  :key="person.id"
+                >
                   <p v-if="person.name">
-                    {{ person.name }}({{ person.zodiac || '未填' }})
+                    {{ person.name }}({{ person.zodiac || "未填" }})
                   </p>
                 </div>
               </td>
               <td>
-                 <div v-for="survivor in item.salvation?.survivors || []" :key="survivor.id">
+                <div
+                  v-for="survivor in item.salvation?.survivors || []"
+                  :key="survivor.id"
+                >
                   <p v-if="survivor.name">
-                    {{ survivor.name }}({{ survivor.zodiac || '未填' }})
+                    {{ survivor.name }}({{ survivor.zodiac || "未填" }})
                   </p>
                 </div>
               </td>
@@ -149,7 +178,7 @@
                     詳情
                   </el-button>
                   <el-button
-                    style="display: none;"
+                    style="display: none"
                     type="primary"
                     link
                     size="small"
@@ -164,8 +193,6 @@
           </tbody>
         </table>
       </div>
-
-      
     </div>
 
     <div class="pagination">
@@ -182,11 +209,9 @@
         />
       </div>
     </div>
-    
-    
 
     <!-- 載入狀態 -->
-    <div class="loading-state" v-if="searching">
+    <div class="loading-state" v-if="isLoading">
       <el-result icon="info" title="搜尋中">
         <template #extra>
           <el-button type="primary" :loading="true">載入中</el-button>
@@ -196,7 +221,7 @@
 
     <!-- 無結果提示 -->
     <div
-      class="no-results" 
+      class="no-results"
       v-else-if="hasSearched && searchResults.length === 0"
     >
       <el-empty description="查無符合條件的資料">
@@ -218,10 +243,7 @@
     </div>
 
     <!-- 初始提示 -->
-    <div
-      class="initial-state" 
-      v-else-if="!hasSearched"
-    >
+    <div class="initial-state" v-else-if="!hasSearched">
       <el-empty description="請輸入查詢條件開始搜尋">
         <el-button type="primary" @click="handleSearch">查詢所有資料</el-button>
       </el-empty>
@@ -259,7 +281,7 @@
             </div>
             <div class="detail-item">
               <label>來源:</label>
-              <span>{{ selectedItem.formSource || '-' }}</span>
+              <span>{{ selectedItem.formSource || "-" }}</span>
             </div>
           </div>
         </div>
@@ -269,7 +291,7 @@
           <div class="detail-grid">
             <div class="detail-item">
               <label>姓名:</label>
-              <span>{{ selectedItem.contact?.name || '-' }}</span>
+              <span>{{ selectedItem.contact?.name || "-" }}</span>
             </div>
             <div class="detail-item">
               <label>手機:</label>
@@ -282,7 +304,7 @@
             <div class="detail-item">
               <label>關係:</label>
               <span>
-                {{ selectedItem.contact?.relationship || '-' }}
+                {{ selectedItem.contact?.relationship || "-" }}
                 <span v-if="selectedItem.contact?.otherRelationship">
                   ({{ selectedItem.contact.otherRelationship }})
                 </span>
@@ -295,10 +317,15 @@
           <h4>消災祈福</h4>
           <div class="detail-item full-width">
             <label>地址:</label>
-            <span>{{ selectedItem.blessing?.address || '-' }}</span>
+            <span>{{ selectedItem.blessing?.address || "-" }}</span>
           </div>
           <div class="detail-item full-width">
-            <label>消災人員 ({{ selectedItem.blessing?.persons?.length || 0 }} 位):</label>
+            <label
+              >消災人員 ({{
+                selectedItem.blessing?.persons?.length || 0
+              }}
+              位):</label
+            >
             <div class="persons-list">
               <div
                 v-for="person in selectedItem.blessing?.persons || []"
@@ -306,10 +333,16 @@
                 class="person-tag"
                 :class="{ 'household-head-tag': person.isHouseholdHead }"
               >
-                {{ person.name || '未填寫' }}
-                <span v-if="person.zodiac" class="zodiac">({{ person.zodiac }})</span>
-                <span v-if="person.isHouseholdHead" class="household-head">戶長</span>
-                <span v-if="person.notes" class="person-notes">{{ person.notes }}</span>
+                {{ person.name || "未填寫" }}
+                <span v-if="person.zodiac" class="zodiac"
+                  >({{ person.zodiac }})</span
+                >
+                <span v-if="person.isHouseholdHead" class="household-head"
+                  >戶長</span
+                >
+                <span v-if="person.notes" class="person-notes">{{
+                  person.notes
+                }}</span>
               </div>
             </div>
           </div>
@@ -319,42 +352,62 @@
           <h4>超度祈福</h4>
           <div class="detail-item full-width">
             <label>地址:</label>
-            <span>{{ selectedItem.salvation?.address || '-' }}</span>
+            <span>{{ selectedItem.salvation?.address || "-" }}</span>
           </div>
           <div class="detail-item full-width">
-            <label>祖先 ({{ selectedItem.salvation?.ancestors?.length || 0 }} 位):</label>
+            <label
+              >祖先 ({{
+                selectedItem.salvation?.ancestors?.length || 0
+              }}
+              位):</label
+            >
             <div class="persons-list">
               <div
                 v-for="ancestor in selectedItem.salvation?.ancestors || []"
                 :key="ancestor.id"
                 class="person-tag ancestor-tag"
               >
-                {{ ancestor.surname || '未填寫' }}氏歷代祖先
-                <span v-if="ancestor.notes" class="ancestor-notes">({{ ancestor.notes }})</span>
+                {{ ancestor.surname || "未填寫" }}氏歷代祖先
+                <span v-if="ancestor.notes" class="ancestor-notes"
+                  >({{ ancestor.notes }})</span
+                >
               </div>
             </div>
           </div>
           <div class="detail-item full-width">
-            <label>陽上人 ({{ selectedItem.salvation?.survivors?.length || 0 }} 位):</label>
+            <label
+              >陽上人 ({{
+                selectedItem.salvation?.survivors?.length || 0
+              }}
+              位):</label
+            >
             <div class="persons-list">
               <div
                 v-for="survivor in selectedItem.salvation?.survivors || []"
                 :key="survivor.id"
                 class="person-tag survivor-tag"
               >
-                {{ survivor.name || '未填寫' }}
-                <span v-if="survivor.zodiac" class="zodiac">({{ survivor.zodiac }})</span>
-                <span v-if="survivor.notes" class="survivor-notes">{{ survivor.notes }}</span>
+                {{ survivor.name || "未填寫" }}
+                <span v-if="survivor.zodiac" class="zodiac"
+                  >({{ survivor.zodiac }})</span
+                >
+                <span v-if="survivor.notes" class="survivor-notes">{{
+                  survivor.notes
+                }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
+
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="closeModal">關閉</el-button>
-          <el-button type="primary" @click="handlePrint(selectedItem)" v-if="selectedItem">
+          <el-button
+            type="primary"
+            @click="handlePrint(selectedItem)"
+            v-if="selectedItem"
+          >
             🖨️ 列印表單
           </el-button>
         </span>
@@ -365,28 +418,41 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { useRegistrationStore } from "../stores/registration.js";
+import { ElMessage } from "element-plus";
+import { storeToRefs } from "pinia"; // 添加這行
+import { authService } from "../services/authService";
+import { useQueryStore } from "../stores/queryStore.js";
 
 export default {
   name: "RegistrationList",
   setup() {
-    const registrationStore = useRegistrationStore();
+    const queryStore = useQueryStore();
+    const isDev = ref(false);
 
-    // 響應式數據
-    const searchQuery = ref("");
-    const searchResults = ref([]);
-    const searching = ref(false);
-    const hasSearched = ref(false);
+    // 使用 storeToRefs 保持響應性
+    const { searchResults, searchQuery, isLoading, hasSearched } =
+      storeToRefs(queryStore); // 使用 storeToRefs
+
+    // 本地狀態
     const selectedItem = ref(null);
     const showModal = ref(false);
     const currentPage = ref(1);
     const pageSize = ref(10);
 
-    // 計算屬性
-    const totalItems = computed(() => searchResults.value.length);
-    
+    // 計算屬性 - 添加防護檢查
+    const totalItems = computed(() => {
+      return Array.isArray(searchResults.value)
+        ? searchResults.value.length
+        : 0;
+    });
+
     const paginatedResults = computed(() => {
+      if (
+        !Array.isArray(searchResults.value) ||
+        searchResults.value.length === 0
+      ) {
+        return [];
+      }
       const start = (currentPage.value - 1) * pageSize.value;
       const end = start + pageSize.value;
       return searchResults.value.slice(start, end);
@@ -394,48 +460,38 @@ export default {
 
     // 方法
     const handleSearch = async () => {
-      
-      // if (!searchQuery.value.trim()) {
-      //   ElMessage.warning("請輸入查詢條件");
-      //   return;
-      // }
-      
-      searching.value = true;
-      hasSearched.value = true;
+      // 添加防護檢查
+      const query = searchQuery.value ? searchQuery.value.trim() : "";
+      console.log("開始搜尋，查詢條件:", query);
 
       try {
         const queryData = {
-          query: searchQuery.value.trim(),
+          query: query,
         };
 
-        const result = await registrationStore.queryRegistrationData(queryData);
+        const result = await queryStore.queryRegistrationData(queryData);
+        console.log("Store 查詢完成，結果數量:", searchResults.value.length);
+        console.log("searchResults 內容:", searchResults.value);
 
         if (result.success) {
-          searchResults.value = result.data || [];
-          currentPage.value = 1; // 重置到第一頁
+          console.log("查詢結果:", result.data?.length || 0);
 
-          if (searchResults.value.length === 0) {
+          if (!result.data || result.data.length === 0) {
             ElMessage.info("查無符合條件的資料");
           } else {
-            ElMessage.success(`找到 ${searchResults.value.length} 筆資料`);
+            ElMessage.success(`找到 ${result.data.length} 筆資料`);
           }
         } else {
           ElMessage.error(result.message || "查詢失敗");
-          searchResults.value = [];
         }
       } catch (error) {
         console.error("查詢錯誤:", error);
         ElMessage.error("查詢過程中發生錯誤");
-        searchResults.value = [];
-      } finally {
-        searching.value = false;
       }
     };
 
     const handleClear = () => {
-      searchQuery.value = "";
-      searchResults.value = [];
-      hasSearched.value = false;
+      queryStore.clearSearch();
       currentPage.value = 1;
     };
 
@@ -448,11 +504,10 @@ export default {
       currentPage.value = newPage;
 
       // 可選：滾動到表格頂部
-      const tableContainer = document.querySelector('.table-container');
+      const tableContainer = document.querySelector(".table-container");
       if (tableContainer) {
-        tableContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        tableContainer.scrollTo({ top: 0, behavior: "smooth" });
       }
-
     };
 
     const viewDetails = (item) => {
@@ -505,22 +560,27 @@ export default {
     // 初始化
     onMounted(() => {
       console.log("RegistrationList 組件已載入");
+      console.log("當前 searchResults:", searchResults.value);
+      isDev.value = authService.getCurrentDev();
     });
 
     return {
-      // 響應式數據
+      // 響應式數據（來自 Store）
       searchQuery,
       searchResults,
-      searching,
+      isLoading,
       hasSearched,
+
+      // 本地狀態
       selectedItem,
       showModal,
       currentPage,
       pageSize,
-      
+
       // 計算屬性
       totalItems,
       paginatedResults,
+      isDev,
 
       // 方法
       handleSearch,
@@ -537,7 +597,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 /* 樣式部分保持不變，但添加一些新的樣式類別 */
@@ -674,7 +733,6 @@ export default {
 
 .household-head-tag {
   border-left: 3px solid var(--primary-color);
-  
 }
 
 .ancestor-tag {
@@ -1014,7 +1072,6 @@ export default {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-
   .date-time {
     font-size: 0.5rem;
   }
@@ -1074,7 +1131,5 @@ export default {
   .data-table td {
     padding: 0.5rem;
   }
-
-  
 }
 </style>

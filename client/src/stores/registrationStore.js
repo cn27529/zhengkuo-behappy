@@ -7,8 +7,21 @@ import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
 import { serviceConfig } from "../config/serviceConfig.js";
 import mockRegistrations from "../data/mock_registrations.json";
+import { useConfigStore } from "./configStore.js";
 
 export const useRegistrationStore = defineStore("registration", () => {
+  const configStore = useConfigStore();
+
+  // ✅ 使用 computed 保持響應式
+  const relationshipOptions = computed(() => configStore.relationshipOptions);
+  const zodiacOptions = computed(() => configStore.zodiacOptions);
+  const formConfig = computed(() => configStore.formConfig);
+
+  // ✅ 代理方法
+  const loadConfig = async () => {
+    return await configStore.loadConfig();
+  };
+
   // 支援多張表單的陣列
   const formArray = ref([]);
   // 當前編輯的表單索引
@@ -260,30 +273,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     () => getFormSummaries.value[currentFormIndex.value]
   );
 
-  const config = ref({
-    maxHouseholdHeads: 1,
-    maxAncestors: 1,
-    maxSurvivors: 2,
-    defaultSurvivors: 2,
-  });
-
   const registrationForm = ref(getInitialFormData());
-
-  const relationshipOptions = ref(["本家", "娘家", "朋友", "其它"]);
-  const zodiacOptions = ref([
-    "鼠",
-    "牛",
-    "虎",
-    "兔",
-    "龍",
-    "蛇",
-    "馬",
-    "羊",
-    "猴",
-    "雞",
-    "狗",
-    "豬",
-  ]);
 
   const currentHouseholdHeadsCount = computed(() => {
     return registrationForm.value.blessing.persons.filter(
@@ -328,7 +318,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   const householdHeadWarning = computed(() => {
     const count = currentHouseholdHeadsCount.value;
-    const max = config.value.maxHouseholdHeads;
+    const max = formConfig.value.maxHouseholdHeads;
     const filledCount = availableBlessingPersons.value.length;
     if (count > max) {
       return `戶長數量超過限制 (${count}/${max})`;
@@ -340,7 +330,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   const ancestorsWarning = computed(() => {
     const count = currentAncestorsCount.value;
-    const max = config.value.maxAncestors;
+    const max = formConfig.value.maxAncestors;
     if (count > max) {
       return `祖先數量超過限制 (${count}/${max})`;
     }
@@ -349,7 +339,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   const survivorsWarning = computed(() => {
     const count = currentSurvivorsCount.value;
-    const max = config.value.maxSurvivors;
+    const max = formConfig.value.maxSurvivors;
     if (count > max) {
       return `陽上人數量超過限制 (${count}/${max})`;
     }
@@ -364,7 +354,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     };
 
     const hhCount = currentHouseholdHeadsCount.value;
-    if (hhCount > config.value.maxHouseholdHeads) {
+    if (hhCount > formConfig.value.maxHouseholdHeads) {
       details.valid = false;
       details.errors.householdHead = `戶長數量超過限制 (${hhCount}/${config.value.maxHouseholdHeads})`;
       details.messages.push(details.errors.householdHead);
@@ -377,7 +367,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     const ancCount = currentAncestorsCount.value;
-    if (ancCount > config.value.maxAncestors) {
+    if (ancCount > formConfig.value.maxAncestors) {
       details.valid = false;
       details.errors.ancestors = `祖先數量超過限制 (${ancCount}/${config.value.maxAncestors})`;
       details.messages.push(details.errors.ancestors);
@@ -386,7 +376,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     const svCount = currentSurvivorsCount.value;
-    if (svCount > config.value.maxSurvivors) {
+    if (svCount > formConfig.value.maxSurvivors) {
       details.valid = false;
       details.errors.survivors = `陽上人數量超過限制 (${svCount}/${config.value.maxSurvivors})`;
       details.messages.push(details.errors.survivors);
@@ -603,7 +593,9 @@ export const useRegistrationStore = defineStore("registration", () => {
       if (person.isHouseholdHead) {
         person.isHouseholdHead = false;
       } else {
-        if (currentHouseholdHeadsCount.value < config.value.maxHouseholdHeads) {
+        if (
+          currentHouseholdHeadsCount.value < formConfig.value.maxHouseholdHeads
+        ) {
           person.isHouseholdHead = true;
         }
       }
@@ -723,7 +715,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       return { status: "invalid", message: "聯絡人姓名為空" };
     }
 
-    if (currentSurvivorsCount.value >= config.value.maxSurvivors) {
+    if (currentSurvivorsCount.value >= formConfig.value.maxSurvivors) {
       setActionMessage("warning", "陽上人名單已達上限");
       return { status: "max", message: "陽上人名單已達上限" };
     }
@@ -835,390 +827,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // const queryRegistrationData = async (queryData) => {
-  //   try {
-  //     if (!mockRegistrations || mockRegistrations.length === 0) {
-  //       console.error("Mock 數據為空或未找到");
-  //       return {
-  //         success: false,
-  //         message: "Mock 數據為空或未找到",
-  //         data: [],
-  //       };
-  //     }
-
-  //     // 如果有查詢條件，進行過濾
-  //     let filteredData = mockRegistrations;
-  //     if (queryData && queryData.query && queryData.query.trim()) {
-  //       const query = queryData.query.trim().toLowerCase();
-  //       filteredData = mockRegistrations.filter((item) => {
-  //         // 搜尋聯絡人姓名
-  //         if (item.contact?.name?.toLowerCase().includes(query)) return true;
-  //         // 搜尋手機號碼
-  //         if (item.contact?.mobile?.toLowerCase().includes(query)) return true;
-  //         // 搜尋家用電話
-  //         if (item.contact?.phone?.toLowerCase().includes(query)) return true;
-  //         // 搜尋消災人員姓名
-  //         if (
-  //           item.blessing?.persons?.some((person) =>
-  //             person.name?.toLowerCase().includes(query)
-  //           )
-  //         )
-  //           return true;
-  //         // 搜尋消災地址
-  //         if (item.blessing?.address?.toLowerCase().includes(query))
-  //           return true;
-  //         // 搜尋超度地址
-  //         if (item.salvation?.address?.toLowerCase().includes(query))
-  //           return true;
-  //         // 搜尋陽上人姓名
-  //         if (
-  //           item.salvation?.survivors?.some((survivor) =>
-  //             survivor.name?.toLowerCase().includes(query)
-  //           )
-  //         )
-  //           return true;
-  //         return false;
-  //       });
-  //     }
-
-  //     console.log("查詢結果數據:", filteredData);
-  //     console.log("查詢結果數據類型:", typeof filteredData);
-  //     console.log("查詢結果數據長度:", filteredData.length);
-
-  //     return {
-  //       success: true,
-  //       message: `找到 ${filteredData.length} 筆資料`,
-  //       data: filteredData, // 這裡直接返回陣列
-  //     };
-  //   } catch (error) {
-  //     console.error("報名查詢錯誤:", error);
-  //     return {
-  //       success: false,
-  //       message: "查詢過程中發生錯誤",
-  //       data: [],
-  //     };
-  //   }
-  // };
-
-  const queryRegistrationData = async (queryData) => {
-    try {
-      // 檢查是否為 directus 模式
-      if (serviceConfig.mode !== "directus") {
-        console.warn("⚠️ 當前模式不是 directus，使用 Mock 數據");
-
-        // 使用現有的 Mock 數據邏輯
-        if (!mockRegistrations || mockRegistrations.length === 0) {
-          console.error("Mock 數據為空或未找到");
-          return {
-            success: false,
-            message: "Mock 數據為空或未找到",
-            data: [],
-          };
-        }
-
-        // 如果有查詢條件，進行過濾
-        let filteredData = getFilteredData(queryData, mockRegistrations);
-
-        console.log("Mock 查詢結果:", filteredData.length, "筆資料");
-        return {
-          success: true,
-          message: `找到 ${filteredData.length} 筆資料 (Mock 模式)`,
-          data: filteredData,
-        };
-      }
-
-      // 先測試簡單查詢
-      // const testResult = await registrationService.testSimpleQuery();
-      // if (testResult.success) {
-      //   console.log("✅ 簡單查詢測試成功，繼續完整查詢...");
-      //   return await getMockData(queryData);
-      // }
-
-      // Directus 模式 - 使用後端 API
-      console.log("開始查詢報名表數據...", queryData);
-
-      // 構建查詢參數，添加排序（按創建時間降序）
-      const params = {
-        //params.sort = "-createdAt";
-        sort: "-date_created", // 使用 Directus 系統欄位
-      };
-
-      // 調用後端服務
-      const result = await registrationService.getAllRegistrations(params);
-
-      if (result.success) {
-        console.log("後端查詢成功:", result.data?.length || 0, "筆資料");
-
-        let filteredData = getFilteredData(queryData, result.data);
-
-        return {
-          success: true,
-          //message: result.message || `找到 ${result.data?.length || 0} 筆資料`,
-          //data: result.data || [],
-          message: result.message || `找到 ${filteredData?.length || 0} 筆資料`,
-          data: filteredData || [],
-        };
-      } else {
-        const messages = `${result.message}, ${result.errorCode}`;
-        console.error("後端查詢失敗:", messages);
-        return {
-          success: false,
-          message: result.message || "查詢失敗",
-          data: [],
-        };
-      }
-    } catch (error) {
-      console.error("報名查詢錯誤:", error);
-      return {
-        success: false,
-        message: "查詢過程中發生錯誤",
-        data: [],
-      };
-    }
-  };
-
-  // const getFilteredData = (queryData, data) => {
-  //   // 參數驗證
-  //   if (!Array.isArray(data)) {
-  //     console.warn("getFilteredData: data 參數不是陣列", data);
-  //     return [];
-  //   }
-
-  //   if (!queryData.query || typeof queryData.query !== "string") {
-  //     return data;
-  //   }
-
-  //   if (!queryData || !queryData.query || !queryData.query.trim()) {
-  //     return data; // 沒有查詢條件，返回所有數據
-  //   }
-
-  //   const query = (queryData.query || "").toString().trim().toLowerCase();
-  //   if (!query) {
-  //     return data;
-  //   }
-
-  //   let filteredData = data.filter((item) => {
-  //     // 檢查聯絡人信息
-  //     if (item.contact) {
-  //       if (item.contact.name?.toLowerCase().includes(query)) return true;
-  //       if (item.contact.mobile?.toLowerCase().includes(query)) return true;
-  //       if (item.contact.phone?.toLowerCase().includes(query)) return true;
-  //     }
-
-  //     // 檢查消災信息
-  //     if (item.blessing) {
-  //       if (item.blessing.address?.toLowerCase().includes(query)) return true;
-  //       if (
-  //         item.blessing.persons?.some((person) =>
-  //           person.name?.toLowerCase().includes(query)
-  //         )
-  //       )
-  //         return true;
-  //     }
-
-  //     // 檢查超度信息
-  //     if (item.salvation) {
-  //       if (item.salvation.address?.toLowerCase().includes(query)) return true;
-  //       if (
-  //         item.salvation.survivors?.some((survivor) =>
-  //           survivor.name?.toLowerCase().includes(query)
-  //         )
-  //       )
-  //         return true;
-  //     }
-
-  //     return false;
-  //   });
-
-  //   return filteredData;
-  // };
-
-  // const getFilteredData = (queryData, data) => {
-  //   //我的版本
-
-  //   // 參數驗證
-  //   if (!Array.isArray(data)) {
-  //     console.warn("getFilteredData: data 參數不是陣列", data);
-  //     return [];
-  //   }
-
-  //   if (!queryData.query || typeof queryData.query !== "string") {
-  //     return data;
-  //   }
-
-  //   if (!queryData || !queryData.query || !queryData.query.trim()) {
-  //     return data; // 沒有查詢條件，返回所有數據
-  //   }
-
-  //   if (queryData && queryData.query && queryData.query.trim()) {
-  //     const query = queryData.query.trim().toLowerCase();
-  //     let filteredData = data.filter((item) => {
-  //       // 搜尋聯絡人姓名
-  //       if (item.contact?.name?.toLowerCase().includes(query)) return true;
-  //       // 搜尋手機號碼
-  //       if (item.contact?.mobile?.toLowerCase().includes(query)) return true;
-  //       // 搜尋家用電話
-  //       if (item.contact?.phone?.toLowerCase().includes(query)) return true;
-  //       // 搜尋消災人員姓名
-  //       if (
-  //         item.blessing?.persons?.some((person) =>
-  //           person.name?.toLowerCase().includes(query)
-  //         )
-  //       )
-  //         return true;
-  //       // 搜尋消災地址
-  //       if (item.blessing?.address?.toLowerCase().includes(query)) return true;
-  //       // 搜尋超度地址
-  //       if (item.salvation?.address?.toLowerCase().includes(query)) return true;
-  //       // 搜尋陽上人姓名
-  //       if (
-  //         item.salvation?.survivors?.some((survivor) =>
-  //           survivor.name?.toLowerCase().includes(query)
-  //         )
-  //       )
-  //         return true;
-  //       return false;
-  //     });
-  //     return filteredData;
-  //   } else {
-  //     return data;
-  //   }
-  // };
-
-  const getFilteredData = (queryData, data) => {
-    console.log("🎯 開始過濾數據...");
-    console.log("查詢條件:", queryData);
-    console.log("原始數據:", data);
-
-    if (!queryData || !queryData.query || !queryData.query.trim()) {
-      console.log("🔍 無查詢條件，返回所有數據");
-      return data;
-    }
-
-    const query = queryData.query.trim().toLowerCase();
-    console.log("🔍 搜索關鍵字:", query);
-
-    if (!data || !Array.isArray(data)) {
-      console.warn("⚠️ 數據不是陣列或為空");
-      return [];
-    }
-
-    const filteredData = data.filter((item, index) => {
-      console.log(`--- 檢查第 ${index} 筆資料 ---`);
-      console.log("資料內容:", item);
-
-      let matchFound = false;
-
-      // 檢查聯絡人
-      if (item.contact) {
-        console.log("檢查聯絡人:", item.contact);
-        if (
-          item.contact.name &&
-          item.contact.name.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人姓名");
-          matchFound = true;
-        }
-        if (
-          item.contact.mobile &&
-          item.contact.mobile.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人手機");
-          matchFound = true;
-        }
-        if (
-          item.contact.phone &&
-          item.contact.phone.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人電話");
-          matchFound = true;
-        }
-      }
-
-      // 檢查消災信息
-      if (item.blessing && !matchFound) {
-        console.log("檢查消災信息:", item.blessing);
-        if (
-          item.blessing.address &&
-          item.blessing.address.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配消災地址");
-          matchFound = true;
-        }
-        if (item.blessing.persons) {
-          console.log("檢查消災人員:", item.blessing.persons);
-          item.blessing.persons.forEach((person, i) => {
-            if (
-              person &&
-              person.name &&
-              person.name.toLowerCase().includes(query)
-            ) {
-              console.log(`✅ 匹配消災人員 ${i}:`, person.name);
-              matchFound = true;
-            }
-          });
-        }
-      }
-
-      // 檢查超度信息
-      if (item.salvation && !matchFound) {
-        console.log("檢查超度信息:", item.salvation);
-        if (
-          item.salvation.address &&
-          item.salvation.address.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配超度地址");
-          matchFound = true;
-        }
-        if (item.salvation.ancestors) {
-          console.log("檢查祖先:", item.salvation.ancestors);
-          item.salvation.ancestors.forEach((ancestor, i) => {
-            if (
-              ancestor &&
-              ancestor.surname &&
-              ancestor.surname.toLowerCase().includes(query)
-            ) {
-              console.log(`✅ 匹配祖先 ${i}:`, ancestor.surname);
-              matchFound = true;
-            }
-          });
-        }
-        if (item.salvation.survivors) {
-          console.log("檢查陽上人:", item.salvation.survivors);
-          item.salvation.survivors.forEach((survivor, i) => {
-            if (
-              survivor &&
-              survivor.name &&
-              survivor.name.toLowerCase().includes(query)
-            ) {
-              console.log(`✅ 匹配陽上人 ${i}:`, survivor.name);
-              matchFound = true;
-            }
-          });
-        }
-      }
-
-      console.log(
-        `第 ${index} 筆資料匹配結果:`,
-        matchFound ? "✅ 匹配" : "❌ 不匹配"
-      );
-      return matchFound;
-    });
-
-    console.log("🎯 過濾完成，結果:", filteredData);
-    return filteredData;
-  };
-
-  const loadConfig = async () => {
-    try {
-      console.log("加載配置成功");
-      return config.value;
-    } catch (error) {
-      console.error("加載配置失敗:", error);
-      throw error;
-    }
-  };
-
   const initializeFormArray = () => {
     if (formArray.value.length === 0) {
       formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
@@ -1306,8 +914,8 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   return {
-    config,
     registrationForm,
+    // 配置數據（響應式）
     relationshipOptions,
     zodiacOptions,
     formArray,
@@ -1326,6 +934,8 @@ export const useRegistrationStore = defineStore("registration", () => {
     survivorsWarning,
     isFormValid,
     validationDetails,
+    // 配置方法
+    loadConfig,
     addBlessingPerson,
     removeBlessingPerson,
     toggleHouseholdHead,
@@ -1338,7 +948,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     addContactToSurvivors,
     copyBlessingAddress,
     submitRegistration,
-    loadConfig,
     addNewForm,
     switchForm,
     deleteForm,
@@ -1347,6 +956,5 @@ export const useRegistrationStore = defineStore("registration", () => {
     setupFormSync, // 🆕 供外部使用
     loadFormToRegistration, // 🆕 供外部使用
     loadMockData, // 🆕 供外部使用
-    queryRegistrationData, // 🆕 供外部使用
   };
 });

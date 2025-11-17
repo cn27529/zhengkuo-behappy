@@ -74,7 +74,7 @@
 
 <script>
 import { ref, reactive, onMounted } from "vue";
-import { useAuthStore } from "../stores/auth.js";
+import { useAuthStore } from "../stores/authStore.js";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 
