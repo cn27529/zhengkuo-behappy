@@ -1,5 +1,5 @@
 // src/services/mydataService.js
-import { commonService, getApiUrl } from "../services/commonService.js";
+import { commonService, getApiUrl } from "../services/urlService.js";
 
 export class MydataService {
   constructor() {

@@ -5,7 +5,7 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
-import { commonService } from "../services/commonService.js";
+import { commonService } from "../services/urlService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 //import { useConnectionStore } from "./connectionStore.js"; // ✅ 新增

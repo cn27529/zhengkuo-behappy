@@ -1,4 +1,4 @@
-// src/services/commonService.js
+// src/services/urlService.js
 export const commonService = {
   // 可切換模式: 'mock' 或 'backend'
   mode: import.meta.env.VITE_AUTH_MODE || "mock",
@@ -25,9 +25,12 @@ export const commonService = {
 
   // 模擬 API 延遲（毫秒）
   mockDelay: 500,
+
 };
 
 // 獲取完整的 API URL
 export const getApiUrl = (endpoint) => {
   return `${commonService.apiBaseUrl}${endpoint}`;
 };
+
+

@@ -1,5 +1,5 @@
 // src/services/authService.js
-import { commonService, getApiUrl } from "../services/commonService.js";
+import { commonService, getApiUrl } from "../services/urlService.js";
 import userData from "../data/auth_user.json";
 
 export class AuthService {

@@ -117,7 +117,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { authService } from "../services/authService.js";
-import { commonService } from "../services/commonService.js";
+import { commonService } from "../services/urlService.js";
 import { useAuthStore } from "../stores/authStore.js";
 
 const authStore = useAuthStore();

@@ -1,5 +1,5 @@
 // src/services/registrationService.js
-import { commonService, getApiUrl } from "../services/commonService.js";
+import { commonService, getApiUrl } from "../services/urlService.js";
 import {
   generateGitHash,
   generateMultipleHashes,
@@ -285,8 +285,6 @@ export class RegistrationService {
       if (params.sort) {
         queryParams.append("sort", params.sort);
       }
-
-      //getApiUrl(commonService.apiEndpoints.me
 
       const apiUrl = `${getApiUrl(commonService.apiEndpoints.itemsRegistration)}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);

@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 import { ref, computed, h } from "vue";
 import { registrationService } from "../services/registrationService.js";
 import { authService } from "../services/authService.js";
-import { commonService } from "../services/commonService.js";
+import { commonService } from "../services/urlService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { useConnectionStore } from "./connectionStore.js";
