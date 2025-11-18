@@ -1,14 +1,17 @@
 // src/stores/queryStore.js
 // 本檔為查詢表單的 Pinia store，管理查詢表單的狀態與操作。
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, h } from "vue";
 import { registrationService } from "../services/registrationService.js";
+import { authService } from "../services/authService.js";
 import { serviceConfig } from "../config/serviceConfig.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
+import { useConnectionStore } from "./connectionStore.js";
 
 export const useQueryStore = defineStore("query", () => {
   const configStore = useConfigStore();
+  const connectionStore = useConnectionStore();
 
   // 狀態定義 - Pinia 會自動保持這些狀態
   const searchResults = ref([]);
@@ -59,6 +62,35 @@ export const useQueryStore = defineStore("query", () => {
 
       // Directus 模式
       console.log("開始查詢報名表數據...", queryData);
+
+      // 先檢查連線
+      // ✅ 修正：正確的健康檢查邏輯
+      try {
+        const health = await authService.checkDirectusHealth();
+        console.log("健康檢查結果:", health);
+
+        if (!health.success || !health.available) {
+          console.warn("⚠️ Directus 服務可能未啟動:", health);
+          isLoading.value = false;
+          return {
+            success: false,
+            online: false,
+            message: health.message || "Directus 服務不可用",
+            data: null,
+          };
+        }
+      } catch (healthError) {
+        console.error("健康檢查失敗:", healthError);
+        isLoading.value = false;
+        return {
+          success: false,
+          online: false,
+          message: "無法連線到 Directus 服務",
+          data: null,
+        };
+      }
+
+      console.log("✅ Directus 服務健康檢查通過");
 
       const params = {
         sort: "-date_created",

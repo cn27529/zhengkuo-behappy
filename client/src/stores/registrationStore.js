@@ -8,9 +8,12 @@ import { registrationService } from "../services/registrationService.js";
 import { serviceConfig } from "../config/serviceConfig.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
+//import { useConnectionStore } from "./connectionStore.js"; // ✅ 新增
+
 
 export const useRegistrationStore = defineStore("registration", () => {
   const configStore = useConfigStore();
+  //const connectionStore = useConnectionStore(); // ✅ 新增
 
   // ✅ 使用 computed 保持響應式
   const relationshipOptions = computed(() => configStore.relationshipOptions);

@@ -297,7 +297,7 @@ export class MydataService {
   // ========== 健康檢查 ==========
   async checkDirectusHealth() {
     try {
-      const response = await fetch(`${serviceConfig.apiBaseUrl}/server/info`, {
+      const response = await fetch(`${getApiUrl(serviceConfig.apiEndpoints.serverInfo)}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

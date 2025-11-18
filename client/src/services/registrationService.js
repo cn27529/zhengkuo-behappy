@@ -30,6 +30,8 @@ export class RegistrationService {
     return result.data;
   }
 
+
+
   // ========== 生成表單 ID ==========
   generateFormId() {
     return generateGitHash();
@@ -212,6 +214,56 @@ export class RegistrationService {
   //   }
   // }
 
+  // ========== 連線檢查方法 ==========
+  async checkConnection() {
+    try {
+      
+      const response = await fetch(`${getApiUrl(serviceConfig.apiEndpoints.serverInfo)}`, {
+          method: 'GET',
+          timeout: 5000,
+        });
+        
+        if (response.ok) {
+          console.log("伺服器連線正常");
+          return {
+            success: true,
+            online: true,
+            message: "伺服器連線正常"
+          };
+        } else {
+          return {
+            success: false,
+            online: false,
+            message: "伺服器無回應"
+          };
+        }
+
+    } catch (error) {
+      console.error("伺服器連線異常:", error);      
+      return {
+        success: false,
+        online: false,
+        message: `伺服器連線異常: ${error.message}`
+      };
+    }
+  }
+
+  // ========== 帶有連線檢查的查詢方法 ==========
+  async getAllRegistrationsWithCheck(params = {}) {
+    const connectionCheck = await this.checkConnection();
+    
+    if (!connectionCheck.online) {
+      return {
+        success: false,
+        online: false,
+        message: connectionCheck.message,
+        data: null
+      };
+    }
+    
+    return await this.getAllRegistrations(params);
+  }
+  
   async getAllRegistrations(params = {}) {
     if (serviceConfig.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
@@ -234,9 +286,9 @@ export class RegistrationService {
         queryParams.append("sort", params.sort);
       }
 
-      const apiUrl = `${getApiUrl(
-        "/items/registrationDB"
-      )}?${queryParams.toString()}`;
+      //getApiUrl(serviceConfig.apiEndpoints.me
+
+      const apiUrl = `${getApiUrl(serviceConfig.apiEndpoints.itemsRegistration)}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
       const headers = await this.getAuthHeaders();
@@ -286,7 +338,7 @@ export class RegistrationService {
       console.log("🧪 開始簡單查詢測試...");
 
       // 測試 1: 最簡單的查詢
-      const simpleUrl = `${getApiUrl("/items/registrationDB")}?limit=1`;
+      const simpleUrl = `${getApiUrl(serviceConfig.apiEndpoints.itemsRegistration)}?limit=1`;
       console.log("測試 URL:", simpleUrl);
 
       const response = await fetch(simpleUrl, {

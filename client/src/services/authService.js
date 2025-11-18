@@ -599,7 +599,7 @@ export class AuthService {
       ];
 
       // 使用最簡單的端點檢查
-      const response = await fetch(`${serviceConfig.apiBaseUrl}/server/info`, {
+      const response = await fetch(`${getApiUrl(serviceConfig.apiEndpoints.serverInfo)}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
