@@ -585,8 +585,9 @@ export class AuthService {
       // 健康檢查
       if (mode === "backend") {
         // 檢查後端連接狀態
-        baseService.checkBackendHealth().then((healthCheck) => {
-          if (healthCheck.available) {
+
+        baseService.checkConnection().then((healthCheck) => {
+          if (healthCheck.online) {
             console.log("✅ 後端服務健康檢查通過");
           } else {
             console.warn("⚠️ 後端服務可能未啟動:", healthCheck);

@@ -28,35 +28,6 @@ export class BaseService {
     this.mockDelay = 500;
   }
 
-  // 檢查後端健康狀態，返回一個包含 available 和 message 的對象
-  async checkBackendHealth() {
-    try {
-      const response = await fetch(getApiUrl(this.apiEndpoints.serverPing), {
-        method: "GET",
-        timeout: 5000,
-      });
-
-      if (response.ok) {
-        console.log("伺服器連線正常");
-        return {
-          available: true,
-          message: "伺服器連線正常",
-        };
-      } else {
-        return {
-          available: false,
-          message: "伺服器無回應",
-        };
-      }
-    } catch (error) {
-      console.error("伺服器連線異常:", error);
-      return {
-        available: false,
-        message: `伺服器連線異常: ${error.message}`,
-      };
-    }
-  }
-
   // 檢查後端連接狀態，返回一個包含 success 和 message 的對象
   async checkConnection() {
     // Mock 模式總是返回成功

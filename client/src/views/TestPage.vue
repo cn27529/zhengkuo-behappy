@@ -205,13 +205,21 @@ const testBackendHealth = async () => {
   
   testing.value = true;
   try {
-    const health = await authService.checkBackendHealth();
-    backendHealth.value = { ...health, checked: true };
+
+    const healthCheck = await baseService.checkConnection();
+    if (healthCheck.online) {
+      console.log("✅ 後端服務健康檢查通過");
+    } else {
+      console.warn("⚠️ 後端服務可能未啟動:", healthCheck);
+    }
+
+    backendHealth.value = { ...healthCheck, checked: true };
     testResult.value = {
-      success: health.available,
-      message: health.available ? '後端服務正常' : '後端服務不可用',
-      data: health
+      success: healthCheck.online,
+      message: healthCheck.online ? '後端服務正常' : '後端服務不可用',
+      data: healthCheck
     };
+    
   } catch (error) {
     testResult.value = {
       success: false,
