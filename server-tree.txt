@@ -1,18 +1,71 @@
-./server
-├── Directus user setup.md
+./client
 ├── README.md
-├── data.db
-├── package-lock.json
+├── index.html
 ├── package.json
-└── schema
-    ├── articles-schema.json
-    ├── articles-simple.json
-    ├── delete-articles.js
-    ├── delete-articles.mjs
-    ├── step1-articles.json
-    ├── step2-cats-tags.json
-    ├── step3-junction.json
-    ├── step4-article-category-image.json
-    └── step5-article-tags-alias.json
+├── public
+│   ├── temple-icon.png
+│   ├── vite.svg
+│   └── vue.svg
+├── src
+│   ├── App.vue
+│   ├── assets
+│   │   └── vue.svg
+│   ├── components
+│   │   ├── ContactForm.vue
+│   │   ├── DevTools.vue
+│   │   ├── EnvTest.vue
+│   │   ├── LoginForm.vue
+│   │   └── SupabaseLoginForm.vue
+│   ├── config
+│   │   ├── appConfig.js
+│   │   └── supabase.js
+│   ├── data
+│   │   ├── auth_user.json
+│   │   ├── mock2.json
+│   │   ├── mock_registrations.json
+│   │   └── mock_registrations.md
+│   ├── main.js
+│   ├── router
+│   │   └── index.js
+│   ├── services
+│   │   ├── authService.js
+│   │   ├── baseService.js
+│   │   ├── mydataService.js
+│   │   └── registrationService.js
+│   ├── stores
+│   │   ├── activities.js
+│   │   ├── authStore.js
+│   │   ├── configStore.js
+│   │   ├── connectionStore.js
+│   │   ├── menu.js
+│   │   ├── queryStore.js
+│   │   ├── registrationStore.js
+│   │   ├── supabase-auth.js
+│   │   └── taisui.js
+│   ├── style.css
+│   ├── utils
+│   │   ├── generateGitHash.js
+│   │   ├── generateGitHashAsync.js
+│   │   └── mockDataHelper.js
+│   └── views
+│       ├── Contact.vue
+│       ├── Dashboard.vue
+│       ├── Empty.vue
+│       ├── Env.vue
+│       ├── Login.vue
+│       ├── Logout.vue
+│       ├── MockLogin.vue
+│       ├── MydataForm.vue
+│       ├── MydataList.vue
+│       ├── Placeholder.vue
+│       ├── PrintRegistration.vue
+│       ├── Registration.vue
+│       ├── RegistrationList copy.vue
+│       ├── RegistrationList.vue
+│       ├── SupabaseLogin.vue
+│       ├── TaiSui.vue
+│       ├── TestPage.vue
+│       └── generatorHash.vue
+└── vite.config.js
 
-2 directories, 14 files
+12 directories, 57 files

@@ -1,5 +1,5 @@
 // src/services/registrationService.js
-import { commonService, getApiUrl } from "../services/urlService.js";
+import { baseService, getApiUrl } from "../services/baseService.js";
 import {
   generateGitHash,
   generateMultipleHashes,
@@ -8,7 +8,7 @@ import {
 export class RegistrationService {
   // ========== 建構函式 ==========
   constructor() {
-    console.log(`RegistrationService 初始化: 當前模式為 ${commonService.mode}`);
+    console.log(`RegistrationService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
   // ========== 通用方法 ==========
@@ -30,8 +30,6 @@ export class RegistrationService {
     return result.data;
   }
 
-
-
   // ========== 生成表單 ID ==========
   generateFormId() {
     return generateGitHash();
@@ -43,7 +41,7 @@ export class RegistrationService {
     const getCurrentISOTime = () => new Date().toISOString();
     const createISOTime = new Date().toISOString();
 
-    if (commonService.mode !== "directus") {
+    if (baseService.mode !== "directus") {
       console.warn(
         "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
       );
@@ -59,6 +57,18 @@ export class RegistrationService {
     }
 
     try {
+      // 先檢查連線 ✅ 修正：正確的健康檢查邏輯
+      const healthCheck = await baseService.checkConnection();
+      if (!healthCheck.online) {
+        return {
+          success: false,
+          online: false,
+          message: healthCheck.message,
+          data: null,
+        };
+      }
+      console.log("✅ Directus 服務健康檢查通過");
+
       // 準備提交數據
       const processedData = {
         state: registrationData.state || "creating",
@@ -86,7 +96,7 @@ export class RegistrationService {
       };
 
       const response = await fetch(
-        getApiUrl("/items/registrationDB"), // Directus registrationDB 端點
+        getApiUrl(baseService.apiEndpoints.itemsRegistration), // Directus registrationDB 端點
         {
           method: "POST",
           headers: await this.getAuthHeaders(),
@@ -109,7 +119,7 @@ export class RegistrationService {
   }
 
   async updateRegistration(id, registrationData) {
-    if (commonService.mode !== "directus") {
+    if (baseService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -122,7 +132,7 @@ export class RegistrationService {
       };
 
       const response = await fetch(
-        `${getApiUrl("/items/registrationDB")}/${id}`,
+        `${getApiUrl(baseService.apiEndpoints.itemsRegistration)}/${id}`,
         {
           method: "PATCH",
           headers: await this.getAuthHeaders(),
@@ -144,14 +154,14 @@ export class RegistrationService {
   }
 
   async getRegistrationById(id) {
-    if (commonService.mode !== "directus") {
+    if (baseService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
       const response = await fetch(
-        `${getApiUrl("/items/registrationDB")}/${id}?fields=*`,
+        `${getApiUrl(baseService.apiEndpoints.registrations)}/${id}?fields=*`,
         {
           method: "GET",
           headers: await this.getAuthHeaders(),
@@ -171,101 +181,8 @@ export class RegistrationService {
     }
   }
 
-  // async getAllRegistrations(params = {}) {
-  //   if (commonService.mode !== "directus") {
-  //     console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
-  //     return { success: false, message: "請切換到 directus 模式" };
-  //   }
-
-  //   try {
-  //     const queryParams = new URLSearchParams();
-  //     queryParams.append("fields", "*");
-
-  //     // 添加篩選條件
-  //     if (params.filter) {
-  //       Object.keys(params.filter).forEach((key) => {
-  //         queryParams.append(`filter[${key}]`, params.filter[key]);
-  //       });
-  //     }
-
-  //     // 添加排序
-  //     if (params.sort) {
-  //       queryParams.append("sort", params.sort);
-  //     }
-
-  //     const response = await fetch(
-  //       `${getApiUrl("/items/registrationDB")}?${queryParams.toString()}`,
-  //       {
-  //         method: "GET",
-  //         headers: await this.getAuthHeaders(),
-  //       }
-  //     );
-
-  //     const data = await this.handleDirectusResponse(response);
-
-  //     return {
-  //       success: true,
-  //       data: data,
-  //       message: "成功獲取所有報名表",
-  //     };
-  //   } catch (error) {
-  //     console.error("獲取報名表列表失敗:", error);
-  //     return this.handleDirectusError(error);
-  //   }
-  // }
-
-  // ========== 連線檢查方法 ==========
-  async checkConnection() {
-    try {
-      
-      const response = await fetch(`${getApiUrl(commonService.apiEndpoints.serverInfo)}`, {
-          method: 'GET',
-          timeout: 5000,
-        });
-        
-        if (response.ok) {
-          console.log("伺服器連線正常");
-          return {
-            success: true,
-            online: true,
-            message: "伺服器連線正常"
-          };
-        } else {
-          return {
-            success: false,
-            online: false,
-            message: "伺服器無回應"
-          };
-        }
-
-    } catch (error) {
-      console.error("伺服器連線異常:", error);      
-      return {
-        success: false,
-        online: false,
-        message: `伺服器連線異常: ${error.message}`
-      };
-    }
-  }
-
-  // ========== 帶有連線檢查的查詢方法 ==========
-  async getAllRegistrationsWithCheck(params = {}) {
-    const connectionCheck = await this.checkConnection();
-    
-    if (!connectionCheck.online) {
-      return {
-        success: false,
-        online: false,
-        message: connectionCheck.message,
-        data: null
-      };
-    }
-    
-    return await this.getAllRegistrations(params);
-  }
-  
   async getAllRegistrations(params = {}) {
-    if (commonService.mode !== "directus") {
+    if (baseService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -286,7 +203,9 @@ export class RegistrationService {
         queryParams.append("sort", params.sort);
       }
 
-      const apiUrl = `${getApiUrl(commonService.apiEndpoints.itemsRegistration)}?${queryParams.toString()}`;
+      const apiUrl = `${getApiUrl(
+        baseService.apiEndpoints.itemsRegistration
+      )}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
       const headers = await this.getAuthHeaders();
@@ -336,7 +255,9 @@ export class RegistrationService {
       console.log("🧪 開始簡單查詢測試...");
 
       // 測試 1: 最簡單的查詢
-      const simpleUrl = `${getApiUrl(commonService.apiEndpoints.itemsRegistration)}?limit=1`;
+      const simpleUrl = `${getApiUrl(
+        baseService.apiEndpoints.itemsRegistration
+      )}?limit=1`;
       console.log("測試 URL:", simpleUrl);
 
       const response = await fetch(simpleUrl, {
@@ -362,14 +283,14 @@ export class RegistrationService {
   }
 
   async deleteRegistration(id) {
-    if (commonService.mode !== "directus") {
+    if (baseService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
       const response = await fetch(
-        `${getApiUrl("/items/registrationDB")}/${id}`,
+        `${getApiUrl(baseService.apiEndpoints.itemsRegistration)}/${id}`,
         {
           method: "DELETE",
           headers: await this.getAuthHeaders(),
@@ -486,12 +407,12 @@ export class RegistrationService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
-    return commonService.mode;
+    return baseService.mode;
   }
 
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
-      commonService.mode = mode;
+      baseService.mode = mode;
       console.log(`RegistrationService 模式已切換為: ${mode}`);
     } else {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');

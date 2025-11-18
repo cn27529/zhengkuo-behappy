@@ -1,0 +1,69 @@
+{
+    "success": true,
+    "message": "報名提交成功！",
+    "formId": "7cad83c",
+    "dbName": "/items/registrationDB",
+    "data": {
+        "id": 69,
+        "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+        "date_created": "2025-11-18T12:18:12.146Z",
+        "user_updated": null,
+        "date_updated": null,
+        "state": "submitted",
+        "formId": "7cad83c",
+        "formName": "2025消災超度報名表-019",
+        "formSource": "",
+        "salvation": {
+            "address": "新北市永和區永和路二段200號",
+            "ancestors": [
+                {
+                    "id": 1,
+                    "surname": "蘇氏",
+                    "notes": "外祖歷代祖先"
+                }
+            ],
+            "survivors": [
+                {
+                    "id": 1,
+                    "name": "蘇怡君",
+                    "zodiac": "蛇",
+                    "notes": ""
+                },
+                {
+                    "id": 2,
+                    "name": "蘇媽媽",
+                    "zodiac": "馬",
+                    "notes": ""
+                }
+            ]
+        },
+        "contact": {
+            "name": "蘇怡君",
+            "phone": "",
+            "mobile": "0910-555-888",
+            "relationship": "娘家",
+            "otherRelationship": ""
+        },
+        "blessing": {
+            "address": "新北市永和區永和路二段200號",
+            "persons": [
+                {
+                    "id": 1,
+                    "name": "蘇怡君",
+                    "zodiac": "蛇",
+                    "notes": "",
+                    "isHouseholdHead": true
+                },
+                {
+                    "id": 2,
+                    "name": "蘇媽媽",
+                    "zodiac": "馬",
+                    "notes": "母親",
+                    "isHouseholdHead": false
+                }
+            ]
+        },
+        "createdAt": "2025-11-18T12:18:12.016Z",
+        "updatedAt": ""
+    }
+}

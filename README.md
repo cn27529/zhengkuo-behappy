@@ -11,5 +11,5 @@ A zhengkuo-behappy project for client and server apps
 npm run dev:full
 
 ## look tree
-tree -L 3 -I "node_modules|.git|dist" ./client > client-tree.txt 
+tree -L 3 -I "node_modules|.git|dist" ./client > client-tree.txt
 tree -L 2 -I "node_modules|.git|dist" ./server > server-tree.txt

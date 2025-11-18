@@ -11,19 +11,13 @@
 │   ├── assets
 │   │   └── vue.svg
 │   ├── components
-│   │   ├── BlessingSection.vue
-│   │   ├── BlessingSection2.vue
 │   │   ├── ContactForm.vue
 │   │   ├── DevTools.vue
 │   │   ├── EnvTest.vue
 │   │   ├── LoginForm.vue
-│   │   ├── PersonForm.vue
-│   │   ├── SalvationSection.vue
-│   │   ├── SalvationSection2.vue
 │   │   └── SupabaseLoginForm.vue
 │   ├── config
 │   │   ├── appConfig.js
-│   │   ├── commonService.js
 │   │   └── supabase.js
 │   ├── data
 │   │   ├── auth_user.json
@@ -35,13 +29,17 @@
 │   │   └── index.js
 │   ├── services
 │   │   ├── authService.js
+│   │   ├── baseService.js
 │   │   ├── mydataService.js
 │   │   └── registrationService.js
 │   ├── stores
 │   │   ├── activities.js
-│   │   ├── auth.js
+│   │   ├── authStore.js
+│   │   ├── configStore.js
+│   │   ├── connectionStore.js
 │   │   ├── menu.js
-│   │   ├── registration.js
+│   │   ├── queryStore.js
+│   │   ├── registrationStore.js
 │   │   ├── supabase-auth.js
 │   │   └── taisui.js
 │   ├── style.css
@@ -55,8 +53,8 @@
 │       ├── Empty.vue
 │       ├── Env.vue
 │       ├── Login.vue
-│       ├── MockLogin.vue
 │       ├── Logout.vue
+│       ├── MockLogin.vue
 │       ├── MydataForm.vue
 │       ├── MydataList.vue
 │       ├── Placeholder.vue
@@ -70,4 +68,4 @@
 │       └── generatorHash.vue
 └── vite.config.js
 
-12 directories, 59 files
+12 directories, 57 files

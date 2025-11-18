@@ -5,11 +5,10 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
-import { commonService } from "../services/urlService.js";
+import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 //import { useConnectionStore } from "./connectionStore.js"; // ✅ 新增
-
 
 export const useRegistrationStore = defineStore("registration", () => {
   const configStore = useConfigStore();
@@ -788,7 +787,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       registrationForm.value.createdAt = createISOTime;
       registrationForm.value.state = "submitted";
 
-      if (commonService.mode !== "directus") {
+      if (baseService.mode !== "directus") {
         console.warn(
           "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
         );
@@ -804,6 +803,25 @@ export const useRegistrationStore = defineStore("registration", () => {
         };
       }
 
+      console.log("🔍 正在檢查 Directus 服務連線狀態...");
+      // 先檢查連線 ✅ 修正：正確的健康檢查邏輯
+      const healthCheck = await baseService.checkConnection();
+      if (!healthCheck.online) {
+        registrationForm.value.formId = ""; // 重置 formId，允許重新提交
+        const message = `${"❌ Directus 服務連線失敗，無法提交報名表單："} ${
+          healthCheck.message
+        }`;
+        console.error(message);
+        return {
+          success: false,
+          online: false,
+          message: message,
+          data: null,
+        };
+      }
+      console.log("✅ Directus 服務健康檢查通過");
+      console.log("🚀 開始提交並創建報名表單...");
+      // 創建報名表單
       const result = await registrationService.createRegistration(
         registrationForm.value
       );
@@ -815,8 +833,8 @@ export const useRegistrationStore = defineStore("registration", () => {
           success: result.success,
           message: "報名提交成功！",
           formId: result.formId,
+          dbName: baseService.apiEndpoints.itemsRegistration,
           data: {
-            dbName: "registrationDB",
             ...result.data,
           },
         };

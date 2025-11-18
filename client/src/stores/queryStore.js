@@ -4,14 +4,12 @@ import { defineStore } from "pinia";
 import { ref, computed, h } from "vue";
 import { registrationService } from "../services/registrationService.js";
 import { authService } from "../services/authService.js";
-import { commonService } from "../services/urlService.js";
+import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
-import { useConnectionStore } from "./connectionStore.js";
 
 export const useQueryStore = defineStore("query", () => {
   const configStore = useConfigStore();
-  const connectionStore = useConnectionStore();
 
   // 狀態定義 - Pinia 會自動保持這些狀態
   const searchResults = ref([]);
@@ -27,7 +25,7 @@ export const useQueryStore = defineStore("query", () => {
     isLoading.value = true;
     try {
       // 檢查是否為 directus 模式
-      if (commonService.mode !== "directus") {
+      if (baseService.mode !== "directus") {
         console.warn("⚠️ 當前模式不是 directus，使用 Mock 數據");
 
         if (!mockRegistrations || mockRegistrations.length === 0) {
@@ -63,33 +61,20 @@ export const useQueryStore = defineStore("query", () => {
       // Directus 模式
       console.log("開始查詢報名表數據...", queryData);
 
-      // 先檢查連線
-      // ✅ 修正：正確的健康檢查邏輯
-      try {
-        const health = await authService.checkDirectusHealth();
-        console.log("健康檢查結果:", health);
+      // 先檢查連線 ✅ 修正：正確的健康檢查邏輯
+      // 在健康檢查後添加詳細日誌
+      const healthCheck = await baseService.checkConnection();
+      console.log("🔍 連線檢查結果:", healthCheck);
 
-        if ( !health.available) {
-          console.warn("⚠️ Directus 服務可能未啟動:", health);
-          isLoading.value = false;
-          return {
-            success: false,
-            online: false,
-            message: health.error  || "Directus 服務不可用",
-            data: null,
-          };
-        }
-      } catch (healthError) {
-        console.error("健康檢查失敗:", healthError);
-        isLoading.value = false;
+      if (!healthCheck.online) {
+        console.error("❌ 連線檢查失敗，停止查詢");
         return {
           success: false,
           online: false,
-          message: "無法連線到 Directus 服務",
+          message: healthCheck.message,
           data: null,
         };
       }
-
       console.log("✅ Directus 服務健康檢查通過");
 
       const params = {

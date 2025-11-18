@@ -31,13 +31,15 @@
           </span>
         </p>
         <!-- 添加 Mock 按钮 -->
-  <div style="margin: 10px 0;">
-    <button 
-      @click="loadMockData" 
-      class="btn btn-outline btn-sm"
-      style="margin-right: 10px;">🎲 載入 Mock 數據
-    </button>
-  </div>
+        <div style="margin: 10px 0">
+          <button
+            @click="loadMockData"
+            class="btn btn-outline btn-sm"
+            style="margin-right: 10px"
+          >
+            🎲 載入 Mock 數據
+          </button>
+        </div>
       </div>
       <!-- 表單切換器 -->
       <div class="form-switcher" v-if="formArray && formArray.length > 1">
@@ -68,7 +70,7 @@
         <div
           class="current-form-info"
           v-if="currentFormSummary"
-          style="display: none;"
+          style="display: none"
         >
           <span>聯絡人: {{ currentFormSummary.contactName || "未填寫" }}</span>
           <span>消災人員: {{ currentFormSummary.personsCount }} 位</span>
@@ -508,8 +510,6 @@
 
       <!-- 修正後的提交按鈕區塊 -->
       <div class="form-actions">
-        
-
         <button
           type="button"
           class="btn btn-primary"
@@ -555,7 +555,6 @@ export default {
     const isDev = ref(false);
 
     onMounted(async () => {
-
       await registrationStore.loadConfig();
       // 啟動自動同步機制
       registrationStore.initializeFormArray();
@@ -569,13 +568,13 @@ export default {
       try {
         const success = await registrationStore.loadMockData();
         if (success) {
-          ElMessage.success('Mock 數據載入成功');
+          ElMessage.success("Mock 數據載入成功");
         } else {
-          ElMessage.error('載入 Mock 數據失敗');
+          ElMessage.error("載入 Mock 數據失敗");
         }
       } catch (error) {
-        console.error('載入 Mock 數據錯誤:', error);
-        ElMessage.error('載入 Mock 數據時發生錯誤');
+        console.error("載入 Mock 數據錯誤:", error);
+        ElMessage.error("載入 Mock 數據時發生錯誤");
       }
     };
 
@@ -714,8 +713,17 @@ export default {
       try {
         const result = await registrationStore.submitRegistration();
 
-        ElMessage.success(result.message);
-        console.log(result.result);
+        console.log("提交結果調試信息:",  JSON.stringify(result));
+        
+
+        if(result.success) {
+          ElMessage.success(result.message);
+        } else {
+          ElMessage.error(result.message);
+        }
+
+        console.log(result);
+        
       } catch (error) {
         ElMessage.error("提交失敗: " + error.message);
       } finally {
@@ -787,7 +795,6 @@ export default {
 
     // 修改後：
     return {
-
       // 本地變數、方法、計算屬性
       submitForm,
       addContactAsBlessing,
@@ -800,7 +807,7 @@ export default {
       handleDuplicateForm,
       getStatusText,
       loadMockData, // 載入測試 Mock 數據，進行快速測試
-      
+
       // 計算屬性
       currentFormIndex,
       submitting,
@@ -824,8 +831,7 @@ export default {
       addSurvivor: registrationStore.addSurvivor,
       removeSurvivor: registrationStore.removeSurvivor,
       copyBlessingAddress: registrationStore.copyBlessingAddress,
-      
-      
+
       // store 中其他計算屬性...
       availableBlessingPersons: registrationStore.availableBlessingPersons,
       currentHouseholdHeadsCount: registrationStore.currentHouseholdHeadsCount,
@@ -837,20 +843,15 @@ export default {
       availableSurvivors: registrationStore.availableSurvivors,
       relationshipOptions: configStore.relationshipOptions,
       zodiacOptions: configStore.zodiacOptions,
-      
     };
   },
 };
 </script>
 
 <style scoped>
-
-
 .ancestors-section {
   margin-bottom: 20px;
 }
-
-
 
 .form-grid {
   display: grid;
