@@ -1,5 +1,5 @@
 // src/services/registrationService.js
-import { serviceConfig, getApiUrl } from "../config/serviceConfig.js";
+import { commonService, getApiUrl } from "../services/commonService.js";
 import {
   generateGitHash,
   generateMultipleHashes,
@@ -8,7 +8,7 @@ import {
 export class RegistrationService {
   // ========== 建構函式 ==========
   constructor() {
-    console.log(`RegistrationService 初始化: 當前模式為 ${serviceConfig.mode}`);
+    console.log(`RegistrationService 初始化: 當前模式為 ${commonService.mode}`);
   }
 
   // ========== 通用方法 ==========
@@ -43,7 +43,7 @@ export class RegistrationService {
     const getCurrentISOTime = () => new Date().toISOString();
     const createISOTime = new Date().toISOString();
 
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn(
         "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
       );
@@ -109,7 +109,7 @@ export class RegistrationService {
   }
 
   async updateRegistration(id, registrationData) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -144,7 +144,7 @@ export class RegistrationService {
   }
 
   async getRegistrationById(id) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -172,7 +172,7 @@ export class RegistrationService {
   }
 
   // async getAllRegistrations(params = {}) {
-  //   if (serviceConfig.mode !== "directus") {
+  //   if (commonService.mode !== "directus") {
   //     console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
   //     return { success: false, message: "請切換到 directus 模式" };
   //   }
@@ -218,7 +218,7 @@ export class RegistrationService {
   async checkConnection() {
     try {
       
-      const response = await fetch(`${getApiUrl(serviceConfig.apiEndpoints.serverInfo)}`, {
+      const response = await fetch(`${getApiUrl(commonService.apiEndpoints.serverInfo)}`, {
           method: 'GET',
           timeout: 5000,
         });
@@ -265,7 +265,7 @@ export class RegistrationService {
   }
   
   async getAllRegistrations(params = {}) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -286,9 +286,9 @@ export class RegistrationService {
         queryParams.append("sort", params.sort);
       }
 
-      //getApiUrl(serviceConfig.apiEndpoints.me
+      //getApiUrl(commonService.apiEndpoints.me
 
-      const apiUrl = `${getApiUrl(serviceConfig.apiEndpoints.itemsRegistration)}?${queryParams.toString()}`;
+      const apiUrl = `${getApiUrl(commonService.apiEndpoints.itemsRegistration)}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
       const headers = await this.getAuthHeaders();
@@ -338,7 +338,7 @@ export class RegistrationService {
       console.log("🧪 開始簡單查詢測試...");
 
       // 測試 1: 最簡單的查詢
-      const simpleUrl = `${getApiUrl(serviceConfig.apiEndpoints.itemsRegistration)}?limit=1`;
+      const simpleUrl = `${getApiUrl(commonService.apiEndpoints.itemsRegistration)}?limit=1`;
       console.log("測試 URL:", simpleUrl);
 
       const response = await fetch(simpleUrl, {
@@ -364,7 +364,7 @@ export class RegistrationService {
   }
 
   async deleteRegistration(id) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -488,12 +488,12 @@ export class RegistrationService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
-    return serviceConfig.mode;
+    return commonService.mode;
   }
 
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
-      serviceConfig.mode = mode;
+      commonService.mode = mode;
       console.log(`RegistrationService 模式已切換為: ${mode}`);
     } else {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');

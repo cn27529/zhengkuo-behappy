@@ -1,22 +1,22 @@
 // src/services/authService.js
-import { serviceConfig, getApiUrl } from "../config/serviceConfig.js";
+import { commonService, getApiUrl } from "../services/commonService.js";
 import userData from "../data/auth_user.json";
 
 export class AuthService {
   constructor() {
     console.log(
-      `AuthService 初始化: serviceConfig.mode 當前模式為 ${serviceConfig.mode}`
+      `AuthService 初始化: commonService.mode 當前模式為 ${commonService.mode}`
     );
     console.log(
-      `AuthService 初始化: serviceConfig.isDev 當前開發模式為 ${serviceConfig.isDev}`
+      `AuthService 初始化: commonService.isDev 當前開發模式為 ${commonService.isDev}`
     );
   }
 
   async login(username, password) {
-    console.log(`登入請求 - 模式: ${serviceConfig.mode}, 用戶: ${username}`);
+    console.log(`登入請求 - 模式: ${commonService.mode}, 用戶: ${username}`);
 
     // 在控制台輸出警告
-    if (serviceConfig.mode === "mock") {
+    if (commonService.mode === "mock") {
       console.warn(
         "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
           "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
@@ -24,26 +24,26 @@ export class AuthService {
       );
 
       return this.mockLogin(username, password);
-    } else if (serviceConfig.mode === "backend") {
+    } else if (commonService.mode === "backend") {
       return this.backendLogin(username, password);
-    } else if (serviceConfig.mode === "directus") {
+    } else if (commonService.mode === "directus") {
       return this.directusLogin(username, password);
     }
   }
 
   async logout() {
-    if (serviceConfig.mode === "backend") {
+    if (commonService.mode === "backend") {
       return this.backendLogout();
-    } else if (serviceConfig.mode === "directus") {
+    } else if (commonService.mode === "directus") {
       return this.directusLogout();
     }
     return { success: true };
   }
 
   async validateToken() {
-    if (serviceConfig.mode === "mock") {
+    if (commonService.mode === "mock") {
       return this.mockValidateToken();
-    } else if (serviceConfig.mode === "directus") {
+    } else if (commonService.mode === "directus") {
       return this.directusValidateToken();
     } else {
       return this.backendValidateToken();
@@ -51,9 +51,9 @@ export class AuthService {
   }
 
   async refreshToken() {
-    if (serviceConfig.mode === "mock") {
+    if (commonService.mode === "mock") {
       return this.mockRefreshToken();
-    } else if (serviceConfig.mode === "directus") {
+    } else if (commonService.mode === "directus") {
       return this.directusRefreshToken();
     } else {
       return this.backendRefreshToken();
@@ -163,7 +163,7 @@ export class AuthService {
   async directusLogin(username, password) {
     try {
       const response = await fetch(
-        getApiUrl(serviceConfig.apiEndpoints.login),
+        getApiUrl(commonService.apiEndpoints.login),
         {
           method: "POST",
           headers: {
@@ -194,7 +194,7 @@ export class AuthService {
 
         // 獲取用戶資訊
         const userResponse = await fetch(
-          `${serviceConfig.apiBaseUrl}/users/me`,
+          `${commonService.apiBaseUrl}/users/me`,
           {
             method: "GET",
             headers: {
@@ -264,7 +264,7 @@ export class AuthService {
 
       // Directus 登出請求
       const response = await fetch(
-        getApiUrl(serviceConfig.apiEndpoints.logout),
+        getApiUrl(commonService.apiEndpoints.logout),
         {
           method: "POST",
           headers: {
@@ -298,7 +298,7 @@ export class AuthService {
       }
 
       // 使用 /users/me 端點驗證 token
-      const response = await fetch(getApiUrl(serviceConfig.apiEndpoints.me), {
+      const response = await fetch(getApiUrl(commonService.apiEndpoints.me), {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -345,7 +345,7 @@ export class AuthService {
       }
 
       const response = await fetch(
-        getApiUrl(serviceConfig.apiEndpoints.refresh),
+        getApiUrl(commonService.apiEndpoints.refresh),
         {
           method: "POST",
           headers: {
@@ -398,7 +398,7 @@ export class AuthService {
   async backendLogin(username, password) {
     try {
       const response = await fetch(
-        getApiUrl(serviceConfig.apiEndpoints.login),
+        getApiUrl(commonService.apiEndpoints.login),
         {
           method: "POST",
           headers: {
@@ -451,7 +451,7 @@ export class AuthService {
       }
 
       const response = await fetch(
-        getApiUrl(serviceConfig.apiEndpoints.logout),
+        getApiUrl(commonService.apiEndpoints.logout),
         {
           method: "POST",
           headers: {
@@ -482,7 +482,7 @@ export class AuthService {
       }
 
       const response = await fetch(
-        getApiUrl(serviceConfig.apiEndpoints.validate),
+        getApiUrl(commonService.apiEndpoints.validate),
         {
           method: "GET",
           headers: {
@@ -524,7 +524,7 @@ export class AuthService {
       }
 
       const response = await fetch(
-        getApiUrl(serviceConfig.apiEndpoints.refresh),
+        getApiUrl(commonService.apiEndpoints.refresh),
         {
           method: "POST",
           headers: {
@@ -561,7 +561,7 @@ export class AuthService {
   // ========== 輔助方法 ==========
   async mockDelay() {
     return new Promise((resolve) =>
-      setTimeout(resolve, serviceConfig.mockDelay)
+      setTimeout(resolve, commonService.mockDelay)
     );
   }
 
@@ -583,6 +583,7 @@ export class AuthService {
     } catch (error) {
       return {
         available: false,
+        status: 500,
         error: error.message,
       };
     }
@@ -599,7 +600,7 @@ export class AuthService {
       ];
 
       // 使用最簡單的端點檢查
-      const response = await fetch(`${getApiUrl(serviceConfig.apiEndpoints.serverInfo)}`, {
+      const response = await fetch(`${getApiUrl(commonService.apiEndpoints.serverInfo)}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -610,6 +611,7 @@ export class AuthService {
         const data = await response.json();
         return {
           available: true,
+          success: true,
           status: response.status,
           data: {
             directusVersion: data.data?.version,
@@ -620,6 +622,7 @@ export class AuthService {
       } else {
         return {
           available: false,
+          success: false,
           status: response.status,
           statusText: response.statusText,
         };
@@ -634,35 +637,35 @@ export class AuthService {
 
   getCurrentMode() {
     if (sessionStorage.getItem("auth-mode") !== null) {
-      serviceConfig.mode = sessionStorage.getItem("auth-mode");
+      commonService.mode = sessionStorage.getItem("auth-mode");
     }
-    console.log("AuthService getCurrentMode()", serviceConfig.mode);
-    return serviceConfig.mode;
+    console.log("AuthService getCurrentMode()", commonService.mode);
+    return commonService.mode;
   }
 
   getCurrentDev() {
     if (sessionStorage.getItem("auth-dev") !== null) {
-      serviceConfig.isDev = sessionStorage.getItem("auth-dev");
+      commonService.isDev = sessionStorage.getItem("auth-dev");
     }
-    console.log("AuthService getCurrentDev()", serviceConfig.isDev);
-    return serviceConfig.isDev === "true" ? true : false;
+    console.log("AuthService getCurrentDev()", commonService.isDev);
+    return commonService.isDev === "true" ? true : false;
   }
 
   // 修改 setDev 方法 ,用於設置是否為開發模式，可開啟調試模式
   setDev(isDev) {
     console.log("AuthService setDev()", isDev);
-    serviceConfig.isDev = isDev;
+    commonService.isDev = isDev;
     sessionStorage.setItem("auth-dev", isDev);
     console.log(
-      `AuthService serviceConfig.isDev 開發模式調試信息已切換為: ${serviceConfig.isDev} `
+      `AuthService commonService.isDev 開發模式調試信息已切換為: ${commonService.isDev} `
     );
   }
 
   // 修改 setMode 方法中的健康檢查
   setMode(mode) {
     console.log("AuthService setMode()", mode);
-    serviceConfig.mode = mode;
-    console.log(`AuthService serviceConfig.mode 模式已切換為: ${mode}`);
+    commonService.mode = mode;
+    console.log(`AuthService commonService.mode 模式已切換為: ${mode}`);
     sessionStorage.setItem("auth-mode", mode);
 
     if (["mock", "backend", "directus"].includes(mode)) {

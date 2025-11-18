@@ -23,7 +23,7 @@
 │   │   └── SupabaseLoginForm.vue
 │   ├── config
 │   │   ├── appConfig.js
-│   │   ├── serviceConfig.js
+│   │   ├── commonService.js
 │   │   └── supabase.js
 │   ├── data
 │   │   ├── auth_user.json

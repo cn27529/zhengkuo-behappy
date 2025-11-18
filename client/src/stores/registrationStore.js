@@ -5,7 +5,7 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
-import { serviceConfig } from "../config/serviceConfig.js";
+import { commonService } from "../services/commonService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 //import { useConnectionStore } from "./connectionStore.js"; // ✅ 新增
@@ -788,7 +788,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       registrationForm.value.createdAt = createISOTime;
       registrationForm.value.state = "submitted";
 
-      if (serviceConfig.mode !== "directus") {
+      if (commonService.mode !== "directus") {
         console.warn(
           "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
         );

@@ -1,9 +1,9 @@
 // src/services/mydataService.js
-import { serviceConfig, getApiUrl } from "../config/serviceConfig.js";
+import { commonService, getApiUrl } from "../services/commonService.js";
 
 export class MydataService {
   constructor() {
-    console.log(`MydataService 初始化: 當前模式為 ${serviceConfig.mode}`);
+    console.log(`MydataService 初始化: 當前模式為 ${commonService.mode}`);
   }
 
   // ========== 通用方法 ==========
@@ -27,7 +27,7 @@ export class MydataService {
 
   // ========== CRUD 操作 ==========
   async getAllMydata(params = {}) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -61,7 +61,7 @@ export class MydataService {
 
       const response = await fetch(
         `${getApiUrl(
-          serviceConfig.apiEndpoints.itemsMydata
+          commonService.apiEndpoints.itemsMydata
         )}?${queryParams.toString()}`,
         {
           method: "GET",
@@ -83,7 +83,7 @@ export class MydataService {
   }
 
   async getMydataById(id) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -91,7 +91,7 @@ export class MydataService {
     try {
       const response = await fetch(
         `${getApiUrl(
-          serviceConfig.apiEndpoints.itemsMydata
+          commonService.apiEndpoints.itemsMydata
         )}/${id}?fields=*,contact.*`,
         {
           method: "GET",
@@ -113,7 +113,7 @@ export class MydataService {
   }
 
   async createMydata(mydataData) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法創建數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -141,7 +141,7 @@ export class MydataService {
       };
 
       const response = await fetch(
-        getApiUrl(serviceConfig.apiEndpoints.itemsMydata),
+        getApiUrl(commonService.apiEndpoints.itemsMydata),
         {
           method: "POST",
           headers: await this.getAuthHeaders(),
@@ -163,14 +163,14 @@ export class MydataService {
   }
 
   async updateMydata(id, mydataData) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
       const response = await fetch(
-        `${getApiUrl(serviceConfig.apiEndpoints.itemsMydata)}/${id}`,
+        `${getApiUrl(commonService.apiEndpoints.itemsMydata)}/${id}`,
         {
           method: "PATCH",
           headers: await this.getAuthHeaders(),
@@ -192,14 +192,14 @@ export class MydataService {
   }
 
   async deleteMydata(id) {
-    if (serviceConfig.mode !== "directus") {
+    if (commonService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
       const response = await fetch(
-        `${getApiUrl(serviceConfig.apiEndpoints.itemsMydata)}/${id}`,
+        `${getApiUrl(commonService.apiEndpoints.itemsMydata)}/${id}`,
         {
           method: "DELETE",
           headers: await this.getAuthHeaders(),
@@ -297,7 +297,7 @@ export class MydataService {
   // ========== 健康檢查 ==========
   async checkDirectusHealth() {
     try {
-      const response = await fetch(`${getApiUrl(serviceConfig.apiEndpoints.serverInfo)}`, {
+      const response = await fetch(`${getApiUrl(commonService.apiEndpoints.serverInfo)}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -332,12 +332,12 @@ export class MydataService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
-    return serviceConfig.mode;
+    return commonService.mode;
   }
 
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
-      serviceConfig.mode = mode;
+      commonService.mode = mode;
       console.log(`MydataService 模式已切換為: ${mode}`);
 
       // 健康檢查

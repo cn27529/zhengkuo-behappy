@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 import { ref, computed, h } from "vue";
 import { registrationService } from "../services/registrationService.js";
 import { authService } from "../services/authService.js";
-import { serviceConfig } from "../config/serviceConfig.js";
+import { commonService } from "../services/commonService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { useConnectionStore } from "./connectionStore.js";
@@ -27,7 +27,7 @@ export const useQueryStore = defineStore("query", () => {
     isLoading.value = true;
     try {
       // 檢查是否為 directus 模式
-      if (serviceConfig.mode !== "directus") {
+      if (commonService.mode !== "directus") {
         console.warn("⚠️ 當前模式不是 directus，使用 Mock 數據");
 
         if (!mockRegistrations || mockRegistrations.length === 0) {
@@ -69,13 +69,13 @@ export const useQueryStore = defineStore("query", () => {
         const health = await authService.checkDirectusHealth();
         console.log("健康檢查結果:", health);
 
-        if (!health.success || !health.available) {
+        if ( !health.available) {
           console.warn("⚠️ Directus 服務可能未啟動:", health);
           isLoading.value = false;
           return {
             success: false,
             online: false,
-            message: health.message || "Directus 服務不可用",
+            message: health.error  || "Directus 服務不可用",
             data: null,
           };
         }
