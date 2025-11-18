@@ -41,9 +41,12 @@ export class AuthService {
   }
 
   async validateToken() {
-    if (baseService.mode === "mock") {
+    const currentMode = this.getCurrentMode();
+    console.log(`驗證 Token - 當前模式: ${currentMode}`);
+
+    if (currentMode === "mock") {
       return this.mockValidateToken();
-    } else if (baseService.mode === "directus") {
+    } else if (currentMode === "directus") {
       return this.directusValidateToken();
     } else {
       return this.backendValidateToken();

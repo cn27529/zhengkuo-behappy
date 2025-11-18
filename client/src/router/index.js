@@ -50,12 +50,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/test",
-    name: "/test",
+    path: "/testpage",
+    name: "/testpage",
     component: () => import("../views/TestPage.vue"),
     meta: {
       title: "測試頁面",
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
   {

@@ -28,6 +28,53 @@ export class BaseService {
     this.mockDelay = 500;
   }
 
+  // 獲取伺服器資訊，返回伺服器資訊對象或 null
+  async serverInfo() {
+    try {
+      const response = await fetch(getApiUrl(this.apiEndpoints.serverInfo), {
+        method: "GET",
+        timeout: 5000,
+      });
+
+      console.log("伺服器資訊回應狀態:", JSON.stringify(response));
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("伺服器資訊:", data);
+        return data;
+      } else {
+        console.warn("無法取得伺服器資訊");
+        return null;
+      }
+    } catch (error) {
+      console.error("取得伺服器資訊異常:", error);
+      return null;
+    }
+  }
+
+  // 檢查伺服器是否在線，返回布林值
+  async serverPing() {
+    try {
+      const response = await fetch(getApiUrl(this.apiEndpoints.serverPing), {
+        method: "GET",
+        timeout: 5000,
+      });
+
+      console.log("Ping 伺服器回應狀態:", JSON.stringify(response));
+
+      if (response.ok) {
+        console.log("伺服器 Ping 成功");
+        return true;
+      } else {
+        console.warn("伺服器 Ping 失敗");
+        return false;
+      }
+    } catch (error) {
+      console.error("伺服器 Ping 異常:", error);
+      return false;
+    }
+  }
+
   // 檢查後端連接狀態，返回一個包含 success 和 message 的對象
   async checkConnection() {
     // Mock 模式總是返回成功
@@ -44,6 +91,8 @@ export class BaseService {
         method: "GET",
         timeout: 5000,
       });
+
+      console.log("檢查後端連接回應狀態:", JSON.stringify(response));
 
       if (response.ok) {
         console.log("伺服器連線正常");

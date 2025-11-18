@@ -966,9 +966,9 @@ select:focus {
 .person-item,
 .ancestor-item,
 .survivor-item {
-  border: 1px solid #e9ecef;
+  border: 0px solid #e9ecef;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 1rem;
   background: #f8f9fa;
 }
 

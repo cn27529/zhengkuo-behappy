@@ -14,8 +14,8 @@
             🎭 Mock 模式
           </button>
           <button 
-            :class="{ active: authMode === 'backend' }"
-            @click="setMode('backend')"
+            :class="{ active: authMode === 'directus' }"
+            @click="setMode('directus')"
           >
             🚀 後端模式
           </button>
@@ -24,7 +24,7 @@
           <span class="mode-indicator" :class="authMode">
             {{ authMode === 'mock' ? '🎭 模擬模式' : '🚀 後端模式' }}
           </span>
-          <span v-if="authMode === 'backend'" class="backend-status" :class="backendHealth.available ? 'healthy' : 'unhealthy'">
+          <span v-if="authMode === 'directus'" class="backend-status" :class="backendHealth.available ? 'healthy' : 'unhealthy'">
             {{ backendHealth.available ? '✅ 後端服務正常' : '❌ 後端服務異常' }}
           </span>
         </div>
@@ -101,7 +101,7 @@
     </div>
 
     <!-- 後端模式提示 -->
-    <div v-if="authMode === 'backend' && !backendHealth.available" class="warning-banner">
+    <div v-if="authMode === 'mock' && !backendHealth.available" class="warning-banner">
       <h4>⚠️ 後端服務警告</h4>
       <p>後端服務可能未啟動或無法連接。請確保：</p>
       <ul>
@@ -147,7 +147,7 @@ const setMode = async (mode) => {
   sessionStorage.setItem("auth-mode", mode);
   
   // 切換到後端模式時檢查健康狀態
-  if (mode === 'backend') {
+  if (mode === "directus") {
     await testBackendHealth();
   } else {
     backendHealth.value = { available: false, checked: false };
@@ -195,7 +195,7 @@ const testRefresh = async () => {
 };
 
 const testBackendHealth = async () => {
-  if (authMode.value !== 'backend') {
+  if (authMode.value !== 'directus') {
     testResult.value = {
       success: false,
       message: '此功能僅在後端模式下可用'
@@ -272,7 +272,7 @@ const clearAll = () => {
 
 // 初始化時檢查後端狀態
 onMounted(async () => {
-  if (authMode.value === 'backend') {
+  if (authMode.value === 'directus') {
     await testBackendHealth();
   }
 });
