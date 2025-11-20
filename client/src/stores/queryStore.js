@@ -17,6 +17,10 @@ export const useQueryStore = defineStore("query", () => {
   const isLoading = ref(false);
   const hasSearched = ref(false);
 
+  // ✅ 新增分頁狀態
+  const currentPage = ref(1);
+  const pageSize = ref(10);
+
   // ✅ 使用 computed 保持響應式
   const relationshipOptions = computed(() => configStore.relationshipOptions);
   const zodiacOptions = computed(() => configStore.zodiacOptions);
@@ -275,6 +279,10 @@ export const useQueryStore = defineStore("query", () => {
     searchQuery,
     isLoading,
     hasSearched,
+    currentPage, // 新增
+    pageSize, // 新增
+
+    // 計算屬性
     relationshipOptions,
     zodiacOptions,
 
@@ -283,5 +291,16 @@ export const useQueryStore = defineStore("query", () => {
     clearSearch,
     setSearchQuery,
     getFilteredData,
+
+    // ✅ 新增分頁方法
+    setCurrentPage: (page) => {
+      currentPage.value = page;
+    },
+    setPageSize: (size) => {
+      pageSize.value = size;
+    },
+    resetPagination: () => {
+      currentPage.value = 1;
+    },
   };
 });

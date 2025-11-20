@@ -66,6 +66,8 @@
       <div>paginatedResults.length: {{ paginatedResults.length }}</div>
       <div>hasSearched: {{ hasSearched }}</div>
       <div>isLoading: {{ isLoading }}</div>
+      <div>currentPage: {{ currentPage }}</div>
+      <div>pageSize: {{ pageSize }}</div>
     </div>
 
     <!-- 查詢結果 -->
@@ -188,7 +190,10 @@
 
                   <button
                     class="btn btn-outline capsule-btn"
-                    @click="handlePrintPage(item)">查看詳情</button>
+                    @click="handlePrintPage(item)"
+                  >
+                    查看詳情
+                  </button>
                 </div>
               </td>
             </tr>
@@ -257,10 +262,11 @@
       :title="`表單詳情資訊 - ${selectedItem?.contact?.name || ''}`"
       width="70%"
       class="modal-header"
-      :close-on-click-modal="false">
+      :close-on-click-modal="false"
+    >
       <div class="modal-body" v-if="selectedItem">
         <!-- 詳細資訊內容 -->
-        <div style="display: none;" class="detail-section">
+        <div style="display: none" class="detail-section">
           <h4>基本資訊</h4>
           <div class="detail-grid">
             <div class="detail-item">
@@ -433,19 +439,21 @@ export default {
     const isDev = ref(false);
     const router = useRouter();
 
-    // 使用 storeToRefs 保持響應性
-    const { searchResults, searchQuery, isLoading, hasSearched } =
-      storeToRefs(queryStore); // 使用 storeToRefs
+    // 使用 storeToRefs 保持響應性 - 包含分頁狀態
+    const {
+      searchResults,
+      searchQuery,
+      isLoading,
+      hasSearched,
+      currentPage, // 從 store 獲取
+      pageSize, // 從 store 獲取
+    } = storeToRefs(queryStore);
 
     // 本地狀態
-    const selectedItem = ref(null);
+    const selectedItem = ref(null); //
     const showModal = ref(false);
-    const currentPage = ref(1);
-    const pageSize = ref(10);
-
-    // 分頁狀態保存的鍵名
-    const PAGINATION_STORAGE_KEY = 'registration_list_pagination';
-
+    // const currentPage = ref(1); // 已移至 store
+    // const pageSize = ref(10); // 已移至 store
 
     // 計算屬性 - 添加防護檢查
     const totalItems = computed(() => {
@@ -467,8 +475,11 @@ export default {
     });
 
     // 方法
+    // 修改搜索方法 - 在搜索時重置分頁
     const handleSearch = async () => {
-      // 添加防護檢查
+      // 搜索前重置到第一頁
+      queryStore.resetPagination();
+
       const query = searchQuery.value ? searchQuery.value.trim() : "";
       console.log("開始搜尋，查詢條件:", query);
 
@@ -500,16 +511,17 @@ export default {
 
     const handleClear = () => {
       queryStore.clearSearch();
-      currentPage.value = 1;
+      queryStore.resetPagination(); // 清空時也重置分頁
     };
 
+    // 修改分頁處理方法
     const handleSizeChange = (newSize) => {
-      pageSize.value = newSize;
-      currentPage.value = 1;
+      queryStore.setPageSize(newSize);
+      queryStore.setCurrentPage(1); // 切換頁面大小時回到第一頁
     };
 
     const handleCurrentChange = (newPage) => {
-      currentPage.value = newPage;
+      queryStore.setCurrentPage(newPage);
 
       // 可選：滾動到表格頂部
       const tableContainer = document.querySelector(".table-container");
@@ -529,17 +541,18 @@ export default {
     };
 
     const handlePrintPage = (item) => {
-      
       try {
         const formId = item.formId;
         const printData = JSON.stringify(item);
-        
-        console.log("準備列印數據:", {formId, printData});
+
+        console.log("準備列印數據:", { formId, printData });
         ElMessage.info(`準備列印表單: ${formId}`);
-      
+
         // 生成唯一列印 ID
         //const printId = `print_form_${formId}`;
-        const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
+        const printId = `print_form_${formId}_${Math.floor(
+          Math.random() * 1000
+        )}`;
         console.log("列印表單 ID:", printId);
 
         // 儲存到 sessionStorage
@@ -548,7 +561,7 @@ export default {
           printId,
           data: JSON.parse(printData),
         });
-        
+
         // 開啟列印頁面
         const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
         console.log("開啟列印頁面:", printUrl);
@@ -556,24 +569,21 @@ export default {
 
         // 使用 router.push 導航到列印頁面
         router.push({
-          path: '/print-registration',
-          query: { 
+          path: "/print-registration",
+          query: {
             print_id: printId,
-            print_data: printData
-          }
+            print_data: printData,
+          },
         });
-        
+
         // setTimeout(() => {
         //   showModal.value = false;
         //   selectedItem.value = null;
         // }, 500);
-
-
       } catch (error) {
         console.error("導航到列印頁面失敗:", error);
         ElMessage.error("導航到列印頁面失敗");
       }
-
     };
 
     const getStatusText = (state) => {
@@ -621,12 +631,12 @@ export default {
       searchResults,
       isLoading,
       hasSearched,
+      currentPage, // 從 store 來
+      pageSize, // 從 store 來
 
       // 本地狀態
       selectedItem,
       showModal,
-      currentPage,
-      pageSize,
 
       // 計算屬性
       totalItems,
@@ -1063,7 +1073,6 @@ export default {
 
 .modal-body {
   padding: 1.5rem;
-  
 }
 
 .modal-footer {
@@ -1072,9 +1081,6 @@ export default {
   text-align: right;
   background: #f8f9fa;
 }
-
-
-
 
 /* 詳細資訊樣式 */
 .detail-section {
@@ -1113,8 +1119,6 @@ export default {
 .detail-item span {
   color: #666;
 }
-
-
 
 .persons-list {
   display: flex;
