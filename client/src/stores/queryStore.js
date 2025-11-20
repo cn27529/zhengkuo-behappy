@@ -78,7 +78,8 @@ export const useQueryStore = defineStore("query", () => {
       console.log("✅ Directus 服務健康檢查通過");
 
       const params = {
-        sort: "-date_created",
+        //sort: "-date_created",
+        sort: "-createdAt",
       };
 
       const result = await registrationService.getAllRegistrations(params);
