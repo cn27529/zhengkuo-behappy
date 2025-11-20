@@ -14,10 +14,6 @@ import router from "./router";
 import appConfig from "./config/appConfig.js";
 import { useMenuStore } from "./stores/menu.js";
 
-// 引入 antd
-import Antd from "ant-design-vue";
-import "ant-design-vue/dist/reset.css"; // 方式一：reset 樣式（推薦）
-
 import { useRegistrationStore } from "./stores/registrationStore.js";
 
 // 创建Pinia实例
@@ -63,8 +59,6 @@ const app = createApp(App);
 app.use(router);
 app.use(pinia);
 app.use(ElementPlus); // 使用Element Plus组件库
-
-app.use(Antd); // 使用 Ant Design Vue 组件库
 
 // 挂载应用
 app.mount("#app");
