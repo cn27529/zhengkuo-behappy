@@ -3,9 +3,7 @@
 ## 手記
 2025-10-20
 
-Ant Design Vue整合
-
-https://antdv.com/components/overview
+使用ElementPlus套件
 
 2025-10-19
 
@@ -22,6 +20,10 @@ https://antdv.com/components/overview
 完成 netlify的部署計劃 詳見netlify.toml
 
 https://zkapp.netlify.app
+
+2025-11-18
+完成查詢功能
+
 
 ## user guide 
 請評估多張表單的需求的可行性，registration.js是報名表單的 Pinia store，管理整個消災超度登記表的狀態與操作。

@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { App } from 'ant-design-vue';
-
 export default {
   setup() {
     const env = {
