@@ -284,6 +284,26 @@ export class AuthService {
     }
   }
 
+  getToken() {
+    try {
+      const token = sessionStorage.getItem("auth-token");
+      return token;
+    } catch (error) {
+      console.error("獲取 Token 失敗:", error);
+      return null;
+    }
+  }
+
+  getUserInfo() {
+    try {
+      const user = sessionStorage.getItem("auth-user");
+      return JSON.parse(user);
+    } catch (error) {
+      console.error("獲取用戶資訊失敗:", error);
+      return null;
+    }
+  }
+
   async directusValidateToken() {
     try {
       const token = sessionStorage.getItem("auth-token");
