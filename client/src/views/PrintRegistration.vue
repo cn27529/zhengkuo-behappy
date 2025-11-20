@@ -3,19 +3,21 @@
   <div class="print-registration">
     <!-- 列印控制欄（僅在預覽時顯示） -->
     <div class="print-controls" v-if="!isPrinting">
-      <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
-      <button @click="handleClose" class="close-btn">✖️ 關閉</button>
-      <span style="display: none;" class="print-tips">提示：建議使用橫向列印以獲得最佳效果</span>
+      <div class="controls-left">
+        <button @click="handleBack" class="back-btn">← 返回</button>
+      </div>
+      <div class="controls-right">
+        <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
+      </div>
     </div>
 
     <!-- 列印內容 -->
-    <div class="print-content">
+    <div class="print-content" id="print-content">
       <!-- 表頭 -->
       <div class="print-header">
-        <h1>{{ printData.contact?.name || '未填寫' }}-消災超度登記表</h1>
+        <h1>{{ printContent.contact?.name || '未填寫' }}-消災超度登記表</h1>
         <div class="print-meta">
-          <p>列印時間：{{ printTime }}</p>
-          <p style="display: none;">表單編號：{{ formId }}</p>
+          <!-- <p>｜列印時間：{{ printTime }}｜列印編號：{{ printId }}｜</p> -->
         </div>
       </div>
 
@@ -27,18 +29,18 @@
             <tbody>
             <tr>
               <td width="25%"><strong>聯絡人姓名：</strong></td>
-              <td width="25%">{{ printData.contact?.name || '未填寫' }}</td>
+              <td width="25%">{{ printContent.contact?.name || '未填寫' }}</td>
               <td width="25%"><strong>手機號碼：</strong></td>
-              <td width="25%">{{ printData.contact?.mobile || '未填寫' }}</td>
+              <td width="25%">{{ printContent.contact?.mobile || '未填寫' }}</td>
             </tr>
             <tr>
               <td><strong>家用電話：</strong></td>
-              <td>{{ printData.contact?.phone || '未填寫' }}</td>
+              <td>{{ printContent.contact?.phone || '未填寫' }}</td>
               <td><strong>資料表屬性：</strong></td>
               <td>
-                {{ printData.contact?.relationship || '未填寫' }}
-                <span v-if="printData.contact?.otherRelationship">
-                  ({{ printData.contact.otherRelationship }})
+                {{ printContent.contact?.relationship || '未填寫' }}
+                <span v-if="printContent.contact?.otherRelationship">
+                  ({{ printContent.contact.otherRelationship }})
                 </span>
               </td>
             </tr>
@@ -48,20 +50,20 @@
       </div>
 
       <!-- 消災祈福 -->
-      <div class="print-section" v-if="printData.blessing">
+      <div class="print-section" v-if="printContent.blessing">
         <h2 class="section-title">二、消災祈福</h2>
         <div class="section-content">
           <table class="info-table">
             <tbody>
             <tr>
               <td width="20%"><strong>地址：</strong></td>
-              <td width="80%">{{ printData.blessing.address || '未填寫' }}</td>
+              <td width="80%">{{ printContent.blessing.address || '未填寫' }}</td>
             </tr>
             </tbody>
           </table>
 
           <!-- 消災人員列表 -->
-          <div class="persons-list" v-if="printData.blessing.persons && printData.blessing.persons.length">
+          <div class="persons-list" v-if="printContent.blessing.persons && printContent.blessing.persons.length">
             <h3 class="sub-title">消災人員名單</h3>
             <table class="persons-table">
               <thead>
@@ -94,20 +96,20 @@
       </div>
 
       <!-- 超度祈福 -->
-      <div class="print-section" v-if="printData.salvation">
+      <div class="print-section" v-if="printContent.salvation">
         <h2 class="section-title">三、超度祈福</h2>
         <div class="section-content">
           <table class="info-table">
             <tbody>
             <tr>
               <td width="20%"><strong>地址：</strong></td>
-              <td width="80%">{{ printData.salvation.address || '未填寫' }}</td>
+              <td width="80%">{{ printContent.salvation.address || '未填寫' }}</td>
             </tr>
             </tbody>
           </table>
 
           <!-- 歷代祖先 -->
-          <div class="ancestors-list" v-if="printData.salvation.ancestors && printData.salvation.ancestors.length">
+          <div class="ancestors-list" v-if="printContent.salvation.ancestors && printContent.salvation.ancestors.length">
             <h3 class="sub-title">歷代祖先</h3>
             <table class="persons-table">
               <thead>
@@ -131,7 +133,7 @@
           </div>
 
           <!-- 陽上人 -->
-          <div class="survivors-list" v-if="printData.salvation.survivors && printData.salvation.survivors.length">
+          <div class="survivors-list" v-if="printContent.salvation.survivors && printContent.salvation.survivors.length">
             <h3 class="sub-title">陽上人</h3>
             <table class="persons-table">
               <thead>
@@ -160,7 +162,10 @@
 
       <!-- 頁尾 -->
       <div class="print-footer">
-        <p class="footer-note">本表單由系統自動生成，列印時間：{{ printTime }}</p>
+        <p class="footer-note"></p>
+        <div class="print-meta">
+          <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -168,30 +173,35 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 export default {
   name: 'PrintRegistration',
   setup() {
-    const printData = ref({})
+    const router = useRouter();
+    const printContent = ref({})
     const isPrinting = ref(false)
     const printTime = ref('')
-    const formId = ref('')
+    const formId = ref('') 
+    const printId = ref('') // URL 參數中的列印 ID
+    const printData = ref('') // URL 參數中的列印數據
 
     // 計算屬性：過濾有效數據
     const availableBlessingPersons = computed(() => {
-      return (printData.value.blessing?.persons || []).filter(person => 
+      return (printContent.value.blessing?.persons || []).filter(person => 
         person.name && person.name.trim() !== ''
       )
     })
 
     const availableAncestors = computed(() => {
-      return (printData.value.salvation?.ancestors || []).filter(ancestor => 
+      return (printContent.value.salvation?.ancestors || []).filter(ancestor => 
         ancestor.surname && ancestor.surname.trim() !== ''
       )
     })
 
     const availableSurvivors = computed(() => {
-      return (printData.value.salvation?.survivors || []).filter(survivor => 
+      return (printContent.value.salvation?.survivors || []).filter(survivor => 
         survivor.name && survivor.name.trim() !== ''
       )
     })
@@ -204,44 +214,42 @@ export default {
     const loadPrintData = () => {
       try {
         const urlParams = new URLSearchParams(window.location.search)
-        const print_id = urlParams.get('print_id')
-        const print_data = urlParams.get('print_data')
+        printId.value = urlParams.get('print_id')
+        printData.value = urlParams.get('print_data')
 
-        console.log('列印數據，ID:', print_id)
-        console.log('列印數據，數據:', print_data)
+        console.log('列印數據，ID:', printId.value)
+        console.log('列印數據，數據:', printData.value)
 
-        if (!print_id) {
+        if (!printId.value) {
           throw new Error('無效的列印ID')
         }
 
-        //const storedData = sessionStorage.getItem(print_id)
-        //const storedData = decodeURIComponent(print_data || 'null')
-        const storedData = localStorage.getItem(print_id) || decodeURIComponent(print_data || 'null')
+        const storedData = sessionStorage.getItem(printId.value) || decodeURIComponent(printData.value || 'null')
 
         console.log('獲取的列印數據:', storedData)
         
         // 驗證資料存在且不是字串 'undefined' 或空字串
         if (!storedData || storedData === 'undefined') {
-          console.error('列印數據不存在或為無效字串', { print_id, storedData })
-          throw new Error('找不到列印數據或資料無效')
+          ElMessage.error('找不到列印數據或資料無效，請返回重新操作')
         }
 
         let parsed = {}
         try {
           parsed = JSON.parse(storedData)
           console.log('解析後的列印數據:', parsed)
-          
+          printContent.value = parsed
+          if(!parsed || typeof parsed !== 'object') {
+            throw new Error('解析後的列印數據不是有效對象')
+          }
+          formId.value = printContent.value.formId
         } catch (e) {
-          console.error('解析列印數據失敗，可能格式錯誤', { print_id, storedData, error: e })
+          console.error('解析列印數據失敗，可能格式錯誤', { printId, storedData, error: e })
           throw new Error('列印數據格式錯誤')
         }
 
-        printData.value = parsed
-        formId.value = print_id
-
         // 成功載入資料後再設定 document.title，確保使用到最新資料
         try {
-          const contactName = (printData.value.contact?.name || '未填寫').toString().trim()
+          const contactName = (printContent.value.contact?.name || '未填寫').toString().trim()
           document.title = `${contactName} - 消災超度登記表`
         } catch (e) {
           // 如果意外錯誤，不阻斷流程
@@ -249,8 +257,10 @@ export default {
         }
         
       } catch (error) {
-        //console.error('載入列印數據失敗:', error)
-        //alert('載入列印數據失敗，請返回重新操作')
+        console.error('載入列印數據失敗:', error)
+        // 可以顯示錯誤訊息或導回原頁面
+        ElMessage.error('載入列印數據失敗，請返回重新操作')
+        //handleBack()
       }
     }
 
@@ -265,6 +275,19 @@ export default {
         minute: '2-digit',
         second: '2-digit'
       })
+    }
+
+    // 返回表單頁面
+    const handleBack = () => {
+      // 清理本地存儲的列印數據（可選）
+      if (printId.value) {
+        sessionStorage.removeItem(printId.value)
+        console.log('已清理列印數據，ID:', printId.value)
+      }
+      
+      // 返回上一頁或指定頁面
+      router.back()
+      // 或者使用 router.push('/registration') 導航到特定頁面
     }
 
     // 列印處理
@@ -284,14 +307,10 @@ export default {
     // 關閉視窗
     const handleClose = () => {
 
-      //alert('關閉視窗，將清理列印數據')
-
-      const print_id = formId.value
       // 清理本地存儲的列印數據
-      if (print_id) {
-        //sessionStorage.removeItem(print_id)
-        localStorage.removeItem(print_id)
-        console.log('已清理列印數據，ID:', print_id)
+      if (printId.value) {
+        sessionStorage.removeItem(printId.value)
+        console.log('已清理列印數據，ID:', printId.value)
       }
       window.close()
     }
@@ -312,32 +331,35 @@ export default {
       // 添加列印事件監聽
       window.addEventListener('beforeprint', beforePrint)
       window.addEventListener('afterprint', afterPrint)
-      window.addEventListener('onbeforeunload', handleClose)
-      window.addEventListener('unload', handleClose)
+      //window.addEventListener('onbeforeunload', handleClose)
+      //window.addEventListener('unload', handleClose)
 
       // 自動觸發列印（可選）
-      handlePrint()
+      //handlePrint()
     })
 
     onUnmounted(() => {
       // 清理事件監聽
       window.removeEventListener('beforeprint', beforePrint)
       window.removeEventListener('afterprint', afterPrint)
-      window.removeEventListener('onbeforeunload', handleClose)
-      window.removeEventListener('unload', handleClose)
+      //window.removeEventListener('onbeforeunload', handleClose)
+      //window.removeEventListener('unload', handleClose)
     })
 
     return {
-      printData,
+      printContent,
       isPrinting,
       printTime,
       formId,
+      printId,
+      printData,
       availableBlessingPersons,
       availableAncestors,
       availableSurvivors,
       currentHouseholdHeadsCount,
       handlePrint,
-      handleClose
+      handleClose,
+      handleBack
     }
   }
 }
@@ -348,6 +370,7 @@ export default {
 <style scoped>
 /* 列印樣式 */
 @media print {
+
   .print-controls {
     display: none !important;
   }
@@ -369,7 +392,7 @@ export default {
     text-align: center;
     margin-bottom: 20pt;
     padding-bottom: 10pt;
-    border-bottom: 2pt solid #333;
+    border-bottom: 1pt solid #333;
   }
   
   .print-header h1 {
@@ -494,31 +517,44 @@ export default {
     gap: 15px;
   }
   
-  .print-btn, .close-btn {
+  .controls-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .back-btn {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    background: white;
+    color: #333;
+  }
+  
+  .back-btn:hover {
+    background: #f0f0f0;
+  }
+  
+  .print-btn {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
-  }
-  
-  .print-btn {
     background: #4CAF50;
     color: white;
   }
   
   .print-btn:hover {
     background: #45a049;
-  }
-  
-  .close-btn {
-    background: #f44336;
-    color: white;
-  }
-  
-  .close-btn:hover {
-    background: #da190b;
   }
   
   .print-tips {
@@ -535,7 +571,7 @@ export default {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #333;
+    border-bottom: 1px solid #333;
   }
   
   .print-header h1 {
@@ -555,7 +591,7 @@ export default {
   .section-title {
     margin: 5px 0 5px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid #333;
+    border-bottom: 0px solid #333;
     color: #333;
   }
   
@@ -611,14 +647,20 @@ strong {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
+  
   .print-controls {
     flex-direction: column;
-    text-align: center;
+    gap: 10px;
+  }
+  
+  .controls-left, .controls-right {
+    width: 100%;
+    justify-content: center;
   }
   
   .print-tips {
+    text-align: center;
     order: -1;
-    margin-bottom: 10px;
   }
 }
 </style>

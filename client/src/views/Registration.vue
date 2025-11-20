@@ -545,6 +545,7 @@ import { ref, onMounted, computed, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { authService } from "../services/authService";
 import { useConfigStore } from "../stores/configStore.js";
+import { useRouter } from "vue-router";
 
 export default {
   name: "Registration",
@@ -553,6 +554,7 @@ export default {
     const registrationStore = useRegistrationStore();
     const submitting = ref(false);
     const isDev = ref(false);
+    const router = useRouter();
 
     onMounted(async () => {
       await registrationStore.loadConfig();
@@ -759,6 +761,7 @@ export default {
     };
 
     const handlePrintPage = () => {
+
       const details = registrationStore.validationDetails;
       if (details && !details.valid) {
         // 顯示第一則錯誤為訊息，並同時在畫面上列出所有錯誤
@@ -770,39 +773,47 @@ export default {
 
         const printData = JSON.stringify(registrationStore.registrationForm);
         const formId = registrationStore.registrationForm.formId;
-        console.log("準備列印數據:", JSON.parse(printData));
-
-        console.log("表單 ID:", formId);
-
+        
         if (formId === null || formId === undefined || formId === "") {
           ElMessage.error("表單尚未提交，無法列印");
           return;
         }
+
+        console.log("準備列印數據:", {formId, printData});
+        ElMessage.info(`準備列印表單: ${formId}`);
       
-        // 生成唯一 ID
-        //const printId = "print_form_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-        const printId = "print_form_" + formId;
+        // 生成唯一列印 ID
+        //const printId = `print_form_${formId}`;
+        const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
         console.log("列印表單 ID:", printId);
 
         // 儲存到 sessionStorage
+        sessionStorage.setItem(printId, printData);
         console.log("儲存列印數據:", {
           printId,
-          data: registrationStore.registrationForm,
+          data: JSON.parse(printData),
         });
 
-        //sessionStorage.setItem(printId, printData);
-        localStorage.setItem(printId, printData); // 使用 localStorage 以避免 sessionStorage 限制
-
+        
+        
         // 開啟列印頁面
-        //const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
-        const printUrl = `${window.location.origin}/print-registration?print_id=${printId}`;
+        const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
         console.log("開啟列印頁面:", printUrl);
-        //window.open(printUrl, "_blank", "width=1000,height=800,scrollbars=yes");
-        window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
+        //window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
+
+        // 使用 router.push 導航到列印頁面
+        router.push({
+          path: '/print-registration',
+          query: { 
+            print_id: printId,
+            print_data: printData
+          }
+        });
+
         
       } catch (error) {
-        console.error("開啟列印頁面失敗:", error);
-        ElMessage.error("開啟列印預覽失敗");
+       console.error("導航到列印頁面失敗:", error);
+        ElMessage.error("導航到列印頁面失敗");
       }
     };
 

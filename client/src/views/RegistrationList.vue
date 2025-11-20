@@ -177,6 +177,7 @@
               <td>
                 <div class="action-buttons">
                   <el-button
+                    style="display: none"
                     type="primary"
                     link
                     size="small"
@@ -184,16 +185,10 @@
                   >
                     詳情
                   </el-button>
-                  <el-button
-                    style="display: none"
-                    type="primary"
-                    link
-                    size="small"
-                    @click="handlePrintPage(item)"
-                    title="列印表單"
-                  >
-                    🖨️
-                  </el-button>
+
+                  <button
+                    class="btn btn-outline capsule-btn"
+                    @click="handlePrintPage(item)">查看詳情</button>
                 </div>
               </td>
             </tr>
@@ -429,12 +424,14 @@ import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia"; // 添加這行
 import { authService } from "../services/authService";
 import { useQueryStore } from "../stores/queryStore.js";
+import { useRouter } from "vue-router";
 
 export default {
   name: "RegistrationList",
   setup() {
     const queryStore = useQueryStore();
     const isDev = ref(false);
+    const router = useRouter();
 
     // 使用 storeToRefs 保持響應性
     const { searchResults, searchQuery, isLoading, hasSearched } =
@@ -445,6 +442,10 @@ export default {
     const showModal = ref(false);
     const currentPage = ref(1);
     const pageSize = ref(10);
+
+    // 分頁狀態保存的鍵名
+    const PAGINATION_STORAGE_KEY = 'registration_list_pagination';
+
 
     // 計算屬性 - 添加防護檢查
     const totalItems = computed(() => {
@@ -528,40 +529,49 @@ export default {
     };
 
     const handlePrintPage = (item) => {
-      ElMessage.info(`準備列印表單: ${item.formId || item.id}`);
       
       try {
-        // 生成唯一 ID
-        //const printId = "print_form_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-        const printId = "print_form_" + item.formId;
+        const formId = item.formId;
+        const printData = JSON.stringify(item);
+        
+        console.log("準備列印數據:", {formId, printData});
+        ElMessage.info(`準備列印表單: ${formId}`);
+      
+        // 生成唯一列印 ID
+        //const printId = `print_form_${formId}`;
+        const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
         console.log("列印表單 ID:", printId);
 
         // 儲存到 sessionStorage
-        const printData = JSON.stringify(item);
+        sessionStorage.setItem(printId, printData);
         console.log("儲存列印數據:", {
           printId,
-          data: JSON.parse(JSON.stringify(item)),
+          data: JSON.parse(printData),
         });
-
-        //sessionStorage.setItem(printId, printData);
-        localStorage.setItem(printId, printData); // 使用 localStorage 以避免 sessionStorage 限制
-
-        // 開啟列印頁面
-        //const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
-        const printUrl = `${window.location.origin}/print-registration?print_id=${printId}`;
-        console.log("開啟列印頁面:", printUrl);
-        //window.open(printUrl, "_blank", "width=1000,height=800,scrollbars=yes");
-        window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
         
-        setTimeout(() => {
-          showModal.value = false;
-          selectedItem.value = null;
-        }, 500);
+        // 開啟列印頁面
+        const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
+        console.log("開啟列印頁面:", printUrl);
+        //window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
+
+        // 使用 router.push 導航到列印頁面
+        router.push({
+          path: '/print-registration',
+          query: { 
+            print_id: printId,
+            print_data: printData
+          }
+        });
+        
+        // setTimeout(() => {
+        //   showModal.value = false;
+        //   selectedItem.value = null;
+        // }, 500);
 
 
       } catch (error) {
-        console.error("開啟列印頁面失敗:", error);
-        ElMessage.error("開啟列印預覽失敗");
+        console.error("導航到列印頁面失敗:", error);
+        ElMessage.error("導航到列印頁面失敗");
       }
 
     };
@@ -641,6 +651,23 @@ export default {
 
 <style scoped>
 /* 樣式部分保持不變，但添加一些新的樣式類別 */
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-outline:disabled {
+  border-color: #ccc;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
 .search-hint {
   margin-top: 0.5rem;
   color: #666;
