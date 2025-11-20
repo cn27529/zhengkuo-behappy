@@ -204,29 +204,40 @@ export default {
     const loadPrintData = () => {
       try {
         const urlParams = new URLSearchParams(window.location.search)
-        const printId = urlParams.get('print_id')
+        const print_id = urlParams.get('print_id')
+        const print_data = urlParams.get('print_data')
 
-        if (!printId) {
+        console.log('列印數據，ID:', print_id)
+        console.log('列印數據，數據:', print_data)
+
+        if (!print_id) {
           throw new Error('無效的列印ID')
         }
 
-        const storedData = sessionStorage.getItem(printId)
+        //const storedData = sessionStorage.getItem(print_id)
+        //const storedData = decodeURIComponent(print_data || 'null')
+        const storedData = localStorage.getItem(print_id) || decodeURIComponent(print_data || 'null')
+
+        console.log('獲取的列印數據:', storedData)
+        
         // 驗證資料存在且不是字串 'undefined' 或空字串
         if (!storedData || storedData === 'undefined') {
-          console.error('列印數據不存在或為無效字串', { printId, storedData })
+          console.error('列印數據不存在或為無效字串', { print_id, storedData })
           throw new Error('找不到列印數據或資料無效')
         }
 
-        let parsed
+        let parsed = {}
         try {
           parsed = JSON.parse(storedData)
+          console.log('解析後的列印數據:', parsed)
+          
         } catch (e) {
-          console.error('解析列印數據失敗，可能格式錯誤', { printId, storedData, error: e })
+          console.error('解析列印數據失敗，可能格式錯誤', { print_id, storedData, error: e })
           throw new Error('列印數據格式錯誤')
         }
 
         printData.value = parsed
-        formId.value = printId
+        formId.value = print_id
 
         // 成功載入資料後再設定 document.title，確保使用到最新資料
         try {
@@ -238,8 +249,8 @@ export default {
         }
         
       } catch (error) {
-        console.error('載入列印數據失敗:', error)
-        alert('載入列印數據失敗，請返回重新操作')
+        //console.error('載入列印數據失敗:', error)
+        //alert('載入列印數據失敗，請返回重新操作')
       }
     }
 
@@ -272,6 +283,16 @@ export default {
 
     // 關閉視窗
     const handleClose = () => {
+
+      //alert('關閉視窗，將清理列印數據')
+
+      const print_id = formId.value
+      // 清理本地存儲的列印數據
+      if (print_id) {
+        //sessionStorage.removeItem(print_id)
+        localStorage.removeItem(print_id)
+        console.log('已清理列印數據，ID:', print_id)
+      }
       window.close()
     }
 
@@ -291,12 +312,19 @@ export default {
       // 添加列印事件監聽
       window.addEventListener('beforeprint', beforePrint)
       window.addEventListener('afterprint', afterPrint)
+      window.addEventListener('onbeforeunload', handleClose)
+      window.addEventListener('unload', handleClose)
+
+      // 自動觸發列印（可選）
+      handlePrint()
     })
 
     onUnmounted(() => {
       // 清理事件監聽
       window.removeEventListener('beforeprint', beforePrint)
       window.removeEventListener('afterprint', afterPrint)
+      window.removeEventListener('onbeforeunload', handleClose)
+      window.removeEventListener('unload', handleClose)
     })
 
     return {
@@ -313,6 +341,8 @@ export default {
     }
   }
 }
+
+
 </script>
 
 <style scoped>

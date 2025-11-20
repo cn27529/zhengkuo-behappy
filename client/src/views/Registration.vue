@@ -530,7 +530,7 @@
         <button
           type="button"
           class="btn btn-outline capsule-btn"
-          @click="openPrintPage"
+          @click="handlePrintPage"
         >
           🖨️ 列印表單
         </button>
@@ -758,7 +758,7 @@ export default {
       return res;
     };
 
-    const openPrintPage = () => {
+    const handlePrintPage = () => {
       const details = registrationStore.validationDetails;
       if (details && !details.valid) {
         // 顯示第一則錯誤為訊息，並同時在畫面上列出所有錯誤
@@ -767,26 +767,39 @@ export default {
       }
 
       try {
-        // 生成唯一 ID
-        const printId =
-          "print_form_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
 
-        console.log("準備儲存列印數據，ID:", printId);
+        const printData = JSON.stringify(registrationStore.registrationForm);
+        const formId = registrationStore.registrationForm.formId;
+        console.log("準備列印數據:", JSON.parse(printData));
+
+        console.log("表單 ID:", formId);
+
+        if (formId === null || formId === undefined || formId === "") {
+          ElMessage.error("表單尚未提交，無法列印");
+          return;
+        }
+      
+        // 生成唯一 ID
+        //const printId = "print_form_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+        const printId = "print_form_" + formId;
+        console.log("列印表單 ID:", printId);
 
         // 儲存到 sessionStorage
-        const formData = JSON.stringify(registrationStore.registrationForm);
         console.log("儲存列印數據:", {
           printId,
           data: registrationStore.registrationForm,
         });
 
-        sessionStorage.setItem(printId, formData);
+        //sessionStorage.setItem(printId, printData);
+        localStorage.setItem(printId, printData); // 使用 localStorage 以避免 sessionStorage 限制
 
         // 開啟列印頁面
+        //const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
         const printUrl = `${window.location.origin}/print-registration?print_id=${printId}`;
         console.log("開啟列印頁面:", printUrl);
-
-        window.open(printUrl, "_blank", "width=1000,height=800,scrollbars=yes");
+        //window.open(printUrl, "_blank", "width=1000,height=800,scrollbars=yes");
+        window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
+        
       } catch (error) {
         console.error("開啟列印頁面失敗:", error);
         ElMessage.error("開啟列印預覽失敗");
@@ -800,7 +813,7 @@ export default {
       addContactAsBlessing,
       addContactAsSurvivor,
       importFromBlessing,
-      openPrintPage,
+      handlePrintPage,
       handleAddNewForm,
       handleSwitchForm,
       handleDeleteForm,
