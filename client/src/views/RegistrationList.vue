@@ -94,22 +94,24 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th style="display: none">表單名稱</th>
+              <th></th>
               <th>聯絡人</th>
-              <th>手機、電話</th>
+              <th>手機</th>
+              <th>電話</th>
+              <th>資料表屬性</th>
               <th style="display: none">關係</th>
               <th style="display: none">超度地址</th>
               <th style="display: none">狀態</th>
-              <th>消災人員</th>
-              <th>陽上人</th>
+              <th style="display: none">消災人員</th>
+              <th style="display: none">陽上人</th>
               <th>建立時間</th>
               <th style="text-align: center">操作</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in paginatedResults" :key="item.formId || item.id">
-              <td style="display: none">
-                <span class="form-name">{{ item.formName }}</span>
+              <td>
+                <span class="form-name">{{ item.formId }}</span>
                 <br />
                 <small class="form-source">{{ item.formSource }}</small>
               </td>
@@ -118,7 +120,12 @@
               </td>
               <td>
                 <div>{{ item.contact?.mobile || "-" }}</div>
+              </td>
+              <td>
                 <div>{{ item.contact?.phone || "-" }}</div>
+              </td>
+              <td>
+                <div>{{ item.contact?.relationship || "-" }}</div>
               </td>
               <td style="display: none">
                 <span class="relationship">
@@ -141,7 +148,7 @@
                   {{ getStatusText(item.state) }}
                 </span>
               </td>
-              <td>
+              <td style="display: none">
                 <div class="address-truncate" :title="item.blessing?.address">
                   {{ truncateAddress(item.blessing?.address) }}
                 </div>
@@ -154,7 +161,7 @@
                   </p>
                 </div>
               </td>
-              <td>
+              <td style="display: none">
                 <div
                   v-for="survivor in item.salvation?.survivors || []"
                   :key="survivor.id"
@@ -182,7 +189,7 @@
                     type="primary"
                     link
                     size="small"
-                    @click="handlePrint(item)"
+                    @click="handlePrintPage(item)"
                     title="列印表單"
                   >
                     🖨️
@@ -252,13 +259,13 @@
     <!-- 詳情資訊彈窗 -->
     <el-dialog
       v-model="showModal"
-      :title="`表單詳情資訊 - ${selectedItem?.formName || ''}`"
-      width="90%"
-      :close-on-click-modal="false"
-    >
+      :title="`表單詳情資訊 - ${selectedItem?.contact?.name || ''}`"
+      width="70%"
+      class="modal-header"
+      :close-on-click-modal="false">
       <div class="modal-body" v-if="selectedItem">
         <!-- 詳細資訊內容 -->
-        <div class="detail-section">
+        <div style="display: none;" class="detail-section">
           <h4>基本資訊</h4>
           <div class="detail-grid">
             <div class="detail-item">
@@ -405,7 +412,7 @@
           <el-button @click="closeModal">關閉</el-button>
           <el-button
             type="primary"
-            @click="handlePrint(selectedItem)"
+            @click="handlePrintPage(selectedItem)"
             v-if="selectedItem"
           >
             🖨️ 列印表單
@@ -520,9 +527,43 @@ export default {
       selectedItem.value = null;
     };
 
-    const handlePrint = (item) => {
-      ElMessage.info(`準備列印表單: ${item.formName}`);
-      console.log("列印表單:", item);
+    const handlePrintPage = (item) => {
+      ElMessage.info(`準備列印表單: ${item.formId || item.id}`);
+      
+      try {
+        // 生成唯一 ID
+        //const printId = "print_form_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+        const printId = "print_form_" + item.formId;
+        console.log("列印表單 ID:", printId);
+
+        // 儲存到 sessionStorage
+        const printData = JSON.stringify(item);
+        console.log("儲存列印數據:", {
+          printId,
+          data: JSON.parse(JSON.stringify(item)),
+        });
+
+        //sessionStorage.setItem(printId, printData);
+        localStorage.setItem(printId, printData); // 使用 localStorage 以避免 sessionStorage 限制
+
+        // 開啟列印頁面
+        //const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
+        const printUrl = `${window.location.origin}/print-registration?print_id=${printId}`;
+        console.log("開啟列印頁面:", printUrl);
+        //window.open(printUrl, "_blank", "width=1000,height=800,scrollbars=yes");
+        window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
+        
+        setTimeout(() => {
+          showModal.value = false;
+          selectedItem.value = null;
+        }, 500);
+
+
+      } catch (error) {
+        console.error("開啟列印頁面失敗:", error);
+        ElMessage.error("開啟列印預覽失敗");
+      }
+
     };
 
     const getStatusText = (state) => {
@@ -589,7 +630,7 @@ export default {
       handleCurrentChange,
       viewDetails,
       closeModal,
-      handlePrint,
+      handlePrintPage,
       getStatusText,
       formatDate,
       truncateAddress,
@@ -943,6 +984,7 @@ export default {
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
+  color: #ffffff;
 }
 
 .modal-content {
@@ -967,6 +1009,11 @@ export default {
 .modal-header h3 {
   margin: 0;
   color: #333;
+  /* color: #ffffff; */
+}
+
+.modal-header span {
+  color: #ffffff;
 }
 
 .modal-close {
@@ -989,6 +1036,7 @@ export default {
 
 .modal-body {
   padding: 1.5rem;
+  
 }
 
 .modal-footer {
@@ -997,6 +1045,9 @@ export default {
   text-align: right;
   background: #f8f9fa;
 }
+
+
+
 
 /* 詳細資訊樣式 */
 .detail-section {
@@ -1035,6 +1086,8 @@ export default {
 .detail-item span {
   color: #666;
 }
+
+
 
 .persons-list {
   display: flex;
