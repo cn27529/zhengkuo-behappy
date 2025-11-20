@@ -4,10 +4,14 @@ import { useAuthStore } from "../stores/authStore.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
+  { path: "/open-new-tab", component: () => import("../views/OpenNewTab.vue") },
+  { path: "/el-dialog", component: () => import("../views/ElDialog.vue") },
   { path: "/empty", component: () => import("../views/Empty.vue") },
   { path: "/env", component: () => import("../views/Env.vue") },
+  { path: "/hash", component: () => import("../views/generatorHash.vue") },
   { path: "/login", component: () => import("../views/Login.vue") },
   { path: "/contact", component: () => import("../views/Contact.vue") },
+  { path: "/mocklogin", component: () => import("../views/MockLogin.vue") },
   {
     path: "/dashboard",
     component: () => import("../views/Dashboard.vue"),
@@ -22,7 +26,7 @@ const routes = [
   {
     path: "/print-registration",
     component: () => import("../views/PrintRegistration.vue"),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   // 为未来功能预留路由
   {
@@ -54,15 +58,7 @@ const routes = [
     name: "/testpage",
     component: () => import("../views/TestPage.vue"),
     meta: {
-      title: "測試頁面",
       requiresAuth: true,
-    },
-  },
-  {
-    path: "/mocklogin",
-    component: () => import("../views/MockLogin.vue"),
-    meta: {
-      requiresAuth: false,
     },
   },
   {
@@ -77,15 +73,6 @@ const routes = [
     path: "/registration-list",
     name: "RegistrationList",
     component: () => import("../views/RegistrationList.vue"),
-    meta: {
-      requiresAuth: true,
-    },
-  },
-
-  {
-    path: "/hash",
-    name: "Hash",
-    component: () => import("../views/generatorHash.vue"),
     meta: {
       requiresAuth: true,
     },
