@@ -3,6 +3,7 @@ services:
   directus:
     #image: directus/directus:10.10.0
     image: my-directus-app:latest
+    #image: zk-server-app:latest
     ports:
       - "8055:8055"
     environment:

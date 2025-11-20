@@ -1,6 +1,6 @@
-# 執行docker compose
-## 配置docker-compose.yml
-docker compose up -d
+
+# 配置docker-compose.yml並運行
+docker compose up
 
 ## 前景執行還是背景執行
 docker-compose up (前景模式)開發時 (推薦不加 -d)
