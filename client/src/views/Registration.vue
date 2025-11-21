@@ -135,10 +135,10 @@
               required
             />
           </div>
-
+        </div>
+        <div class="form-grid">
           <div class="form-group">
             <label>資料表屬性<span class="required">*</span></label>
-
             <div class="radio-group">
               <label
                 v-for="option in relationshipOptions"
@@ -201,7 +201,7 @@
                   class="btn btn-outline btn-sm"
                   @click="addBlessingPerson"
                 >
-                  + 增加消災人員
+                  ＋增加消災人員
                 </button>
                 <button
                   v-if="
@@ -238,6 +238,10 @@
                 >
                   刪除
                 </button>
+                <label class="checkbox-label">
+                  <input type="checkbox" v-model="person.isHouseholdHead" />
+                  <span>設為戶長</span>
+                </label>
               </div>
 
               <div class="person-form">
@@ -272,13 +276,6 @@
                       v-model="person.notes"
                       placeholder="備註信息"
                     />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="checkbox-label">
-                      <input type="checkbox" v-model="person.isHouseholdHead" />
-                      <span>設為戶長</span>
-                    </label>
                   </div>
                 </div>
               </div>
@@ -320,7 +317,7 @@
                 class="btn btn-outline btn-sm"
                 @click="addAncestor"
               >
-                + 增加祖先
+                ＋增加祖先
               </button>
 
               <button
@@ -369,7 +366,7 @@
                       v-model="ancestor.surname"
                       placeholder="請輸入祖先姓氏"
                     />
-                    <p>氏歷代祖先</p>
+                    <p class="ancestor">氏歷代祖先</p>
                   </div>
 
                   <div class="form-group address-row">
@@ -397,24 +394,26 @@
                 }}
                 位</span
               >
-              <button
-                type="button"
-                class="btn btn-outline btn-sm"
-                @click="addSurvivor"
-              >
-                + 增加陽上人
-              </button>
-              <button
-                v-if="
-                  registrationForm.contact.name &&
-                  registrationForm.contact.name.trim()
-                "
-                type="button"
-                class="btn btn-outline btn-sm"
-                @click="addContactAsSurvivor"
-              >
-                同聯絡人
-              </button>
+              <div style="display: flex; gap: 8px; align-items: center">
+                <button
+                  type="button"
+                  class="btn btn-outline btn-sm"
+                  @click="addSurvivor"
+                >
+                  ＋增加陽上人
+                </button>
+                <button
+                  v-if="
+                    registrationForm.contact.name &&
+                    registrationForm.contact.name.trim()
+                  "
+                  type="button"
+                  class="btn btn-outline btn-sm"
+                  @click="addContactAsSurvivor"
+                >
+                  同聯絡人
+                </button>
+              </div>
             </div>
           </div>
 
@@ -715,17 +714,15 @@ export default {
       try {
         const result = await registrationStore.submitRegistration();
 
-        console.log("提交結果調試信息:",  JSON.stringify(result));
-        
+        console.log("提交結果調試信息:", JSON.stringify(result));
 
-        if(result.success) {
+        if (result.success) {
           ElMessage.success(result.message);
         } else {
           ElMessage.error(result.message);
         }
 
         console.log(result);
-        
       } catch (error) {
         ElMessage.error("提交失敗: " + error.message);
       } finally {
@@ -735,12 +732,38 @@ export default {
 
     // wrapper: 將聯絡人加入消災人員（呼叫 store）
     const addContactAsBlessing = () => {
-      return registrationStore.addContactToBlessing();
+      const res = registrationStore.addContactToBlessing();
+      if (res && res.status) {
+        if (res.status === "ok") {
+          ElMessage.success(res.message);
+        } else if (
+          res.status === "invalid" ||
+          res.status === "warning" ||
+          res.status === "duplicate" ||
+          res.status === "max"
+        ) {
+          ElMessage.warning(res.message);
+        }
+      }
+      return res;
     };
 
     // wrapper: 將聯絡人加入陽上人（呼叫 store）
     const addContactAsSurvivor = () => {
-      return registrationStore.addContactToSurvivors();
+      const res = registrationStore.addContactToSurvivors();
+      if (res && res.status) {
+        if (res.status === "ok") {
+          ElMessage.success(res.message);
+        } else if (
+          res.status === "invalid" ||
+          res.status === "warning" ||
+          res.status === "duplicate" ||
+          res.status === "max"
+        ) {
+          ElMessage.warning(res.message);
+        }
+      }
+      return res;
     };
 
     // wrapper: 從消災人員載入陽上人（呼叫 store）
@@ -750,6 +773,7 @@ export default {
         if (res.status === "ok") {
           ElMessage.success(res.message);
         } else if (
+          res.status === "invalid" ||
           res.status === "warning" ||
           res.status === "duplicate" ||
           res.status === "max"
@@ -761,7 +785,6 @@ export default {
     };
 
     const handlePrintPage = () => {
-
       const details = registrationStore.validationDetails;
       if (details && !details.valid) {
         // 顯示第一則錯誤為訊息，並同時在畫面上列出所有錯誤
@@ -770,21 +793,22 @@ export default {
       }
 
       try {
-
         const printData = JSON.stringify(registrationStore.registrationForm);
         const formId = registrationStore.registrationForm.formId;
-        
+
         if (formId === null || formId === undefined || formId === "") {
           ElMessage.error("表單尚未提交，無法列印");
           return;
         }
 
-        console.log("準備列印數據:", {formId, printData});
+        console.log("準備列印數據:", { formId, printData });
         ElMessage.info(`準備列印表單: ${formId}`);
-      
+
         // 生成唯一列印 ID
         //const printId = `print_form_${formId}`;
-        const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
+        const printId = `print_form_${formId}_${Math.floor(
+          Math.random() * 1000
+        )}`;
         console.log("列印表單 ID:", printId);
 
         // 儲存到 sessionStorage
@@ -794,8 +818,6 @@ export default {
           data: JSON.parse(printData),
         });
 
-        
-        
         // 開啟列印頁面
         const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
         console.log("開啟列印頁面:", printUrl);
@@ -803,16 +825,14 @@ export default {
 
         // 使用 router.push 導航到列印頁面
         router.push({
-          path: '/print-registration',
-          query: { 
+          path: "/print-registration",
+          query: {
             print_id: printId,
-            print_data: printData
-          }
+            print_data: printData,
+          },
         });
-
-        
       } catch (error) {
-       console.error("導航到列印頁面失敗:", error);
+        console.error("導航到列印頁面失敗:", error);
         ElMessage.error("導航到列印頁面失敗");
       }
     };
@@ -922,7 +942,6 @@ select:focus {
 
 .radio-group {
   display: flex;
-  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -1309,6 +1328,24 @@ select:focus {
     max-width: 80px;
     font-size: 0.8rem;
     padding: 3px 12px;
+  }
+
+  /* 手機版取消樣式*/
+  .address-row label {
+    margin: 0;
+  }
+  /* 手機版取消樣式*/
+  .form-group.address-row label {
+    margin-bottom: 0;
+  }
+  .ancestor {
+    display: none;
+  }
+
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap; /*手機版就換行*/
+    gap: 1rem;
   }
 }
 </style>

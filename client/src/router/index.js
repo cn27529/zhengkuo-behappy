@@ -4,14 +4,14 @@ import { useAuthStore } from "../stores/authStore.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
-  { path: "/open-new-tab", component: () => import("../views/OpenNewTab.vue") },
-  { path: "/el-dialog", component: () => import("../views/ElDialog.vue") },
+  { path: "/newtab", component: () => import("../views/NewTab.vue") },
+  { path: "/dialog", component: () => import("../views/ElDialog.vue") },
   { path: "/empty", component: () => import("../views/Empty.vue") },
   { path: "/env", component: () => import("../views/Env.vue") },
   { path: "/hash", component: () => import("../views/generatorHash.vue") },
   { path: "/login", component: () => import("../views/Login.vue") },
   { path: "/contact", component: () => import("../views/Contact.vue") },
-  { path: "/mocklogin", component: () => import("../views/MockLogin.vue") },
+  { path: "/mock", component: () => import("../views/MockLogin.vue") },
   {
     path: "/dashboard",
     component: () => import("../views/Dashboard.vue"),
@@ -93,7 +93,7 @@ router.beforeEach((to, from, next) => {
     (record) => record.meta && record.meta.requiresAuth === true
   );
 
-  console.log("路由守衛:", {
+  console.log("路由守衛(目前檢查的路由):", {
     to: to.path,
     requiresAuth,
     matched: to.matched.map((r) => ({ path: r.path, meta: r.meta })),
@@ -107,16 +107,16 @@ router.beforeEach((to, from, next) => {
     try {
       authStore.user = JSON.parse(savedUser);
       authStore.isAuthenticated = true;
-      console.log("router 從本地存儲恢復用戶會話:", authStore.user.displayName);
+      console.log("從本地存儲恢復用戶會話:", authStore.user.displayName);
     } catch (error) {
-      console.error("index router 解析保存的用戶數據失敗:", error);
+      console.error("解析保存的用戶數據失敗:", error);
       authStore.logout();
     }
   }
 
   // 如果需要驗證且未登入
   if (requiresAuth && !authStore.isAuthenticated) {
-    console.log("router 需要驗證但未登入，跳轉到登入頁");
+    console.log("需要驗證但未登入，跳轉到登入頁");
     next("/login");
   } else {
     next();

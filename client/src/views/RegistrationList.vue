@@ -493,8 +493,6 @@ export default {
         console.log("searchResults 內容:", searchResults.value);
 
         if (result.success) {
-          console.log("查詢結果:", result.data?.length || 0);
-
           if (!result.data || result.data.length === 0) {
             ElMessage.info("查無符合條件的資料");
           } else {
