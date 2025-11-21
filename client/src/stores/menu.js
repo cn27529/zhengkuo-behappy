@@ -1,4 +1,4 @@
-// src/stores/menu.js
+// src/stores/menu.js.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
@@ -10,7 +10,7 @@ export const useMenuStore = defineStore("menu", () => {
   const menuItems = ref([
     {
       id: 1,
-      name: "仪表板",
+      name: "儀表板",
       path: "/dashboard",
       icon: "📊",
       component: "Dashboard",
@@ -20,7 +20,7 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 2,
-      name: "活动报名",
+      name: "祈福登記",
       path: "/registration", // 修改路徑
       icon: "📝",
       component: "Registration", // 修改組件名稱
@@ -30,34 +30,65 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 3,
-      name: "收据管理",
-      path: "/receipts",
-      icon: "🧾",
-      component: "Receipts",
+      name: "登記查詢",
+      path: "/registration-list", //路徑
+      icon: "📝",
+      component: "RegistrationList",
       requiredAuth: true,
       order: 3,
-      enabled: true, // 暂时禁用，等后续开发
+      enabled: true,
     },
     {
       id: 4,
-      name: "查询收据",
-      path: "/receipts-query",
-      icon: "🔍",
-      component: "ReceiptsQuery",
+      name: "太歲分析",
+      path: "/taisui",
+      icon: "📥",
+      component: "TaiSui",
       requiredAuth: true,
       order: 4,
       enabled: true,
     },
     {
-      id: 5,
+      id: 99,
+      name: "收据管理",
+      path: "/receipts",
+      icon: "🧾",
+      component: "Receipts",
+      requiredAuth: true,
+      order: 99,
+      enabled: true, // 暂时禁用，等后续开发
+    },
+    {
+      id: 99,
+      name: "收据查询",
+      path: "/receipts-query",
+      icon: "🔍",
+      component: "ReceiptsQuery",
+      requiredAuth: true,
+      order: 99,
+      enabled: true,
+    },
+    {
+      id: 99,
       name: "数据导入",
       path: "/data-import",
       icon: "📥",
       component: "DataImport",
-      requiredAuth: true,
-      order: 5,
+      requiredAuth: false,
+      order: 99,
       enabled: true,
     },
+
+    // {
+    //   id: 7,
+    //   name: "Mydata",
+    //   path: "/mydata",
+    //   icon: "📥",
+    //   component: "MydataList",
+    //   requiredAuth: true,
+    //   order: 0,
+    //   enabled: true,
+    // },
   ]);
 
   // 当前激活的菜单项

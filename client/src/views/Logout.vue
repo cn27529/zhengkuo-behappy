@@ -13,26 +13,28 @@
 </template>
 
 <script>
-import { onMounted,ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-import { ElMessage } from 'element-plus'
-import appConfig from '../config/appConfig'
+import { onMounted,ref, reactive } from "vue"
+import { useRouter } from "vue-router"
+import { useAuthStore } from "../stores/authStore.js"
+import { useSupabaseAuthStore } from "../stores/supabase-auth.js"
+import { ElMessage } from "element-plus"
+import appConfig from "../config/appConfig"
 
 export default {
-  name: 'Logout',
+  name: "Logout",
   setup() {
     
     const router = useRouter()
     const authStore = useAuthStore()
+    const supabaseAuthStore = useSupabaseAuthStore()
 
-    const errors = reactive({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: ''
-    })
+    // const errors = reactive({
+    //   name: '',
+    //   email: '',
+    //   phone: '',
+    //   subject: '',
+    //   message: ''
+    // })
 
     //const success = ref(false)
     //const loading = ref(false)
@@ -45,17 +47,18 @@ export default {
         
       // 执行退出登录操作
       authStore.logout()
+      supabaseAuthStore.logout()
 
       // 可选：添加延迟后自动跳转到登录页
       setTimeout(() => {
         router.push('/login')
-      }, 10000)
+      }, 3000); // 3秒后跳转
 
     })
 
     return {
       appTitle: appConfig.title,
-      errors,
+      //errors,
       //success,
       //loading,
     }

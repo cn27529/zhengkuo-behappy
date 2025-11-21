@@ -2,8 +2,8 @@
   <!-- 主内容区域 -->
       <main class="main-content">
         <div class="page-header">
-          <h2>活动统计仪表板</h2>
-          <p>查看活动报名情况和统计数据</p>
+          <h2>登記儀表板</h2>
+          <p style="display: none;">查看登記情况和统计数据</p>
           <div class="total-participants">
             年度总参与人数: <strong>{{ totalParticipants }}</strong> 人
           </div>
@@ -49,10 +49,10 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-import { useActivitiesStore } from '../stores/activities'
+import { ref, onMounted, onUnmounted } from "vue"
+import { useRouter } from "vue-router"
+import { useAuthStore } from "../stores/authStore.js"
+import { useActivitiesStore } from "../stores/activities.js"
 
 export default {
   name: 'Dashboard',

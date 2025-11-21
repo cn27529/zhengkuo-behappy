@@ -2,7 +2,7 @@
 <template>
   <div class="placeholder-container">
     <div class="placeholder-content">
-      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-icon">🧱🚧🪨😓</div>
       <h2>功能开发中</h2>
       <p>此功能正在积极开发中，敬请期待！</p>
       <router-link to="/dashboard" class="btn btn-primary">
@@ -38,7 +38,7 @@ export default {
 }
 
 .placeholder-icon {
-  font-size: 4rem;
+  font-size: 2rem;
   margin-bottom: 1.5rem;
 }
 
