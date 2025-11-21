@@ -189,10 +189,10 @@
                   </el-button>
 
                   <button
-                    class="btn btn-outline capsule-btn"
+                    class="btn btn-primary capsule-btn"
                     @click="handlePrintPage(item)"
                   >
-                    查看詳情
+                    📄
                   </button>
                 </div>
               </td>
