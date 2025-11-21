@@ -23,7 +23,8 @@
 │   │   ├── auth_user.json
 │   │   ├── mock2.json
 │   │   ├── mock_registrations.json
-│   │   └── mock_registrations.md
+│   │   ├── mock_registrations.md
+│   │   └── submit-success.json
 │   ├── main.js
 │   ├── router
 │   │   └── index.js
@@ -50,6 +51,7 @@
 │   └── views
 │       ├── Contact.vue
 │       ├── Dashboard.vue
+│       ├── ElDialog.vue
 │       ├── Empty.vue
 │       ├── Env.vue
 │       ├── Login.vue
@@ -57,10 +59,10 @@
 │       ├── MockLogin.vue
 │       ├── MydataForm.vue
 │       ├── MydataList.vue
+│       ├── NewTab.vue
 │       ├── Placeholder.vue
 │       ├── PrintRegistration.vue
 │       ├── Registration.vue
-│       ├── RegistrationList copy.vue
 │       ├── RegistrationList.vue
 │       ├── SupabaseLogin.vue
 │       ├── TaiSui.vue
@@ -68,4 +70,4 @@
 │       └── generatorHash.vue
 └── vite.config.js
 
-12 directories, 57 files
+12 directories, 59 files
