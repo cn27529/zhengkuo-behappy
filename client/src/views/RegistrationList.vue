@@ -14,37 +14,33 @@
         <div class="form-group">
           <label style="display: none" for="searchQuery">查詢條件</label>
           <div class="search-input-group">
-            <input
-              type="text"
-              id="searchQuery"
+            <el-input
               v-model="searchQuery"
               placeholder="表單名、聯絡人、手機、電話、消災人員、地址、陽上人"
               @keyup.enter="handleSearch"
-              autocomplete="off"
               :disabled="isLoading"
-            />
-            <!-- 加載時禁用輸入框 -->
+              clearable
+              size="large"
+            >
+              <template #prefix>
+                <el-icon><Search /></el-icon>
+              </template>
+            </el-input>
 
-            <button
-              type="button"
-              class="btn btn-primary"
+            <el-button
+              type="primary"
               @click="handleSearch"
-              :disabled="isLoading"
+              :loading="isLoading"
+              size="large"
             >
-              <!-- 加載時禁用輸入框 -->
               {{ isLoading ? "查詢中..." : "查詢" }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline"
-              @click="handleClear"
-              :disabled="isLoading"
-            >
-              <!-- 使用 isLoading -->
+            </el-button>
+
+            <el-button @click="handleClear" :disabled="isLoading" size="large">
               清空
-            </button>
+            </el-button>
           </div>
-          <p class="search-hint">💡 提示：搜尋關鍵字，系統會自動匹配相關欄位</p>
+          <p class="search-hint">💡 提示:搜尋關鍵字,系統會自動匹配相關欄位</p>
         </div>
       </div>
     </div>
@@ -68,143 +64,99 @@
       <div>isLoading: {{ isLoading }}</div>
       <div>currentPage: {{ currentPage }}</div>
       <div>pageSize: {{ pageSize }}</div>
+      <div>isMoile: {{ isMobile }}</div>
     </div>
 
     <!-- 查詢結果 -->
     <div class="results-section" v-if="searchResults.length > 0">
       <div class="results-header">
         <h3>查詢結果 (共 {{ totalItems }} 筆)</h3>
-
-        <div class="pagination">
-          <!-- Element Plus 分頁控件 -->
-          <div class="pagination-top" v-if="totalItems > 0">
-            <el-pagination
-              v-model:current-page="currentPage"
-              v-model:page-size="pageSize"
-              :total="totalItems"
-              :page-sizes="[10, 20, 50, 100]"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
-          </div>
-        </div>
       </div>
 
-      <!-- 資料表格 -->
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>聯絡人</th>
-              <th>手機</th>
-              <th>電話</th>
-              <th>資料表屬性</th>
-              <th style="display: none">關係</th>
-              <th style="display: none">超度地址</th>
-              <th style="display: none">狀態</th>
-              <th style="display: none">消災人員</th>
-              <th style="display: none">陽上人</th>
-              <th>建立時間</th>
-              <th style="text-align: center">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in paginatedResults" :key="item.formId || item.id">
-              <td>
-                <span class="form-name">{{ item.formId }}</span>
-                <br />
-                <small class="form-source">{{ item.formSource }}</small>
-              </td>
-              <td>
-                <strong>{{ item.contact?.name || "-" }}</strong>
-              </td>
-              <td>
-                <div>{{ item.contact?.mobile || "-" }}</div>
-              </td>
-              <td>
-                <div>{{ item.contact?.phone || "-" }}</div>
-              </td>
-              <td>
-                <div>{{ item.contact?.relationship || "-" }}</div>
-              </td>
-              <td style="display: none">
-                <span class="relationship">
-                  {{ item.contact?.relationship || "-" }}
-                  <span
-                    v-if="item.contact?.otherRelationship"
-                    class="other-relationship"
-                  >
-                    ({{ item.contact.otherRelationship }})
-                  </span>
-                </span>
-              </td>
-              <td style="display: none">
-                <div class="address-truncate" :title="item.salvation?.address">
-                  {{ truncateAddress(item.salvation?.address) }}
-                </div>
-              </td>
-              <td style="display: none">
-                <span class="status-badge" :class="item.state">
-                  {{ getStatusText(item.state) }}
-                </span>
-              </td>
-              <td style="display: none">
-                <div class="address-truncate" :title="item.blessing?.address">
-                  {{ truncateAddress(item.blessing?.address) }}
-                </div>
-                <div
-                  v-for="person in item.blessing?.persons || []"
-                  :key="person.id"
-                >
-                  <p v-if="person.name">
-                    {{ person.name }}({{ person.zodiac || "未填" }})
-                  </p>
-                </div>
-              </td>
-              <td style="display: none">
-                <div
-                  v-for="survivor in item.salvation?.survivors || []"
-                  :key="survivor.id"
-                >
-                  <p v-if="survivor.name">
-                    {{ survivor.name }}({{ survivor.zodiac || "未填" }})
-                  </p>
-                </div>
-              </td>
-              <td>
-                <span class="date-time">{{ formatDate(item.createdAt) }}</span>
-              </td>
-              <td>
-                <div class="action-buttons">
-                  <el-button
-                    style="display: none"
-                    type="primary"
-                    link
-                    size="small"
-                    @click="viewDetails(item)"
-                  >
-                    詳情
-                  </el-button>
+      <!-- Element Plus 表格 -->
+      <el-table
+        :data="paginatedResults"
+        style="width: 100%"
+        :default-sort="{ prop: 'createdAt', order: 'descending' }"
+        stripe
+        border
+        :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
+        v-loading="isLoading"
+      >
+        <el-table-column label="表單資訊" min-width="150">
+          <template #default="{ row }">
+            <div>
+              <div class="form-name">{{ row.formId }}</div>
+              <el-tag size="small" type="info" class="form-source-tag">
+                {{ row.formSource }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
 
-                  <button
-                    class="btn btn-primary capsule-btn"
-                    @click="handlePrintPage(item)"
-                  >
-                    📄
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <el-table-column prop="contact.name" label="聯絡人" min-width="100">
+          <template #default="{ row }">
+            <strong>{{ row.contact?.name || "-" }}</strong>
+          </template>
+        </el-table-column>
 
-    <div class="pagination">
-      <!-- 底部分頁控件 -->
-      <div class="pagination-bottom" v-if="totalItems > 0">
+        <el-table-column prop="contact.mobile" label="手機" min-width="120">
+          <template #default="{ row }">
+            {{ row.contact?.mobile || "-" }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="contact.phone" label="電話" min-width="120">
+          <template #default="{ row }">
+            {{ row.contact?.phone || "-" }}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="contact.relationship"
+          label="關係"
+          min-width="100"
+        >
+          <template #default="{ row }">
+            <div>
+              {{ row.contact?.relationship || "-" }}
+              <span
+                v-if="row.contact?.otherRelationship"
+                class="other-relationship"
+              >
+                ({{ row.contact.otherRelationship }})
+              </span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="createdAt"
+          label="建立時間"
+          min-width="150"
+          sortable
+        >
+          <template #default="{ row }">
+            <span class="date-time">{{ formatDate(row.createdAt) }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="操作" width="100" fixed="right" align="center">
+          <template #default="{ row }">
+            <el-tooltip content="列印表單" placement="top">
+              <el-button
+                type="primary"
+                :icon="Printer"
+                circle
+                @click="handlePrintPage(row)"
+              />
+            </el-tooltip>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分頁控件 - 只在非手機設備顯示 -->
+      <div class="pagination" v-if="!isMobile">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
@@ -213,12 +165,20 @@
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
+          background
         />
+      </div>
+
+      <!-- 手機設備顯示總筆數 -->
+      <div class="mobile-total" v-else>
+        <el-text type="info" size="small">
+          顯示全部 {{ totalItems }} 筆資料
+        </el-text>
       </div>
     </div>
 
     <!-- 載入狀態 -->
-    <div class="loading-state" v-if="isLoading">
+    <div class="loading-state" v-if="isLoading && !searchResults.length">
       <el-result icon="info" title="搜尋中">
         <template #extra>
           <el-button type="primary" :loading="true">載入中</el-button>
@@ -237,7 +197,7 @@
         </template>
         <template #description>
           <div class="empty-content">
-            <p class="empty-hint">請嘗試：</p>
+            <p class="empty-hint">請嘗試:</p>
             <ul class="empty-suggestions">
               <li>檢查關鍵字是否拼寫正確</li>
               <li>使用更簡單的關鍵字</li>
@@ -245,7 +205,7 @@
             </ul>
           </div>
         </template>
-        <el-button @click="handleClear">重新搜尋</el-button>
+        <el-button type="primary" @click="handleClear">重新搜尋</el-button>
       </el-empty>
     </div>
 
@@ -413,10 +373,11 @@
           <el-button @click="closeModal">關閉</el-button>
           <el-button
             type="primary"
+            :icon="Printer"
             @click="handlePrintPage(selectedItem)"
             v-if="selectedItem"
           >
-            🖨️ 列印表單
+            列印表單
           </el-button>
         </span>
       </template>
@@ -427,7 +388,8 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import { storeToRefs } from "pinia"; // 添加這行
+import { Search, Printer } from "@element-plus/icons-vue";
+import { storeToRefs } from "pinia";
 import { authService } from "../services/authService";
 import { useQueryStore } from "../stores/queryStore.js";
 import { useRouter } from "vue-router";
@@ -445,15 +407,13 @@ export default {
       searchQuery,
       isLoading,
       hasSearched,
-      currentPage, // 從 store 獲取
-      pageSize, // 從 store 獲取
+      currentPage,
+      pageSize,
     } = storeToRefs(queryStore);
 
     // 本地狀態
-    const selectedItem = ref(null); //
+    const selectedItem = ref(null);
     const showModal = ref(false);
-    // const currentPage = ref(1); // 已移至 store
-    // const pageSize = ref(10); // 已移至 store
 
     // 計算屬性 - 添加防護檢查
     const totalItems = computed(() => {
@@ -469,19 +429,27 @@ export default {
       ) {
         return [];
       }
+
+      // 如果是手機設備，返回所有結果不分頁
+      if (isMobile.value) {
+        return searchResults.value;
+      }
+
       const start = (currentPage.value - 1) * pageSize.value;
       const end = start + pageSize.value;
       return searchResults.value.slice(start, end);
     });
 
+    const isMobile = computed(() => {
+      return queryStore.isMobile();
+    });
+
     // 方法
-    // 修改搜索方法 - 在搜索時重置分頁
     const handleSearch = async () => {
-      // 搜索前重置到第一頁
       queryStore.resetPagination();
 
       const query = searchQuery.value ? searchQuery.value.trim() : "";
-      console.log("開始搜尋，查詢條件:", query);
+      console.log("開始搜尋,查詢條件:", query);
 
       try {
         const queryData = {
@@ -489,7 +457,7 @@ export default {
         };
 
         const result = await queryStore.queryRegistrationData(queryData);
-        console.log("Store 查詢完成，結果數量:", searchResults.value.length);
+        console.log("Store 查詢完成,結果數量:", searchResults.value.length);
         console.log("searchResults 內容:", searchResults.value);
 
         if (result.success) {
@@ -509,22 +477,27 @@ export default {
 
     const handleClear = () => {
       queryStore.clearSearch();
-      queryStore.resetPagination(); // 清空時也重置分頁
+      queryStore.resetPagination();
     };
 
-    // 修改分頁處理方法
     const handleSizeChange = (newSize) => {
+      // 手機設備不需要分頁處理
+      if (isMobile.value) return;
+
       queryStore.setPageSize(newSize);
-      queryStore.setCurrentPage(1); // 切換頁面大小時回到第一頁
+      queryStore.setCurrentPage(1);
     };
 
     const handleCurrentChange = (newPage) => {
+      // 手機設備不需要分頁處理
+      if (isMobile.value) return;
+
       queryStore.setCurrentPage(newPage);
 
-      // 可選：滾動到表格頂部
-      const tableContainer = document.querySelector(".table-container");
+      // 可選:滾動到表格頂部
+      const tableContainer = document.querySelector(".el-table");
       if (tableContainer) {
-        tableContainer.scrollTo({ top: 0, behavior: "smooth" });
+        //tableContainer.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     };
 
@@ -546,26 +519,17 @@ export default {
         console.log("準備列印數據:", { formId, printData });
         ElMessage.info(`準備列印表單: ${formId}`);
 
-        // 生成唯一列印 ID
-        //const printId = `print_form_${formId}`;
         const printId = `print_form_${formId}_${Math.floor(
           Math.random() * 1000
         )}`;
         console.log("列印表單 ID:", printId);
 
-        // 儲存到 sessionStorage
         sessionStorage.setItem(printId, printData);
         console.log("儲存列印數據:", {
           printId,
           data: JSON.parse(printData),
         });
 
-        // 開啟列印頁面
-        const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
-        console.log("開啟列印頁面:", printUrl);
-        //window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
-
-        // 使用 router.push 導航到列印頁面
         router.push({
           path: "/print-registration",
           query: {
@@ -573,11 +537,6 @@ export default {
             print_data: printData,
           },
         });
-
-        // setTimeout(() => {
-        //   showModal.value = false;
-        //   selectedItem.value = null;
-        // }, 500);
       } catch (error) {
         console.error("導航到列印頁面失敗:", error);
         ElMessage.error("導航到列印頁面失敗");
@@ -624,13 +583,13 @@ export default {
     });
 
     return {
-      // 響應式數據（來自 Store）
+      // 響應式數據(來自 Store)
       searchQuery,
       searchResults,
       isLoading,
       hasSearched,
-      currentPage, // 從 store 來
-      pageSize, // 從 store 來
+      currentPage,
+      pageSize,
 
       // 本地狀態
       selectedItem,
@@ -640,6 +599,7 @@ export default {
       totalItems,
       paginatedResults,
       isDev,
+      isMobile,
 
       // 方法
       handleSearch,
@@ -652,28 +612,43 @@ export default {
       getStatusText,
       formatDate,
       truncateAddress,
+
+      // Icons
+      Search,
+      Printer,
     };
   },
 };
 </script>
 
 <style scoped>
-/* 樣式部分保持不變，但添加一些新的樣式類別 */
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
+/* 主要容器樣式 */
+.main-content {
+  padding: 1rem;
 }
 
-.btn-outline:hover:not(:disabled) {
-  background: var(--primary-color);
-  color: white;
+.page-header {
+  margin-bottom: 1.5rem;
 }
 
-.btn-outline:disabled {
-  border-color: #ccc;
-  color: #ccc;
-  cursor: not-allowed;
+.page-header h2 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+/* 搜尋區域 */
+.search-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.search-input-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .search-hint {
@@ -682,22 +657,32 @@ export default {
   font-size: 0.875rem;
 }
 
-.results-summary {
-  color: #666;
-  font-size: 0.875rem;
+/* 結果區域 */
+.results-section {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  padding: 1.5rem;
 }
 
+.results-header {
+  margin-bottom: 1rem;
+}
+
+.results-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+/* 表單標籤 */
 .form-name {
   font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
-.form-source {
-  color: #666;
-  font-size: 0.75rem;
-}
-
-.relationship {
-  font-size: 0.875rem;
+.form-source-tag {
+  margin-top: 0.25rem;
 }
 
 .other-relationship {
@@ -705,95 +690,35 @@ export default {
   font-size: 0.75rem;
 }
 
-.address-truncate {
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .date-time {
   font-size: 0.875rem;
   color: #666;
 }
 
-.action-buttons {
+/* 分頁 */
+.pagination {
   display: flex;
-  gap: 0.25rem;
+  justify-content: center;
+  padding: 1.5rem 0;
 }
 
-.pagination-controls {
+/* 手機總筆數顯示 */
+.mobile-total {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.page-numbers {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.page-number {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: white;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.page-number:hover:not(:disabled) {
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-}
-
-.page-number.active {
-  background: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-}
-
-.page-number:disabled {
-  cursor: default;
-}
-
-.page-size-selector {
+  justify-content: center;
+  padding: 1rem 0;
+  color: #666;
   font-size: 0.875rem;
 }
 
-.page-size-selector select {
-  margin-left: 0.5rem;
-  padding: 0.25rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 80px;
-}
-
-.loading-state {
-  text-align: center;
-  padding: 3rem;
+/* 空狀態 */
+.loading-state,
+.no-results,
+.initial-state {
   background: white;
+  padding: 3rem;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.loading-spinner {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid var(--primary-color);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 .empty-icon {
@@ -805,288 +730,29 @@ export default {
   text-align: left;
   max-width: 300px;
   margin: 1rem auto;
-}
-
-.household-head-tag {
-  border-left: 3px solid var(--primary-color);
-}
-
-.ancestor-tag {
-  background: #e7f3ff;
-}
-
-.survivor-tag {
-  background: #f0f9ff;
-}
-
-.zodiac,
-.person-notes,
-.ancestor-notes,
-.survivor-notes {
-  font-size: 0.75rem;
-  color: #666;
-  margin-left: 0.25rem;
-}
-
-/* 查詢區域樣式 */
-.search-section {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.search-form .form-group {
-  margin-bottom: 0;
-}
-
-.search-input-group {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-}
-
-.search-input-group input {
-  flex: 1;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.search-input-group input:focus {
-  border-color: var(--primary-color);
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.1);
-}
-
-/* 結果區域樣式 */
-.results-section {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.results-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e9ecef;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8f9fa;
-  height: 80px;
-}
-
-.results-header h3 {
-  margin: 0;
-  color: #333;
-}
-
-.results-info {
-  color: #666;
-  font-size: 0.875rem;
-}
-
-/* 表格樣式 */
-.table-container {
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table th,
-.data-table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.data-table th {
-  background: #f8f9fa;
-  font-weight: 600;
-  color: #333;
-  position: sticky;
-  top: 0;
-}
-
-.data-table tbody tr:hover {
-  background: #f8f9fa;
-}
-
-/* 狀態標籤 */
-.status-badge {
-  padding: 0.5rem 0.5rem;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  font-weight: 50;
-}
-
-.status-badge.creating {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.status-badge.editing {
-  background: #d1ecf1;
-  color: #0c5460;
-}
-
-.status-badge.saved {
-  background: #d4edda;
-  color: #155724;
-}
-
-.status-badge.submitted {
-  background: #cce7ff;
-  color: #004085;
-}
-
-.status-badge.completed {
-  background: #d1ecf1;
-  color: #0c5460;
-}
-
-/* 分頁樣式 */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  /* border-top: 1px solid #e9ecef; */
-}
-
-.pagination-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: white;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-}
-
-.pagination-btn:disabled {
-  color: #ccc;
-  cursor: not-allowed;
-}
-
-.pagination-info {
-  color: #666;
-  font-size: 0.875rem;
-}
-
-/* 空狀態樣式 */
-.no-results {
-  background: white;
-  padding: 3rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.empty-state p {
-  margin: 0 0 0.5rem 0;
-  color: #333;
-  font-size: 1.1rem;
-}
-
-.empty-hint {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-/* 彈窗樣式 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-  color: #ffffff;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 10px;
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e9ecef;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8f9fa;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: #333;
-  /* color: #ffffff; */
-}
-
-.modal-header span {
-  color: #ffffff;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #666;
+  list-style: none;
   padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.modal-close:hover {
-  color: #333;
+.empty-suggestions li {
+  padding: 0.25rem 0;
+  color: #666;
 }
 
-.modal-body {
-  padding: 1.5rem;
+.empty-suggestions li::before {
+  content: "• ";
+  color: var(--el-color-primary);
+  font-weight: bold;
+  margin-right: 0.5rem;
 }
 
-.modal-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e9ecef;
-  text-align: right;
-  background: #f8f9fa;
-}
-
-/* 詳細資訊樣式 */
+/* 詳情區域 */
 .detail-section {
   margin-bottom: 2rem;
 }
 
 .detail-section h4 {
-  color: var(--primary-color);
+  color: var(--el-color-primary);
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #e9ecef;
@@ -1127,14 +793,26 @@ export default {
 
 .person-tag {
   background: #f8f9fa;
-  padding: 0.25rem 0.75rem;
-  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
   font-size: 0.875rem;
   border: 1px solid #e9ecef;
 }
 
+.household-head-tag {
+  border-left: 3px solid var(--el-color-primary);
+}
+
+.ancestor-tag {
+  background: #e7f3ff;
+}
+
+.survivor-tag {
+  background: #f0f9ff;
+}
+
 .household-head {
-  background: var(--household-color);
+  background: var(--el-color-primary);
   color: white;
   padding: 0.125rem 0.5rem;
   border-radius: 50px;
@@ -1142,76 +820,68 @@ export default {
   margin-left: 0.5rem;
 }
 
-/* 分頁樣式 */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  /* border-top: 1px solid #e9ecef; */
+.zodiac,
+.person-notes,
+.ancestor-notes,
+.survivor-notes {
+  font-size: 0.75rem;
+  color: #666;
+  margin-left: 0.25rem;
 }
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .date-time {
-    font-size: 0.5rem;
-  }
-
   .main-content {
     padding: 0.5rem;
   }
 
   .search-section {
     padding: 1rem;
-    margin-bottom: 1rem;
   }
 
   .search-input-group {
     flex-direction: column;
   }
 
-  .search-input-group input {
+  .search-input-group .el-input {
     width: 100%;
   }
 
-  .search-input-group button {
-    margin-top: 0.5rem;
+  .search-input-group .el-button {
     width: 100%;
   }
 
-  .results-header {
-    flex-direction: column;
-    gap: 1rem;
+  .results-section {
     padding: 1rem;
-  }
-
-  .pagination-top,
-  .pagination-bottom {
-    padding: 0.5rem;
-  }
-
-  /* 手機版：隱藏表格，改用卡片佈局 */
-  .table-container {
-    overflow-x: visible;
-  }
-
-  .pagination {
-    flex-direction: column;
-    gap: 0.5rem;
   }
 
   .detail-grid {
     grid-template-columns: 1fr;
   }
 
-  .data-table {
-    font-size: 0.5rem;
+  /* 手機版表格樣式調整 */
+  :deep(.el-table) {
+    font-size: 0.875rem;
   }
 
-  .data-table th,
-  .data-table td {
-    padding: 0.5rem;
+  :deep(.el-table__cell) {
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* 極小螢幕優化 */
+  :deep(.el-table) {
+    font-size: 0.75rem;
+  }
+
+  :deep(.el-pagination) {
+    padding: 0.5rem 0;
+  }
+
+  :deep(.el-pagination__sizes),
+  :deep(.el-pagination__jump) {
+    display: none;
   }
 }
 </style>

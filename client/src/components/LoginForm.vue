@@ -23,7 +23,7 @@
         />
       </div>
 
-      <div style="display: none;" class="form-group">
+      <div style="display: none" class="form-group">
         <label class="checkbox-label">
           <input type="checkbox" v-model="rememberMe" />
           <span>記住我（在此電腦保持登入狀態）</span>
@@ -60,15 +60,13 @@
           <h3>為了較佳的使用體驗，請選擇桌上型裝置</h3>
         </div>
       </div>
-      
+
       <span class="dialog-footer">
-          <el-button type="primary" @click="confirmDeviceDialog" size="large">
-            我知道了
-          </el-button>
-        </span>
-      
+        <el-button type="primary" @click="confirmDeviceDialog" size="large">
+          我知道了
+        </el-button>
+      </span>
     </el-dialog>
-    
   </div>
 </template>
 
@@ -87,38 +85,6 @@ export default {
 
     const showDeviceDialog = ref(false);
 
-    // 检测是否为移动设备
-    const isMobileDevice = () => {
-      const userAgent = navigator.userAgent.toLowerCase();
-      const screenWidth = window.innerWidth;
-      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      
-      const mobileKeywords = [
-        'android', 'iphone', 'ipad', 'ipod', 'blackberry',
-        'windows phone', 'webos', 'opera mini', 'iemobile', 'mobile'
-      ];
-      
-      return mobileKeywords.some(keyword => userAgent.includes(keyword)) || 
-             (screenWidth <= 768 && hasTouch);
-    };
-
-    const detectDeviceType = () => {
-      const userAgent = navigator.userAgent;
-      const screenWidth = window.innerWidth;
-      
-      // 更精確的移動設備檢測
-      const isMobile = {
-        // User Agent 檢測
-        byUA: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent),
-        // 屏幕尺寸 + 觸控
-        byScreen: screenWidth <= 768 && ('ontouchstart' in window || navigator.maxTouchPoints > 0),
-        // 特定移動特徵
-        byFeatures: !!userAgent.match(/iPhone|Android/i) && 'ontouchstart' in window
-      };
-      
-      return isMobile.byUA || isMobile.byScreen || isMobile.byFeatures ? 'mobile' : 'desktop';
-    };
-
     // 確認對話框
     const confirmDeviceDialog = () => {
       showDeviceDialog.value = false;
@@ -130,8 +96,6 @@ export default {
       username: "",
       password: "",
     });
-
-    
 
     //const success = ref(false)
     const loading = ref(false);
@@ -186,34 +150,21 @@ export default {
         loading.value = false;
       }
     };
-    
 
     onMounted(() => {
-      
       // // 檢查用戶是否已經確認過提示
       // const hasConfirmed = sessionStorage.getItem('device-warning-confirmed');
-      
-      if (isMobileDevice() || detectDeviceType() === 'mobile') {
+
+      if (
+        authStore.isMobileDevice() ||
+        authStore.detectDeviceType() === "mobile"
+      ) {
         // 延迟显示，确保页面加载完成
         setTimeout(() => {
           showDeviceDialog.value = true;
         }, 800);
       }
-
-      //const deviceType = detectDeviceType();
-      //console.log(`檢測到裝置類型: ${deviceType}`);
-      
-      //if (deviceType === 'mobile') {
-        // ElMessage({
-        //   message: "為了較佳的使用體驗，請選擇桌上型裝置",
-        //   type: 'warning',
-        //   duration: 6000,
-        //   showClose: true,
-        // });
-      //}
-
-      
-    })
+    });
 
     return {
       loginForm,
@@ -222,7 +173,7 @@ export default {
       handleLogin,
       rememberMe,
       showDeviceDialog,
-      confirmDeviceDialog
+      confirmDeviceDialog,
     };
   },
 };
@@ -243,7 +194,7 @@ export default {
 
 .warning-text h3 {
   margin: 0 0 8px 0;
-  color: #E6A23C;
+  color: #e6a23c;
   font-size: 18px;
   text-align: center;
 }
@@ -261,7 +212,7 @@ export default {
 
 /* 自訂對話框樣式 */
 :deep(.custom-dialog .el-dialog__title) {
-  color: white !important;  
+  color: white !important;
 }
 
 /* 響應式設計 */
@@ -270,16 +221,14 @@ export default {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .warning-icon {
     align-self: center;
   }
 
-    /* 自訂對話框樣式 */
+  /* 自訂對話框樣式 */
   :deep(.custom-dialog .el-dialog__title) {
     color: white !important;
-    
   }
-
 }
 </style>

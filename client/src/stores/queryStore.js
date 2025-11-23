@@ -7,9 +7,11 @@ import { authService } from "../services/authService.js";
 import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
+import { useAuthStore } from "./authStore.js";
 
 export const useQueryStore = defineStore("query", () => {
   const configStore = useConfigStore();
+  const authStore = useAuthStore();
 
   // 狀態定義 - Pinia 會自動保持這些狀態
   const searchResults = ref([]);
@@ -273,6 +275,19 @@ export const useQueryStore = defineStore("query", () => {
     return {}; // 尚未實作
   };
 
+  const isMobile = () => {
+    if (
+      authStore.isMobileDevice() ||
+      authStore.detectDeviceType() === "mobile"
+    ) {
+      console.log("手機裝置");
+      return true;
+    } else {
+      console.log("非手機裝置");
+      return false;
+    }
+  };
+
   return {
     // 狀態
     searchResults,
@@ -291,6 +306,7 @@ export const useQueryStore = defineStore("query", () => {
     clearSearch,
     setSearchQuery,
     getFilteredData,
+    isMobile,
 
     // ✅ 新增分頁方法
     setCurrentPage: (page) => {

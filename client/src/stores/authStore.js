@@ -201,6 +201,55 @@ export const useAuthStore = defineStore("auth", () => {
     return authService.getCurrentDev();
   };
 
+  // 检测是否为移动设备
+  const isMobileDevice = () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const screenWidth = window.innerWidth;
+    const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+    const mobileKeywords = [
+      "android",
+      "iphone",
+      "ipad",
+      "ipod",
+      "blackberry",
+      "windows phone",
+      "webos",
+      "opera mini",
+      "iemobile",
+      "mobile",
+    ];
+
+    return (
+      mobileKeywords.some((keyword) => userAgent.includes(keyword)) ||
+      (screenWidth <= 768 && hasTouch)
+    );
+  };
+
+  const detectDeviceType = () => {
+    const userAgent = navigator.userAgent;
+    const screenWidth = window.innerWidth;
+
+    // 更精確的移動設備檢測
+    const isMobile = {
+      // User Agent 檢測
+      byUA: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        userAgent
+      ),
+      // 屏幕尺寸 + 觸控
+      byScreen:
+        screenWidth <= 768 &&
+        ("ontouchstart" in window || navigator.maxTouchPoints > 0),
+      // 特定移動特徵
+      byFeatures:
+        !!userAgent.match(/iPhone|Android/i) && "ontouchstart" in window,
+    };
+
+    return isMobile.byUA || isMobile.byScreen || isMobile.byFeatures
+      ? "mobile"
+      : "desktop";
+  };
+
   return {
     user,
     isAuthenticated,
@@ -216,6 +265,8 @@ export const useAuthStore = defineStore("auth", () => {
     resetInactivityTimer,
     getAuthMode,
     getDev,
+    isMobileDevice,
+    detectDeviceType,
   };
 });
 
