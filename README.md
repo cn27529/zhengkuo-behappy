@@ -19,7 +19,7 @@ tree -L 2 -I "node_modules|.git|dist" ./server > server-tree.txt
 git checkout zk-client-netlify
 
 ## 2. 重設為與 v0-13 相同的內容
-git reset --hard zk-client-v0-13
+git reset --hard zk-client-v1-1123
 
 ## 3. 推送覆蓋遠端（⚠️小心使用）
 git push origin zk-client-netlify --force
