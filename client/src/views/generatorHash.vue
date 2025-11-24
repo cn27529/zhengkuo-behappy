@@ -8,17 +8,23 @@
     <!-- 表单管理区域 -->
     <div class="form-header">
       <p>生成类似Git提交哈希的7位代码</p>
-        
     </div>
 
     <div class="form-content">
-
       <!-- 内容区域 -->
       <div class="form-section">
         <h2>顯示當前生成的哈希</h2>
         <div class="form-actions">
-          <button @click="handleGenerateHash" class="btn btn-primary">生成哈希</button>
-          <button style="display: none;" @click="copyHash(currentHash)" class="btn btn-copy">📋 複製</button>
+          <button @click="handleGenerateHash" class="btn btn-primary">
+            生成哈希
+          </button>
+          <button
+            style="display: none"
+            @click="copyHash(currentHash)"
+            class="btn btn-copy"
+          >
+            📋 複製
+          </button>
         </div>
         <div class="form-grid">
           <div class="form-group">
@@ -31,15 +37,27 @@
       <div class="form-section">
         <h2>顯示多個哈希</h2>
         <div class="form-actions">
-          <button @click="handleGenerateMultiple" class="btn btn-secondary">生成5個哈希</button>          
-          <button style="display: none;" @click="copyHash(hash)" class="btn btn-copy">📋 複製</button>
+          <button @click="handleGenerateMultiple" class="btn btn-secondary">
+            生成5個哈希
+          </button>
+          <button
+            style="display: none"
+            @click="copyHash(hash)"
+            class="btn btn-copy"
+          >
+            📋 複製
+          </button>
         </div>
         <div class="form-grid">
           <div class="form-group">
             <label></label>
-            <div v-for="(hash, index) in multipleHashes" :key="index" class="hash-item">
-                <span class="hash-index"></span>
-                <code class="hash-value">{{ hash }}</code>
+            <div
+              v-for="(hash, index) in multipleHashes"
+              :key="index"
+              class="hash-item"
+            >
+              <span class="hash-index"></span>
+              <code class="hash-value">{{ hash }}</code>
             </div>
           </div>
         </div>
@@ -74,51 +92,49 @@ console.log(hashes) // {{ multipleHashes.length ? `[${multipleHashes.map((hash) 
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { 
-  generateGitHash, 
-  generateMultipleHashes, 
+import { ref } from "vue";
+import {
+  generateGitHash,
+  generateMultipleHashes,
 } from "../utils/generateGitHash";
 
-const currentHash = ref('');
+const currentHash = ref("");
 const multipleHashes = ref([]);
 
 const handleGenerateHash = () => {
   currentHash.value = generateGitHash();
-  console.log('生成的哈希:', currentHash.value);
+  console.log("生成的哈希:", currentHash.value);
 };
 
 const handleGenerateMultiple = () => {
   multipleHashes.value = generateMultipleHashes(5);
-  console.log('生成的多個哈希:', multipleHashes.value);
+  console.log("生成的多個哈希:", multipleHashes.value);
 };
 
 const copyHash = async (hash) => {
   try {
     await navigator.clipboard.writeText(hash);
-    alert('已複製哈希: ' + hash);
+    alert("已複製哈希: " + hash);
   } catch (err) {
-    console.error('複製失敗:', err);
+    console.error("複製失敗:", err);
     // 降級方案
-    const textArea = document.createElement('textarea');
+    const textArea = document.createElement("textarea");
     textArea.value = hash;
     document.body.appendChild(textArea);
     textArea.select();
-    document.execCommand('copy');
+    document.execCommand("copy");
     document.body.removeChild(textArea);
-    alert('已複製: ' + hash);
+    alert("已複製: " + hash);
   }
 };
 </script>
 
 <style scoped>
-
 /* 增加粘性标题时的样式 */
 .form-section.sticky {
   position: fixed;
@@ -130,9 +146,6 @@ const copyHash = async (hash) => {
   transform: translateX(-50%);
   z-index: 1000;
 }
-
-
-
 
 .form-grid {
   display: grid;
@@ -298,10 +311,6 @@ const copyHash = async (hash) => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
-  }
-
   .form-section {
     padding: 1.5rem;
   }

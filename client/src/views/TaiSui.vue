@@ -320,12 +320,10 @@ export default {
       }
     };
 
-
     // 頁面加載時初始化
     onMounted(() => {
       console.log("🚀 TaiSui 組件掛載完成");
       //window.addEventListener('scroll', handleScroll);
-
     });
 
     onMounted(() => {
@@ -352,11 +350,9 @@ export default {
 //         header.classList.remove('sticky');
 //     }
 // });
-
 </script>
 
 <style scoped>
-
 /* 增加粘性标题时的样式 */
 .form-section.sticky {
   position: fixed;
@@ -533,10 +529,6 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
-  }
-
   .form-section {
     padding: 1.5rem;
   }

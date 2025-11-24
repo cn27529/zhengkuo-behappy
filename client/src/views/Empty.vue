@@ -6,9 +6,7 @@
     </div>
 
     <!-- 表单管理区域 -->
-    <div class="form-header">
-      
-    </div>
+    <div class="form-header"></div>
 
     <div class="form-content">
       <!-- 内容区域 -->
@@ -24,15 +22,9 @@
 
       <!-- 操作按钮 -->
       <div class="form-actions">
-        <button type="button" class="btn btn-secondary">
-          重置
-        </button>
-        <button type="button" class="btn btn-outline">
-          新增表单
-        </button>
-        <button type="button" class="btn btn-primary">
-          提交
-        </button>
+        <button type="button" class="btn btn-secondary">重置</button>
+        <button type="button" class="btn btn-outline">新增表单</button>
+        <button type="button" class="btn btn-primary">提交</button>
       </div>
     </div>
   </div>
@@ -51,9 +43,6 @@ export default {
 </script>
 
 <style scoped>
-
-
-
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -207,10 +196,6 @@ input:focus {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
-  }
-
   .form-section {
     padding: 1.5rem;
   }
