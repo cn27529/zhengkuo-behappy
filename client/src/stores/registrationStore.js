@@ -8,6 +8,7 @@ import { registrationService } from "../services/registrationService.js";
 import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
+import { id, lo } from "element-plus/es/locale/index.mjs";
 //import { useConnectionStore } from "./connectionStore.js"; // ✅ 新增
 
 export const useRegistrationStore = defineStore("registration", () => {
@@ -137,6 +138,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     };
 
     const initForm = {
+      id: -1,
       state: "creating",
       createdAt: createISOTime,
       createdUser: "",
@@ -859,20 +861,25 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // 載入 Mock 數據
-  const loadMockData = async () => {
+  const loadMockData = async (formId = null) => {
     try {
-      // 動態導入 mock 數據
-      //const mockModule = await import('../data/mock_registrations.json');
-      //const mockRegistrations = mockModule.default || mockModule;
-
       if (!mockRegistrations || mockRegistrations.length === 0) {
         console.error("Mock 數據為空或未找到");
         return false;
       }
 
+      console.log("formId 參數:", formId);
+
+      let mockData = null;
+
       // 隨機選擇一筆數據
       const randomIndex = Math.floor(Math.random() * mockRegistrations.length);
-      const mockData = mockRegistrations[randomIndex];
+      mockData = mockRegistrations[randomIndex];
+
+      // 如果提供了 formId，則嘗試找到對應的數據
+      if (formId) {
+        mockData = mockRegistrations.find((item) => item.formId === formId);
+      }
 
       console.log("載入 Mock 數據:", mockData);
 
@@ -917,6 +924,8 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 設置表單狀態為編輯中
       currentForm.state = "editing";
 
+      //currentForm.formId = mockData.formId || "";
+
       // 觸發響應式更新
       formArray.value[currentFormIndex.value] = JSON.parse(
         JSON.stringify(currentForm)
@@ -935,8 +944,20 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // 统一的表单加载方法
-  const loadFormData = async (formId, action = "view") => {
+  const loadFormData = async (formId, id, action = "view") => {
     try {
+      //console.log("參數調試：", { formId, action, mode: baseService.mode });
+
+      // 不是 directus 模式下，載入 Mock 數據
+      if (baseService.mode !== "directus") {
+        console.warn(
+          "表單載入成功！⚠️ 當前模式不是 directus，無法從服務器加載表單"
+        );
+        loadMockData(formId);
+        setupFormSync();
+        return true;
+      }
+
       console.log(
         `🔄 載入表單進行${action === "edit" ? "編輯" : "查看"}:`,
         formId
@@ -946,23 +967,22 @@ export const useRegistrationStore = defineStore("registration", () => {
       const localForm = formArray.value.find((form) => form.formId === formId);
       if (localForm) {
         console.log("📁 從本地載入表單");
-        formArray.value = [localForm];
+        formArray.value[currentFormIndex.value] = JSON.parse(
+          JSON.stringify(localForm)
+        );
         currentFormIndex.value = 0;
         loadFormToRegistration(localForm);
-
         // 根据 action 设置状态
         if (action === "edit") {
           registrationForm.value.state = "editing";
           setupFormSync();
         }
-
         return true;
       }
 
-      // 如果本地没有，从服务器加载
-      if (baseService.mode !== "directus") {
-        console.warn("⚠️ 當前模式不是 directus，無法從服務器加載表單");
-        return false;
+      // 如果本地没有，再从服务器加载
+      if (!localForm) {
+        console.log("📡 從服務器載入表單");
       }
 
       // 检查连接
@@ -973,23 +993,34 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
 
       // 从服务器获取表单数据
-      const result = await registrationService.getRegistrationById(formId);
+      const result = await registrationService.getRegistrationById(id);
+
+      //console.log("服務器返回的表單數據:", result);
+
       if (result.success && result.data) {
         const formData = result.data;
 
         // 根据 action 设置表单状态
         if (action === "edit") {
           formData.state = "editing";
-          formData.updatedAt = new Date().toISOString();
-          setupFormSync();
         } else {
           formData.state = "submitted"; // 查看模式设置为已提交（只读）
         }
 
         // 更新到store
-        formArray.value = [formData];
+        // 觸發響應式更新
+        formArray.value[currentFormIndex.value] = JSON.parse(
+          JSON.stringify(formData)
+        );
         currentFormIndex.value = 0;
-        loadFormToRegistration(formData);
+
+        console.log("📁 從服務器載入的表單數據:", formData);
+        // 更新當前表單數據
+        loadFormToRegistration(formArray.value[currentFormIndex.value]);
+        if (action === "edit") {
+          registrationForm.value.state = "editing";
+          setupFormSync();
+        }
 
         console.log(
           `✅ 表單載入成功（${action === "edit" ? "編輯" : "查看"}模式）`
@@ -1002,6 +1033,85 @@ export const useRegistrationStore = defineStore("registration", () => {
     } catch (error) {
       console.error("❌ 載入表單錯誤:", error);
       return false;
+    }
+  };
+
+  // 更新表单
+  const updateFormData = async () => {
+    if (!isFormValid.value) {
+      throw new Error("表單驗證失敗，請檢查所有必填欄位");
+    }
+
+    if (baseService.mode !== "directus") {
+      console.warn("⚠️ 當前模式不是 directus，無法更新數據");
+      return {
+        success: true,
+        message: "表單更新成功！⚠️ 當前模式不是 directus，無法更新服務器數據",
+        data: registrationForm.value,
+      };
+    }
+
+    try {
+      const formId = registrationForm.value.formId;
+      const id = registrationForm.value.id;
+
+      if (!formId) {
+        throw new Error("表單formId不存在，無法更新");
+      }
+
+      if (!id) {
+        throw new Error("記錄id不存在，無法更新");
+      }
+
+      // 更新时间
+      registrationForm.value.updatedAt = new Date().toISOString();
+      registrationForm.value.updatedUser = getCurrentUser();
+      registrationForm.value.state = "updated"; // 更新后状态改为已提交
+
+      // 检查连接
+      const healthCheck = await baseService.checkConnection();
+      if (!healthCheck.online) {
+        const message = `❌ Directus 服務連線失敗，無法更新表單: ${healthCheck.message}`;
+        console.error(message);
+        return {
+          success: false,
+          online: false,
+          message: message,
+          data: null,
+        };
+      }
+
+      console.log(`🔄 開始更新表單: formId=${formId}, id=${id}`);
+
+      // 更新报名的表单
+      const result = await registrationService.updateFormData(
+        id,
+        registrationForm.value
+      );
+
+      if (result.success) {
+        console.log("✅ 表單更新成功！");
+
+        // 更新本地数据
+        if (formArray.value.length > 0 && currentFormIndex.value >= 0) {
+          formArray.value[currentFormIndex.value] = JSON.parse(
+            JSON.stringify(registrationForm.value)
+          );
+        }
+
+        return {
+          success: true,
+          message: "表單更新成功！",
+          formId: formId,
+          data: result.data,
+        };
+      } else {
+        console.error("❌ 表單更新失敗:", result.message);
+        return { ...result };
+      }
+    } catch (error) {
+      console.error("❌ 表單更新錯誤:", error);
+      throw error;
     }
   };
 
@@ -1049,5 +1159,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     loadFormToRegistration, // 🆕 供外部使用
     loadMockData, // 🆕 供外部使用
     loadFormData,
+    updateFormData,
   };
 });

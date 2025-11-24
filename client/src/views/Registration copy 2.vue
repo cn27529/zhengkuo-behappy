@@ -560,48 +560,43 @@ export default {
     const isEditMode = ref(false);
     const isViewMode = ref(false);
     const isCreateMode = ref(false);
-    const pageTitle = ref("消災超度登記");
 
     onMounted(async () => {
       await registrationStore.loadConfig();
 
-      // 检查路由参数
-      const editMode = route.query.action === "edit" ? true : false;
-      const viewMode = route.query.action === "view" ? true : false;
-      const actionMode = route.query.action;
-      const formId = route.query.formId;
-      const id = route.query.id;
+      // // 检查路由参数
+      // const editMode = route.query.action === "edit" ? true : false;
+      // const viewMode = route.query.action === "view" ? true : false;
+      // const formId = route.query.formId;
+      // const id = route.query.id;
+      // const pageTitle = ref("消災超度登記");
 
-      if (editMode && formId && id) {
-        // 编辑模式
-        isEditMode.value = true;
-        pageTitle.value = "編輯表單";
-        //await loadFormData(formId);
-      } else if (viewMode && formId && id) {
-        // 查看模式
-        isViewMode.value = true;
-        pageTitle.value = "查看表單";
-      } else {
-        isCreateMode.value = true;
-      }
+      // console.log("路由參數調試信息:", {
+      //   editMode,
+      //   viewMode,
+      //   formId,
+      //   id,
+      // });
 
-      console.log("路由參數調試信息:", {
-        editMode,
-        viewMode,
-        formId,
-        id,
-        pageTitle: pageTitle.value,
-      });
+      // if (editMode && formId && id) {
+      //   // 编辑模式
+      //   isEditMode.value = true;
+      //   pageTitle.value = "編輯表單";
+      //   await loadFormData(formId);
+      // } else if (viewMode && formId && id) {
+      //   // 查看模式
+      //   isViewMode.value = true;
+      //   pageTitle.value = "查看表單";
+      //   await loadFormForView(formId);
+      // } else {
+      //   isCreateMode.value = true;
+      // }
 
-      if (editMode || viewMode) {
-        await registrationStore.loadFormData(formId, id, actionMode);
-      }
-      if (isCreateMode.value) {
-        // 啟動自動同步機制
-        registrationStore.initializeFormArray();
-        console.log("[v0] 表單同步已啟動");
-      }
+      // 创建模式
+      registrationStore.initializeFormArray();
+      console.log("[v0] 表單同步已啟動 - 創建模式");
 
+      document.title = pageTitle.value;
       isDev.value = authService.getCurrentDev();
     });
 
@@ -901,7 +896,6 @@ export default {
       formSummaries,
       isDev,
       pageTitle,
-
       // store 中只暴露需要的屬性和方法，不要使用展開運算符
       registrationForm: registrationStore.registrationForm,
       formConfig: configStore.formConfig,

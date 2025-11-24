@@ -161,7 +161,9 @@ export class RegistrationService {
 
     try {
       const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.registrations)}/${id}?fields=*`,
+        `${getApiUrl(
+          baseService.apiEndpoints.itemsRegistration
+        )}/${id}?fields=*`,
         {
           method: "GET",
           headers: await this.getAuthHeaders(),

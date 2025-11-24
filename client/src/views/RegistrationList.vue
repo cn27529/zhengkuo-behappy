@@ -348,6 +348,7 @@ export default {
         query: {
           action: action, // 'edit' 或 'view'
           formId: item.formId,
+          id: item.id,
         },
       });
     };
