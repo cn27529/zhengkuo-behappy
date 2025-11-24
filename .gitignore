@@ -146,3 +146,5 @@ client拷貝/*
 server拷貝/*
 
 .package-lock.json
+
+.vscode/*
