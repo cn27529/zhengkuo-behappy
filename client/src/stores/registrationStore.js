@@ -934,6 +934,77 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // 统一的表单加载方法
+  const loadFormData = async (formId, action = "view") => {
+    try {
+      console.log(
+        `🔄 載入表單進行${action === "edit" ? "編輯" : "查看"}:`,
+        formId
+      );
+
+      // 先检查本地是否有该表单
+      const localForm = formArray.value.find((form) => form.formId === formId);
+      if (localForm) {
+        console.log("📁 從本地載入表單");
+        formArray.value = [localForm];
+        currentFormIndex.value = 0;
+        loadFormToRegistration(localForm);
+
+        // 根据 action 设置状态
+        if (action === "edit") {
+          registrationForm.value.state = "editing";
+          setupFormSync();
+        }
+
+        return true;
+      }
+
+      // 如果本地没有，从服务器加载
+      if (baseService.mode !== "directus") {
+        console.warn("⚠️ 當前模式不是 directus，無法從服務器加載表單");
+        return false;
+      }
+
+      // 检查连接
+      const healthCheck = await baseService.checkConnection();
+      if (!healthCheck.online) {
+        console.error("❌ Directus 服務連線失敗");
+        return false;
+      }
+
+      // 从服务器获取表单数据
+      const result = await registrationService.getRegistrationById(formId);
+      if (result.success && result.data) {
+        const formData = result.data;
+
+        // 根据 action 设置表单状态
+        if (action === "edit") {
+          formData.state = "editing";
+          formData.updatedAt = new Date().toISOString();
+          setupFormSync();
+        } else {
+          formData.state = "submitted"; // 查看模式设置为已提交（只读）
+        }
+
+        // 更新到store
+        formArray.value = [formData];
+        currentFormIndex.value = 0;
+        loadFormToRegistration(formData);
+
+        console.log(
+          `✅ 表單載入成功（${action === "edit" ? "編輯" : "查看"}模式）`
+        );
+        return true;
+      } else {
+        console.error("❌ 從服務器載入表單失敗:", result.message);
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ 載入表單錯誤:", error);
+      return false;
+    }
+  };
+
   return {
     registrationForm,
     // 配置數據（響應式）
@@ -977,5 +1048,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     setupFormSync, // 🆕 供外部使用
     loadFormToRegistration, // 🆕 供外部使用
     loadMockData, // 🆕 供外部使用
+    loadFormData,
   };
 });
