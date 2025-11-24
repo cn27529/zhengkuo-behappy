@@ -2,7 +2,7 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>消災超度登記查詢</h2>
+      <h2>登記查詢</h2>
       <p class="page-subtitle" style="display: none">
         查詢已提交的消災超度報名資料
       </p>
@@ -141,15 +141,17 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="100" fixed="right" align="center">
+        <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
+            <el-tooltip content="編輯表單" placement="top">
+              <el-button circle @click="handleEdit(row)" type="primary">
+                📝
+              </el-button>
+            </el-tooltip>
             <el-tooltip content="列印表單" placement="top">
-              <el-button
-                type="primary"
-                :icon="Printer"
-                circle
-                @click="handlePrintPage(row)"
-              />
+              <el-button type="success" circle @click="handlePrint(row)"
+                >🖨️</el-button
+              >
             </el-tooltip>
           </template>
         </el-table-column>
@@ -215,173 +217,6 @@
         <el-button type="primary" @click="handleSearch">查詢所有資料</el-button>
       </el-empty>
     </div>
-
-    <!-- 詳情資訊彈窗 -->
-    <el-dialog
-      v-model="showModal"
-      :title="`表單詳情資訊 - ${selectedItem?.contact?.name || ''}`"
-      width="70%"
-      class="modal-header"
-      :close-on-click-modal="false"
-    >
-      <div class="modal-body" v-if="selectedItem">
-        <!-- 詳細資訊內容 -->
-        <div style="display: none" class="detail-section">
-          <h4>基本資訊</h4>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <label>表單名稱:</label>
-              <span>{{ selectedItem.formName }}</span>
-            </div>
-            <div class="detail-item">
-              <label>狀態:</label>
-              <span class="status-badge" :class="selectedItem.state">
-                {{ getStatusText(selectedItem.state) }}
-              </span>
-            </div>
-            <div class="detail-item">
-              <label>建立時間:</label>
-              <span>{{ formatDate(selectedItem.createdAt) }}</span>
-            </div>
-            <div class="detail-item">
-              <label>更新時間:</label>
-              <span>{{ formatDate(selectedItem.updatedAt) }}</span>
-            </div>
-            <div class="detail-item">
-              <label>來源:</label>
-              <span>{{ selectedItem.formSource || "-" }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>聯絡人資訊</h4>
-          <div class="detail-grid">
-            <div class="detail-item">
-              <label>姓名:</label>
-              <span>{{ selectedItem.contact?.name || "-" }}</span>
-            </div>
-            <div class="detail-item">
-              <label>手機:</label>
-              <span>{{ selectedItem.contact?.mobile || "-" }}</span>
-            </div>
-            <div class="detail-item">
-              <label>電話:</label>
-              <span>{{ selectedItem.contact?.phone || "-" }}</span>
-            </div>
-            <div class="detail-item">
-              <label>關係:</label>
-              <span>
-                {{ selectedItem.contact?.relationship || "-" }}
-                <span v-if="selectedItem.contact?.otherRelationship">
-                  ({{ selectedItem.contact.otherRelationship }})
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>消災祈福</h4>
-          <div class="detail-item full-width">
-            <label>地址:</label>
-            <span>{{ selectedItem.blessing?.address || "-" }}</span>
-          </div>
-          <div class="detail-item full-width">
-            <label
-              >消災人員 ({{
-                selectedItem.blessing?.persons?.length || 0
-              }}
-              位):</label
-            >
-            <div class="persons-list">
-              <div
-                v-for="person in selectedItem.blessing?.persons || []"
-                :key="person.id"
-                class="person-tag"
-                :class="{ 'household-head-tag': person.isHouseholdHead }"
-              >
-                {{ person.name || "未填寫" }}
-                <span v-if="person.zodiac" class="zodiac"
-                  >({{ person.zodiac }})</span
-                >
-                <span v-if="person.isHouseholdHead" class="household-head"
-                  >戶長</span
-                >
-                <span v-if="person.notes" class="person-notes">{{
-                  person.notes
-                }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>超度祈福</h4>
-          <div class="detail-item full-width">
-            <label>地址:</label>
-            <span>{{ selectedItem.salvation?.address || "-" }}</span>
-          </div>
-          <div class="detail-item full-width">
-            <label
-              >祖先 ({{
-                selectedItem.salvation?.ancestors?.length || 0
-              }}
-              位):</label
-            >
-            <div class="persons-list">
-              <div
-                v-for="ancestor in selectedItem.salvation?.ancestors || []"
-                :key="ancestor.id"
-                class="person-tag ancestor-tag"
-              >
-                {{ ancestor.surname || "未填寫" }}氏歷代祖先
-                <span v-if="ancestor.notes" class="ancestor-notes"
-                  >({{ ancestor.notes }})</span
-                >
-              </div>
-            </div>
-          </div>
-          <div class="detail-item full-width">
-            <label
-              >陽上人 ({{
-                selectedItem.salvation?.survivors?.length || 0
-              }}
-              位):</label
-            >
-            <div class="persons-list">
-              <div
-                v-for="survivor in selectedItem.salvation?.survivors || []"
-                :key="survivor.id"
-                class="person-tag survivor-tag"
-              >
-                {{ survivor.name || "未填寫" }}
-                <span v-if="survivor.zodiac" class="zodiac"
-                  >({{ survivor.zodiac }})</span
-                >
-                <span v-if="survivor.notes" class="survivor-notes">{{
-                  survivor.notes
-                }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeModal">關閉</el-button>
-          <el-button
-            type="primary"
-            :icon="Printer"
-            @click="handlePrintPage(selectedItem)"
-            v-if="selectedItem"
-          >
-            列印表單
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -410,10 +245,6 @@ export default {
       currentPage,
       pageSize,
     } = storeToRefs(queryStore);
-
-    // 本地狀態
-    const selectedItem = ref(null);
-    const showModal = ref(false);
 
     // 計算屬性 - 添加防護檢查
     const totalItems = computed(() => {
@@ -501,17 +332,28 @@ export default {
       }
     };
 
-    const viewDetails = (item) => {
-      selectedItem.value = item;
-      showModal.value = true;
+    // 編輯表單
+    const handleEdit = (item) => {
+      handleActionToRegistration(item, "edit");
     };
 
-    const closeModal = () => {
-      showModal.value = false;
-      selectedItem.value = null;
+    // 查看詳情
+    const handleView = (item) => {
+      handleActionToRegistration(item, "view");
     };
 
-    const handlePrintPage = (item) => {
+    const handleActionToRegistration = (item, action) => {
+      router.push({
+        path: "/registration",
+        query: {
+          action: action, // 'edit' 或 'view'
+          formId: item.formId,
+        },
+      });
+    };
+
+    // 列印表單
+    const handlePrint = (item) => {
       try {
         const formId = item.formId;
         const printData = JSON.stringify(item);
@@ -591,10 +433,6 @@ export default {
       currentPage,
       pageSize,
 
-      // 本地狀態
-      selectedItem,
-      showModal,
-
       // 計算屬性
       totalItems,
       paginatedResults,
@@ -606,36 +444,21 @@ export default {
       handleClear,
       handleSizeChange,
       handleCurrentChange,
-      viewDetails,
-      closeModal,
-      handlePrintPage,
+      handlePrint,
+      handleEdit,
+      handleView,
       getStatusText,
       formatDate,
       truncateAddress,
 
       // Icons
       Search,
-      Printer,
     };
   },
 };
 </script>
 
 <style scoped>
-/* 主要容器樣式 */
-.main-content {
-  padding: 1rem;
-}
-
-.page-header {
-  margin-bottom: 1.5rem;
-}
-
-.page-header h2 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
-}
-
 /* 搜尋區域 */
 .search-section {
   background: white;
@@ -831,10 +654,6 @@ export default {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .main-content {
-    padding: 0.5rem;
-  }
-
   .search-section {
     padding: 1rem;
   }
