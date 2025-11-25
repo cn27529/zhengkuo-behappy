@@ -4,6 +4,12 @@
     <div class="page-header">
       <h2>{{ pageTitle }}</h2>
     </div>
+    <!-- 返回按鈕 -->
+    <div class="print-controls" v-if="isEditMode || isViewMode">
+      <div class="controls-left">
+        <button @click="handleBack" class="back-btn">← 返回列表</button>
+      </div>
+    </div>
 
     <!-- 在 .form-header div 內新增表單切換區塊 -->
     <div class="form-header">
@@ -11,31 +17,37 @@
       <div
         v-if="isDev"
         style="
-          background: #f5f5f5;
+          background: #000000;
+          color: #fff000;
           padding: 10px;
           margin-top: 20px;
           font-size: 12px;
         "
       >
         <h4>調試信息: {{ isDev }}</h4>
-        <p>表單陣列長度: {{ formArray.length }}</p>
-        <p>當前索引: {{ currentFormIndex }}</p>
+        <p>
+          表單陣列長度: {{ formArray.length }}, 當前索引: {{ currentFormIndex }}
+        </p>
         <p>
           <span v-for="(form, idx) in formArray" :key="idx">
             <hr />
             第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{
               form.formId
-            }}, contact={{ JSON.stringify(form.contact) }}, blessing={{
-              JSON.stringify(form.blessing)
-            }}]
+            }}, formSource={{ form.formSource }}, id={{ form.id }}, contact={{
+              JSON.stringify(form.contact)
+            }}, blessing={{ JSON.stringify(form.blessing) }}]
           </span>
         </p>
         <!-- 添加 Mock 按钮 -->
-        <div style="margin: 10px 0">
+        <div style="margin: 0 auto">
           <button
             @click="loadMockData"
             class="btn btn-outline btn-sm"
-            style="margin-right: 10px"
+            style="
+              margin-right: 10px;
+              color: #fff000;
+              border: #fff000 1px solid;
+            "
           >
             🎲 載入 Mock 數據
           </button>
@@ -509,7 +521,27 @@
 
       <!-- 修正後的提交按鈕區塊 -->
       <div class="form-actions">
+        <!-- 编辑模式：显示保存按钮 -->
         <button
+          v-if="isEditMode || isViewMode"
+          type="button"
+          class="btn btn-outline"
+          @click="handleBack"
+        >
+          返回列表
+        </button>
+        <button
+          v-if="isEditMode"
+          type="button"
+          class="btn btn-primary"
+          @click="handleUpdateForm"
+          :disabled="submitting"
+        >
+          {{ submitting ? "保存中..." : "保存修改" }}
+        </button>
+
+        <button
+          v-if="isCreateMode"
           type="button"
           class="btn btn-primary"
           @click="submitForm"
@@ -519,6 +551,7 @@
         </button>
 
         <button
+          v-if="isCreateMode"
           type="button"
           class="btn btn-outline capsule-btn"
           @click="handleAddNewForm"
@@ -557,46 +590,56 @@ export default {
     const route = useRoute();
 
     // 新增：模式判断
-    const isEditMode = ref(false);
-    const isViewMode = ref(false);
-    const isCreateMode = ref(false);
     const pageTitle = ref("消災超度登記");
+    const isCreateMode = computed(() =>
+      route.query.action === "create" ? true : false
+    );
+    const isViewMode = computed(() =>
+      route.query.action === "view" ? true : false
+    );
+    const isEditMode = computed(() =>
+      route.query.action === "edit" ? true : false
+    );
+    const actionMode = computed(() => route.query.action);
+    const formId = computed(() => route.query.formId);
+    const id = computed(() => route.query.id);
+    const actionResult = ref({});
+    // 新增：模式判断
+    const handleActionResult = () => {
+      if (isEditMode.value && formId.value && id.value) {
+        // 编辑模式
+        pageTitle.value = "編輯表單";
+      } else if (isViewMode.value && formId.value && id.value) {
+        // 查看模式
+        pageTitle.value = "查看表單";
+      } else if (isCreateMode.value) {
+        pageTitle.value = "消災超度登記";
+      }
+
+      const result = {
+        editMode: isEditMode.value,
+        viewMode: isViewMode.value,
+        createMode: isCreateMode.value,
+        formId: formId.value,
+        id: id.value,
+        pageTitle: pageTitle.value,
+      };
+      console.log("路由參數調試信息:", result);
+      return result;
+    };
 
     onMounted(async () => {
       await registrationStore.loadConfig();
 
-      // 检查路由参数
-      const editMode = route.query.action === "edit" ? true : false;
-      const viewMode = route.query.action === "view" ? true : false;
-      const actionMode = route.query.action;
-      const formId = route.query.formId;
-      const id = route.query.id;
-
-      if (editMode && formId && id) {
-        // 编辑模式
-        isEditMode.value = true;
-        pageTitle.value = "編輯表單";
-        //await loadFormData(formId);
-      } else if (viewMode && formId && id) {
-        // 查看模式
-        isViewMode.value = true;
-        pageTitle.value = "查看表單";
-      } else {
-        isCreateMode.value = true;
+      actionResult.value = handleActionResult();
+      if (actionResult.value.editMode || actionResult.value.viewMode) {
+        await registrationStore.loadFormData(
+          formId.value,
+          id.value,
+          actionMode.value
+        );
       }
-
-      console.log("路由參數調試信息:", {
-        editMode,
-        viewMode,
-        formId,
-        id,
-        pageTitle: pageTitle.value,
-      });
-
-      if (editMode || viewMode) {
-        await registrationStore.loadFormData(formId, id, actionMode);
-      }
-      if (isCreateMode.value) {
+      if (actionResult.createMode) {
         // 啟動自動同步機制
         registrationStore.initializeFormArray();
         console.log("[v0] 表單同步已啟動");
@@ -738,6 +781,51 @@ export default {
       } else {
         ElMessage.error("新增表單失敗");
       }
+    };
+
+    const handleBack = () => {
+      // 返回上一頁或指定頁面
+      router.back();
+      // 或者使用 router.push('/registration') 導航到特定頁面
+    };
+
+    // 更新表单
+    const handleUpdateForm = async () => {
+      console.log("更新表單調試信息:");
+      console.log("當前表單陣列:", formArray.value);
+      console.log("當前表單索引:", currentFormIndex.value);
+
+      const details = registrationStore.validationDetails;
+      if (details && !details.valid) {
+        ElMessage.error(details.messages[0] || "表單驗證失敗");
+        return;
+      }
+
+      submitting.value = true;
+      try {
+        const result = await registrationStore.updateFormData();
+        if (result.success) {
+          ElMessage.success(result.message);
+          // 更新成功后返回列表
+          setTimeout(() => {
+            goBack();
+          }, 1500);
+        } else {
+          ElMessage.error(result.message);
+        }
+      } catch (error) {
+        ElMessage.error("更新失敗: " + error.message);
+      } finally {
+        submitting.value = false;
+      }
+    };
+
+    // 包装操作方法，在查看模式下禁用
+    const createActionWrapper = (storeMethod) => {
+      return (...args) => {
+        if (isViewMode.value) return;
+        return storeMethod(...args);
+      };
     };
 
     // 提交表單處理
@@ -890,6 +978,8 @@ export default {
       handleSwitchForm,
       handleDeleteForm,
       handleDuplicateForm,
+      handleBack,
+      handleUpdateForm,
       getStatusText,
       loadMockData, // 載入測試 Mock 數據，進行快速測試
 
@@ -901,6 +991,13 @@ export default {
       formSummaries,
       isDev,
       pageTitle,
+      isEditMode,
+      isViewMode,
+      isCreateMode,
+      actionMode,
+      formId,
+      id,
+      actionResult,
 
       // store 中只暴露需要的屬性和方法，不要使用展開運算符
       registrationForm: registrationStore.registrationForm,
@@ -936,6 +1033,43 @@ export default {
 </script>
 
 <style scoped>
+.print-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  /* 
+  padding: 15px;
+  background: #f5f5f5; */
+  border-radius: 5px;
+  gap: 10px;
+}
+
+.controls-left {
+  display: flex;
+  align-items: center;
+}
+
+.controls-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-btn {
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  background: white;
+  color: #333;
+}
+
+.back-btn:hover {
+  background: #f0f0f0;
+}
+
 .ancestors-section {
   margin-bottom: 20px;
 }
@@ -1332,6 +1466,22 @@ select:focus {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
+  .print-controls {
+    /* flex-direction: column;
+    gap: 10px; */
+  }
+
+  .controls-left,
+  .controls-right {
+    /* width: 100%; */
+    justify-content: center;
+  }
+
+  .print-tips {
+    text-align: center;
+    order: -1;
+  }
+
   .registration-container {
     padding: 1rem;
   }
