@@ -50,14 +50,14 @@
       v-if="isDev"
       class="debug-info"
       style="
-        background: #f8f9fa;
+        background: #000000;
+        color: #fff000;
         padding: 10px;
-        margin: 10px 0;
-        border-radius: 4px;
+        margin-top: 20px;
         font-size: 12px;
       "
     >
-      <div>調試信息:</div>
+      <h4>調試信息: {{ isDev }}</h4>
       <div>searchResults.length: {{ searchResults.length }}</div>
       <div>paginatedResults.length: {{ paginatedResults.length }}</div>
       <div>hasSearched: {{ hasSearched }}</div>
@@ -87,7 +87,12 @@
           <template #default="{ row }">
             <div>
               <div class="form-name">{{ row.formId }}</div>
-              <el-tag v-if="row.formSource" size="small" type="info" class="form-source-tag">
+              <el-tag
+                v-if="row.formSource"
+                size="small"
+                type="info"
+                class="form-source-tag"
+              >
                 {{ row.formSource }}
               </el-tag>
             </div>
