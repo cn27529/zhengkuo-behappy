@@ -15,7 +15,8 @@
           <ul>
             <li>
               <router-link to="/logout" v-if="showLogoutLink"
-                >退出登录</router-link>
+                >退出登录</router-link
+              >
             </li>
           </ul>
         </nav>
@@ -23,46 +24,46 @@
     </header>
     <!-- 父内容区 -->
     <div class="app-content">
-        <!-- 侧边菜单栏 -->
-        <aside
-          v-if="layoutReady && showSidebar"
-          :class="[
-            'sidebar',
-            {
-              'sidebar-left': menuPosition === 'left',
-              'sidebar-right': menuPosition === 'right',
-            },
-          ]"
-        >
-          <div class="menu-toggle" style="display: none">
-            <label>菜单位置：</label>
-            <select v-model="menuPosition" class="position-select">
-              <option value="left">左侧</option>
-              <option value="right">右侧</option>
-            </select>
-          </div>
+      <!-- 侧边菜单栏 -->
+      <aside
+        v-if="layoutReady && showSidebar"
+        :class="[
+          'sidebar',
+          {
+            'sidebar-left': menuPosition === 'left',
+            'sidebar-right': menuPosition === 'right',
+          },
+        ]"
+      >
+        <div class="menu-toggle" style="display: none">
+          <label>菜单位置：</label>
+          <select v-model="menuPosition" class="position-select">
+            <option value="left">左侧</option>
+            <option value="right">右侧</option>
+          </select>
+        </div>
 
-          <nav class="sidebar-nav">
-            <ul>
-              <li v-for="menuItem in availableMenuItems" :key="menuItem.id">
-                <router-link
-                  :to="menuItem.path"
-                  :class="['nav-link', { active: isMenuActive(menuItem) }]"
-                  @click="handleMenuClick(menuItem)"
-                >
-                  <span class="nav-icon">{{ menuItem.icon }}</span>
-                  <span class="nav-text">{{ menuItem.name }}</span>
-                  <!-- <span v-if="isMenuActive(menuItem)" class="nav-icon">👌</span> -->
-                </router-link>
-              </li>
-            </ul>
-          </nav>
-        </aside>
-        <!-- 主要内容区 -->
-        <main>
-          <router-view></router-view>
-        </main>
-      </div>
+        <nav class="sidebar-nav">
+          <ul>
+            <li v-for="menuItem in availableMenuItems" :key="menuItem.id">
+              <router-link
+                :to="menuItem.path"
+                :class="['nav-link', { active: isMenuActive(menuItem) }]"
+                @click="handleMenuClick(menuItem)"
+              >
+                <span class="nav-icon">{{ menuItem.icon }}</span>
+                <span class="nav-text">{{ menuItem.name }}</span>
+                <!-- <span v-if="isMenuActive(menuItem)" class="nav-icon">👌</span> -->
+              </router-link>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <!-- 主要内容区 -->
+      <main>
+        <router-view></router-view>
+      </main>
+    </div>
     <!-- 底部-->
     <footer v-if="layoutReady && showFooter">
       <p>© 2025 {{ appTitle }} | 弘扬佛法、服务众生</p>
@@ -140,7 +141,25 @@ export default {
     };
 
     const handleMenuClick = (menuItem) => {
-      menuStore.navigateToMenu(menuItem);
+      if (menuItem.path === "/registration") {
+        // 如果是 Registration 頁面，添加時間戳確保路由變化
+        router.push({
+          path: menuItem.path,
+          query: {
+            action: "create",
+            t: Date.now(), // 添加時間戳避免路由緩存
+          },
+        });
+
+        setTimeout(() => {
+          window.location.href = `${
+            menuItem.path
+          }?action=create&t=${Date.now()}`;
+        }, 100);
+      } else {
+        router.push(menuItem.path);
+      }
+      menuStore.setActiveMenu(menuItem.id);
     };
 
     // 计算顶部导航栏、侧边菜单栏、底部的预期可见性（不直接改变 ref，供 updateLayoutVisibility 使用）
@@ -191,7 +210,6 @@ export default {
 
     // 在组件挂载前初始化认证状态
     const initializeApp = async () => {
-      
       // // 确保认证状态已恢复
       // if (sessionStorage.getItem("auth-user")) {
       //   authStore.initializeAuth();
@@ -215,18 +233,23 @@ export default {
     };
 
     // 监听 authStore.user 的变化
-    watch(() => authStore.user, (newUser) => {
-      userDisplayName.value = newUser ? newUser.displayName : "訪客"
-    }, { immediate: true })
+    watch(
+      () => authStore.user,
+      (newUser) => {
+        userDisplayName.value = newUser ? newUser.displayName : "訪客";
+      },
+      { immediate: true }
+    );
 
     onMounted(() => {
-
       initializeApp();
       // 初始化菜单
       menuStore.initializeActiveMenu();
 
       // 修改用户昵称的计算方式
-      userDisplayName.value = authStore.user ? authStore.user.displayName : "訪客";
+      userDisplayName.value = authStore.user
+        ? authStore.user.displayName
+        : "訪客";
 
       // 初始載入時，在 nextTick 後設定 header/sidebar/footer
       updateLayoutVisibility();
@@ -263,7 +286,6 @@ export default {
 //         header.classList.remove('sticky');
 //     }
 // });
-
 </script>
 
 <style>
@@ -418,7 +440,6 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  
 }
 
 /* 滚动条样式 */
@@ -442,8 +463,6 @@ export default {
 .main-content::-webkit-scrollbar {
   width: 6px;
 }
-
-
 
 /* 保持原有的样式不变，只添加active状态的样式增强 */
 .nav-link.active {
@@ -472,7 +491,6 @@ export default {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-
   .app-content {
     flex-direction: column;
   }
@@ -482,8 +500,6 @@ export default {
     order: 1;
     max-height: 300px;
   }
-
-  
 
   .stats-grid {
     grid-template-columns: 1fr;
@@ -508,12 +524,12 @@ export default {
   .nav-link.active {
     transform: translateY(2px);
   }
-  
+
   .dialog-content {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .warning-icon {
     align-self: center;
   }
@@ -521,7 +537,6 @@ export default {
   /* 自訂對話框樣式 */
   :deep(.custom-dialog .el-dialog__title) {
     color: white !important;
-    
   }
 
   /* 移动端按钮样式调整 */
@@ -530,5 +545,4 @@ export default {
     font-size: 16px;
   }
 }
-
 </style>
