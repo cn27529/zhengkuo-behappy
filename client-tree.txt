@@ -21,7 +21,9 @@
 │   │   └── supabase.js
 │   ├── data
 │   │   ├── auth_user.json
+│   │   ├── deepseek_json_20251124_746596.json
 │   │   ├── mock2.json
+│   │   ├── mock_registrations copy.json
 │   │   ├── mock_registrations.json
 │   │   ├── mock_registrations.md
 │   │   └── submit-success.json
@@ -62,7 +64,10 @@
 │       ├── NewTab.vue
 │       ├── Placeholder.vue
 │       ├── PrintRegistration.vue
+│       ├── Registration copy 2.vue
+│       ├── Registration copy.vue
 │       ├── Registration.vue
+│       ├── RegistrationList copy.vue
 │       ├── RegistrationList.vue
 │       ├── SupabaseLogin.vue
 │       ├── TaiSui.vue
@@ -70,4 +75,4 @@
 │       └── generatorHash.vue
 └── vite.config.js
 
-12 directories, 59 files
+12 directories, 64 files
