@@ -1084,7 +1084,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       console.log(`🔄 開始更新表單: formId=${formId}, id=${id}`);
 
       // 更新报名的表单
-      const result = await registrationService.updateFormData(
+      const result = await registrationService.updateRegistration(
         id,
         registrationForm.value
       );
