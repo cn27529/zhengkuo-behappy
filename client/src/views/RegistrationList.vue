@@ -83,11 +83,11 @@
         :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
         v-loading="isLoading"
       >
-        <el-table-column label="表單資訊" min-width="150">
+        <el-table-column label="表單資訊" min-width="100">
           <template #default="{ row }">
             <div>
               <div class="form-name">{{ row.formId }}</div>
-              <el-tag size="small" type="info" class="form-source-tag">
+              <el-tag v-if="row.formSource" size="small" type="info" class="form-source-tag">
                 {{ row.formSource }}
               </el-tag>
             </div>
