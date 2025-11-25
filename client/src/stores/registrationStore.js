@@ -8,12 +8,10 @@ import { registrationService } from "../services/registrationService.js";
 import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
-import { id, lo } from "element-plus/es/locale/index.mjs";
-//import { useConnectionStore } from "./connectionStore.js"; // ✅ 新增
+import { ro } from "element-plus/es/locale/index.mjs";
 
 export const useRegistrationStore = defineStore("registration", () => {
   const configStore = useConfigStore();
-  //const connectionStore = useConnectionStore(); // ✅ 新增
 
   // ✅ 使用 computed 保持響應式
   const relationshipOptions = computed(() => configStore.relationshipOptions);
@@ -850,14 +848,30 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // ✅ 新增：重置表單的方法
+  const resetForm = () => {
+    console.log("🔄 重置表單資料");
+
+    // 重置為初始狀態
+    registrationForm.value = getInitialFormData();
+
+    // 清空表單陣列
+    formArray.value = [];
+    currentFormIndex.value = 0;
+
+    // 停止同步監聽
+    if (syncWatcher) {
+      syncWatcher();
+      syncWatcher = null;
+    }
+  };
+
   const initializeFormArray = () => {
     if (formArray.value.length === 0) {
       formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
       console.log("✅ 表單陣列已初始化");
     }
-    // 設定自動同步機制
-    setupFormSync();
-    console.log("✅ 自動同步已啟動");
+    console.log("✅ 自動同步已啟動，當前索引:", currentFormIndex.value);
   };
 
   // 載入 Mock 數據
@@ -884,27 +898,26 @@ export const useRegistrationStore = defineStore("registration", () => {
       console.log("載入 Mock 數據:", mockData);
 
       // 更新當前表單數據，但保留表單的狀態和 ID
-      //const currentForm = formArray[currentFormIndex.value];
-      const currentForm = getInitialFormData();
+      const currentMock = getInitialFormData();
 
       // 只更新數據字段，不改變表單狀態和 ID
       if (mockData.contact) {
-        currentForm.contact = { ...mockData.contact };
-        console.log("載入 Mock contact 數據:", currentForm.contact);
+        currentMock.contact = { ...mockData.contact };
+        console.log("載入 Mock contact 數據:", currentMock.contact);
       }
 
       if (mockData.blessing) {
-        currentForm.blessing = {
+        currentMock.blessing = {
           ...mockData.blessing,
           persons: mockData.blessing.persons
             ? [...mockData.blessing.persons]
             : [],
         };
-        console.log("載入 Mock blessing 數據:", currentForm.blessing);
+        console.log("載入 Mock blessing 數據:", currentMock.blessing);
       }
 
       if (mockData.salvation) {
-        currentForm.salvation = {
+        currentMock.salvation = {
           ...mockData.salvation,
           ancestors: mockData.salvation.ancestors
             ? [...mockData.salvation.ancestors]
@@ -913,25 +926,23 @@ export const useRegistrationStore = defineStore("registration", () => {
             ? [...mockData.salvation.survivors]
             : [],
         };
-        console.log("載入 Mock salvation 數據:", currentForm.salvation);
+        console.log("載入 Mock salvation 數據:", currentMock.salvation);
       }
 
       // 更新表單名稱（可選）
       if (mockData.formName) {
-        currentForm.formName = mockData.formName;
+        currentMock.formName = mockData.formName;
       }
 
       // 設置表單狀態為編輯中
-      currentForm.state = "editing";
-
-      //currentForm.formId = mockData.formId || "";
+      //currentMock.state = "editing";
 
       // 觸發響應式更新
       formArray.value[currentFormIndex.value] = JSON.parse(
-        JSON.stringify(currentForm)
+        JSON.stringify(currentMock)
       );
 
-      console.log("Mock 數據載入完成，當前表單:", currentForm);
+      console.log("Mock 數據載入完成，當前表單:", currentMock);
 
       // 更新當前表單數據
       loadFormToRegistration(formArray.value[currentFormIndex.value]);
@@ -958,32 +969,32 @@ export const useRegistrationStore = defineStore("registration", () => {
         return true;
       }
 
-      console.log(
-        `🔄 載入表單進行${action === "edit" ? "編輯" : "查看"}:`,
-        formId
-      );
+      console.log(`🔄 載入表單進行${action === "edit" ? "編輯" : "查看"}:`);
+      console.log("參數調試：", { formId, id, action, mode: baseService.mode });
 
-      // 先检查本地是否有该表单
-      const localForm = formArray.value.find((form) => form.formId === formId);
-      if (localForm) {
-        console.log("📁 從本地載入表單");
-        formArray.value[currentFormIndex.value] = JSON.parse(
-          JSON.stringify(localForm)
-        );
-        currentFormIndex.value = 0;
-        loadFormToRegistration(localForm);
-        // 根据 action 设置状态
-        if (action === "edit") {
-          registrationForm.value.state = "editing";
-          setupFormSync();
-        }
-        return true;
-      }
+      // // 先检查本地是否有该表单
+      // const localForm = formArray.value.find((form) => form.formId === formId);
+      // if (localForm) {
+      //   console.log("📁 從本地載入表單");
+      //   formArray.value[currentFormIndex.value] = JSON.parse(
+      //     JSON.stringify(localForm)
+      //   );
+      //   currentFormIndex.value = 0;
+      //   loadFormToRegistration(localForm);
+      //   // 根据 action 设置状态
+      //   if (action === "edit") {
+      //     registrationForm.value.state = "editing";
+      //     setupFormSync();
+      //   }
+      //   return true;
+      // }
 
-      // 如果本地没有，再从服务器加载
-      if (!localForm) {
-        console.log("📡 從服務器載入表單");
-      }
+      // // 如果本地没有，再从服务器加载
+      // if (!localForm) {
+      //   console.log("📡 從服務器載入表單");
+      // }
+
+      console.log("📡 從服務器載入表單");
 
       // 检查连接
       const healthCheck = await baseService.checkConnection();
@@ -1000,12 +1011,12 @@ export const useRegistrationStore = defineStore("registration", () => {
       if (result.success && result.data) {
         const formData = result.data;
 
-        // 根据 action 设置表单状态
-        if (action === "edit") {
-          formData.state = "editing";
-        } else {
-          formData.state = "submitted"; // 查看模式设置为已提交（只读）
-        }
+        // // 根据 action 设置表单状态
+        // if (action === "edit") {
+        //   formData.state = "editing";
+        // } else {
+        //   formData.state = "submitted"; // 查看模式设置为已提交（只读）
+        // }
 
         // 更新到store
         // 觸發響應式更新
@@ -1018,7 +1029,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         // 更新當前表單數據
         loadFormToRegistration(formArray.value[currentFormIndex.value]);
         if (action === "edit") {
-          registrationForm.value.state = "editing";
+          //registrationForm.value.state = "editing";
           setupFormSync();
         }
 
@@ -1154,6 +1165,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     switchForm,
     deleteForm,
     duplicateForm,
+    resetForm,
     initializeFormArray, // 🆕 供 Vue 組件調用
     setupFormSync, // 🆕 供外部使用
     loadFormToRegistration, // 🆕 供外部使用
