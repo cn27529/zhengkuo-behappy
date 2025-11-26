@@ -21,7 +21,7 @@ const pinia = createPinia();
 
 // 模式下的初始化
 if (import.meta.env.VITE_AUTH_MODE === "mock") {  
-  console.log("🚨 注意！");
+  console.warn("🚨 注意！");
   console.warn("⚠️ 當前使用前端模擬認證，密碼為明碼儲存！正式環境請切換到後端模式並移除密碼硬編碼。");  
   //console.log("🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01");
 }
