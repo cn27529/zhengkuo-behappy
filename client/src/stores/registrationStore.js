@@ -867,6 +867,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   const initializeFormArray = () => {
+    console.log("✅ 表單陣列初始化");
     if (formArray.value.length === 0) {
       formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
       console.log("✅ 表單陣列已初始化");
@@ -895,7 +896,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         mockData = mockRegistrations.find((item) => item.formId === formId);
       }
 
-      console.log("載入 Mock 數據:", mockData);
+      //console.log("載入 Mock 數據:", mockData);
 
       // 更新當前表單數據，但保留表單的狀態和 ID
       const currentMock = getInitialFormData();
@@ -903,7 +904,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 只更新數據字段，不改變表單狀態和 ID
       if (mockData.contact) {
         currentMock.contact = { ...mockData.contact };
-        console.log("載入 Mock contact 數據:", currentMock.contact);
+        //console.log("載入 Mock contact 數據:", currentMock.contact);
       }
 
       if (mockData.blessing) {
@@ -913,7 +914,7 @@ export const useRegistrationStore = defineStore("registration", () => {
             ? [...mockData.blessing.persons]
             : [],
         };
-        console.log("載入 Mock blessing 數據:", currentMock.blessing);
+        //console.log("載入 Mock blessing 數據:", currentMock.blessing);
       }
 
       if (mockData.salvation) {
@@ -926,7 +927,7 @@ export const useRegistrationStore = defineStore("registration", () => {
             ? [...mockData.salvation.survivors]
             : [],
         };
-        console.log("載入 Mock salvation 數據:", currentMock.salvation);
+        //console.log("載入 Mock salvation 數據:", currentMock.salvation);
       }
 
       // 更新表單名稱（可選）
