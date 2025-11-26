@@ -135,6 +135,13 @@ const router = createRouter({
   routes,
 });
 
+// ========================================
+// 🛡️ 全局路由守衛(可選)
+// ========================================
+
+// 記錄路由歷史,用於更好的錯誤處理
+let routeHistory = [];
+
 // 全局導航路由守衛
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
@@ -165,6 +172,12 @@ router.beforeEach((to, from, next) => {
     }
   }
 
+  // 記錄路由歷史(最多保留10條)
+  routeHistory.push(from.fullPath);
+  if (routeHistory.length > 10) {
+    routeHistory.shift();
+  }
+
   // 如果需要驗證且未登入
   if (requiresAuth && !authStore.isAuthenticated) {
     console.log("需要驗證但未登入，跳轉到登入頁");
@@ -173,5 +186,18 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
+
+// 路由錯誤處理
+router.onError((error) => {
+  console.error("❌ 路由錯誤:", error);
+  
+  // 🛡️ 如果發生錯誤,嘗試回到安全的頁面
+  if (error.message.includes('Failed to fetch') || 
+      error.message.includes('Loading chunk')) {
+    ElMessage.error("頁面載入失敗,請重新整理");
+  }
+});
+
+
 
 export default router;
