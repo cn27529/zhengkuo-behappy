@@ -354,7 +354,7 @@ export default {
           action: action, // 'edit' 或 'view'
           formId: item.formId,
           id: item.id,
-          t: Date.now(),
+          //t: Date.now(),
         },
       });
     };

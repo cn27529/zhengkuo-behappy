@@ -142,20 +142,16 @@ export default {
 
     const handleMenuClick = (menuItem) => {
       if (menuItem.path === "/registration") {
-        // 如果是 Registration 頁面，添加時間戳確保路由變化
-        router.push({
+        // 使用 replace 而不是 push，确保路由替换
+        router.replace({
           path: menuItem.path,
           query: {
             action: "create",
-            t: Date.now(), // 添加時間戳避免路由緩存
+            //t: Date.now(),
           },
         });
 
-        setTimeout(() => {
-          window.location.href = `${
-            menuItem.path
-          }?action=create&t=${Date.now()}`;
-        }, 100);
+        
       } else {
         router.push(menuItem.path);
       }

@@ -866,6 +866,27 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // 在 registrationStore.js 中，直接使用 initializeFormArray 的逻辑
+  const resetRegistrationForm = () => {
+    console.log("🔄 重置表單（使用初始化邏輯）");
+
+    // 直接重用 initializeFormArray 的逻辑
+    if (formArray.value.length === 0) {
+      formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
+    } else {
+      // 替换当前表单为初始状态
+      const initialForm = getInitialFormData();
+      formArray.value[currentFormIndex.value] = JSON.parse(
+        JSON.stringify(initialForm)
+      );
+      loadFormToRegistration(initialForm);
+    }
+
+    // 确保同步机制运行
+    setupFormSync();
+    console.log("✅ 表單已重置");
+  };
+
   const initializeFormArray = () => {
     console.log("✅ 表單陣列初始化");
     if (formArray.value.length === 0) {
@@ -1168,9 +1189,10 @@ export const useRegistrationStore = defineStore("registration", () => {
     duplicateForm,
     resetForm,
     initializeFormArray, // 🆕 供 Vue 組件調用
-    setupFormSync, // 🆕 供外部使用
-    loadFormToRegistration, // 🆕 供外部使用
-    loadMockData, // 🆕 供外部使用
+    resetRegistrationForm,
+    setupFormSync,
+    loadFormToRegistration,
+    loadMockData,
     loadFormData,
     updateFormData,
   };

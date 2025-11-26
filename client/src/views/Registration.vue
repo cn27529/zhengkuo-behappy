@@ -24,20 +24,6 @@
           font-size: 12px;
         "
       >
-        <h4>調試信息: {{ isDev }}</h4>
-        <p>
-          表單陣列長度: {{ formArray.length }}, 當前索引: {{ currentFormIndex }}
-        </p>
-        <p>
-          <span v-for="(form, idx) in formArray" :key="idx">
-            <hr />
-            第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{
-              form.formId
-            }}, formSource={{ form.formSource }}, id={{ form.id }}, contact={{
-              JSON.stringify(form.contact)
-            }}, blessing={{ JSON.stringify(form.blessing) }}]
-          </span>
-        </p>
         <!-- 添加 Mock 按钮 -->
         <div style="margin: 0 auto">
           <button
@@ -51,6 +37,21 @@
           >
             🎲 載入 Mock 數據
           </button>
+          <h4>調試信息: {{ isDev }}</h4>
+          <p>
+            表單陣列長度: {{ formArray.length }}, 當前索引:
+            {{ currentFormIndex }}
+          </p>
+          <p>
+            <span v-for="(form, idx) in formArray" :key="idx">
+              <hr />
+              第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{
+                form.formId
+              }}, formSource={{ form.formSource }}, id={{ form.id }}, contact={{
+                JSON.stringify(form.contact)
+              }}, blessing={{ JSON.stringify(form.blessing) }}]
+            </span>
+          </p>
         </div>
       </div>
       <!-- 表單切換器 -->
@@ -556,7 +557,7 @@
           class="btn btn-outline capsule-btn"
           @click="handleAddNewForm"
         >
-          📄 再填一張
+          📄 再填一張🆕
         </button>
 
         <button
@@ -639,10 +640,12 @@ export default {
           actionMode.value
         );
       }
-      if (actionResult.createMode) {
+      if (actionResult.value.createMode) {
         // 啟動自動同步機制
-        registrationStore.initializeFormArray();
-        console.log("[v0] 表單同步已啟動");
+        //registrationStore.initializeFormArray();
+        registrationStore.resetRegistrationForm();
+
+        console.log("[v0] 表單同步已啟動 - 創建模式");
       }
 
       isDev.value = authService.getCurrentDev();

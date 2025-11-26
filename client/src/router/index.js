@@ -32,7 +32,7 @@ const routes = [
         console.log("✨ 無參數,設置為 create 模式");
         next({
           path: "/registration",
-          query: { action: "create", t: Date.now() },
+          query: { action: "create" },
           replace: true,
         });
         return;
