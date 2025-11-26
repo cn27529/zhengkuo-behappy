@@ -5,7 +5,7 @@
       <h2>{{ pageTitle }}</h2>
     </div>
     <!-- 返回按鈕 -->
-    <div class="print-controls" v-if="isEditMode || isViewMode">
+    <div class="print-controls" v-if="isEditMode">
       <div class="controls-left">
         <button @click="handleBack" class="back-btn">← 返回列表</button>
       </div>
@@ -524,7 +524,7 @@
       <div class="form-actions">
         <!-- 编辑模式：显示保存按钮 -->
         <button
-          v-if="isEditMode || isViewMode"
+          v-if="isEditMode"
           type="button"
           class="btn btn-outline"
           @click="handleBack"
@@ -593,13 +593,11 @@ export default {
     // 新增：模式判断
     const pageTitle = ref("消災超度登記");
     const isCreateMode = computed(() =>
-      route.query.action === "create" ? true : false
+      route.query.action || "create" === "create" ? true : false
     );
-    const isViewMode = computed(() =>
-      route.query.action === "view" ? true : false
-    );
+
     const isEditMode = computed(() =>
-      route.query.action === "edit" ? true : false
+      route.query.action || "edit" === "edit" ? true : false
     );
     const actionMode = computed(() => route.query.action);
     const formId = computed(() => route.query.formId);
@@ -610,16 +608,12 @@ export default {
       if (isEditMode.value && formId.value && id.value) {
         // 编辑模式
         pageTitle.value = "編輯表單";
-      } else if (isViewMode.value && formId.value && id.value) {
-        // 查看模式
-        pageTitle.value = "查看表單";
       } else if (isCreateMode.value) {
         pageTitle.value = "消災超度登記";
       }
 
       const result = {
         editMode: isEditMode.value,
-        viewMode: isViewMode.value,
         createMode: isCreateMode.value,
         formId: formId.value,
         id: id.value,
@@ -823,14 +817,6 @@ export default {
       }
     };
 
-    // 包装操作方法，在查看模式下禁用
-    const createActionWrapper = (storeMethod) => {
-      return (...args) => {
-        if (isViewMode.value) return;
-        return storeMethod(...args);
-      };
-    };
-
     // 提交表單處理
     const submitForm = async () => {
       // 先檢查 validationDetails
@@ -995,7 +981,6 @@ export default {
       isDev,
       pageTitle,
       isEditMode,
-      isViewMode,
       isCreateMode,
       actionMode,
       formId,

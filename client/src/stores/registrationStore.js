@@ -977,7 +977,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // 统一的表单加载方法
-  const loadFormData = async (formId, id, action = "view") => {
+  const loadFormData = async (formId, id, action = "create") => {
     try {
       //console.log("參數調試：", { formId, action, mode: baseService.mode });
 

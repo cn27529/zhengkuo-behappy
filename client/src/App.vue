@@ -150,8 +150,6 @@ export default {
             //t: Date.now(),
           },
         });
-
-        
       } else {
         router.push(menuItem.path);
       }

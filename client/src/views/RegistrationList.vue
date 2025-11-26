@@ -342,11 +342,6 @@ export default {
       handleActionToRegistration(item, "edit");
     };
 
-    // 查看詳情
-    const handleView = (item) => {
-      handleActionToRegistration(item, "view");
-    };
-
     const handleActionToRegistration = (item, action) => {
       router.push({
         path: "/registration",
@@ -453,7 +448,6 @@ export default {
       handleCurrentChange,
       handlePrint,
       handleEdit,
-      handleView,
       getStatusText,
       formatDate,
       truncateAddress,

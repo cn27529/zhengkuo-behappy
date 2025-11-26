@@ -39,19 +39,19 @@ const routes = [
       }
 
       // 情況2: action 不合法
-      const validActions = ["create", "edit", "view"];
+      const validActions = ["create", "edit"];
       if (action && !validActions.includes(action)) {
         console.log("⚠️ 不合法的 action:", action);
         next({
           path: "/registration",
-          query: { action: "create", t: Date.now() },
+          query: { action: "create" },
           replace: true,
         });
         return;
       }
 
       // 情況3: edit/view 模式但缺少必要參數
-      if ((action === "edit" || action === "view") && (!formId || !id)) {
+      if (action === "edit" && (!formId || !id)) {
         console.log("⚠️ edit/view 模式缺少必要參數");
         ElMessage.error("缺少必要的表單資訊");
         next({ path: "/registration-list", replace: true });
@@ -190,14 +190,14 @@ router.beforeEach((to, from, next) => {
 // 路由錯誤處理
 router.onError((error) => {
   console.error("❌ 路由錯誤:", error);
-  
+
   // 🛡️ 如果發生錯誤,嘗試回到安全的頁面
-  if (error.message.includes('Failed to fetch') || 
-      error.message.includes('Loading chunk')) {
+  if (
+    error.message.includes("Failed to fetch") ||
+    error.message.includes("Loading chunk")
+  ) {
     ElMessage.error("頁面載入失敗,請重新整理");
   }
 });
-
-
 
 export default router;
