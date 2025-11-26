@@ -354,6 +354,7 @@ export default {
           action: action, // 'edit' 或 'view'
           formId: item.formId,
           id: item.id,
+          t: Date.now(),
         },
       });
     };
@@ -425,7 +426,7 @@ export default {
 
     // 初始化
     onMounted(() => {
-      console.log("RegistrationList 組件已載入");
+      console.log("✅ RegistrationList 組件已載入");
       console.log("當前 searchResults:", searchResults.value);
       isDev.value = authService.getCurrentDev();
     });
