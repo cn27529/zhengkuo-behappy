@@ -21,6 +21,57 @@ const routes = [
   {
     path: "/registration",
     component: () => import("../views/Registration.vue"),
+    // 🛡️ Registration.vue路由進入前的驗證
+    beforeEnter: (to, from, next) => {
+      const { action, formId, id } = to.query;
+
+      console.log("🚪 進入 Registration 路由:", { action, formId, id });
+
+      // 情況1: 沒有任何參數,默認為 create
+      if (!action && !formId && !id) {
+        console.log("✨ 無參數,設置為 create 模式");
+        next({
+          path: "/registration",
+          query: { action: "create", t: Date.now() },
+          replace: true,
+        });
+        return;
+      }
+
+      // 情況2: action 不合法
+      const validActions = ["create", "edit", "view"];
+      if (action && !validActions.includes(action)) {
+        console.log("⚠️ 不合法的 action:", action);
+        next({
+          path: "/registration",
+          query: { action: "create", t: Date.now() },
+          replace: true,
+        });
+        return;
+      }
+
+      // 情況3: edit/view 模式但缺少必要參數
+      if ((action === "edit" || action === "view") && (!formId || !id)) {
+        console.log("⚠️ edit/view 模式缺少必要參數");
+        ElMessage.error("缺少必要的表單資訊");
+        next({ path: "/registration-list", replace: true });
+        return;
+      }
+
+      // 情況4: create 模式有多餘參數,清理掉
+      if (action === "create" && (formId || id)) {
+        console.log("🧹 清理 create 模式的多餘參數");
+        next({
+          path: "/registration",
+          query: { action: "create", t: Date.now() },
+          replace: true,
+        });
+        return;
+      }
+
+      // 通過驗證,繼續
+      next();
+    },
     meta: { requiresAuth: true },
   },
   {
