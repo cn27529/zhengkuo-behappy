@@ -46,18 +46,9 @@
     </div>
 
     <!-- 在查詢表單後面添加調試信息 -->
-    <div
-      v-if="isDev"
-      class="debug-info"
-      style="
-        background: #000000;
-        color: #fff000;
-        padding: 10px;
-        margin-top: 20px;
-        font-size: 12px;
-      "
-    >
-      <h4>調試信息: {{ isDev }}</h4>
+    <div v-if="isDev" class="debug-panel">
+      <h4>🔧 調試信息</h4>
+      <hr />
       <div>searchResults.length: {{ searchResults.length }}</div>
       <div>paginatedResults.length: {{ paginatedResults.length }}</div>
       <div>hasSearched: {{ hasSearched }}</div>
@@ -460,6 +451,14 @@ export default {
 </script>
 
 <style scoped>
+.debug-panel {
+  background: #000000;
+  color: #fff000;
+  padding: 10px;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
 /* 搜尋區域 */
 .search-section {
   background: white;

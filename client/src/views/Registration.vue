@@ -14,45 +14,26 @@
     <!-- 在 .form-header div 內新增表單切換區塊 -->
     <div class="form-header">
       <!-- 在 template 添加調試信息 -->
-      <div
-        v-if="isDev"
-        style="
-          background: #000000;
-          color: #fff000;
-          padding: 10px;
-          margin-top: 20px;
-          font-size: 12px;
-        "
-      >
+      <div v-if="isDev" class="debug-panel">
         <!-- 添加 Mock 按钮 -->
-        <div style="margin: 0 auto">
-          <button
-            @click="loadMockData"
-            class="btn btn-outline btn-sm"
-            style="
-              margin-right: 10px;
-              color: #fff000;
-              border: #fff000 1px solid;
-            "
-          >
-            🎲 載入 Mock 數據
-          </button>
-          <h4>調試信息: {{ isDev }}</h4>
-          <p>
-            表單陣列長度: {{ formArray.length }}, 當前索引:
-            {{ currentFormIndex }}
-          </p>
-          <p>
-            <span v-for="(form, idx) in formArray" :key="idx">
-              <hr />
-              第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{
-                form.formId
-              }}, formSource={{ form.formSource }}, id={{ form.id }}, contact={{
-                JSON.stringify(form.contact)
-              }}, blessing={{ JSON.stringify(form.blessing) }}]
-            </span>
-          </p>
-        </div>
+        <el-button type="success" class="dev-button" @click="loadMockData"
+          >🎲 生成 Mock 數據</el-button
+        >
+        <h4>🔧 調試信息</h4>
+        <hr />
+        <p>
+          表單陣列長度: {{ formArray.length }}, 當前索引:{{ currentFormIndex }}
+        </p>
+        <p>
+          <span v-for="(form, idx) in formArray" :key="idx">
+            第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{
+              form.formId
+            }}, formSource={{ form.formSource }}, id={{ form.id }}, contact={{
+              JSON.stringify(form.contact)
+            }}, blessing={{ JSON.stringify(form.blessing) }}]
+            <hr />
+          </span>
+        </p>
       </div>
       <!-- 表單切換器 -->
       <div class="form-switcher" v-if="formArray && formArray.length > 1">
@@ -1021,6 +1002,14 @@ export default {
 </script>
 
 <style scoped>
+.debug-panel {
+  background: #000000;
+  color: #00ff00;
+  padding: 10px;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
 .print-controls {
   display: flex;
   justify-content: space-between;
