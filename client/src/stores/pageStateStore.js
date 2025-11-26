@@ -7,16 +7,30 @@ export const usePageStateStore = defineStore("pageState", () => {
   const pageStates = ref({});
 
   // 设置页面状态
-  const setPageState = (pageName, state) => {
-    pageStates.value[pageName] = {
-      ...state,
-      timestamp: Date.now(),
-    };
-    // 可选：同步到 sessionStorage 以防页面刷新
-    sessionStorage.setItem(
-      `pageState_${pageName}`,
-      JSON.stringify(pageStates.value[pageName])
-    );
+  const setPageState = async (pageName, state) => {
+    return new Promise((resolve) => {
+      console.log("🔄 開始設置頁面狀態");
+
+      const stateData = {
+        ...state,
+        timestamp: Date.now(),
+      };
+
+      pageStates.value[pageName] = stateData;
+
+      // 如果有 sessionStorage 操作，確保它是同步的
+      try {
+        sessionStorage.setItem(
+          `pageState_${pageName}`,
+          JSON.stringify(stateData)
+        );
+      } catch (error) {
+        console.warn("sessionStorage 操作失敗:", error);
+      }
+
+      console.log("✅ 頁面狀態設置完成");
+      resolve(stateData);
+    });
   };
 
   // 获取页面状态

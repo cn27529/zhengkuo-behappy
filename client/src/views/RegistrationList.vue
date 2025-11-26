@@ -22,9 +22,6 @@
               clearable
               size="large"
             >
-              <template #prefix>
-                <el-icon><Search /></el-icon>
-              </template>
             </el-input>
 
             <el-button
@@ -221,13 +218,15 @@ import { ref, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { Search, Printer } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 import { authService } from "../services/authService";
 import { useQueryStore } from "../stores/queryStore.js";
-import { useRouter } from "vue-router";
+import { usePageStateStore } from "../stores/pageStateStore.js";
 
 export default {
   name: "RegistrationList",
   setup() {
+    const pageStateStore = usePageStateStore();
     const queryStore = useQueryStore();
     const isDev = ref(false);
     const router = useRouter();
@@ -328,12 +327,27 @@ export default {
       }
     };
 
-    // 編輯表單
-    const handleEdit = (item) => {
-      handleActionToRegistration(item, "edit");
+    // 將某筆資料傳遞給表單編輯
+    const handleEdit = async (item) => {
+      try {
+        console.log("🔄 開始處理編輯操作");
+        // 儲存狀態
+        const pageState = await pageStateStore.setPageState("registration", {
+          action: "edit",
+          formId: item.formId,
+          id: item.id,
+          source: "list",
+        });
+        console.log("🔄 等待狀態保存完成:", pageState);
+        console.log("✅ 狀態保存完成，開始導航");
+        handleActionToRedirect(item, "edit");
+      } catch (error) {
+        console.error("❌ 編輯操作失敗:", error);
+        ElMessage.error("操作失敗，請重試");
+      }
     };
 
-    const handleActionToRegistration = (item, action) => {
+    const handleActionToRedirect = (item, action) => {
       router.push({
         path: "/registration",
         query: {
@@ -442,9 +456,6 @@ export default {
       getStatusText,
       formatDate,
       truncateAddress,
-
-      // Icons
-      Search,
     };
   },
 };
