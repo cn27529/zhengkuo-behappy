@@ -631,8 +631,8 @@ export default {
       }
       if (actionResult.value.createMode) {
         // 啟動自動同步機制
-        //gistrationStore.initializeFormArray();
-        gistrationStore.resetRegistrationForm();
+        //registrationStore.initializeFormArray();
+        registrationStore.resetRegistrationForm();
 
         console.log("[v0] 表單同步已啟動 - 創建模式");
       }
