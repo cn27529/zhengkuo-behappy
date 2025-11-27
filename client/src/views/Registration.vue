@@ -543,13 +543,7 @@
         </button>
 
         
-        <button
-          type="button"
-          class="btn btn-secondary"
-          @click="handleResetForm"
-        >
-          清空表單重新填寫
-        </button>
+        
 
         <button
           type="button"
@@ -558,6 +552,15 @@
         >
           🖨️ 列印表單
         </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="handleResetForm"
+        >
+          清空表單重新填寫
+        </button>
+
       </div>
     </div>
   </div>
@@ -627,8 +630,8 @@ export default {
       }
       if (actionResult.value.createMode) {
         // 啟動自動同步機制
-        //registrationStore.initializeFormArray();
-        registrationStore.resetRegistrationForm();
+        //gistrationStore.initializeFormArray();
+        gistrationStore.resetRegistrationForm();        
 
         console.log("[v0] 表單同步已啟動 - 創建模式");
       }
