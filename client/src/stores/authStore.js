@@ -91,6 +91,145 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  // ========== 2FA 專用登入方法 ==========
+  const loginWith2FA = async (username, password) => {
+    isLoading.value = true;
+
+    try {
+      const result = await authService.directus2FALogin(username, password);
+
+      console.log("2FA 登入結果:", JSON.stringify(result));
+
+      // 如果需要 2FA 驗證
+      if (result.requires2FA) {
+        return {
+          requires2FA: true,
+          tempToken: result.tempToken,
+          message: result.message || "需要兩步驟驗證",
+        };
+      }
+
+      // 如果不需要 2FA，直接成功
+      if (result.success) {
+        const userInfo = result.data.user;
+        user.value = userInfo;
+        isAuthenticated.value = true;
+
+        // 儲存用戶信息和 Token
+        sessionStorage.setItem("auth-user", JSON.stringify(userInfo));
+        if (result.data.token) {
+          sessionStorage.setItem("auth-token", result.data.token);
+        }
+        if (result.data.refreshToken) {
+          sessionStorage.setItem(
+            "auth-refresh-token",
+            result.data.refreshToken
+          );
+        }
+
+        resetInactivityTimer();
+        setupActivityListeners();
+
+        return {
+          success: true,
+          message: result.message || `登入成功！歡迎 ${userInfo.displayName}`,
+          user: userInfo,
+        };
+      } else {
+        const userExists = await checkUserExists(username);
+        throw {
+          success: false,
+          message: result.message || "用戶名或密碼錯誤",
+          suggestions: getLoginSuggestions(username, userExists),
+          errorCode: result.errorCode,
+        };
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // ========== 2FA 驗證方法 ==========
+  const verify2FA = async (tempToken, otpCode) => {
+    isLoading.value = true;
+
+    try {
+      const result = await authService.verify2FA(tempToken, otpCode);
+
+      console.log("2FA 驗證結果:", JSON.stringify(result));
+
+      if (result.success) {
+        const userInfo = result.data.user;
+        user.value = userInfo;
+        isAuthenticated.value = true;
+
+        // 儲存用戶信息和 Token
+        sessionStorage.setItem("auth-user", JSON.stringify(userInfo));
+        if (result.data.token) {
+          sessionStorage.setItem("auth-token", result.data.token);
+        }
+        if (result.data.refreshToken) {
+          sessionStorage.setItem(
+            "auth-refresh-token",
+            result.data.refreshToken
+          );
+        }
+
+        resetInactivityTimer();
+        setupActivityListeners();
+
+        return {
+          success: true,
+          message: result.message || "兩步驟驗證成功！",
+          user: userInfo,
+        };
+      } else {
+        throw {
+          success: false,
+          message: result.message || "兩步驟驗證失敗",
+          errorCode: result.errorCode,
+          isRetryable: result.errorCode === "INVALID_OTP", // 標記是否可以重試
+        };
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // ========== 檢查 2FA 狀態的方法 ==========
+  const check2FAStatus = async (username) => {
+    try {
+      // 這裡可以實現檢查用戶是否啟用了 2FA 的邏輯
+      // 目前先返回模擬數據
+      if (authService.getCurrentMode() === "mock") {
+        // 模擬檢查：特定用戶需要 2FA
+        const usersRequire2FA = ["admin", "zkuser01"];
+        return {
+          requires2FA: usersRequire2FA.includes(username),
+          message: usersRequire2FA.includes(username)
+            ? "此用戶需要兩步驟驗證"
+            : "此用戶不需要兩步驟驗證",
+        };
+      }
+
+      // 在實際環境中，這裡可以呼叫 API 檢查用戶的 2FA 狀態
+      return {
+        requires2FA: false,
+        message: "2FA 狀態檢查功能待實現",
+      };
+    } catch (error) {
+      console.error("檢查 2FA 狀態失敗:", error);
+      return {
+        requires2FA: false,
+        message: "檢查 2FA 狀態時發生錯誤",
+      };
+    }
+  };
+
   const logout = async () => {
     isLoading.value = true;
 
@@ -256,7 +395,12 @@ export const useAuthStore = defineStore("auth", () => {
     isLoading,
     authMode,
     isDev,
+    // 原有的登入方法
     login,
+    // 新增的 2FA 方法
+    loginWith2FA,
+    verify2FA,
+    check2FAStatus,
     logout,
     hasPermission,
     hasRole,

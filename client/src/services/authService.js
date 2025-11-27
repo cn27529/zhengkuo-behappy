@@ -140,6 +140,37 @@ export class AuthService {
     };
   }
 
+  // ========== Mock 2FA 方法 ==========
+  async mockVerify2FA(tempToken, otpCode) {
+    await this.mockDelay();
+
+    console.log("模擬 2FA 驗證:", { tempToken, otpCode });
+
+    // 模擬 2FA 驗證（在實際環境中應該驗證正確的 OTP）
+    if (otpCode === "123456" || otpCode === "000000") {
+      // 模擬驗證成功
+      const userData = await import("../data/auth_user.json");
+      const mockUser = userData.default[0];
+
+      return {
+        success: true,
+        message: "模擬 2FA 驗證成功",
+        data: {
+          user: mockUser,
+          token: `mock-2fa-token-${Date.now()}`,
+          refreshToken: `mock-2fa-refresh-token-${Date.now()}`,
+          expiresIn: 3600,
+        },
+      };
+    } else {
+      return {
+        success: false,
+        message: "驗證碼錯誤，請嘗試 123456 或 000000",
+        errorCode: "INVALID_OTP",
+      };
+    }
+  }
+
   async mockRefreshToken() {
     await this.mockDelay();
 
@@ -247,6 +278,173 @@ export class AuthService {
         details: error.message,
       };
     }
+  }
+
+  // ========== Directus 2FA 登入流程 ==========
+  async directus2FALogin(username, password) {
+    try {
+      console.log("開始 Directus 2FA 登入流程");
+
+      const response = await fetch(getApiUrl(baseService.apiEndpoints.login), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `Directus 錯誤: ${response.status}`
+        );
+      }
+
+      const result = await response.json();
+      console.log("Directus 登入回應:", result);
+
+      // 檢查是否需要 2FA
+      if (result.data && result.data.tfa === "required" && result.data.token) {
+        console.log("檢測到需要 2FA 驗證");
+        return {
+          success: false,
+          requires2FA: true,
+          tempToken: result.data.token,
+          message: "需要兩步驟驗證，請輸入驗證碼",
+        };
+      }
+
+      // 不需要 2FA，直接成功
+      if (result.data && result.data.access_token) {
+        console.log("不需要 2FA，直接登入成功");
+        return await this.handleDirectusLoginSuccess(result.data, username);
+      }
+
+      // 其他情況
+      throw new Error("Directus 返回數據格式錯誤");
+    } catch (error) {
+      console.error("Directus 2FA 登入請求失敗:", error);
+
+      // 檢查網路錯誤
+      if (
+        error.message.includes("Failed to fetch") ||
+        error.message.includes("NetworkError")
+      ) {
+        return {
+          success: false,
+          message: "Directus 服務未啟動或網路連接失敗",
+          errorCode: "DIRECTUS_NOT_AVAILABLE",
+          details: "請確保 Directus 服務正在運行",
+        };
+      }
+
+      return {
+        success: false,
+        message: error.message || "Directus 登入失敗",
+        errorCode: "DIRECTUS_LOGIN_ERROR",
+        details: error.message,
+      };
+    }
+  }
+
+  async directusVerify2FA(tempToken, otpCode) {
+    try {
+      console.log("開始 Directus 2FA 驗證");
+
+      const response = await fetch(getApiUrl("/auth/tfa"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: tempToken,
+          otp: otpCode,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        // 特別處理 OTP 錯誤
+        if (response.status === 400 || response.status === 401) {
+          return {
+            success: false,
+            message: "驗證碼錯誤或已過期，請重新輸入",
+            errorCode: "INVALID_OTP",
+          };
+        }
+
+        throw new Error(
+          errorData.message || `2FA 驗證錯誤: ${response.status}`
+        );
+      }
+
+      const result = await response.json();
+      console.log("Directus 2FA 驗證回應:", result);
+
+      if (result.data && result.data.access_token) {
+        console.log("2FA 驗證成功");
+        return await this.handleDirectusLoginSuccess(result.data, "2FA User");
+      } else {
+        throw new Error("兩步驟驗證失敗：返回數據格式錯誤");
+      }
+    } catch (error) {
+      console.error("Directus 2FA 驗證失敗:", error);
+      return {
+        success: false,
+        message: error.message || "兩步驟驗證失敗",
+        errorCode: "2FA_VERIFICATION_FAILED",
+      };
+    }
+  }
+
+  // ========== 2FA 專用方法 ==========
+  async verify2FA(tempToken, otpCode) {
+    const currentMode = this.getCurrentMode();
+
+    if (currentMode === "directus") {
+      return this.directusVerify2FA(tempToken, otpCode);
+    } else {
+      // 對於 mock 和 backend 模式，模擬 2FA 驗證
+      return this.mockVerify2FA(tempToken, otpCode);
+    }
+  }
+
+  // ========== 共用方法 ==========
+  async handleDirectusLoginSuccess(authData, username) {
+    const { access_token, refresh_token, expires } = authData;
+
+    // 獲取用戶資訊
+    const userResponse = await fetch(`${baseService.apiBaseUrl}/users/me`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    let userData = null;
+    if (userResponse.ok) {
+      const userResult = await userResponse.json();
+      console.log("Directus 返回用戶資訊:", userResult.data);
+      userData = userResult.data;
+      userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
+    } else {
+      console.error("Directus 返回用戶資訊發生錯誤:", userResponse.status);
+    }
+
+    return {
+      success: true,
+      message: "Directus 登入成功",
+      data: {
+        user: userData || { username, displayName: username },
+        token: access_token,
+        refreshToken: refresh_token,
+        expiresIn: expires || 3600,
+      },
+    };
   }
 
   async directusLogout() {
@@ -575,7 +773,7 @@ export class AuthService {
     if (sessionStorage.getItem("auth-mode") !== null) {
       baseService.mode = sessionStorage.getItem("auth-mode");
     }
-    console.log("AuthService getCurrentMode()", baseService.mode);
+    console.log("getCurrentMode: ", baseService.mode);
     return baseService.mode;
   }
 
@@ -583,25 +781,22 @@ export class AuthService {
     if (sessionStorage.getItem("auth-dev") !== null) {
       baseService.isDev = sessionStorage.getItem("auth-dev");
     }
-    console.log("getCurrentDev=", baseService.isDev);
+    console.log("getCurrentDev: ", baseService.isDev);
     return baseService.isDev === "true" ? true : false;
   }
 
   // 修改 setDev 方法 ,用於設置是否為開發模式，可開啟調試模式
   setDev(isDev) {
-    console.log("AuthService setDev()", isDev);
+    console.log("setDev: ", isDev);
     baseService.isDev = isDev;
     sessionStorage.setItem("auth-dev", isDev);
-    console.log(
-      `AuthService baseService.isDev 開發模式調試信息已切換為: ${baseService.isDev} `
-    );
+    console.log(`開發模式調試信息已切換為: ${baseService.isDev} `);
   }
 
   // 修改 setMode 方法中的健康檢查
   setMode(mode) {
-    console.log("AuthService setMode()", mode);
     baseService.mode = mode;
-    console.log(`AuthService baseService.mode 模式已切換為: ${mode}`);
+    console.log(`開發模式已切換為: ${mode}`);
     sessionStorage.setItem("auth-mode", mode);
 
     if (["mock", "backend", "directus"].includes(mode)) {
