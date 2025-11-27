@@ -579,7 +579,8 @@ export default {
     const configStore = useConfigStore();
     const registrationStore = useRegistrationStore();
     const submitting = ref(false);
-    const isDev = ref(false);
+    //const isDev = ref(false);
+    const isDev = computed(() => authService.getCurrentDev());
     const router = useRouter();
     const route = useRoute();
 
@@ -634,17 +635,29 @@ export default {
 
         console.log("[v0] 表單同步已啟動 - 創建模式");
       }
-
-      isDev.value = authService.getCurrentDev();
     });
 
     // 載入測試 Mock 數據，進行快速測試
     const handleLoadMockData = async () => {
       try {
+        let myFormId = "";
+        isEditMode.value
+          ? (myFormId = formId.value)
+          : registrationStore.registrationForm.formId;
+
+        let myDbId = "";
+        isEditMode.value
+          ? (myDbId = id.value)
+          : registrationStore.registrationForm.id;
+        console.log("載入 Mock 數據 - 表單 ID:", myFormId);
+
         const success = await registrationStore.loadMockData(
-          registrationForm.value.formId,
-          actionMode.value
+          myDbId,
+          myFormId,
+          actionMode.value,
+          isDev.value
         );
+
         if (success) {
           ElMessage.success("Mock 數據載入成功");
         } else {
