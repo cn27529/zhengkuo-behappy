@@ -351,7 +351,7 @@ export default {
       router.push({
         path: "/registration",
         query: {
-          action: action, // 'edit' 或 'view'
+          action: action, // 'edit' 或 'create'
           formId: item.formId,
           id: item.id,
           //t: Date.now(),

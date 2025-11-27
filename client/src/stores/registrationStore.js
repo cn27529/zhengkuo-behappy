@@ -930,12 +930,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // 載入 Mock 數據
-  const loadMockData = async (
-    dbId = 0,
-    formId = "",
-    action = "create",
-    isDev = true
-  ) => {
+  const loadMockData = async (formId, id, action) => {
     try {
       if (!mockRegistrations || mockRegistrations.length === 0) {
         console.error("Mock 數據為空或未找到");
@@ -943,9 +938,8 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
 
       console.log("formId 參數:", formId);
+      console.log("dbId 參數:", id);
       console.log("action 參數:", action);
-      console.log("isDev 參數:", isDev);
-      //if (isDev) return true;
 
       let mockData = null;
 
@@ -954,7 +948,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       mockData = mockRegistrations[randomIndex];
 
       // 如果提供了 formId，則嘗試找到對應的數據
-      if (isDev === false && formId !== "") {
+      if (action === "edit" && formId !== "" && id !== "") {
         mockData = mockRegistrations.find((item) => item.formId === formId);
       }
 
@@ -968,16 +962,20 @@ export const useRegistrationStore = defineStore("registration", () => {
       currentMock.createdAt = mockData.createdAt;
       currentMock.updatedAt = mockData.updatedAt;
       currentMock.id = mockData.id;
-
-      if (baseService.mode === "directus") {
-        currentMock.id = dbId;
+      currentMock.status = mockData.status;
+      //如果是create模式，重置formId，可以提交
+      if (!action === "create") {
+        currentMock.formId = "";
+      }
+      // 如果是edit模式，formId與id不變，可以保存修改
+      if (action === "edit" && formId !== "" && id !== "") {
         currentMock.formId = formId;
+        currentMock.id = id;
       }
 
       // 只更新數據字段，不改變表單狀態和 ID
       if (mockData.contact) {
-        currentMock.contact = { ...mockData.contact };
-        //console.log("載入 Mock contact 數據:", currentMock.contact);
+        currentMock.contact = { ...mockData.contact };        
       }
 
       if (mockData.blessing) {

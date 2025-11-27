@@ -28,9 +28,9 @@
           <span v-for="(form, idx) in formArray" :key="idx">
             第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{
               form.formId
-            }}, formSource={{ form.formSource }}, createdAt={{
+            }}, id={{ form.id }}, formSource={{ form.formSource }}, createdAt={{
               form.createdAt
-            }}, updatedAt={{ form.updatedAt }}, id={{ form.id }}, contact={{
+            }}, updatedAt={{ form.updatedAt }}, contact={{
               JSON.stringify(form.contact)
             }}, blessing={{ JSON.stringify(form.blessing) }}]
             <hr />
@@ -612,6 +612,7 @@ export default {
         formId: formId.value,
         id: id.value,
         pageTitle: pageTitle.value,
+        action: actionMode.value,
       };
       console.log("路由參數調試信息:", result);
       return result;
@@ -621,11 +622,11 @@ export default {
       await registrationStore.loadConfig();
 
       actionResult.value = handleActionResult();
-      if (actionResult.value.editMode || actionResult.value.viewMode) {
+      if (actionResult.value.editMode) {
         await registrationStore.loadFormData(
-          formId.value,
-          id.value,
-          actionMode.value
+          actionResult.value.formId,
+          actionResult.value.id,
+          actionResult.value.action
         );
       }
       if (actionResult.value.createMode) {
@@ -639,23 +640,13 @@ export default {
 
     // 載入測試 Mock 數據，進行快速測試
     const handleLoadMockData = async () => {
+      console.log("🔍 載入 Mock 數據調試信息:", { actionResult });      
+
       try {
-        let myFormId = "";
-        isEditMode.value
-          ? (myFormId = formId.value)
-          : registrationStore.registrationForm.formId;
-
-        let myDbId = "";
-        isEditMode.value
-          ? (myDbId = id.value)
-          : registrationStore.registrationForm.id;
-        console.log("載入 Mock 數據 - 表單 ID:", myFormId);
-
         const success = await registrationStore.loadMockData(
-          myDbId,
-          myFormId,
-          actionMode.value,
-          isDev.value
+          actionResult.value.formId,
+          actionResult.value.id,
+          actionResult.value.action          
         );
 
         if (success) {
