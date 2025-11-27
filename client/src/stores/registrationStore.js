@@ -1041,6 +1041,12 @@ export const useRegistrationStore = defineStore("registration", () => {
     try {
       console.log("propsData 參數調試:", propsData);
 
+      // 檢查必要的參數
+      if (!propsData || !propsData.id) {
+        console.error("❌ 缺少必要的表單 ID 參數");
+        return false;
+      }
+
       // 不是 directus 模式下，載入 Mock 數據
       if (baseService.mode !== "directus") {
         console.warn(
@@ -1061,7 +1067,9 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
 
       // 从服务器获取表单数据
-      const result = await registrationService.getRegistrationById(id);
+      const result = await registrationService.getRegistrationById(
+        propsData.id
+      );
 
       console.log("服務器返回的表單數據:", result);
 
@@ -1080,7 +1088,9 @@ export const useRegistrationStore = defineStore("registration", () => {
         setupFormSync();
 
         console.log(
-          `✅ 表單載入成功（${action === "edit" ? "編輯" : "查看"}模式）`
+          `✅ 表單載入成功（${
+            propsData.action === "edit" ? "編輯" : "查看"
+          }模式）`
         );
         return true;
       } else {

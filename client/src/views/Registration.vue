@@ -622,8 +622,15 @@ export default {
       await registrationStore.loadConfig();
 
       actionResult.value = handleActionResult();
+
+      const propsData = {
+        id: actionResult.value.id,
+        formId: actionResult.value.formId,
+        action: actionResult.value.action,
+      };
+
       if (actionResult.value.editMode) {
-        await registrationStore.loadFormData(actionResult);
+        await registrationStore.loadFormData(propsData);
       }
       if (actionResult.value.createMode) {
         // 啟動自動同步機制
@@ -637,7 +644,15 @@ export default {
       console.log("🔍 載入 Mock 數據調試信息:", { actionResult });
 
       try {
-        const success = await registrationStore.loadMockData(actionResult);
+        actionResult.value = handleActionResult();
+
+        const propsData = {
+          id: actionResult.value.id,
+          formId: actionResult.value.formId,
+          action: actionResult.value.action,
+        };
+
+        const success = await registrationStore.loadMockData(propsData);
 
         if (success) {
           ElMessage.success("Mock 數據載入成功");
