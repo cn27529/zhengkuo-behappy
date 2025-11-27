@@ -5,8 +5,9 @@
 ├── data.db
 ├── extensions
 ├── logs
+├── package-windows.json
 ├── package.json
 └── uploads
     └── test.txt
 
-4 directories, 6 files
+4 directories, 7 files

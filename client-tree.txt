@@ -14,6 +14,7 @@
 │   │   ├── ContactForm.vue
 │   │   ├── DevTools.vue
 │   │   ├── EnvTest.vue
+│   │   ├── Login2FAForm.vue
 │   │   ├── LoginForm.vue
 │   │   └── SupabaseLoginForm.vue
 │   ├── config
@@ -41,6 +42,7 @@
 │   │   ├── configStore.js
 │   │   ├── connectionStore.js
 │   │   ├── menu.js
+│   │   ├── pageStateStore.js
 │   │   ├── queryStore.js
 │   │   ├── registrationStore.js
 │   │   ├── supabase-auth.js
@@ -64,10 +66,7 @@
 │       ├── NewTab.vue
 │       ├── Placeholder.vue
 │       ├── PrintRegistration.vue
-│       ├── Registration copy 2.vue
-│       ├── Registration copy.vue
 │       ├── Registration.vue
-│       ├── RegistrationList copy.vue
 │       ├── RegistrationList.vue
 │       ├── SupabaseLogin.vue
 │       ├── TaiSui.vue
@@ -75,4 +74,4 @@
 │       └── generatorHash.vue
 └── vite.config.js
 
-12 directories, 64 files
+12 directories, 63 files
