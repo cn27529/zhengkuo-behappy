@@ -1,11 +1,17 @@
 // src/router/index.js 更新版本
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "../stores/auth";
+import { useAuthStore } from "../stores/authStore.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
+  { path: "/newtab", component: () => import("../views/NewTab.vue") },
+  { path: "/dialog", component: () => import("../views/ElDialog.vue") },
+  { path: "/empty", component: () => import("../views/Empty.vue") },
+  { path: "/env", component: () => import("../views/Env.vue") },
+  { path: "/hash", component: () => import("../views/generatorHash.vue") },
   { path: "/login", component: () => import("../views/Login.vue") },
   { path: "/contact", component: () => import("../views/Contact.vue") },
+  { path: "/mock", component: () => import("../views/MockLogin.vue") },
   {
     path: "/dashboard",
     component: () => import("../views/Dashboard.vue"),
@@ -15,12 +21,63 @@ const routes = [
   {
     path: "/registration",
     component: () => import("../views/Registration.vue"),
+    // 🛡️ Registration.vue路由進入前的驗證
+    beforeEnter: (to, from, next) => {
+      const { action, formId, id } = to.query;
+
+      console.log("🚪 進入 Registration 路由:", { action, formId, id });
+
+      // 情況1: 沒有任何參數,默認為 create
+      if (!action && !formId && !id) {
+        console.log("✨ 無參數,設置為 create 模式");
+        next({
+          path: "/registration",
+          query: { action: "create" },
+          replace: true,
+        });
+        return;
+      }
+
+      // 情況2: action 不合法
+      const validActions = ["create", "edit"];
+      if (action && !validActions.includes(action)) {
+        console.log("⚠️ 不合法的 action:", action);
+        next({
+          path: "/registration",
+          query: { action: "create" },
+          replace: true,
+        });
+        return;
+      }
+
+      // 情況3: edit/view 模式但缺少必要參數
+      if (action === "edit" && (!formId || !id)) {
+        console.log("⚠️ edit/view 模式缺少必要參數");
+        ElMessage.error("缺少必要的表單資訊");
+        next({ path: "/registration-list", replace: true });
+        return;
+      }
+
+      // 情況4: create 模式有多餘參數,清理掉
+      if (action === "create" && (formId || id)) {
+        console.log("🧹 清理 create 模式的多餘參數");
+        next({
+          path: "/registration",
+          query: { action: "create", t: Date.now() },
+          replace: true,
+        });
+        return;
+      }
+
+      // 通過驗證,繼續
+      next();
+    },
     meta: { requiresAuth: true },
   },
   {
     path: "/print-registration",
     component: () => import("../views/PrintRegistration.vue"),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   // 为未来功能预留路由
   {
@@ -38,6 +95,39 @@ const routes = [
     component: () => import("../views/Placeholder.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/taisui",
+    component: () => import("../views/TaiSui.vue"),
+    props: (route) => ({
+      // 設定預設年份為當前年份，如果 URL 有參數則使用 URL 參數
+      year: route.query.year || new Date().getFullYear(),
+    }),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/testpage",
+    name: "/testpage",
+    component: () => import("../views/TestPage.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/mydata",
+    name: "MydataList",
+    component: () => import("../views/MydataList.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: "/registration-list",
+    name: "RegistrationList",
+    component: () => import("../views/RegistrationList.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({
@@ -45,43 +135,68 @@ const router = createRouter({
   routes,
 });
 
-// 路由守卫
+// ========================================
+// 🛡️ 全局路由守衛(可選)
+// ========================================
+
+// 記錄路由歷史,用於更好的錯誤處理
+let routeHistory = [];
+
+// 全局導航路由守衛
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
+
   // 明確檢查 matched records 中是否有 requiresAuth === true
   const requiresAuth = to.matched.some(
     (record) => record.meta && record.meta.requiresAuth === true
   );
 
-  console.log("路由守衛:", {
+  console.log("路由守衛(目前檢查的路由):", {
     to: to.path,
     requiresAuth,
     matched: to.matched.map((r) => ({ path: r.path, meta: r.meta })),
     isAuthenticated: authStore.isAuthenticated,
   });
 
-  // 改為localStorage檢查設定isAuthenticated
-  const savedUser = localStorage.getItem("auth-user");
+  //sessionStorage（關閉瀏覽器就登出）
+  const savedUser = sessionStorage.getItem("auth-user");
+
   if (savedUser) {
     try {
       authStore.user = JSON.parse(savedUser);
       authStore.isAuthenticated = true;
-      console.log(
-        "index router 從本地存儲恢復用戶會話:",
-        authStore.user.nickname
-      );
+      console.log("從本地存儲恢復用戶會話:", authStore.user.displayName);
     } catch (error) {
-      console.error("index router 解析保存的用戶數據失敗:", error);
+      console.error("解析保存的用戶數據失敗:", error);
       authStore.logout();
     }
   }
 
+  // 記錄路由歷史(最多保留10條)
+  routeHistory.push(from.fullPath);
+  if (routeHistory.length > 10) {
+    routeHistory.shift();
+  }
+
   // 如果需要驗證且未登入
   if (requiresAuth && !authStore.isAuthenticated) {
-    console.log("index router 需要驗證但未登入，跳轉到登入頁");
+    console.log("需要驗證但未登入，跳轉到登入頁");
     next("/login");
   } else {
     next();
+  }
+});
+
+// 路由錯誤處理
+router.onError((error) => {
+  console.error("❌ 路由錯誤:", error);
+
+  // 🛡️ 如果發生錯誤,嘗試回到安全的頁面
+  if (
+    error.message.includes("Failed to fetch") ||
+    error.message.includes("Loading chunk")
+  ) {
+    ElMessage.error("頁面載入失敗,請重新整理");
   }
 });
 

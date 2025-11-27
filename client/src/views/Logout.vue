@@ -1,76 +1,79 @@
 <template>
-
   <div class="page login-container">
     <h2>已退出登录</h2>
     <div class="welcome-message">
       <p>您已成功退出{{ appTitle }}</p>
     </div>
-    <div class="logout-actions" style="display: none;">
-        <router-link to="/login" class="btn btn-primary">重新登录</router-link>
+    <div class="logout-actions" style="display: none">
+      <router-link to="/login" class="btn btn-primary">重新登录</router-link>
     </div>
   </div>
-
 </template>
 
 <script>
-import { onMounted,ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-import { ElMessage } from 'element-plus'
-import appConfig from '../config/appConfig'
+import { onMounted, ref, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/authStore.js";
+//import { useSupabaseAuthStore } from "../stores/supabase-auth.js"
+import { ElMessage } from "element-plus";
+import appConfig from "../config/appConfig";
 
 export default {
-  name: 'Logout',
+  name: "Logout",
   setup() {
-    
-    const router = useRouter()
-    const authStore = useAuthStore()
+    const router = useRouter();
+    const authStore = useAuthStore();
+    //const supabaseAuthStore = useSupabaseAuthStore()
 
-    const errors = reactive({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: ''
-    })
+    // const errors = reactive({
+    //   name: '',
+    //   email: '',
+    //   phone: '',
+    //   subject: '',
+    //   message: ''
+    // })
 
     //const success = ref(false)
     //const loading = ref(false)
 
     onMounted(() => {
-    
       // 显示退出登录消息
-      ElMessage.success('您已成功退出登录！👋👋');
-        
-        
+      ElMessage.success("您已成功退出登录！👋👋");
+
       // 执行退出登录操作
-      authStore.logout()
+      authStore.logout();
+      //supabaseAuthStore.logout()
 
       // 可选：添加延迟后自动跳转到登录页
       setTimeout(() => {
-        router.push('/login')
-      }, 10000)
-
-    })
+        router.push("/login");
+      }, 1500); // 3秒后跳转
+    });
 
     return {
       appTitle: appConfig.title,
-      errors,
+      //errors,
       //success,
       //loading,
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style scoped>
-.logout-container { max-width: 300px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
-h2 { text-align: center; }
+.logout-container {
+  max-width: 300px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+h2 {
+  text-align: center;
+}
 /* .login-container:hover {
   filter: drop-shadow(0 0 3em #42b883aa);
 } */
-
-
 
 .logout-icon {
   font-size: 4rem;
@@ -124,11 +127,11 @@ h2 { text-align: center; }
   .logout-container {
     padding: 1rem;
   }
-  
+
   .logout-actions {
     flex-direction: column;
   }
-  
+
   .btn {
     width: 100%;
   }
