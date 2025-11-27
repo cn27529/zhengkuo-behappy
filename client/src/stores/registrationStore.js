@@ -848,24 +848,62 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // ✅ 新增：重置表單的方法
+  // 重置表單為初始狀態（畫面上的重置按鈕呼叫）使用響應式安全的重置方法
   const resetForm = () => {
-    console.log("🔄 重置表單資料");
+    try {
+      console.log("開始重置表單...");
 
-    // 重置為初始狀態
-    registrationForm.value = getInitialFormData();
+      const initialData = getInitialFormData();
 
-    // 清空表單陣列
-    formArray.value = [];
-    currentFormIndex.value = 0;
+      // 方法：逐個屬性重置，保持響應性
+      // 1. 重置頂層屬性
+      registrationForm.value.state = initialData.status;
+      registrationForm.value.createDate = initialData.createDate;
+      registrationForm.value.lastModified = initialData.lastModified;
+      registrationForm.value.formName = initialData.formName;
+      registrationForm.value.formSource = initialData.formSource;
 
-    // 停止同步監聽
-    if (syncWatcher) {
-      syncWatcher();
-      syncWatcher = null;
+      // 2. 重置 contact 物件
+      registrationForm.value.contact.name = initialData.contact.name;
+      registrationForm.value.contact.phone = initialData.contact.phone;
+      registrationForm.value.contact.mobile = initialData.contact.mobile;
+      registrationForm.value.contact.relationship =
+        initialData.contact.relationship;
+      registrationForm.value.contact.otherRelationship =
+        initialData.contact.otherRelationship;
+
+      // 3. 重置 blessing 物件
+      registrationForm.value.blessing.address = initialData.blessing.address;
+      // 重置 persons 陣列 - 重要：重新賦值整個陣列
+      registrationForm.value.blessing.persons =
+        initialData.blessing.persons.map((person) => ({
+          ...person,
+        }));
+
+      // 4. 重置 salvation 物件
+      registrationForm.value.salvation.address = initialData.salvation.address;
+      registrationForm.value.salvation.ancestors =
+        initialData.salvation.ancestors.map((ancestor) => ({
+          ...ancestor,
+        }));
+      registrationForm.value.salvation.survivors =
+        initialData.salvation.survivors.map((survivor) => ({
+          ...survivor,
+        }));
+
+      // 5. 重置表單陣列
+      formArray.value = [{ ...initialData }];
+      currentFormIndex.value = 0;
+
+      console.log("重置表單完成", registrationForm.value);
+      return true;
+    } catch (error) {
+      console.error("重置表單失敗:", error);
+      return false;
     }
   };
 
+  
   // 在 registrationStore.js 中，直接使用 initializeFormArray 的逻辑
   const resetRegistrationForm = () => {
     console.log("🔄 重置表單（使用初始化邏輯）");

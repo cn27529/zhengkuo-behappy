@@ -512,6 +512,7 @@
         >
           返回列表
         </button>
+
         <button
           v-if="isEditMode"
           type="button"
@@ -539,6 +540,15 @@
           @click="handleAddNewForm"
         >
           📄 再填一張🆕
+        </button>
+
+        
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="handleResetForm"
+        >
+          清空表單重新填寫
         </button>
 
         <button
@@ -574,11 +584,11 @@ export default {
     // 新增：模式判断
     const pageTitle = ref("消災超度登記");
     const isCreateMode = computed(() =>
-      route.query.action || "create" === "create" ? true : false
+      route.query.action === "create" ? true : false
     );
 
     const isEditMode = computed(() =>
-      route.query.action || "edit" === "edit" ? true : false
+      route.query.action === "edit" ? true : false
     );
     const actionMode = computed(() => route.query.action);
     const formId = computed(() => route.query.formId);
@@ -883,6 +893,42 @@ export default {
       return res;
     };
 
+    // 重置表單處理
+    const handleResetForm = () => {
+      ElMessageBox.confirm(
+        "確定要清空所有表單資料嗎？此操作無法復原！",
+        "確認清空",
+        {
+          confirmButtonText: "確定清空",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          console.log("🔄 使用者觸發重置表單");
+
+          const success = registrationStore.resetForm();
+
+          if (success) {
+            // 使用 nextTick 確保 DOM 更新
+            await nextTick();
+            ElMessage.success("表單已重置");
+
+            // 額外確保：觸發輸入框更新
+            setTimeout(() => {
+              document.querySelectorAll("input").forEach((input) => {
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+              });
+            }, 100);
+          } else {
+            ElMessage.error("重置表單失敗");
+          }
+        })
+        .catch(() => {
+          ElMessage.info("已取消清空操作");
+        });
+    };
+
     const handlePrintPage = () => {
       const details = registrationStore.validationDetails;
       if (details && !details.valid) {
@@ -943,6 +989,7 @@ export default {
       addContactAsBlessing,
       addContactAsSurvivor,
       importFromBlessing,
+      handleResetForm,
       handlePrintPage,
       handleAddNewForm,
       handleSwitchForm,
