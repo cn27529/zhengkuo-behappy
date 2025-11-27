@@ -137,12 +137,7 @@
         <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
             <el-tooltip content="編輯表單" placement="top">
-              <el-button
-                circle
-                @click="handleEdit(row)"
-                type="primary"
-                style="display: none"
-              >
+              <el-button circle @click="handleEdit(row)" type="primary">
                 📝
               </el-button>
             </el-tooltip>
