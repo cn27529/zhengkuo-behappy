@@ -853,51 +853,26 @@ export const useRegistrationStore = defineStore("registration", () => {
   // 重置表單為初始狀態（畫面上的重置按鈕呼叫）使用響應式安全的重置方法
   const resetForm = () => {
     try {
-      console.log("開始重置表單...");
+      console.log("🔄 清空表單數據...");
 
-      const initialData = getInitialFormData();
+      // 重置表單數據
+      const initialForm = getInitialFormData();
+      initialForm.status = "reset";
+      initialForm.createdAt = registrationForm.value.createdAt;
+      initialForm.updatedAt = registrationForm.value.updatedAt;
+      initialForm.formName = registrationForm.value.formName;
+      initialForm.formSource = registrationForm.value.formSource;
+      initialForm.formId = registrationForm.value.formId;
+      initialForm.id = registrationForm.value.id;
 
-      // 方法：逐個屬性重置，保持響應性
-      // 1. 重置頂層屬性
-      registrationForm.value.state = initialData.status;
-      registrationForm.value.createDate = initialData.createDate;
-      registrationForm.value.lastModified = initialData.lastModified;
-      registrationForm.value.formName = initialData.formName;
-      registrationForm.value.formSource = initialData.formSource;
-
-      // 2. 重置 contact 物件
-      registrationForm.value.contact.name = initialData.contact.name;
-      registrationForm.value.contact.phone = initialData.contact.phone;
-      registrationForm.value.contact.mobile = initialData.contact.mobile;
-      registrationForm.value.contact.relationship =
-        initialData.contact.relationship;
-      registrationForm.value.contact.otherRelationship =
-        initialData.contact.otherRelationship;
-
-      // 3. 重置 blessing 物件
-      registrationForm.value.blessing.address = initialData.blessing.address;
-      // 重置 persons 陣列 - 重要：重新賦值整個陣列
-      registrationForm.value.blessing.persons =
-        initialData.blessing.persons.map((person) => ({
-          ...person,
-        }));
-
-      // 4. 重置 salvation 物件
-      registrationForm.value.salvation.address = initialData.salvation.address;
-      registrationForm.value.salvation.ancestors =
-        initialData.salvation.ancestors.map((ancestor) => ({
-          ...ancestor,
-        }));
-      registrationForm.value.salvation.survivors =
-        initialData.salvation.survivors.map((survivor) => ({
-          ...survivor,
-        }));
-
-      // 5. 重置表單陣列
-      formArray.value = [{ ...initialData }];
+      registrationForm.value = JSON.parse(JSON.stringify(initialForm));
+      formArray.value = [JSON.parse(JSON.stringify(initialForm))];
       currentFormIndex.value = 0;
 
-      console.log("重置表單完成", registrationForm.value);
+      // 重新啟動同步
+      setupFormSync();
+
+      console.log("✅ 表單數據已清空");
       return true;
     } catch (error) {
       console.error("重置表單失敗:", error);
@@ -907,23 +882,42 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 在 registrationStore.js 中，直接使用 initializeFormArray 的逻辑
   const resetRegistrationForm = () => {
-    console.log("🔄 重置表單（使用初始化邏輯）");
+    try {
+      console.log("🔄 重置表單（使用初始化邏輯）");
 
-    // 直接重用 initializeFormArray 的逻辑
-    if (formArray.value.length === 0) {
-      formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
-    } else {
-      // 替换当前表单为初始状态
-      const initialForm = getInitialFormData();
-      formArray.value[currentFormIndex.value] = JSON.parse(
-        JSON.stringify(initialForm)
-      );
-      loadFormToRegistration(initialForm);
+      // 直接重用 initializeFormArray 的逻辑
+      if (formArray.value.length === 0) {
+        formArray.value.push(
+          JSON.parse(JSON.stringify(registrationForm.value))
+        );
+      } else {
+        // 替换当前表单为初始状态
+        const initialForm = getInitialFormData();
+
+        // 方法：逐個屬性重置，保持響應性
+        // 1. 重置頂層屬性
+        initialForm.status = "reset";
+        initialForm.createdAt = registrationForm.value.createdAt;
+        initialForm.updatedAt = registrationForm.value.updatedAt;
+        initialForm.formName = registrationForm.value.formName;
+        initialForm.formSource = registrationForm.value.formSource;
+        initialForm.formId = registrationForm.value.formId;
+        initialForm.id = registrationForm.value.id;
+
+        formArray.value[currentFormIndex.value] = JSON.parse(
+          JSON.stringify(initialForm)
+        );
+        loadFormToRegistration(initialForm);
+      }
+
+      // 确保同步机制运行
+      setupFormSync();
+      console.log("✅ 表單已重置");
+      return true;
+    } catch (error) {
+      console.error("重置表單失敗:", error);
+      return false;
     }
-
-    // 确保同步机制运行
-    setupFormSync();
-    console.log("✅ 表單已重置");
   };
 
   const initializeFormArray = () => {
@@ -936,7 +930,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // 載入 Mock 數據
-  const loadMockData = async (formId = null) => {
+  const loadMockData = async (formId = null, action = "create") => {
     try {
       if (!mockRegistrations || mockRegistrations.length === 0) {
         console.error("Mock 數據為空或未找到");
@@ -962,11 +956,14 @@ export const useRegistrationStore = defineStore("registration", () => {
       const currentMock = getInitialFormData();
 
       // 補上mock缺少的數據
-      currentMock.formId = mockData.formId;
+      if (!action === "create") {
+        currentMock.formId = mockData.formId;
+      }
       currentMock.formName = mockData.formName;
       currentMock.formSource = mockData.formSource;
-      currentMock.createDate = mockData.createDate;
-      currentMock.lastModified = mockData.lastModified;
+      currentMock.createdAt = mockData.createdAt;
+      currentMock.updatedAt = mockData.updatedAt;
+      currentMock.id = mockData.id;
 
       // 只更新數據字段，不改變表單狀態和 ID
       if (mockData.contact) {
@@ -1051,8 +1048,6 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 从服务器获取表单数据
       const result = await registrationService.getRegistrationById(id);
-      
-      
 
       console.log("服務器返回的表單數據:", result);
 

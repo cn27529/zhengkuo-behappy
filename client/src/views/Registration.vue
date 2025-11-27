@@ -16,7 +16,7 @@
       <!-- 在 template 添加調試信息 -->
       <div v-if="isDev" class="debug-panel">
         <!-- 添加 Mock 按钮 -->
-        <el-button type="success" class="dev-button" @click="loadMockData"
+        <el-button type="success" class="dev-button" @click="handleLoadMockData"
           >🎲 生成 Mock 數據</el-button
         >
         <h4>🔧 調試信息</h4>
@@ -28,7 +28,9 @@
           <span v-for="(form, idx) in formArray" :key="idx">
             第{{ idx + 1 }}張表單 [state={{ form.state }}, formId={{
               form.formId
-            }}, formSource={{ form.formSource }}, id={{ form.id }}, contact={{
+            }}, formSource={{ form.formSource }}, createdAt={{
+              form.createdAt
+            }}, updatedAt={{ form.updatedAt }}, id={{ form.id }}, contact={{
               JSON.stringify(form.contact)
             }}, blessing={{ JSON.stringify(form.blessing) }}]
             <hr />
@@ -542,9 +544,6 @@
           📄 再填一張🆕
         </button>
 
-        
-        
-
         <button
           type="button"
           class="btn btn-outline capsule-btn"
@@ -554,13 +553,13 @@
         </button>
 
         <button
+          v-if="isEditMode"
           type="button"
           class="btn btn-secondary"
           @click="handleResetForm"
         >
           清空表單重新填寫
         </button>
-
       </div>
     </div>
   </div>
@@ -631,7 +630,7 @@ export default {
       if (actionResult.value.createMode) {
         // 啟動自動同步機制
         //gistrationStore.initializeFormArray();
-        gistrationStore.resetRegistrationForm();        
+        gistrationStore.resetRegistrationForm();
 
         console.log("[v0] 表單同步已啟動 - 創建模式");
       }
@@ -640,9 +639,9 @@ export default {
     });
 
     // 載入測試 Mock 數據，進行快速測試
-    const loadMockData = async () => {
+    const handleLoadMockData = async () => {
       try {
-        const success = await registrationStore.loadMockData();
+        const success = await registrationStore.loadMockData(registrationForm.valid.formId, actionMode.value);
         if (success) {
           ElMessage.success("Mock 數據載入成功");
         } else {
@@ -910,7 +909,8 @@ export default {
         .then(async () => {
           console.log("🔄 使用者觸發重置表單");
 
-          const success = registrationStore.resetForm();
+          //const success = registrationStore.resetForm();
+          const success = registrationStore.resetRegistrationForm();
 
           if (success) {
             // 使用 nextTick 確保 DOM 更新
@@ -1001,7 +1001,7 @@ export default {
       handleBack,
       handleUpdateForm,
       getStatusText,
-      loadMockData, // 載入測試 Mock 數據，進行快速測試
+      handleLoadMockData, // 載入測試 Mock 數據，進行快速測試
 
       // 計算屬性
       currentFormIndex,
