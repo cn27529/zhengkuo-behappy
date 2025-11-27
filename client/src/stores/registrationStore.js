@@ -30,6 +30,8 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 提取為顶层共用函数（在 setupFormSync 之前定义）
   const loadFormToRegistration = (formData) => {
+    console.log("📡 加載表單到報名表單中…", { formData });
+
     Object.keys(formData).forEach((key) => {
       if (key !== "contact" && key !== "blessing" && key !== "salvation") {
         registrationForm.value[key] = formData[key];
@@ -903,7 +905,6 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  
   // 在 registrationStore.js 中，直接使用 initializeFormArray 的逻辑
   const resetRegistrationForm = () => {
     console.log("🔄 重置表單（使用初始化邏輯）");
@@ -959,6 +960,13 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 更新當前表單數據，但保留表單的狀態和 ID
       const currentMock = getInitialFormData();
+
+      // 補上mock缺少的數據
+      currentMock.formId = mockData.formId;
+      currentMock.formName = mockData.formName;
+      currentMock.formSource = mockData.formSource;
+      currentMock.createDate = mockData.createDate;
+      currentMock.lastModified = mockData.lastModified;
 
       // 只更新數據字段，不改變表單狀態和 ID
       if (mockData.contact) {
@@ -1032,28 +1040,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       console.log(`🔄 載入表單進行${action === "edit" ? "編輯" : "查看"}:`);
       console.log("參數調試：", { formId, id, action, mode: baseService.mode });
 
-      // // 先检查本地是否有该表单
-      // const localForm = formArray.value.find((form) => form.formId === formId);
-      // if (localForm) {
-      //   console.log("📁 從本地載入表單");
-      //   formArray.value[currentFormIndex.value] = JSON.parse(
-      //     JSON.stringify(localForm)
-      //   );
-      //   currentFormIndex.value = 0;
-      //   loadFormToRegistration(localForm);
-      //   // 根据 action 设置状态
-      //   if (action === "edit") {
-      //     registrationForm.value.state = "editing";
-      //     setupFormSync();
-      //   }
-      //   return true;
-      // }
-
-      // // 如果本地没有，再从服务器加载
-      // if (!localForm) {
-      //   console.log("📡 從服務器載入表單");
-      // }
-
       console.log("📡 從服務器載入表單");
 
       // 检查连接
@@ -1065,8 +1051,10 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 从服务器获取表单数据
       const result = await registrationService.getRegistrationById(id);
+      
+      
 
-      //console.log("服務器返回的表單數據:", result);
+      console.log("服務器返回的表單數據:", result);
 
       if (result.success && result.data) {
         const formData = result.data;
@@ -1078,8 +1066,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         //   formData.state = "submitted"; // 查看模式设置为已提交（只读）
         // }
 
-        // 更新到store
-        // 觸發響應式更新
+        // 更新到store觸發響應式更新
         formArray.value[currentFormIndex.value] = JSON.parse(
           JSON.stringify(formData)
         );
@@ -1088,10 +1075,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         console.log("📁 從服務器載入的表單數據:", formData);
         // 更新當前表單數據
         loadFormToRegistration(formArray.value[currentFormIndex.value]);
-        if (action === "edit") {
-          //registrationForm.value.state = "editing";
-          setupFormSync();
-        }
+        setupFormSync();
 
         console.log(
           `✅ 表單載入成功（${action === "edit" ? "編輯" : "查看"}模式）`
