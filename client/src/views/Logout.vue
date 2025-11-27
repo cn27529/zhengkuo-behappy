@@ -16,7 +16,7 @@
 import { onMounted,ref, reactive } from "vue"
 import { useRouter } from "vue-router"
 import { useAuthStore } from "../stores/authStore.js"
-import { useSupabaseAuthStore } from "../stores/supabase-auth.js"
+//import { useSupabaseAuthStore } from "../stores/supabase-auth.js"
 import { ElMessage } from "element-plus"
 import appConfig from "../config/appConfig"
 
@@ -26,7 +26,7 @@ export default {
     
     const router = useRouter()
     const authStore = useAuthStore()
-    const supabaseAuthStore = useSupabaseAuthStore()
+    //const supabaseAuthStore = useSupabaseAuthStore()
 
     // const errors = reactive({
     //   name: '',
