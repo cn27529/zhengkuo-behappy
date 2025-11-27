@@ -71,10 +71,10 @@
         :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
         v-loading="isLoading"
       >
-        <el-table-column label="表單資訊" min-width="100">
+        <el-table-column label="表單資訊" min-width="80">
           <template #default="{ row }">
             <div>
-              <div class="form-name">{{ row.formId }}</div>
+              <div class="form-name"></div>
               <el-tag
                 v-if="row.formSource"
                 size="small"
@@ -136,13 +136,16 @@
 
         <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
-            <div style="display: none">
-              <el-tooltip content="編輯表單" placement="top">
-                <el-button circle @click="handleEdit(row)" type="primary">
-                  📝
-                </el-button>
-              </el-tooltip>
-            </div>
+            <el-tooltip content="編輯表單" placement="top">
+              <el-button
+                circle
+                @click="handleEdit(row)"
+                type="primary"
+                style="display: none"
+              >
+                📝
+              </el-button>
+            </el-tooltip>
             <el-tooltip content="列印表單" placement="top">
               <el-button type="success" circle @click="handlePrint(row)"
                 >🖨️</el-button
