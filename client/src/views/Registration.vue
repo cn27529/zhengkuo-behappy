@@ -641,7 +641,10 @@ export default {
     // 載入測試 Mock 數據，進行快速測試
     const handleLoadMockData = async () => {
       try {
-        const success = await registrationStore.loadMockData(registrationForm.valid.formId, actionMode.value);
+        const success = await registrationStore.loadMockData(
+          registrationForm.value.formId,
+          actionMode.value
+        );
         if (success) {
           ElMessage.success("Mock 數據載入成功");
         } else {
@@ -779,9 +782,9 @@ export default {
       // 或者使用 router.push('/registration') 導航到特定頁面
     };
 
-    // 更新表单
+    // 保存修改表单
     const handleUpdateForm = async () => {
-      console.log("更新表單調試信息:");
+      console.log("保存修改表單調試信息:");
       console.log("當前表單陣列:", formArray.value);
       console.log("當前表單索引:", currentFormIndex.value);
 
@@ -804,7 +807,7 @@ export default {
           ElMessage.error(result.message);
         }
       } catch (error) {
-        ElMessage.error("更新失敗: " + error.message);
+        ElMessage.error("保存修改失敗: " + error.message);
       } finally {
         submitting.value = false;
       }
