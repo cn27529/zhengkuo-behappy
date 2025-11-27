@@ -880,7 +880,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // 在 registrationStore.js 中，直接使用 initializeFormArray 的逻辑
+  // 重置表單為初始狀態（畫面上的重置按鈕呼叫）
   const resetRegistrationForm = () => {
     try {
       console.log("🔄 重置表單（使用初始化邏輯）");
@@ -925,21 +925,21 @@ export const useRegistrationStore = defineStore("registration", () => {
     if (formArray.value.length === 0) {
       formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
       console.log("✅ 表單陣列已初始化");
+    } else {
+      resetRegistrationForm();
     }
     console.log("✅ 自動同步已啟動，當前索引:", currentFormIndex.value);
   };
 
   // 載入 Mock 數據
-  const loadMockData = async (formId, id, action) => {
+  const loadMockData = async (propsData) => {
     try {
       if (!mockRegistrations || mockRegistrations.length === 0) {
         console.error("Mock 數據為空或未找到");
         return false;
       }
 
-      console.log("formId 參數:", formId);
-      console.log("dbId 參數:", id);
-      console.log("action 參數:", action);
+      console.log("propsData 參數調試:", propsData);
 
       let mockData = null;
 
@@ -948,8 +948,14 @@ export const useRegistrationStore = defineStore("registration", () => {
       mockData = mockRegistrations[randomIndex];
 
       // 如果提供了 formId，則嘗試找到對應的數據
-      if (action === "edit" && formId !== "" && id !== "") {
-        mockData = mockRegistrations.find((item) => item.formId === formId);
+      if (
+        propsData.action === "edit" &&
+        propsData.formId !== "" &&
+        propsData.id !== ""
+      ) {
+        mockData = mockRegistrations.find(
+          (item) => item.formId === propsData.formId
+        );
       }
 
       // 更新當前表單數據，但保留表單的狀態和 ID
@@ -964,18 +970,22 @@ export const useRegistrationStore = defineStore("registration", () => {
       currentMock.id = mockData.id;
       currentMock.status = mockData.status;
       //如果是create模式，重置formId，可以提交
-      if (!action === "create") {
+      if (!propsData.action === "create") {
         currentMock.formId = "";
       }
       // 如果是edit模式，formId與id不變，可以保存修改
-      if (action === "edit" && formId !== "" && id !== "") {
-        currentMock.formId = formId;
-        currentMock.id = id;
+      if (
+        propsData.action === "edit" &&
+        propsData.formId !== "" &&
+        propsData.id !== ""
+      ) {
+        currentMock.formId = propsData.formId;
+        currentMock.id = propsData.id;
       }
 
       // 只更新數據字段，不改變表單狀態和 ID
       if (mockData.contact) {
-        currentMock.contact = { ...mockData.contact };        
+        currentMock.contact = { ...mockData.contact };
       }
 
       if (mockData.blessing) {
@@ -1027,22 +1037,19 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // 统一的表单加载方法
-  const loadFormData = async (formId, id, action = "create") => {
+  const loadFormData = async (propsData) => {
     try {
-      //console.log("參數調試：", { formId, action, mode: baseService.mode });
+      console.log("propsData 參數調試:", propsData);
 
       // 不是 directus 模式下，載入 Mock 數據
       if (baseService.mode !== "directus") {
         console.warn(
           "表單載入成功！⚠️ 當前模式不是 directus，無法從服務器加載表單"
         );
-        loadMockData(formId);
+        loadMockData(propsData);
         setupFormSync();
         return true;
       }
-
-      console.log(`🔄 載入表單進行${action === "edit" ? "編輯" : "查看"}:`);
-      console.log("參數調試：", { formId, id, action, mode: baseService.mode });
 
       console.log("📡 從服務器載入表單");
 
@@ -1060,13 +1067,6 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       if (result.success && result.data) {
         const formData = result.data;
-
-        // // 根据 action 设置表单状态
-        // if (action === "edit") {
-        //   formData.state = "editing";
-        // } else {
-        //   formData.state = "submitted"; // 查看模式设置为已提交（只读）
-        // }
 
         // 更新到store觸發響應式更新
         formArray.value[currentFormIndex.value] = JSON.parse(

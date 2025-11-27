@@ -623,31 +623,21 @@ export default {
 
       actionResult.value = handleActionResult();
       if (actionResult.value.editMode) {
-        await registrationStore.loadFormData(
-          actionResult.value.formId,
-          actionResult.value.id,
-          actionResult.value.action
-        );
+        await registrationStore.loadFormData(actionResult);
       }
       if (actionResult.value.createMode) {
         // 啟動自動同步機制
-        //registrationStore.initializeFormArray();
-        registrationStore.resetRegistrationForm();
-
+        registrationStore.initializeFormArray();
         console.log("[v0] 表單同步已啟動 - 創建模式");
       }
     });
 
     // 載入測試 Mock 數據，進行快速測試
     const handleLoadMockData = async () => {
-      console.log("🔍 載入 Mock 數據調試信息:", { actionResult });      
+      console.log("🔍 載入 Mock 數據調試信息:", { actionResult });
 
       try {
-        const success = await registrationStore.loadMockData(
-          actionResult.value.formId,
-          actionResult.value.id,
-          actionResult.value.action          
-        );
+        const success = await registrationStore.loadMockData(actionResult);
 
         if (success) {
           ElMessage.success("Mock 數據載入成功");
