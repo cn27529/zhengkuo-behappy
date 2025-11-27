@@ -8,7 +8,6 @@ import { registrationService } from "../services/registrationService.js";
 import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
-import { ro } from "element-plus/es/locale/index.mjs";
 
 export const useRegistrationStore = defineStore("registration", () => {
   const configStore = useConfigStore();
@@ -948,14 +947,16 @@ export const useRegistrationStore = defineStore("registration", () => {
       mockData = mockRegistrations[randomIndex];
 
       // 如果提供了 formId，則嘗試找到對應的數據
-      if (
-        propsData.action === "edit" &&
-        propsData.formId !== "" &&
-        propsData.id !== ""
-      ) {
-        mockData = mockRegistrations.find(
-          (item) => item.formId === propsData.formId
-        );
+      if (baseService.mode !== "directus") {
+        if (
+          propsData.action === "edit" &&
+          propsData.formId !== "" &&
+          propsData.id !== ""
+        ) {
+          mockData = mockRegistrations.find(
+            (item) => item.formId === propsData.formId
+          );
+        }
       }
 
       // 更新當前表單數據，但保留表單的狀態和 ID
