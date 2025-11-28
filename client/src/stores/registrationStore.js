@@ -7,6 +7,7 @@ import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
 import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
+import submittedMockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 
 export const useRegistrationStore = defineStore("registration", () => {
@@ -187,10 +188,15 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       console.log("🔄 切換表單從", currentFormIndex.value, "到", index);
 
+
       // 如果formId存在，不切換狀態
       if (formArray.value[currentFormIndex.value].formId === "") {
         formArray.value[currentFormIndex.value].state = "saved";
       }
+      // formArray.value[currentFormIndex.value].state = "saved";
+      // if(baseService.isDev) {
+      //   formArray.value[currentFormIndex.value].formId = ""
+      // }
 
       // 切換目標表單
       const targetForm = formArray.value[index];
@@ -198,6 +204,10 @@ export const useRegistrationStore = defineStore("registration", () => {
       if (targetForm.formId === "") {
         targetForm.state = "editing";
       }
+      //targetForm.state = "editing";
+      // if(baseService.isDev) {
+      //   targetForm.formId = ""
+      // }
       loadFormToRegistration(targetForm);
       currentFormIndex.value = index;
 

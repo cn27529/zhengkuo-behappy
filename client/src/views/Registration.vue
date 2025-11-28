@@ -1016,8 +1016,8 @@ export default {
       handleLoadMockData, // 載入測試 Mock 數據，進行快速測試
 
       // 計算屬性
+      submitting,      
       currentFormIndex,
-      submitting,
       formArray,
       currentFormSummary,
       formSummaries,
@@ -1033,10 +1033,10 @@ export default {
       // store 中只暴露需要的屬性和方法，不要使用展開運算符
       registrationForm: registrationStore.registrationForm,
       formConfig: configStore.formConfig,
-      currentFormIndex: registrationStore.currentFormIndex,
-      formArray: registrationStore.formArray,
-      currentFormSummary: registrationStore.currentFormSummary,
-      formSummaries: registrationStore.formSummaries,
+      //currentFormIndex: registrationStore.currentFormIndex,
+      //formArray: registrationStore.formArray,
+      //currentFormSummary: registrationStore.currentFormSummary,
+      //formSummaries: registrationStore.formSummaries,
       validationDetails: registrationStore.validationDetails,
       // store 中方法
       addBlessingPerson: registrationStore.addBlessingPerson,
