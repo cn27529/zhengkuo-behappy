@@ -609,8 +609,8 @@ export default {
       const result = {
         editMode: isEditMode.value,
         createMode: isCreateMode.value,
-        formId: formId.value,
-        id: id.value,
+        formId: formId.value || "", // 預設空
+        id: id.value || -1, // 預設負1
         pageTitle: pageTitle.value,
         action: actionMode.value,
       };
@@ -1016,7 +1016,7 @@ export default {
       handleLoadMockData, // 載入測試 Mock 數據，進行快速測試
 
       // 計算屬性
-      submitting,      
+      submitting,
       currentFormIndex,
       formArray,
       currentFormSummary,
@@ -1064,14 +1064,6 @@ export default {
 </script>
 
 <style scoped>
-.debug-panel {
-  background: #000000;
-  color: #00ff00;
-  padding: 10px;
-  margin-top: 20px;
-  font-size: 14px;
-}
-
 .print-controls {
   display: flex;
   justify-content: space-between;

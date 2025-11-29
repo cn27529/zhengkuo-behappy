@@ -462,14 +462,6 @@ export default {
 </script>
 
 <style scoped>
-.debug-panel {
-  background: #000000;
-  color: #fff000;
-  padding: 10px;
-  margin-top: 20px;
-  font-size: 14px;
-}
-
 /* 搜尋區域 */
 .search-section {
   background: white;

@@ -7,7 +7,6 @@ import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
 import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
-import submittedMockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 
 export const useRegistrationStore = defineStore("registration", () => {
@@ -187,7 +186,6 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
 
       console.log("🔄 切換表單從", currentFormIndex.value, "到", index);
-
 
       // 如果formId存在，不切換狀態
       if (formArray.value[currentFormIndex.value].formId === "") {
@@ -956,79 +954,71 @@ export const useRegistrationStore = defineStore("registration", () => {
       const randomIndex = Math.floor(Math.random() * mockRegistrations.length);
       mockData = mockRegistrations[randomIndex];
 
-      // 如果提供了 formId，則嘗試找到對應的數據
-      if (baseService.mode !== "directus") {
-        if (
-          propsData.action === "edit" &&
-          propsData.formId !== "" &&
-          propsData.id !== ""
-        ) {
-          mockData = mockRegistrations.find(
-            (item) => item.formId === propsData.formId
-          );
-        }
-      }
+      console.log("📡 從 Mock 載入表單數據", mockData);
 
-      // 更新當前表單數據，但保留表單的狀態和 ID
-      const currentMock = getInitialFormData();
-
-      // 補上mock缺少的數據
-      currentMock.formId = mockData.formId;
-      currentMock.formName = mockData.formName;
-      currentMock.formSource = mockData.formSource;
-      currentMock.createdAt = mockData.createdAt;
-      currentMock.updatedAt = mockData.updatedAt;
-      currentMock.id = mockData.id;
-      currentMock.status = mockData.status;
-      //如果是create模式，重置formId，可以提交
-      if (!propsData.action === "create") {
-        currentMock.formId = "";
-      }
       // 如果是edit模式，formId與id不變，可以保存修改
       if (
         propsData.action === "edit" &&
         propsData.formId !== "" &&
         propsData.id !== ""
       ) {
-        currentMock.formId = propsData.formId;
-        currentMock.id = propsData.id;
+        if (baseService.mode === "mock") {
+          // // 嘗試找到對應的數據
+          // mockData = mockRegistrations.find(
+          //   (item) => item.formId === propsData.formId
+          // );
+        }
+        mockData.formId = propsData.formId;
+        mockData.id = propsData.id;
       }
 
-      // 只更新數據字段，不改變表單狀態和 ID
-      if (mockData.contact) {
-        currentMock.contact = { ...mockData.contact };
+      //如果是create模式，重置formId，可以提交
+      if (propsData.action === "create") {
+        mockData.formId = "";
       }
 
-      if (mockData.blessing) {
-        currentMock.blessing = {
-          ...mockData.blessing,
-          persons: mockData.blessing.persons
-            ? [...mockData.blessing.persons]
-            : [],
-        };
-        //console.log("載入 Mock blessing 數據:", currentMock.blessing);
-      }
+      // 更新當前表單數據，但保留表單的狀態和 ID
+      const currentMock = getInitialFormData();
 
-      if (mockData.salvation) {
-        currentMock.salvation = {
-          ...mockData.salvation,
-          ancestors: mockData.salvation.ancestors
-            ? [...mockData.salvation.ancestors]
-            : [],
-          survivors: mockData.salvation.survivors
-            ? [...mockData.salvation.survivors]
-            : [],
-        };
-        //console.log("載入 Mock salvation 數據:", currentMock.salvation);
-      }
+      // 更新當前表單數據
+      Object.assign(currentMock, mockData);
 
-      // 更新表單名稱（可選）
-      if (mockData.formName) {
-        currentMock.formName = mockData.formName;
-      }
+      // // 補上mock缺少的數據
+      // currentMock.formId = mockData.formId;
+      // currentMock.formName = mockData.formName;
+      // currentMock.formSource = mockData.formSource;
+      // currentMock.createdAt = mockData.createdAt;
+      // currentMock.updatedAt = mockData.updatedAt;
+      // currentMock.id = mockData.id;
+      // currentMock.status = mockData.status;
 
-      // 設置表單狀態為編輯中
-      //currentMock.state = "editing";
+      // // 只更新數據字段，不改變表單狀態和 ID
+      // if (mockData.contact) {
+      //   currentMock.contact = { ...mockData.contact };
+      // }
+
+      // if (mockData.blessing) {
+      //   currentMock.blessing = {
+      //     ...mockData.blessing,
+      //     persons: mockData.blessing.persons
+      //       ? [...mockData.blessing.persons]
+      //       : [],
+      //   };
+      //   //console.log("載入 Mock blessing 數據:", currentMock.blessing);
+      // }
+
+      // if (mockData.salvation) {
+      //   currentMock.salvation = {
+      //     ...mockData.salvation,
+      //     ancestors: mockData.salvation.ancestors
+      //       ? [...mockData.salvation.ancestors]
+      //       : [],
+      //     survivors: mockData.salvation.survivors
+      //       ? [...mockData.salvation.survivors]
+      //       : [],
+      //   };
+      //   //console.log("載入 Mock salvation 數據:", currentMock.salvation);
+      // }
 
       // 觸發響應式更新
       formArray.value[currentFormIndex.value] = JSON.parse(
