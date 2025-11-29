@@ -1,4 +1,4 @@
-// src/stores/pageStateStore.js
+// 頁面狀態保存，取代網址URL的暴露，防止使用者由URL直接更改參數據，使得URL簡潔
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 

@@ -338,8 +338,8 @@ export default {
           id: item.id,
           source: "list",
         });
-        console.log("🔄 等待狀態保存完成:", pageState);
-        console.log("✅ 狀態保存完成，開始導航");
+        console.log("🔄 頁面URL狀態保存完成:", pageState);
+        console.log("✅ 頁面URL狀態保存完成，開始導航");
         handleActionToRedirect(item, "edit");
       } catch (error) {
         console.error("❌ 編輯操作失敗:", error);
