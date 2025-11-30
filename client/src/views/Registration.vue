@@ -553,7 +553,7 @@
         </button>
 
         <button
-          v-if="isEditMode"
+          v-if="isEditMode || isCreateMode"
           type="button"
           class="btn btn-secondary"
           @click="handleResetForm"
@@ -920,9 +920,14 @@ export default {
       )
         .then(async () => {
           console.log("🔄 使用者觸發重置表單");
+          console.log("當前表單:", registrationStore.registrationForm);
 
+          let fId = registrationStore.registrationForm.formId;
+          let emptyFormId = false;
+          // 如果是創建模式且 formId 不為空，則清空 formId
+          if (isCreateMode.value && fId !== "") emptyFormId = true;
           //const success = registrationStore.resetForm();
-          const success = registrationStore.resetRegistrationForm();
+          const success = registrationStore.resetRegistrationForm(emptyFormId);
 
           if (success) {
             // 使用 nextTick 確保 DOM 更新

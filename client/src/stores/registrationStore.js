@@ -888,7 +888,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   };
 
   // 重置表單為初始狀態（畫面上的重置按鈕呼叫）
-  const resetRegistrationForm = () => {
+  const resetRegistrationForm = (emptyFormId = false) => {
     try {
       console.log("🔄 重置表單（使用初始化邏輯）");
 
@@ -910,6 +910,10 @@ export const useRegistrationStore = defineStore("registration", () => {
         initialForm.formSource = registrationForm.value.formSource;
         initialForm.formId = registrationForm.value.formId;
         initialForm.id = registrationForm.value.id;
+
+        if (emptyFormId) {
+          initialForm.formId = "";
+        }
 
         formArray.value[currentFormIndex.value] = JSON.parse(
           JSON.stringify(initialForm)
