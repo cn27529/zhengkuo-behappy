@@ -614,6 +614,17 @@ export default {
       return result;
     };
 
+    
+
+    const getPageTitle = (action) => {
+      const titles = {
+        create: '消災超度登記',
+        edit: '編輯表單', 
+        view: '查看表單'
+      };
+      return titles[action] || titles.create;
+    };
+
     // 从 Store 获取页面状态
     const loadPageState = () => {
       const state = pageStateStore.getPageState("registration");
@@ -640,20 +651,10 @@ export default {
 
     };
 
-    const getPageTitle = (action) => {
-      const titles = {
-        create: '消災超度登記',
-        edit: '編輯表單', 
-        view: '查看表單'
-      };
-      return titles[action] || titles.create;
-    };
-
     onMounted(async () => {
       await registrationStore.loadConfig();
 
-      actionResult.value = handleActionResult();
-      pageTitle.value = getPageTitle(actionResult.value.action);
+      actionResult.value = handleActionResult();      
 
       const pageState = loadPageState();
       actionMode.value = pageState.action;
