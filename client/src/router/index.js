@@ -1,6 +1,7 @@
 // src/router/index.js 更新版本
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
+import {  } from "../stores/pageStateStore.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
@@ -124,6 +125,15 @@ const routes = [
     path: "/registration-list",
     name: "RegistrationList",
     component: () => import("../views/RegistrationList.vue"),
+    beforeEach: (to, from, next) => {
+
+      console.log("🚪 進入 RegistrationList 路由，清除所有页面状态");
+      const pageStateStore = usePageStateStore();
+      console.log("🚪 清除所有页面状态");
+      pageStateStore.clearAllPageStates();
+      next();
+      
+    },
     meta: {
       requiresAuth: true,
     },

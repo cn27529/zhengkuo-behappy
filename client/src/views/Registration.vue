@@ -566,16 +566,18 @@
 </template>
 
 <script>
-import { useRegistrationStore } from "../stores/registrationStore.js";
 import { ref, onMounted, computed, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { authService } from "../services/authService";
-import { useConfigStore } from "../stores/configStore.js";
 import { useRouter, useRoute } from "vue-router";
+import { authService } from "../services/authService";
+import { useRegistrationStore } from "../stores/registrationStore.js";
+import { useConfigStore } from "../stores/configStore.js";
+import { usePageStateStore } from "../stores/pageStateStore.js";
 
 export default {
   name: "Registration",
   setup() {
+    const pageStateStore = usePageStateStore();
     const configStore = useConfigStore();
     const registrationStore = useRegistrationStore();
     const submitting = ref(false);
@@ -599,35 +601,77 @@ export default {
     const actionResult = ref({});
     // 新增：模式判断
     const handleActionResult = () => {
-      if (isEditMode.value && formId.value && id.value) {
-        // 编辑模式
-        pageTitle.value = "編輯表單";
-      } else if (isCreateMode.value) {
-        pageTitle.value = "消災超度登記";
-      }
 
       const result = {
         editMode: isEditMode.value,
         createMode: isCreateMode.value,
         formId: formId.value || "", // 預設空
         id: id.value || -1, // 預設負1
-        pageTitle: pageTitle.value,
+        pageTitle: getPageTitle(actionMode.value),
         action: actionMode.value,
       };
       console.log("路由參數調試信息:", result);
       return result;
     };
 
+    // 从 Store 获取页面状态
+    const loadPageState = () => {
+      const state = pageStateStore.getPageState("registration");
+      console.log("📋 加载页面状态:", state);
+      
+      if (state) {
+        return {
+          action: state.action || 'create',
+          formId: state.formId || "",
+          id: state.id || -1,
+          source: state.source || "",
+          pageTitle: getPageTitle(state.action)
+        };
+      }
+      
+      // 如果没有保存的状态，回退到 URL 参数（兼容旧方式）
+      return {
+        action: route.query.action || 'create',
+        formId: route.query.formId || "",
+        id: route.query.id || -1,
+        source: route.query.source || "",
+        pageTitle: getPageTitle(route.query.action)
+      };
+
+    };
+
+    const getPageTitle = (action) => {
+      const titles = {
+        create: '消災超度登記',
+        edit: '編輯表單', 
+        view: '查看表單'
+      };
+      return titles[action] || titles.create;
+    };
+
     onMounted(async () => {
       await registrationStore.loadConfig();
 
       actionResult.value = handleActionResult();
+      pageTitle.value = getPageTitle(actionResult.value.action);
+
+      const pageState = loadPageState();
+      actionResult.value = pageState;
+      actionMode.value = pageState.action;
+      id.value = pageState.id;
+      formId.value = pageState.formId;      
+      pageTitle.value = pageState.pageTitle;
+
+      console.log("📋 pageState參數調試信息:", pageState);
 
       const propsData = {
-        id: actionResult.value.id,
-        formId: actionResult.value.formId,
-        action: actionResult.value.action,
+        id: pageState.id,
+        formId: pageState.formId,
+        action: pageState.action,
       };
+
+      console.log("propsData", propsData);
+      return;
 
       if (actionResult.value.editMode) {
         await registrationStore.loadFormData(propsData);
@@ -786,6 +830,9 @@ export default {
     };
 
     const handleBack = () => {
+      
+      pageStateStore.clearAllPageStates();
+
       // 返回上一頁或指定頁面
       router.back();
       // 或者使用 router.push('/registration') 導航到特定頁面

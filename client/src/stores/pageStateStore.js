@@ -63,6 +63,7 @@ export const usePageStateStore = defineStore("pageState", () => {
 
   // 清除所有页面状态
   const clearAllPageStates = () => {
+    console.log("清除所有页面状态");
     pageStates.value = {};
     Object.keys(sessionStorage)
       .filter((key) => key.startsWith("pageState_"))
