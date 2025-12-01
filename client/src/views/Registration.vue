@@ -656,10 +656,9 @@ export default {
       pageTitle.value = getPageTitle(actionResult.value.action);
 
       const pageState = loadPageState();
-      actionResult.value = pageState;
       actionMode.value = pageState.action;
       id.value = pageState.id;
-      formId.value = pageState.formId;      
+      formId.value = pageState.formId;
       pageTitle.value = pageState.pageTitle;
 
       console.log("📋 pageState參數調試信息:", pageState);
@@ -671,7 +670,7 @@ export default {
       };
 
       console.log("propsData", propsData);
-      return;
+      //return;
 
       if (actionResult.value.editMode) {
         await registrationStore.loadFormData(propsData);

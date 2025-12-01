@@ -146,7 +146,7 @@ export default {
         router.replace({
           path: menuItem.path,
           query: {
-            action: "create",
+            action: "create",        
             //t: Date.now(),
           },
         });

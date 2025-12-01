@@ -352,12 +352,12 @@ export default {
         console.log("✅ 頁面URL狀態保存完成，開始導航");
         
         console.log("4. 開始導航到表單頁面");
-        await router.push('/registration');
-
-        handleActionToRedirect(item, "edit");
+        //await router.push('/registration');
 
         console.log("5. 導航完成");
         console.groupEnd();
+
+        handleActionToRedirect(item, "edit");
         
       } catch (error) {
         console.error("❌ 編輯操作失敗:", error);
