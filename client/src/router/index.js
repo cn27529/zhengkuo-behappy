@@ -77,7 +77,7 @@ const routes = [
 
       // 情況3: edit/view 模式但缺少必要參數
       if (action === "edit" && (!formId || !id)) {
-        console.log("⚠️ edit/view 模式缺少必要參數");
+        console.log("⚠️ edit 模式缺少必要參數");
         ElMessage.error("缺少必要的表單資訊");
         next({ path: "/registration-list", replace: true });
         return;
