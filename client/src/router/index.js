@@ -1,7 +1,7 @@
 // src/router/index.js 更新版本
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
-import {  } from "../stores/pageStateStore.js";
+import { usePageStateStore } from "../stores/pageStateStore.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
@@ -20,10 +20,34 @@ const routes = [
   },
   { path: "/logout", component: () => import("../views/Logout.vue") },
   {
+    path: "/registration-list",
+    name: "RegistrationList",
+    component: () => import("../views/RegistrationList.vue"),
+    // 🛡️ RegistrationList.vue路由進入前的驗證
+    beforeEnter: (to, from, next) => {
+      console.log("🚪 進入 RegistrationList 路由，清除頁面狀態");
+      const pageStateStore = usePageStateStore();
+      pageStateStore.clearPageState("registration");
+      console.log("🚪 清除頁面狀態完成");
+      next();
+    },
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
     path: "/registration",
+    name: "Registration",
     component: () => import("../views/Registration.vue"),
     // 🛡️ Registration.vue路由進入前的驗證
     beforeEnter: (to, from, next) => {
+      console.log("🚪 進入 Registration 路由，獲取頁面狀態");
+      const pageStateStore = usePageStateStore();
+      const pageState = pageStateStore.getPageState("registration");
+      if (pageState) {
+        console.log("🚪 頁面狀態數據調適:", pageState);
+      }
+
       const { action, formId, id } = to.query;
 
       console.log("🚪 進入 Registration 路由:", { action, formId, id });
@@ -64,7 +88,7 @@ const routes = [
         console.log("🧹 清理 create 模式的多餘參數");
         next({
           path: "/registration",
-          query: { action: "create", t: Date.now() },
+          query: { action: "create" },
           replace: true,
         });
         return;
@@ -117,23 +141,6 @@ const routes = [
     path: "/mydata",
     name: "MydataList",
     component: () => import("../views/MydataList.vue"),
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/registration-list",
-    name: "RegistrationList",
-    component: () => import("../views/RegistrationList.vue"),
-    beforeEach: (to, from, next) => {
-
-      console.log("🚪 進入 RegistrationList 路由，清除所有页面状态");
-      const pageStateStore = usePageStateStore();
-      console.log("🚪 清除所有页面状态");
-      pageStateStore.clearAllPageStates();
-      next();
-      
-    },
     meta: {
       requiresAuth: true,
     },
