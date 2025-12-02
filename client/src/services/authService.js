@@ -781,7 +781,7 @@ export class AuthService {
     if (sessionStorage.getItem("auth-dev") !== null) {
       baseService.isDev = sessionStorage.getItem("auth-dev");
     }
-    console.log("getCurrentDev: ", baseService.isDev);
+    //console.log("getCurrentDev: ", baseService.isDev);
     return baseService.isDev === "true" ? true : false;
   }
 

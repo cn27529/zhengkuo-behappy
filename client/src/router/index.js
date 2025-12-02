@@ -25,10 +25,10 @@ const routes = [
     component: () => import("../views/RegistrationList.vue"),
     // 🛡️ RegistrationList.vue路由進入前的驗證
     beforeEnter: (to, from, next) => {
-      console.log("🚪 進入 RegistrationList 路由，清除頁面狀態");
+      console.log("🚪 進入 RegistrationList 路由");
       const pageStateStore = usePageStateStore();
       pageStateStore.clearPageState("registration");
-      console.log("🚪 清除頁面狀態完成");
+      console.log("🚪 清除頁面狀態");
       next();
     },
     meta: {
@@ -42,19 +42,26 @@ const routes = [
     // 🛡️ Registration.vue路由進入前的驗證
     beforeEnter: (to, from, next) => {
       console.log("🚪 進入 Registration 路由，獲取頁面狀態");
+
+      const { action, formId, id } = to.query;
+      console.log("🚪 進入 Registration 路由:", { action, formId, id });
+
       const pageStateStore = usePageStateStore();
       const pageState = pageStateStore.getPageState("registration");
       if (pageState) {
-        console.log("🚪 頁面狀態數據調適:", pageState);
+        console.log("🚪 頁面狀態調適:", pageState);
+      }else{
+        console.log("🚪 頁面狀態不存在，重新建立狀態，設置為 create 模式");
+        new Promise(async () => {
+          await pageStateStore.setPageState("registration",{ action: "create", formId: "", id: -1, source: "" });
+          pageState = pageStateStore.getPageState("registration");
+        });
       }
-
-      const { action, formId, id } = to.query;
-
-      console.log("🚪 進入 Registration 路由:", { action, formId, id });
-
+      
       // 情況1: 沒有任何參數,默認為 create
       if (!action && !formId && !id) {
         console.log("✨ 無參數,設置為 create 模式");
+
         next({
           path: "/registration",
           query: { action: "create" },

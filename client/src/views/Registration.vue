@@ -610,7 +610,7 @@ export default {
         pageTitle: getPageTitle(actionMode.value),
         action: actionMode.value,
       };
-      console.log("路由參數調試信息:", result);
+      console.log("handleActionResult 參數調試信息:", result);
       return result;
     };
 
@@ -636,7 +636,9 @@ export default {
           formId: state.formId || "",
           id: state.id || -1,
           source: state.source || "",
-          pageTitle: getPageTitle(state.action)
+          pageTitle: getPageTitle(state.action),
+          isEdit: state.action === 'edit'? true : false,
+          isCreate: state.action === 'create'? true : false,
         };
       }
       
@@ -646,7 +648,9 @@ export default {
         formId: route.query.formId || "",
         id: route.query.id || -1,
         source: route.query.source || "",
-        pageTitle: getPageTitle(route.query.action)
+        pageTitle: getPageTitle(route.query.action),
+        isEdit: state.action === 'edit'? true : false,
+        isCreate: state.action === 'create'? true : false,
       };
 
     };
@@ -654,29 +658,29 @@ export default {
     onMounted(async () => {
       await registrationStore.loadConfig();
 
-      actionResult.value = handleActionResult();      
+      actionResult.value = handleActionResult();
 
       const pageState = loadPageState();
-      actionMode.value = pageState.action;
-      id.value = pageState.id;
-      formId.value = pageState.formId;
+      //actionMode.value = pageState.action;
+      //id.value = pageState.id;
+      //formId.value = pageState.formId;
       pageTitle.value = pageState.pageTitle;
+      //isEditMode.value = pageState.isEdit;
+      //isCreateMode.value = pageState.isCreate;      
 
-      console.log("📋 pageState參數調試信息:", pageState);
+      console.log("📋 pageState 調試信息:", pageState);
 
       const propsData = {
         id: pageState.id,
         formId: pageState.formId,
         action: pageState.action,
       };
-
-      console.log("propsData", propsData);
       //return;
 
-      if (actionResult.value.editMode) {
+      if (isEditMode.value) {
         await registrationStore.loadFormData(propsData);
       }
-      if (actionResult.value.createMode) {
+      if (isCreateMode.value) {
         // 啟動自動同步機制
         registrationStore.initializeFormArray();
         console.log("[v0] 表單同步已啟動 - 創建模式");
