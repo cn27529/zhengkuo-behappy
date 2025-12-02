@@ -349,9 +349,10 @@ export default {
         
         console.log("4. 頁面URL狀態保存完成，開始導航到表單頁面");
         console.groupEnd();
-        //await router.push('/registration');
+        
+        await router.push('/registration');
 
-        handleActionToRedirect(item, "edit");
+        //handleActionToRedirect(item, "edit");
         
       } catch (error) {
         console.error("❌ 編輯操作失敗:", error);

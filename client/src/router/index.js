@@ -41,7 +41,7 @@ const routes = [
     component: () => import("../views/Registration.vue"),
     // 🛡️ Registration.vue路由進入前的驗證
     beforeEnter: (to, from, next) => {
-      console.log("🚪 進入 Registration 路由，獲取頁面狀態");
+      
 
       const { action, formId, id } = to.query;
       console.log("🚪 進入 Registration 路由:", { action, formId, id });
@@ -49,57 +49,68 @@ const routes = [
       const pageStateStore = usePageStateStore();
       const pageState = pageStateStore.getPageState("registration");
       if (pageState) {
-        console.log("🚪 頁面狀態調適:", pageState);
-      }else{
-        console.log("🚪 頁面狀態不存在，重新建立狀態，設置為 create 模式");
-        new Promise(async () => {
-          await pageStateStore.setPageState("registration",{ action: "create", formId: "", id: -1, source: "" });
-          pageState = pageStateStore.getPageState("registration");
+        console.log("🚪 進入 Registration 路由，獲取頁面狀態調適", pageState);        
+      }
+
+      if (!pageState) {
+        console.log("🚪 頁面狀態不存在，重新建立狀態");
+        const pageState = new Promise(async () => {
+          await pageStateStore.setPageState("registration", {
+            action: "create",
+            formId: "",
+            id: -1,
+            source: "routes",
+          });
+        });
+        pageState.then(() => {
+          console.log("🚪 頁面狀態建立完成");          
         });
       }
+
       
-      // 情況1: 沒有任何參數,默認為 create
-      if (!action && !formId && !id) {
-        console.log("✨ 無參數,設置為 create 模式");
+      
 
-        next({
-          path: "/registration",
-          query: { action: "create" },
-          replace: true,
-        });
-        return;
-      }
+      // // 情況1: 沒有任何參數,默認為 create
+      // if (!action && !formId && !id) {
+      //   console.log("✨ 無參數,設置為 create 模式");
+      //   next({
+      //     path: "/registration",
+      //     //query: { action: "create" },
+      //     replace: true,
+      //   });
+      //   return;
+      // }
 
-      // 情況2: action 不合法
-      const validActions = ["create", "edit"];
-      if (action && !validActions.includes(action)) {
-        console.log("⚠️ 不合法的 action:", action);
-        next({
-          path: "/registration",
-          query: { action: "create" },
-          replace: true,
-        });
-        return;
-      }
+      // // 情況2: action 不合法
+      // const validActions = ["create", "edit"];
+      // if (action && !validActions.includes(action)) {
+      //   console.log("⚠️ 不合法的 action:", action);
+      //   next({
+      //     path: "/registration",
+      //     //query: { action: "create" },
+      //     replace: true,
+      //   });
+      //   return;
+      // }
 
-      // 情況3: edit/view 模式但缺少必要參數
-      if (action === "edit" && (!formId || !id)) {
-        console.log("⚠️ edit 模式缺少必要參數");
-        ElMessage.error("缺少必要的表單資訊");
-        next({ path: "/registration-list", replace: true });
-        return;
-      }
+      // // 情況3: edit/view 模式但缺少必要參數
+      // if (action === "edit" && (!formId || !id)) {
+      //   console.log("⚠️ edit 模式缺少必要參數");
+      //   ElMessage.error("缺少必要的表單資訊");
+      //   next({ path: "/registration-list", replace: true });
+      //   return;
+      // }
 
-      // 情況4: create 模式有多餘參數,清理掉
-      if (action === "create" && (formId || id)) {
-        console.log("🧹 清理 create 模式的多餘參數");
-        next({
-          path: "/registration",
-          query: { action: "create" },
-          replace: true,
-        });
-        return;
-      }
+      // // 情況4: create 模式有多餘參數,清理掉
+      // if (action === "create" && (formId || id)) {
+      //   console.log("🧹 清理 create 模式的多餘參數");
+      //   next({
+      //     path: "/registration",
+      //     //query: { action: "create" },
+      //     replace: true,
+      //   });
+      //   return;
+      // }
 
       // 通過驗證,繼續
       next();

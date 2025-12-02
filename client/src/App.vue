@@ -141,18 +141,18 @@ export default {
     };
 
     const handleMenuClick = (menuItem) => {
-      if (menuItem.path === "/registration") {
-        // 使用 replace 而不是 push，确保路由替换
-        router.replace({
-          path: menuItem.path,
-          query: {
-            action: "create",        
-            //t: Date.now(),
-          },
-        });
-      } else {
-        router.push(menuItem.path);
-      }
+      // if (menuItem.path === "/registration") {
+      //   // 使用 replace 而不是 push，确保路由替换
+      //   router.replace({
+      //     path: menuItem.path,
+      //     query: {
+      //       action: "create",        
+      //       //t: Date.now(),
+      //     },
+      //   });
+      // } else {
+      //   router.push(menuItem.path);
+      // }      
       menuStore.setActiveMenu(menuItem.id);
     };
 

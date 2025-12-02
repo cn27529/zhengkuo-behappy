@@ -599,6 +599,9 @@ export default {
     const formId = computed(() => route.query.formId);
     const id = computed(() => route.query.id);
     const actionResult = ref({});
+
+    const myPageState = computed(() => loadPageState())
+
     // 新增：模式判断
     const handleActionResult = () => {
 
@@ -627,18 +630,18 @@ export default {
 
     // 从 Store 获取页面状态
     const loadPageState = () => {
-      const state = pageStateStore.getPageState("registration");
-      console.log("📋 加载页面状态:", state);
+      const pageState = pageStateStore.getPageState("registration");
+      console.log("📋 加载页面状态:", pageState);
       
-      if (state) {
+      if (pageState) {
         return {
-          action: state.action || 'create',
-          formId: state.formId || "",
-          id: state.id || -1,
-          source: state.source || "",
-          pageTitle: getPageTitle(state.action),
-          isEdit: state.action === 'edit'? true : false,
-          isCreate: state.action === 'create'? true : false,
+          action: pageState.action || 'create',
+          formId: pageState.formId || "",
+          id: pageState.id || -1,
+          source: pageState.source || "",
+          pageTitle: getPageTitle(pageState.action),
+          isEdit: pageState.action === 'edit'? true : false,
+          isCreate: pageState.action === 'create'? true : false,
         };
       }
       
@@ -649,8 +652,8 @@ export default {
         id: route.query.id || -1,
         source: route.query.source || "",
         pageTitle: getPageTitle(route.query.action),
-        isEdit: state.action === 'edit'? true : false,
-        isCreate: state.action === 'create'? true : false,
+        isEdit: pageState.action === 'edit'? true : false,
+        isCreate: pageState.action === 'create'? true : false,
       };
 
     };
@@ -661,12 +664,15 @@ export default {
       actionResult.value = handleActionResult();
 
       const pageState = loadPageState();
+
+      
+
       //actionMode.value = pageState.action;
       //id.value = pageState.id;
       //formId.value = pageState.formId;
-      pageTitle.value = pageState.pageTitle;
+      pageTitle.value = myPageState.value.pageTitle;
       //isEditMode.value = pageState.isEdit;
-      //isCreateMode.value = pageState.isCreate;      
+      //isCreateMode.value = pageState.isCreate;
 
       console.log("📋 pageState 調試信息:", pageState);
 
@@ -677,10 +683,10 @@ export default {
       };
       //return;
 
-      if (isEditMode.value) {
+      if (myPageState.value.isEdit) {
         await registrationStore.loadFormData(propsData);
       }
-      if (isCreateMode.value) {
+      if (myPageState.value.isCreate) {
         // 啟動自動同步機制
         registrationStore.initializeFormArray();
         console.log("[v0] 表單同步已啟動 - 創建模式");
