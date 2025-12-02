@@ -17,7 +17,7 @@
       <div v-if="isDev" class="debug-panel">
         <!-- 添加 Mock 按钮 -->
         <el-button type="success" class="dev-button" @click="handleLoadMockData"
-          >🎲 生成 Mock 數據</el-button
+          >🎲 載入 Mock 數據</el-button
         >
         <h4>🔧 調試信息</h4>
         <hr />

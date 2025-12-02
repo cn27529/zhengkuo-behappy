@@ -8,8 +8,10 @@ import { registrationService } from "../services/registrationService.js";
 import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
+import { usePageStateStore } from "./pageStateStore.js";
 
 export const useRegistrationStore = defineStore("registration", () => {
+  const pageStateStore = usePageStateStore();
   const configStore = useConfigStore();
 
   // ✅ 使用 computed 保持響應式
@@ -967,10 +969,10 @@ export const useRegistrationStore = defineStore("registration", () => {
         propsData.id !== ""
       ) {
         if (baseService.mode === "mock") {
-          // // 嘗試找到對應的數據
-          // mockData = mockRegistrations.find(
-          //   (item) => item.formId === propsData.formId
-          // );
+          // mock模式嘗試找到對應的數據
+          mockData = mockRegistrations.find(
+            (item) => item.formId === propsData.formId
+          );
         }
         mockData.formId = propsData.formId;
         mockData.id = propsData.id;
