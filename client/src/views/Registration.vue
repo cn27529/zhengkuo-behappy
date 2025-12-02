@@ -553,7 +553,7 @@
         </button>
 
         <button
-          v-if="myPageState.isEdit || myPageState.isCreate"
+          v-if="myPageState.isCreate"
           type="button"
           class="btn btn-secondary"
           @click="handleResetForm"
