@@ -2,10 +2,10 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>{{ pageTitle }}</h2>
+      <h2>{{ myPageState.pageTitle }}</h2>
     </div>
     <!-- 返回按鈕 -->
-    <div class="print-controls" v-if="isEditMode">
+    <div class="print-controls" v-if="myPageState.isEdit">
       <div class="controls-left">
         <button @click="handleBack" class="back-btn">← 返回列表</button>
       </div>
@@ -507,7 +507,7 @@
       <div class="form-actions">
         <!-- 编辑模式：显示保存按钮 -->
         <button
-          v-if="isEditMode"
+          v-if="myPageState.isEdit"
           type="button"
           class="btn btn-outline"
           @click="handleBack"
@@ -516,7 +516,7 @@
         </button>
 
         <button
-          v-if="isEditMode"
+          v-if="myPageState.isEdit"
           type="button"
           class="btn btn-primary"
           @click="handleUpdateForm"
@@ -526,7 +526,7 @@
         </button>
 
         <button
-          v-if="isCreateMode"
+          v-if="myPageState.isCreate"
           type="button"
           class="btn btn-primary"
           @click="submitForm"
@@ -536,7 +536,7 @@
         </button>
 
         <button
-          v-if="isCreateMode"
+          v-if="myPageState.isCreate"
           type="button"
           class="btn btn-outline capsule-btn"
           @click="handleAddNewForm"
@@ -553,7 +553,7 @@
         </button>
 
         <button
-          v-if="isEditMode || isCreateMode"
+          v-if="myPageState.isEdit || myPageState.isCreate"
           type="button"
           class="btn btn-secondary"
           @click="handleResetForm"
@@ -587,99 +587,93 @@ export default {
     const route = useRoute();
 
     // 新增：模式判断
-    const pageTitle = ref("消災超度登記");
-    const isCreateMode = computed(() =>
-      route.query.action === "create" ? true : false
-    );
+    //const pageTitle = ref("消災超度登記");
+    // const isCreateMode = computed(() =>
+    //   route.query.action === "create" ? true : false
+    // );
 
-    const isEditMode = computed(() =>
-      route.query.action === "edit" ? true : false
-    );
-    const actionMode = computed(() => route.query.action);
-    const formId = computed(() => route.query.formId);
-    const id = computed(() => route.query.id);
-    const actionResult = ref({});
+    // const isEditMode = computed(() =>
+    //   route.query.action === "edit" ? true : false
+    // );
+    //const actionMode = computed(() => route.query.action);
+    //const formId = computed(() => route.query.formId);
+    //const id = computed(() => route.query.id);
+    //const actionResult = ref({});
 
-    const myPageState = computed(() => loadPageState())
+    const myPageState = computed(() => loadPageState());
 
     // 新增：模式判断
     const handleActionResult = () => {
-
       const result = {
-        editMode: isEditMode.value,
-        createMode: isCreateMode.value,
-        formId: formId.value || "", // 預設空
-        id: id.value || -1, // 預設負1
-        pageTitle: getPageTitle(actionMode.value),
-        action: actionMode.value,
+        editMode: myPageState.value.isEdit,
+        createMode: myPageState.value.isCreate,
+        formId: myPageState.value.formId || "", // 預設空
+        id: myPageState.value.id || -1, // 預設負1
+        pageTitle: getPageTitle(myPageState.value.action),
+        action: myPageState.value.action,
       };
       console.log("handleActionResult 參數調試信息:", result);
       return result;
     };
 
-    
-
     const getPageTitle = (action) => {
       const titles = {
-        create: '消災超度登記',
-        edit: '編輯表單', 
-        view: '查看表單'
+        create: "消災超度登記",
+        edit: "編輯表單",
+        view: "查看表單",
       };
       return titles[action] || titles.create;
     };
 
     // 从 Store 获取页面状态
     const loadPageState = () => {
-      const pageState = pageStateStore.getPageState("registration");
-      console.log("📋 加载页面状态:", pageState);
-      
-      if (pageState) {
+      const state = pageStateStore.getPageState("registration");
+      console.log("📋 加载页面状态:", state);
+
+      if (state) {
         return {
-          action: pageState.action || 'create',
-          formId: pageState.formId || "",
-          id: pageState.id || -1,
-          source: pageState.source || "",
-          pageTitle: getPageTitle(pageState.action),
-          isEdit: pageState.action === 'edit'? true : false,
-          isCreate: pageState.action === 'create'? true : false,
+          action: state.action || "create",
+          formId: state.formId || "",
+          id: state.id || -1,
+          source: state.source || "",
+          pageTitle: getPageTitle(state.action),
+          isEdit: state.action === "edit" ? true : false,
+          isCreate: state.action === "create" ? true : false,
         };
       }
-      
+
       // 如果没有保存的状态，回退到 URL 参数（兼容旧方式）
       return {
-        action: route.query.action || 'create',
+        action: route.query.action || "create",
         formId: route.query.formId || "",
         id: route.query.id || -1,
         source: route.query.source || "",
         pageTitle: getPageTitle(route.query.action),
-        isEdit: pageState.action === 'edit'? true : false,
-        isCreate: pageState.action === 'create'? true : false,
+        isEdit: state.action === "edit" ? true : false,
+        isCreate: state.action === "create" ? true : false,
       };
-
     };
 
     onMounted(async () => {
       await registrationStore.loadConfig();
 
-      actionResult.value = handleActionResult();
+      //actionResult.value = handleActionResult();
 
-      const pageState = loadPageState();
-
-      
+      //const pageState = loadPageState();
 
       //actionMode.value = pageState.action;
       //id.value = pageState.id;
       //formId.value = pageState.formId;
-      pageTitle.value = myPageState.value.pageTitle;
-      //isEditMode.value = pageState.isEdit;
-      //isCreateMode.value = pageState.isCreate;
+      //pageTitle.value = myPageState.value.pageTitle;
+      //isEditMode.value = myPageState.value.isEdit;
+      //isCreateMode.value = myPageState.value.isCreate;
 
-      console.log("📋 pageState 調試信息:", pageState);
+      console.log("📋 myPageState 調試信息:", myPageState.value);
 
       const propsData = {
-        id: pageState.id,
-        formId: pageState.formId,
-        action: pageState.action,
+        id: myPageState.value.id,
+        formId: myPageState.value.formId,
+        action: myPageState.value.action,
       };
       //return;
 
@@ -695,15 +689,15 @@ export default {
 
     // 載入測試 Mock 數據，進行快速測試
     const handleLoadMockData = async () => {
-      console.log("🔍 載入 Mock 數據調試信息:", { actionResult });
+      console.log("🔍 載入 Mock 數據調試信息:", { myPageState });
 
       try {
-        actionResult.value = handleActionResult();
+        //actionResult.value = handleActionResult();
 
         const propsData = {
-          id: actionResult.value.id,
-          formId: actionResult.value.formId,
-          action: actionResult.value.action,
+          id: myPageState.value.id,
+          formId: myPageState.value.formId,
+          action: myPageState.value.action,
         };
 
         const success = await registrationStore.loadMockData(propsData);
@@ -840,8 +834,7 @@ export default {
     };
 
     const handleBack = () => {
-      
-      pageStateStore.clearAllPageStates();
+      pageStateStore.clearPageState("registration");
 
       // 返回上一頁或指定頁面
       router.back();
@@ -982,7 +975,8 @@ export default {
           let fId = registrationStore.registrationForm.formId;
           let emptyFormId = false;
           // 如果是創建模式且 formId 不為空，則清空 formId
-          if (isCreateMode.value && fId !== "") emptyFormId = true;
+          if (myPageState.value.isCreate && myPageState.value.formId !== "")
+            emptyFormId = true;
           //const success = registrationStore.resetForm();
           const success = registrationStore.resetRegistrationForm(emptyFormId);
 
@@ -1084,13 +1078,14 @@ export default {
       currentFormSummary,
       formSummaries,
       isDev,
-      pageTitle,
-      isEditMode,
-      isCreateMode,
-      actionMode,
-      formId,
-      id,
-      actionResult,
+      //pageTitle,
+      myPageState,
+      //isEditMode,
+      //isCreateMode,
+      //actionMode,
+      //formId,
+      //id,
+      //actionResult,
 
       // store 中只暴露需要的屬性和方法，不要使用展開運算符
       registrationForm: registrationStore.registrationForm,

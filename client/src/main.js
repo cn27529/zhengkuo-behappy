@@ -13,21 +13,26 @@ import router from "./router";
 // 引入 appConfig
 import appConfig from "./config/appConfig.js";
 import { useMenuStore } from "./stores/menu.js";
-
 import { useRegistrationStore } from "./stores/registrationStore.js";
+import { usePageStateStore } from "./stores/pageStateStore.js";
+import { my } from "element-plus/es/locale/index.mjs";
 
 // 创建Pinia实例
 const pinia = createPinia();
 
 // 模式下的初始化
-if (import.meta.env.VITE_AUTH_MODE === "mock") {  
+if (import.meta.env.VITE_AUTH_MODE === "mock") {
   console.warn("🚨 注意！");
-  console.warn("⚠️ 當前使用前端模擬認證，密碼為明碼儲存！正式環境請切換到後端模式並移除密碼硬編碼。");  
+  console.warn(
+    "⚠️ 當前使用前端模擬認證，密碼為明碼儲存！正式環境請切換到後端模式並移除密碼硬編碼。"
+  );
   //console.log("🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01");
 }
 
 if (import.meta.env.VITE_DEV === "true") {
-  console.warn("🔧 調試信息已打開！使用 window.authService.setMode() 來切換模式");  
+  console.warn(
+    "🔧 調試信息已打開！使用 window.authService.setMode() 來切換模式"
+  );
 }
 
 // 切換 VITE_AUTH_MODE 認證模式
@@ -64,6 +69,7 @@ app.mount("#app");
 
 // 在控制台暴露 regiStore
 window.$regiStore = useRegistrationStore();
+window.$pageState = usePageStateStore();
 
 // 設定初始 document.title（若存在設定）
 if (appConfig && appConfig.title) {

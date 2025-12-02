@@ -41,15 +41,13 @@ const routes = [
     component: () => import("../views/Registration.vue"),
     // 🛡️ Registration.vue路由進入前的驗證
     beforeEnter: (to, from, next) => {
-      
-
       const { action, formId, id } = to.query;
       console.log("🚪 進入 Registration 路由:", { action, formId, id });
 
       const pageStateStore = usePageStateStore();
       const pageState = pageStateStore.getPageState("registration");
       if (pageState) {
-        console.log("🚪 進入 Registration 路由，獲取頁面狀態調適", pageState);        
+        console.log("🚪 進入 Registration 路由，獲取頁面狀態調適", pageState);
       }
 
       if (!pageState) {
@@ -63,12 +61,9 @@ const routes = [
           });
         });
         pageState.then(() => {
-          console.log("🚪 頁面狀態建立完成");          
+          console.log("🚪 頁面狀態建立完成");
         });
       }
-
-      
-      
 
       // // 情況1: 沒有任何參數,默認為 create
       // if (!action && !formId && !id) {

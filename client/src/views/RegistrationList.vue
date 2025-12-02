@@ -330,12 +330,12 @@ export default {
     // 將某筆資料傳遞給表單編輯
     const handleEdit = async (item) => {
       try {
-        console.group('🔧 編輯操作調試信息');
+        console.group("🔧 編輯操作調試信息");
         console.log("1. 開始處理編輯操作", item);
 
-         // 檢查必要的數據
+        // 檢查必要的數據
         if (!item.formId) {
-          throw new Error('表單ID不存在');
+          throw new Error("表單ID不存在");
         }
 
         console.log("2. 準備保存狀態到 Store");
@@ -346,14 +346,13 @@ export default {
           id: item.id,
           source: "list",
         });
-        
+
         console.log("4. 頁面URL狀態保存完成，開始導航到表單頁面");
         console.groupEnd();
-        
-        await router.push('/registration');
+
+        await router.push("/registration");
 
         //handleActionToRedirect(item, "edit");
-        
       } catch (error) {
         console.error("❌ 編輯操作失敗:", error);
         ElMessage.error("操作失敗，請重試");
@@ -438,9 +437,10 @@ export default {
     };
 
     // 初始化
-    onMounted(() => {      
+    onMounted(() => {
       console.log("✅ RegistrationList 組件已載入");
-      pageStateStore.clearAllPageStates();
+      console.log("清除頁面狀態");
+      pageStateStore.clearPageState("registration");
       console.log("當前 searchResults:", searchResults.value);
       isDev.value = authService.getCurrentDev();
     });

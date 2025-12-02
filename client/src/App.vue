@@ -79,6 +79,8 @@ import { useMenuStore } from "./stores/menu.js";
 import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
 import appConfig from "./config/appConfig";
 import DevTools from "./components/DevTools.vue";
+import { usePageStateStore } from "./stores/pageStateStore.js";
+import { ElMessage } from "element-plus";
 
 export default {
   name: "App",
@@ -90,6 +92,11 @@ export default {
     const route = useRoute();
     const authStore = useAuthStore();
     const menuStore = useMenuStore();
+    const pageStateStore = usePageStateStore();
+
+    const myPageState = computed(() =>
+      pageStateStore.loadPageState("registration")
+    );
 
     const menuPosition = ref(sessionStorage.getItem("menuPosition") || "left");
 
@@ -141,18 +148,6 @@ export default {
     };
 
     const handleMenuClick = (menuItem) => {
-      // if (menuItem.path === "/registration") {
-      //   // 使用 replace 而不是 push，确保路由替换
-      //   router.replace({
-      //     path: menuItem.path,
-      //     query: {
-      //       action: "create",        
-      //       //t: Date.now(),
-      //     },
-      //   });
-      // } else {
-      //   router.push(menuItem.path);
-      // }      
       menuStore.setActiveMenu(menuItem.id);
     };
 
@@ -267,6 +262,7 @@ export default {
       handleMenuClick,
       appTitle: appConfig.title,
       userDisplayName,
+      myPageState,
     };
   },
 };

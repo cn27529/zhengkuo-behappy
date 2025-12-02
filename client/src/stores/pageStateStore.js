@@ -33,6 +33,34 @@ export const usePageStateStore = defineStore("pageState", () => {
     });
   };
 
+  const loadPageState = (pageName) => {
+    const state = pageStateStore.getPageState(pageName);
+    console.log("📋 加載頁面狀態:", state);
+
+    if (state) {
+      return {
+        action: state.action || "create",
+        formId: state.formId || "",
+        id: state.id || -1,
+        source: state.source || "",
+        pageTitle: getPageTitle(state.action),
+        isEdit: state.action === "edit" ? true : false,
+        isCreate: state.action === "create" ? true : false,
+      };
+    }
+
+    // 如果没有保存的状态，回退到 URL 参数（兼容旧方式）
+    return {
+      action: route.query.action || "create",
+      formId: route.query.formId || "",
+      id: route.query.id || -1,
+      source: route.query.source || "",
+      pageTitle: getPageTitle(route.query.action),
+      isEdit: state.action === "edit" ? true : false,
+      isCreate: state.action === "create" ? true : false,
+    };
+  };
+
   // 获取页面状态
   const getPageState = (pageName) => {
     // 先从内存中获取
@@ -76,5 +104,6 @@ export const usePageStateStore = defineStore("pageState", () => {
     getPageState,
     clearPageState,
     clearAllPageStates,
+    loadPageState,
   };
 });
