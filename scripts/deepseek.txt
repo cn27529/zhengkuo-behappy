@@ -1,0 +1,3 @@
+要實現提交表單到後端了，將registration.js的submitRegistration進行實現提交表單到後端接口，實現registrationService.js將表單資料提交到後端Directus，先實現submitRegistration的sqlite schema建立registrationForm 資料表，你有什麼實質的作法嗎，先實現registrationService.js再來是sqlite schema對吧，交給你實現。
+
+依據registration.js的registrationForm物件，生成一組20筆的mock_registrations.json假資料。生成mock_registrations.md 有概要、結構、邏輯、規則等描述請參考registration.js

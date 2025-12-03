@@ -1,5 +1,5 @@
 export const appConfig = {
-  title: "消災超度活动报名系统",
+  title: "消災超度登記系統",
 };
 
 export default appConfig;

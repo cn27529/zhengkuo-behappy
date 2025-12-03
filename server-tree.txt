@@ -1,0 +1,13 @@
+./server
+├── Directus user setup.md
+├── Dockerfile
+├── README.md
+├── data.db
+├── extensions
+├── logs
+├── package-windows.json
+├── package.json
+└── uploads
+    └── test.txt
+
+4 directories, 7 files

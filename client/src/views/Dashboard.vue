@@ -1,113 +1,101 @@
 <template>
   <!-- 主内容区域 -->
-      <main class="main-content">
-        <div class="page-header">
-          <h2>活动统计仪表板</h2>
-          <p>查看活动报名情况和统计数据</p>
-          <div class="total-participants">
-            年度总参与人数: <strong>{{ totalParticipants }}</strong> 人
-          </div>
-        </div>
+  <main class="main-content">
+    <div class="page-header">
+      <h2>登記儀表板</h2>
+      <p style="display: none">查看登記情况和统计数据</p>
+      <div class="total-participants">
+        年度总参与人数: <strong>{{ totalParticipants }}</strong> 人
+      </div>
+    </div>
 
-        <!-- 活动统计卡片 -->
-        <div class="stats-grid">
-          <div 
-            v-for="activity in activities" 
-            :key="activity.id" 
-            class="stat-card"
-          >
-            <div class="stat-icon">{{ activity.icon }}</div>
-            <div class="stat-info">
-              <h3>{{ activity.name }}</h3>
-              <div class="stat-number">{{ activity.participants }}</div>
-              <div class="stat-label">报名人数</div>
-              <div class="activity-date">{{ formatDate(activity.date) }}</div>
-            </div>
-          </div>
+    <!-- 活动统计卡片 -->
+    <div class="stats-grid">
+      <div v-for="activity in activities" :key="activity.id" class="stat-card">
+        <div class="stat-icon">{{ activity.icon }}</div>
+        <div class="stat-info">
+          <h3>{{ activity.name }}</h3>
+          <div class="stat-number">{{ activity.participants }}</div>
+          <div class="stat-label">报名人数</div>
+          <div class="activity-date">{{ formatDate(activity.date) }}</div>
         </div>
+      </div>
+    </div>
 
-        <!-- 活动状态统计 -->
-        <div class="status-grid">
-          <div class="status-card upcoming">
-            <div class="status-icon">📅</div>
-            <div class="status-info">
-              <h3>即将举办</h3>
-              <div class="status-count">{{ upcomingActivities.length }}</div>
-              <div class="status-label">场活动</div>
-            </div>
-          </div>
-          <div class="status-card completed">
-            <div class="status-icon">✅</div>
-            <div class="status-info">
-              <h3>已完成</h3>
-              <div class="status-count">{{ completedActivities.length }}</div>
-              <div class="status-label">场活动</div>
-            </div>
-          </div>
+    <!-- 活动状态统计 -->
+    <div class="status-grid">
+      <div class="status-card upcoming">
+        <div class="status-icon">📅</div>
+        <div class="status-info">
+          <h3>即将举办</h3>
+          <div class="status-count">{{ upcomingActivities.length }}</div>
+          <div class="status-label">场活动</div>
         </div>
-      </main>
+      </div>
+      <div class="status-card completed">
+        <div class="status-icon">✅</div>
+        <div class="status-info">
+          <h3>已完成</h3>
+          <div class="status-count">{{ completedActivities.length }}</div>
+          <div class="status-label">场活动</div>
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-import { useActivitiesStore } from '../stores/activities'
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/authStore.js";
+import { useActivitiesStore } from "../stores/activities.js";
 
 export default {
-  name: 'Dashboard',
+  name: "Dashboard",
   setup() {
-    const router = useRouter()
-    const authStore = useAuthStore()
-    const activitiesStore = useActivitiesStore()
-    
+    const router = useRouter();
+    const authStore = useAuthStore();
+    const activitiesStore = useActivitiesStore();
+
     // 从store获取数据
-    const activities = activitiesStore.activities
-    const totalParticipants = activitiesStore.totalParticipants
-    const upcomingActivities = activitiesStore.upcomingActivities
-    const completedActivities = activitiesStore.completedActivities
-    
-   
+    const activities = activitiesStore.activities;
+    const totalParticipants = activitiesStore.totalParticipants;
+    const upcomingActivities = activitiesStore.upcomingActivities;
+    const completedActivities = activitiesStore.completedActivities;
 
     const formatDate = (dateString) => {
-      return new Date(dateString).toLocaleDateString('zh-TW', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    }
-
+      return new Date(dateString).toLocaleDateString("zh-TW", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    };
 
     onMounted(async () => {
       // 初始化数据
       try {
-        await activitiesStore.fetchActivities()
-
+        await activitiesStore.fetchActivities();
       } catch (error) {
-        console.error('初始化数据失败:', error)
+        console.error("初始化数据失败:", error);
       }
-    })
-    
+    });
+
     onUnmounted(() => {
       // 清理工作
-      
-    })
-    
+    });
+
     return {
       activities,
       totalParticipants,
       upcomingActivities,
       completedActivities,
-      formatDate
-    }
-  }
-}
+      formatDate,
+    };
+  },
+};
 </script>
 
 <style scoped>
-
-
-
 /* 统计卡片网格 */
 .stats-grid {
   display: grid;
@@ -228,7 +216,6 @@ export default {
   padding: 1rem;
 }
 
-
 .total-participants {
   background: var(--light-color);
   padding: 0.5rem 1rem;
@@ -297,5 +284,17 @@ export default {
 .status-label {
   font-size: 0.875rem;
   color: #888;
+}
+
+@media (max-width: 768px) {
+  .stat-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .total-participants {
+    display: none;
+    text-align: center;
+  }
 }
 </style>

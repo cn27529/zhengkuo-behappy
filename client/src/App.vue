@@ -6,7 +6,7 @@
           <div class="logo-icon">🛕</div>
           <h1>{{ appTitle }}</h1>
           <div class="user-info" v-if="showUserInfo">
-            <span>{{ userNickname }}</span
+            <span>{{ userDisplayName }}</span
             >&nbsp;<span>你好</span>🙏
           </div>
         </div>
@@ -22,74 +22,83 @@
         </nav>
       </div>
     </header>
+    <!-- 父内容区 -->
+    <div class="app-content">
+      <!-- 侧边菜单栏 -->
+      <aside
+        v-if="layoutReady && showSidebar"
+        :class="[
+          'sidebar',
+          {
+            'sidebar-left': menuPosition === 'left',
+            'sidebar-right': menuPosition === 'right',
+          },
+        ]"
+      >
+        <div class="menu-toggle" style="display: none">
+          <label>菜单位置：</label>
+          <select v-model="menuPosition" class="position-select">
+            <option value="left">左侧</option>
+            <option value="right">右侧</option>
+          </select>
+        </div>
 
-    <!-- 主要内容区 -->
-    <div class="dashboard-container">
-      <div class="dashboard-content">
-        <!-- 侧边菜单栏 -->
-        <aside
-          v-if="layoutReady && showSidebar"
-          :class="[
-            'sidebar',
-            {
-              'sidebar-left': menuPosition === 'left',
-              'sidebar-right': menuPosition === 'right',
-            },
-          ]"
-        >
-          <div class="menu-toggle" style="display: none">
-            <label>菜单位置：</label>
-            <select v-model="menuPosition" class="position-select">
-              <option value="left">左侧</option>
-              <option value="right">右侧</option>
-            </select>
-          </div>
-
-          <nav class="sidebar-nav">
-            <ul>
-              <li v-for="menuItem in availableMenuItems" :key="menuItem.id">
-                <router-link
-                  :to="menuItem.path"
-                  :class="['nav-link', { active: isMenuActive(menuItem) }]"
-                  @click="handleMenuClick(menuItem)"
-                >
-                  <span class="nav-icon">{{ menuItem.icon }}</span>
-                  <span class="nav-text">{{ menuItem.name }}</span>
-                  <!-- <span v-if="isMenuActive(menuItem)" class="nav-icon">👌</span> -->
-                </router-link>
-              </li>
-            </ul>
-          </nav>
-        </aside>
-
-        <main>
-          <router-view></router-view>
-        </main>
-      </div>
+        <nav class="sidebar-nav">
+          <ul>
+            <li v-for="menuItem in availableMenuItems" :key="menuItem.id">
+              <router-link
+                :to="menuItem.path"
+                :class="['nav-link', { active: isMenuActive(menuItem) }]"
+                @click="handleMenuClick(menuItem)"
+              >
+                <span class="nav-icon">{{ menuItem.icon }}</span>
+                <span class="nav-text">{{ menuItem.name }}</span>
+                <!-- <span v-if="isMenuActive(menuItem)" class="nav-icon">👌</span> -->
+              </router-link>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <!-- 主要内容区 -->
+      <main>
+        <router-view></router-view>
+      </main>
     </div>
     <!-- 底部-->
     <footer v-if="layoutReady && showFooter">
-      <p>© 2025 {{ appTitle }} | 弘扬佛法，服务众生</p>
+      <p>© 2025 {{ appTitle }} | 弘扬佛法、服务众生</p>
     </footer>
+    <!-- <DevTools /> -->
   </div>
 </template>
 
 <script>
 import { useRouter, useRoute } from "vue-router";
-import { useAuthStore } from "./stores/auth";
-import { useMenuStore } from "./stores/menu";
+import { useAuthStore } from "./stores/authStore.js";
+import { useMenuStore } from "./stores/menu.js";
 import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
 import appConfig from "./config/appConfig";
+import DevTools from "./components/DevTools.vue";
+import { usePageStateStore } from "./stores/pageStateStore.js";
+import { ElMessage } from "element-plus";
 
 export default {
   name: "App",
+  components: {
+    DevTools,
+  },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const authStore = useAuthStore();
     const menuStore = useMenuStore();
+    const pageStateStore = usePageStateStore();
 
-    const menuPosition = ref(localStorage.getItem("menuPosition") || "left");
+    const myPageState = computed(() =>
+      pageStateStore.loadPageState("registration")
+    );
+
+    const menuPosition = ref(sessionStorage.getItem("menuPosition") || "left");
 
     // 顶部导航栏显示控制：在非打印页面显示，將三個 UI 可見性預設為 false，等待子組件載入完成後再設定
     const showHeader = ref(false);
@@ -103,7 +112,7 @@ export default {
     // layoutReady: 在子組件完成渲染（nextTick）後才變 true，避免先顯示後隱藏的閃爍
     const layoutReady = ref(false);
 
-    const userNickname = ref("");
+    const userDisplayName = ref("");
 
     // 計算是否為列印路由（供判斷用）
     const isPrintRoute = computed(
@@ -139,7 +148,7 @@ export default {
     };
 
     const handleMenuClick = (menuItem) => {
-      menuStore.navigateToMenu(menuItem);
+      menuStore.setActiveMenu(menuItem.id);
     };
 
     // 计算顶部导航栏、侧边菜单栏、底部的预期可见性（不直接改变 ref，供 updateLayoutVisibility 使用）
@@ -179,10 +188,10 @@ export default {
       next();
     });
 
-    // 當 menuPosition 改變時，同步到 localStorage
+    // 當 menuPosition 改變時，同步到 sessionStorage
     watch(menuPosition, (val) => {
       try {
-        localStorage.setItem("menuPosition", val);
+        sessionStorage.setItem("menuPosition", val);
       } catch (e) {
         // ignore quota errors
       }
@@ -190,21 +199,22 @@ export default {
 
     // 在组件挂载前初始化认证状态
     const initializeApp = async () => {
-      // 确保认证状态已恢复
-      if (localStorage.getItem("token")) {
-        authStore.initAuth();
-      }
+      // // 确保认证状态已恢复
+      // if (sessionStorage.getItem("auth-user")) {
+      //   authStore.initializeAuth();
+      // }
 
-      // 检查当前路由是否需要重定向
-      if (route.meta.requiresAuth && !authStore.isAuthenticated) {
-        await router.push("/login");
-        return;
-      }
+      // // 检查当前路由是否需要重定向
+      // if (route.meta.requiresAuth && !authStore.isAuthenticated) {
+      //   await router.push("/login");
+      //   return;
+      // }
 
-      if (route.meta.requiresGuest && authStore.isAuthenticated) {
-        await router.push("/");
-        return;
-      }
+      // if (route.meta.requiresGuest && authStore.isAuthenticated) {
+      //   await router.push("/");
+      //   return;
+      // }
+
       // 初始化菜单
       menuStore.initializeActiveMenu();
       // 更新布局可见性
@@ -212,18 +222,23 @@ export default {
     };
 
     // 监听 authStore.user 的变化
-    watch(() => authStore.user, (newUser) => {
-      userNickname.value = newUser ? newUser.nickname : "訪客"
-    }, { immediate: true })
+    watch(
+      () => authStore.user,
+      (newUser) => {
+        userDisplayName.value = newUser ? newUser.displayName : "訪客";
+      },
+      { immediate: true }
+    );
 
     onMounted(() => {
-
       initializeApp();
       // 初始化菜单
       menuStore.initializeActiveMenu();
 
       // 修改用户昵称的计算方式
-      userNickname.value = authStore.user ? authStore.user.nickname : "訪客";
+      userDisplayName.value = authStore.user
+        ? authStore.user.displayName
+        : "訪客";
 
       // 初始載入時，在 nextTick 後設定 header/sidebar/footer
       updateLayoutVisibility();
@@ -246,15 +261,26 @@ export default {
       isMenuActive,
       handleMenuClick,
       appTitle: appConfig.title,
-      userNickname,
+      userDisplayName,
+      myPageState,
     };
   },
 };
+
+// 增加粘性标题时的样式
+// window.addEventListener('scroll', function() {
+//     var header = document.querySelector('.form-header');
+//     if (window.pageYOffset > 0) {
+//         header.classList.add('sticky');
+//     } else {
+//         header.classList.remove('sticky');
+//     }
+// });
 </script>
 
 <style>
 /* 全局样式 */
-.dashboard-container {
+.app-container {
   min-height: 100vh;
   background-color: #f5f7fa;
 }
@@ -289,7 +315,7 @@ export default {
   gap: 1.5rem;
 }
 
-.dashboard-content {
+.app-content {
   display: flex;
   min-height: calc(100vh - 80px);
 }
@@ -386,11 +412,76 @@ export default {
   padding: 2rem;
   overflow-y: auto;
   background-color: #f8f9fa;
+  order: 0;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .dashboard-content {
+}
+
+/* 滚动条样式 */
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* 保持原有的样式不变，只添加active状态的样式增强 */
+.nav-link.active {
+  background-color: var(--light-color) !important;
+  color: var(--primary-color) !important;
+  font-weight: 600;
+  border-left: 3px solid var(--primary-color);
+}
+
+.nav-link.active .nav-icon {
+  transform: scale(1.1);
+}
+
+/* 平滑过渡效果 */
+.nav-link {
+  transition: all 0.3s ease;
+}
+
+/* 胶囊样式按钮 */
+.capsule-btn {
+  border-radius: 50px !important;
+  padding: 12px 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .app-content {
     flex-direction: column;
   }
 
@@ -398,11 +489,6 @@ export default {
     width: 100%;
     order: 1;
     max-height: 300px;
-  }
-
-  .main-content {
-    order: 0;
-    padding: 1rem;
   }
 
   .stats-grid {
@@ -428,59 +514,25 @@ export default {
   .nav-link.active {
     transform: translateY(2px);
   }
-}
 
-/* 滚动条样式 */
-.sidebar-nav::-webkit-scrollbar {
-  width: 4px;
-}
+  .dialog-content {
+    flex-direction: column;
+    text-align: center;
+  }
 
-.sidebar-nav::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
+  .warning-icon {
+    align-self: center;
+  }
 
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 2px;
-}
+  /* 自訂對話框樣式 */
+  :deep(.custom-dialog .el-dialog__title) {
+    color: white !important;
+  }
 
-.sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  /* 移动端按钮样式调整 */
+  .capsule-btn {
+    padding: 14px 30px;
+    font-size: 16px;
+  }
 }
-
-.main-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.main-content::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* 保持原有的样式不变，只添加active状态的样式增强 */
-.nav-link.active {
-  background-color: var(--light-color) !important;
-  color: var(--primary-color) !important;
-  font-weight: 600;
-  border-left: 3px solid var(--primary-color);
-}
-
-.nav-link.active .nav-icon {
-  transform: scale(1.1);
-}
-
-/* 平滑过渡效果 */
-.nav-link {
-  transition: all 0.3s ease;
-}
-
-/* 其他原有样式保持不变 */
 </style>
