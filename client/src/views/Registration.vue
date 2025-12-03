@@ -4,12 +4,6 @@
     <div class="page-header">
       <h2>{{ myPageState.pageTitle }}</h2>
     </div>
-    <!-- 返回按鈕 -->
-    <div class="print-controls" v-if="myPageState.isEdit">
-      <div class="controls-left">
-        <button @click="handleBack" class="back-btn">← 返回列表</button>
-      </div>
-    </div>
 
     <!-- 在 .form-header div 內新增表單切換區塊 -->
     <div class="form-header">
@@ -505,16 +499,7 @@
 
       <!-- 修正後的提交按鈕區塊 -->
       <div class="form-actions">
-        <!-- 编辑模式：显示保存按钮 -->
-        <button
-          v-if="myPageState.isEdit"
-          type="button"
-          class="btn btn-outline"
-          @click="handleBack"
-        >
-          返回列表
-        </button>
-
+        <!-- 编辑模式 -->
         <button
           v-if="myPageState.isEdit"
           type="button"
@@ -580,20 +565,39 @@ export default {
     const pageStateStore = usePageStateStore();
     const configStore = useConfigStore();
     const registrationStore = useRegistrationStore();
-    const submitting = ref(false);    
+    const submitting = ref(false);
     const isDev = computed(() => authService.getCurrentDev());
     const router = useRouter();
     const route = useRoute();
 
     // 新增：模式判断
     const myPageState = computed(() => {
-
       const state = loadPageState();
       console.log("🔧 myPageState 調試信息:", state);
-      return state;
 
+      if (state.isEdit) {
+        const propsData = {
+          id: state.id,
+          formId: state.formId,
+          action: state.action,
+        };
+        //return;
+        new Promise((resolve) => {
+          registrationStore.loadFormData(propsData).then(() => {
+            resolve();
+          });
+        });
+        //await registrationStore.loadFormData(propsData);
+      }
+      if (state.isCreate) {
+        // 啟動自動同步機制
+        registrationStore.initializeFormArray();
+        console.log("[v0] 表單同步已啟動 - 創建模式");
+      }
+
+      return state;
     });
-    
+
     const getPageTitle = (action) => {
       const titles = {
         create: "消災超度登記",
@@ -633,31 +637,31 @@ export default {
     };
 
     onMounted(async () => {
-      await registrationStore.loadConfig();      
+      await registrationStore.loadConfig();
 
-      const propsData = {
-        id: myPageState.value.id,
-        formId: myPageState.value.formId,
-        action: myPageState.value.action,
-      };
-      //return;
+      // const propsData = {
+      //   id: myPageState.value.id,
+      //   formId: myPageState.value.formId,
+      //   action: myPageState.value.action,
+      // };
+      // //return;
 
-      if (myPageState.value.isEdit) {
-        await registrationStore.loadFormData(propsData);
-      }
-      if (myPageState.value.isCreate) {
-        // 啟動自動同步機制
-        registrationStore.initializeFormArray();
-        console.log("[v0] 表單同步已啟動 - 創建模式");
-      }
+      // if (myPageState.value.isEdit) {
+      //   await registrationStore.loadFormData(propsData);
+      // }
+      // if (myPageState.value.isCreate) {
+      //   // 啟動自動同步機制
+      //   registrationStore.initializeFormArray();
+      //   console.log("[v0] 表單同步已啟動 - 創建模式");
+      // }
+      
     });
 
     // 載入測試 Mock 數據，進行快速測試
     const handleLoadMockData = async () => {
       console.log("🔧  載入 Mock 調試信息:", { myPageState });
 
-      try {        
-
+      try {
         const propsData = {
           id: myPageState.value.id,
           formId: myPageState.value.formId,
@@ -688,7 +692,7 @@ export default {
     // 新增：表單切換處理
     const handleSwitchForm = async (index) => {
       console.log("🔧 切換表單調試信息:");
-      console.log("🔄 觸發表單切換至索引:", index);      
+      console.log("🔄 觸發表單切換至索引:", index);
 
       if (index === currentFormIndex.value) {
         console.log("已經是當前表單，不處理");
