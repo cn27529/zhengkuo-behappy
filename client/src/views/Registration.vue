@@ -572,7 +572,7 @@ export default {
 
     // 新增：模式判断
     const myPageState = computed(() => {
-      const state = loadPageState();
+      const state = loadPageState("registration");
       console.log("🔧 myPageState 調試信息:", state);
 
       if (state.isEdit) {
@@ -596,19 +596,13 @@ export default {
       }
 
       return state;
-    });
-
-    const getPageTitle = (action) => {
-      const titles = {
-        create: "消災超度登記",
-        edit: "編輯表單",
-        view: "查看表單",
-      };
-      return titles[action] || titles.create;
-    };
+    });    
 
     // 从 Store 获取页面状态
     const loadPageState = () => {
+
+      //return pageStateStore.loadPageState("registration");
+
       const state = pageStateStore.getPageState("registration");
       console.log("📋 loadPageState:", state);
 
@@ -618,7 +612,7 @@ export default {
           formId: state.formId || "",
           id: state.id || -1,
           source: state.source || "",
-          pageTitle: getPageTitle(state.action),
+          pageTitle: pageStateStore.getPageTitle(state.action),
           isEdit: state.action === "edit" ? true : false,
           isCreate: state.action === "create" ? true : false,
         };
@@ -630,7 +624,7 @@ export default {
         formId: route.query.formId || "",
         id: route.query.id || -1,
         source: route.query.source || "",
-        pageTitle: getPageTitle(route.query.action),
+        pageTitle: pageStateStore.getPageTitle(route.query.action),
         isEdit: state.action === "edit" ? true : false,
         isCreate: state.action === "create" ? true : false,
       };

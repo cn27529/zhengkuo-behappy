@@ -34,7 +34,7 @@ export const usePageStateStore = defineStore("pageState", () => {
   };
 
   const loadPageState = (pageName) => {
-    const state = getPageState(pageName);    
+    const state = getPageState(pageName);
     const pageState = null;
 
     if (state) {
@@ -70,7 +70,7 @@ export const usePageStateStore = defineStore("pageState", () => {
   const getPageState = (pageName) => {
     console.log("📋 獲取頁面狀態");
     // 先从内存中获取
-    if (pageStates.value[pageName]) {      
+    if (pageStates.value[pageName]) {
       return pageStates.value[pageName];
     }
 
@@ -87,6 +87,15 @@ export const usePageStateStore = defineStore("pageState", () => {
     }
 
     return null;
+  };
+
+  const getPageTitle = (action) => {
+    const titles = {
+      create: "消災超度登記",
+      edit: "編輯表單",
+      view: "查看表單",
+    };
+    return titles[action] || titles.create;
   };
 
   // 清除页面状态
@@ -111,5 +120,6 @@ export const usePageStateStore = defineStore("pageState", () => {
     clearPageState,
     clearAllPageStates,
     loadPageState,
+    getPageTitle,
   };
 });
