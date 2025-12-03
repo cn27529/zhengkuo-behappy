@@ -580,26 +580,12 @@ export default {
     const pageStateStore = usePageStateStore();
     const configStore = useConfigStore();
     const registrationStore = useRegistrationStore();
-    const submitting = ref(false);
-    //const isDev = ref(false);
+    const submitting = ref(false);    
     const isDev = computed(() => authService.getCurrentDev());
     const router = useRouter();
     const route = useRoute();
 
     // 新增：模式判断
-    //const pageTitle = ref("消災超度登記");
-    // const isCreateMode = computed(() =>
-    //   route.query.action === "create" ? true : false
-    // );
-
-    // const isEditMode = computed(() =>
-    //   route.query.action === "edit" ? true : false
-    // );
-    //const actionMode = computed(() => route.query.action);
-    //const formId = computed(() => route.query.formId);
-    //const id = computed(() => route.query.id);
-    //const actionResult = ref({});
-
     const myPageState = computed(() => {
 
       const state = loadPageState();
@@ -607,21 +593,7 @@ export default {
       return state;
 
     });
-
-    // 新增：模式判断
-    const handleActionResult = () => {
-      const result = {
-        editMode: myPageState.value.isEdit,
-        createMode: myPageState.value.isCreate,
-        formId: myPageState.value.formId || "", // 預設空
-        id: myPageState.value.id || -1, // 預設負1
-        pageTitle: getPageTitle(myPageState.value.action),
-        action: myPageState.value.action,
-      };
-      console.log("🔧 handleActionResult 調試信息:", result);
-      return result;
-    };
-
+    
     const getPageTitle = (action) => {
       const titles = {
         create: "消災超度登記",
@@ -634,7 +606,7 @@ export default {
     // 从 Store 获取页面状态
     const loadPageState = () => {
       const state = pageStateStore.getPageState("registration");
-      console.log("📋 loadPageState:", state);      
+      console.log("📋 loadPageState:", state);
 
       if (state) {
         return {
@@ -661,18 +633,7 @@ export default {
     };
 
     onMounted(async () => {
-      await registrationStore.loadConfig();
-
-      //actionResult.value = handleActionResult();
-
-      //const pageState = loadPageState();
-
-      //actionMode.value = pageState.action;
-      //id.value = pageState.id;
-      //formId.value = pageState.formId;
-      //pageTitle.value = myPageState.value.pageTitle;
-      //isEditMode.value = myPageState.value.isEdit;
-      //isCreateMode.value = myPageState.value.isCreate;
+      await registrationStore.loadConfig();      
 
       const propsData = {
         id: myPageState.value.id,
@@ -695,8 +656,7 @@ export default {
     const handleLoadMockData = async () => {
       console.log("🔧  載入 Mock 調試信息:", { myPageState });
 
-      try {
-        //actionResult.value = handleActionResult();
+      try {        
 
         const propsData = {
           id: myPageState.value.id,

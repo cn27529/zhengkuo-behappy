@@ -356,24 +356,11 @@ export default {
         console.groupEnd();
 
         router.push("/registration-edit");
-
-        //handleActionToRedirect(item, "edit");
+        
       } catch (error) {
         console.error("❌ 編輯操作失敗:", error);
         ElMessage.error("操作失敗，請重試");
       }
-    };
-
-    const handleActionToRedirect = (item, action) => {
-      router.push({
-        path: "/registration",
-        query: {
-          action: action, // 'edit' 或 'create'
-          formId: item.formId,
-          id: item.id,
-          //t: Date.now(),
-        },
-      });
     };
 
     // 列印表單
