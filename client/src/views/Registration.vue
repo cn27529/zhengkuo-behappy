@@ -601,7 +601,7 @@ export default {
     // 从 Store 获取页面状态
     const loadPageState = () => {
 
-      //return pageStateStore.loadPageState("registration");
+      return pageStateStore.loadPageState("registration");
 
       const state = pageStateStore.getPageState("registration");
       console.log("📋 loadPageState:", state);
