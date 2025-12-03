@@ -283,8 +283,8 @@ export default {
         };
 
         const result = await queryStore.queryRegistrationData(queryData);
-        console.log("Store 查詢完成,結果數量:", searchResults.value.length);
-        console.log("searchResults 內容:", searchResults.value);
+        console.log("查詢結果筆數:", searchResults.value.length);
+        //console.log("searchResults 內容:", searchResults.value);
 
         if (result.success) {
           if (!result.data || result.data.length === 0) {
