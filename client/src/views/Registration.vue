@@ -572,7 +572,7 @@ export default {
 
     // 新增：模式判断
     const myPageState = computed(() => {
-      const state = loadPageState("registration");
+      const state = pageStateStore.loadPageState("registration");
       console.log("🔧 myPageState 調試信息:", state);
 
       if (state.isEdit) {
@@ -591,16 +591,15 @@ export default {
       }
       if (state.isCreate) {
         // 啟動自動同步機制
-        registrationStore.initializeFormArray();
+        registrationStore.resetRegistrationForm(true);
         console.log("[v0] 表單同步已啟動 - 創建模式");
       }
 
       return state;
-    });    
+    });
 
     // 从 Store 获取页面状态
     const loadPageState = () => {
-
       //return pageStateStore.loadPageState("registration");
 
       const state = pageStateStore.getPageState("registration");
@@ -648,7 +647,6 @@ export default {
       //   registrationStore.initializeFormArray();
       //   console.log("[v0] 表單同步已啟動 - 創建模式");
       // }
-      
     });
 
     // 載入測試 Mock 數據，進行快速測試
@@ -661,7 +659,6 @@ export default {
           formId: myPageState.value.formId,
           action: myPageState.value.action,
         };
-
         const success = await registrationStore.loadMockData(propsData);
 
         if (success) {
@@ -934,9 +931,8 @@ export default {
 
           let fId = registrationStore.registrationForm.formId;
           let emptyFormId = false;
-          // 如果是創建模式且 formId 不為空，則清空 formId
-          if (myPageState.value.isCreate && myPageState.value.formId !== "")
-            emptyFormId = true;
+          // 如果是創建模式且
+          if (myPageState.value.isCreate) emptyFormId = true;
           //const success = registrationStore.resetForm();
           const success = registrationStore.resetRegistrationForm(emptyFormId);
 

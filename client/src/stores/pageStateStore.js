@@ -38,12 +38,9 @@ export const usePageStateStore = defineStore("pageState", () => {
 
   const loadPageState = (pageName) => {
     const state = getPageState(pageName);
-    const pageState = null;
 
     if (state) {
-      console.log("📋 頁面狀態數據:", pageState);
-
-      pageState = {
+      return {
         action: state.action || "create",
         formId: state.formId || "",
         id: state.id || -1,
@@ -52,21 +49,18 @@ export const usePageStateStore = defineStore("pageState", () => {
         isEdit: state.action === "edit" ? true : false,
         isCreate: state.action === "create" ? true : false,
       };
-      return pageState;
     }
 
-    // 如果没有保存的状态，回退到 URL 参数（兼容旧方式）
-    pageState = {
-      action: route.query.action || "create",
-      formId: route.query.formId || "",
-      id: route.query.id || -1,
-      source: route.query.source || "",
-      pageTitle: getPageTitle(route.query.action),
-      isEdit: state.action === "edit" ? true : false,
-      isCreate: state.action === "create" ? true : false,
+    // 如果没有保存的状态，使用預設值
+    return {
+      action: "create",
+      formId: "",
+      id: -1,
+      source: "loadPageState",
+      pageTitle: getPageTitle("create"),
+      isEdit: false,
+      isCreate: true,
     };
-    console.log("📋 頁面狀態數據:", pageState);
-    return pageState;
   };
 
   // 获取页面状态

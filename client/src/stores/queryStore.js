@@ -136,8 +136,8 @@ export const useQueryStore = defineStore("query", () => {
 
   const getFilteredData = (queryData, data) => {
     console.log("🎯 開始過濾數據...");
-    console.log("查詢條件:", queryData);
-    console.log("原始數據:", data);
+    //console.log("查詢條件:", queryData);
+    //console.log("原始數據:", data);
 
     if (!queryData || !queryData.query || !queryData.query.trim()) {
       console.log("🔍 無查詢條件，返回所有數據");

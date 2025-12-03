@@ -939,7 +939,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
       console.log("✅ 表單陣列已初始化");
     } else {
-      resetRegistrationForm();
+      //resetRegistrationForm();
     }
     console.log("✅ 自動同步已啟動，當前索引:", currentFormIndex.value);
   };
@@ -1043,8 +1043,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 统一的表单加载方法
   const loadFormData = async (propsData) => {
-    try {      
-
+    try {
       // 檢查必要的參數
       if (!propsData || !propsData.id) {
         console.error("❌ 缺少必要的表單 ID 參數");

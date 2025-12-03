@@ -356,7 +356,6 @@ export default {
         console.groupEnd();
 
         router.push("/registration-edit");
-        
       } catch (error) {
         console.error("❌ 編輯操作失敗:", error);
         ElMessage.error("操作失敗，請重試");
@@ -433,7 +432,7 @@ export default {
       console.log("✅ RegistrationList 組件已載入");
       console.log("清除頁面狀態");
       pageStateStore.clearPageState("registration");
-      console.log("當前 searchResults:", searchResults.value);
+      //console.log("當前 searchResults:", searchResults.value);
       isDev.value = authService.getCurrentDev();
     });
 
