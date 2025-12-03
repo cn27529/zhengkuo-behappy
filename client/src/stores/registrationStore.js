@@ -952,8 +952,6 @@ export const useRegistrationStore = defineStore("registration", () => {
         return false;
       }
 
-      console.log("propsData 參數調試:", propsData);
-
       let mockData = null;
 
       // 隨機選擇一筆數據
@@ -1045,8 +1043,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 统一的表单加载方法
   const loadFormData = async (propsData) => {
-    try {
-      console.log("propsData 參數調試:", propsData);
+    try {      
 
       // 檢查必要的參數
       if (!propsData || !propsData.id) {

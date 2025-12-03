@@ -34,11 +34,13 @@ export const usePageStateStore = defineStore("pageState", () => {
   };
 
   const loadPageState = (pageName) => {
-    const state = pageStateStore.getPageState(pageName);
-    console.log("📋 加載頁面狀態:", state);
+    const state = getPageState(pageName);    
+    const pageState = null;
 
     if (state) {
-      return {
+      console.log("📋 頁面狀態數據:", pageState);
+
+      pageState = {
         action: state.action || "create",
         formId: state.formId || "",
         id: state.id || -1,
@@ -47,10 +49,11 @@ export const usePageStateStore = defineStore("pageState", () => {
         isEdit: state.action === "edit" ? true : false,
         isCreate: state.action === "create" ? true : false,
       };
+      return pageState;
     }
 
     // 如果没有保存的状态，回退到 URL 参数（兼容旧方式）
-    return {
+    pageState = {
       action: route.query.action || "create",
       formId: route.query.formId || "",
       id: route.query.id || -1,
@@ -59,12 +62,15 @@ export const usePageStateStore = defineStore("pageState", () => {
       isEdit: state.action === "edit" ? true : false,
       isCreate: state.action === "create" ? true : false,
     };
+    console.log("📋 頁面狀態數據:", pageState);
+    return pageState;
   };
 
   // 获取页面状态
   const getPageState = (pageName) => {
+    console.log("📋 獲取頁面狀態");
     // 先从内存中获取
-    if (pageStates.value[pageName]) {
+    if (pageStates.value[pageName]) {      
       return pageStates.value[pageName];
     }
 
@@ -77,7 +83,7 @@ export const usePageStateStore = defineStore("pageState", () => {
         return parsed;
       }
     } catch (error) {
-      console.error("恢复页面状态失败:", error);
+      console.error("獲取頁面狀態失敗:", error);
     }
 
     return null;
