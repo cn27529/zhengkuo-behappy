@@ -41,29 +41,21 @@ const routes = [
     component: () => import("../views/Registration.vue"),
     // 🛡️ Registration.vue路由進入前的驗證
     beforeEnter: (to, from, next) => {
-      const { action, formId, id } = to.query;
-      console.log("🚪 進入 Registration 路由:", { action, formId, id });
-
+      // const { action, formId, id } = to.query;
+      // console.log("🚪 進入 Registration 路由:", { action, formId, id });
+      console.log("🚪 進入 Registration 路由");
       const pageStateStore = usePageStateStore();
-      const pageState = pageStateStore.getPageState("registration");
-      if (pageState) {
-        console.log("🚪 進入 Registration 路由，獲取頁面狀態調適", pageState);
-      }
-
-      if (!pageState) {
-        console.log("🚪 頁面狀態不存在，重新建立狀態");
-        const pageState = new Promise(async () => {
-          await pageStateStore.setPageState("registration", {
-            action: "create",
-            formId: "",
-            id: -1,
-            source: "routes",
-          });
+      pageStateStore.clearPageState("registration");
+      console.log("🚪 重建頁面狀態");
+      const pageState = new Promise(async () => {
+        await pageStateStore.setPageState("registration", {
+          action: "create",
+          formId: "",
+          id: -1,
+          source: "routes",
         });
-        pageState.then(() => {
-          console.log("🚪 頁面狀態建立完成");
-        });
-      }
+      });
+      console.log("🚪 頁面狀態重建完成");      
 
       // // 情況1: 沒有任何參數,默認為 create
       // if (!action && !formId && !id) {
@@ -108,6 +100,25 @@ const routes = [
       // }
 
       // 通過驗證,繼續
+      next();
+    },
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/registration-edit",
+    name: "RegistrationEdit",
+    component: () => import("../views/Registration.vue"),
+    // 🛡️ Registration.vue路由進入前的驗證
+    beforeEnter: (to, from, next) => {
+      const pageStateStore = usePageStateStore();
+      const pageState = pageStateStore.getPageState("registration");
+      if (pageState) {
+        console.log(
+          "🚪 進入 RegistrationEdit 路由，獲取頁面狀態調適",
+          pageState
+        );
+      }
+
       next();
     },
     meta: { requiresAuth: true },

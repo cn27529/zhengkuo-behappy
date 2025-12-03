@@ -13,7 +13,7 @@
 
     <!-- 在 .form-header div 內新增表單切換區塊 -->
     <div class="form-header">
-      <!-- 在 template 添加調試信息 -->
+      <!-- 在 template 調試信息 -->
       <div v-if="isDev" class="debug-panel">
         <!-- 添加 Mock 按钮 -->
         <el-button type="success" class="dev-button" @click="handleLoadMockData"
@@ -600,7 +600,13 @@ export default {
     //const id = computed(() => route.query.id);
     //const actionResult = ref({});
 
-    const myPageState = computed(() => loadPageState());
+    const myPageState = computed(() => {
+
+      const state = loadPageState();
+      console.log("🔧 myPageState 調試信息:", state);
+      return state;
+
+    });
 
     // 新增：模式判断
     const handleActionResult = () => {
@@ -612,7 +618,7 @@ export default {
         pageTitle: getPageTitle(myPageState.value.action),
         action: myPageState.value.action,
       };
-      console.log("handleActionResult 參數調試信息:", result);
+      console.log("🔧 handleActionResult 調試信息:", result);
       return result;
     };
 
@@ -628,7 +634,7 @@ export default {
     // 从 Store 获取页面状态
     const loadPageState = () => {
       const state = pageStateStore.getPageState("registration");
-      console.log("📋 加载页面状态:", state);
+      console.log("📋 loadPageState:", state);      
 
       if (state) {
         return {
@@ -668,8 +674,6 @@ export default {
       //isEditMode.value = myPageState.value.isEdit;
       //isCreateMode.value = myPageState.value.isCreate;
 
-      console.log("📋 myPageState 調試信息:", myPageState.value);
-
       const propsData = {
         id: myPageState.value.id,
         formId: myPageState.value.formId,
@@ -689,7 +693,7 @@ export default {
 
     // 載入測試 Mock 數據，進行快速測試
     const handleLoadMockData = async () => {
-      console.log("🔍 載入 Mock 數據調試信息:", { myPageState });
+      console.log("🔧  載入 Mock 調試信息:", { myPageState });
 
       try {
         //actionResult.value = handleActionResult();
@@ -723,14 +727,12 @@ export default {
 
     // 新增：表單切換處理
     const handleSwitchForm = async (index) => {
-      console.log("🔍 切換表單調試信息:");
-      console.log("🔄 使用者觸發表單切換至索引:", index);
-      console.log("當前索引 (store):", registrationStore.currentFormIndex);
-      console.log("當前索引 (computed):", currentFormIndex.value);
+      console.log("🔧 切換表單調試信息:");
+      console.log("🔄 觸發表單切換至索引:", index);      
 
       if (index === currentFormIndex.value) {
         console.log("已經是當前表單，不處理");
-        //return;
+        return;
       }
 
       const resultIndex = registrationStore.switchForm(index);
@@ -744,7 +746,7 @@ export default {
 
     // 新增：刪除表單處理
     const handleDeleteForm = (index) => {
-      console.log("🔍 刪除表單調試信息:");
+      console.log("🗑️ 刪除表單調試信息:");
       console.log("傳入的索引:", index);
       console.log("當前表單陣列:", formArray.value);
       console.log("當前表單索引:", currentFormIndex.value);
@@ -843,7 +845,7 @@ export default {
 
     // 保存修改表单
     const handleUpdateForm = async () => {
-      console.log("保存修改表單調試信息:");
+      console.log("🔧 保存修改調試信息:");
       console.log("當前表單陣列:", formArray.value);
       console.log("當前表單索引:", currentFormIndex.value);
 
@@ -887,7 +889,7 @@ export default {
       try {
         const result = await registrationStore.submitRegistration();
 
-        console.log("提交結果調試信息:", JSON.stringify(result));
+        console.log("🔧 提交結果調試信息:", JSON.stringify(result));
 
         if (result.success) {
           ElMessage.success(result.message);

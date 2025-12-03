@@ -28,7 +28,7 @@ export const usePageStateStore = defineStore("pageState", () => {
         console.warn("sessionStorage 操作失敗:", error);
       }
 
-      console.log("✅ 頁面狀態設置完成");
+      //console.log("✅ 頁面狀態設置完成");
       resolve(stateData);
     });
   };

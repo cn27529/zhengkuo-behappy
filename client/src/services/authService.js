@@ -790,7 +790,7 @@ export class AuthService {
     console.log("setDev: ", isDev);
     baseService.isDev = isDev;
     sessionStorage.setItem("auth-dev", isDev);
-    console.log(`開發模式調試信息已切換為: ${baseService.isDev} `);
+    console.log(`🔧 開發模式已切換為: ${baseService.isDev} `);
   }
 
   // 修改 setMode 方法中的健康檢查

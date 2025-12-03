@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <!-- 在查詢表單後面添加調試信息 -->
+    <!-- 調試信息 -->
     <div v-if="isDev" class="debug-panel">
       <h4>🔧 調試信息</h4>
       <hr />
@@ -340,17 +340,22 @@ export default {
 
         console.log("2. 準備保存狀態到 Store");
         // 儲存狀態
-        const pageState = await pageStateStore.setPageState("registration", {
-          action: "edit",
-          formId: item.formId,
-          id: item.id,
-          source: "list",
+        const pageState = new Promise(async () => {
+          await pageStateStore.setPageState("registration", {
+            action: "edit",
+            formId: item.formId,
+            id: item.id,
+            source: "list",
+          });
+        });
+        pageState.then(() => {
+          console.log("🚪 3. 頁面狀態重建完成");
         });
 
-        console.log("4. 頁面URL狀態保存完成，開始導航到表單頁面");
+        console.log("4. 開始導航到表單頁面");
         console.groupEnd();
 
-        await router.push("/registration");
+        router.push("/registration-edit");
 
         //handleActionToRedirect(item, "edit");
       } catch (error) {
