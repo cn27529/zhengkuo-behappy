@@ -613,7 +613,7 @@ export default {
       }
       if (state.isCreate) {
         // 啟動自動同步機制
-        registrationStore.resetRegistrationForm(true);
+        registrationStore.initializeFormArray();
         console.log("[v0] 表單同步已啟動 - 創建模式");
       }
     });
@@ -900,8 +900,7 @@ export default {
           let fId = registrationStore.registrationForm.formId;
           let emptyFormId = false;
           // 如果是創建模式且
-          if (myPageState.value.isCreate) emptyFormId = true;
-          //const success = registrationStore.resetForm();
+          if (myPageState.value.isCreate) emptyFormId = true;          
           const success = registrationStore.resetRegistrationForm(emptyFormId);
 
           if (success) {
@@ -960,7 +959,7 @@ export default {
 
         // 開啟列印頁面
         const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
-        console.log("開啟列印頁面:", printUrl);
+        console.log("列印頁面URL:", printUrl);
         //window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
 
         // 使用 router.push 導航到列印頁面

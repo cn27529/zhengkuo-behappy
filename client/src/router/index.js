@@ -108,15 +108,17 @@ const routes = [
     path: "/registration-edit",
     name: "RegistrationEdit",
     component: () => import("../views/RegistrationEdit.vue"),
-    // 🛡️ Registration.vue路由進入前的驗證
+    // 🛡️ RegistrationEdit.vue路由進入前的驗證
     beforeEnter: (to, from, next) => {
       const pageStateStore = usePageStateStore();
       const pageState = pageStateStore.getPageState("registration");
-      if (pageState) {
-        console.log(
-          "🚪 進入 RegistrationEdit 路由，獲取頁面狀態調適",
-          pageState
-        );
+      if(pageState.action === "create") {
+        console.log("🚪 進入 RegistrationEdit 路由，頁面狀態是action=create，所以狀態與頁面不匹配，重新導航");
+        next({
+          path: "/registration-list",          
+          replace: true,
+        });
+        return;
       }
 
       next();

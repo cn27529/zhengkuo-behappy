@@ -935,6 +935,8 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   const initializeFormArray = () => {
     console.log("✅ 表單陣列初始化");
+    resetRegistrationForm(true);
+    return;
     if (formArray.value.length === 0) {
       formArray.value.push(JSON.parse(JSON.stringify(registrationForm.value)));
       console.log("✅ 表單陣列已初始化");
