@@ -551,7 +551,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed, nextTick } from "vue";
+import { ref, onMounted, computed, nextTick, onUnmounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 import { authService } from "../services/authService";
@@ -598,7 +598,12 @@ export default {
       return state;
     });
 
+    onUnmounted(() => {
+      console.log("🗑️ Registration 組件已卸載");
+    });
+
     onMounted(async () => {
+      console.log('🚀 Registration 組件已掛載');
       await registrationStore.loadConfig();
 
       const state = myPageState.value;
@@ -900,7 +905,7 @@ export default {
           let fId = registrationStore.registrationForm.formId;
           let emptyFormId = false;
           // 如果是創建模式且
-          if (myPageState.value.isCreate) emptyFormId = true;          
+          if (myPageState.value.isCreate) emptyFormId = true;
           const success = registrationStore.resetRegistrationForm(emptyFormId);
 
           if (success) {
