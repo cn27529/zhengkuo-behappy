@@ -1,4 +1,4 @@
-// src/stores/activities.js
+// src/stores/activitiesStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 

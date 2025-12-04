@@ -48,10 +48,11 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
-import { useActivitiesStore } from "../stores/activities.js";
+import { useActivitiesStore } from "../stores/activitiesStore.js";
 
 export default {
   name: "Dashboard",
+
   setup() {
     const router = useRouter();
     const authStore = useAuthStore();
