@@ -18,6 +18,11 @@ const routes = [
     component: () => import("../views/Dashboard.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/dashboard-old",
+    component: () => import("../views/Dashboard-old.vue"),
+    meta: { requiresAuth: true },
+  },
   { path: "/logout", component: () => import("../views/Logout.vue") },
   {
     path: "/registration-list",
@@ -55,7 +60,7 @@ const routes = [
           source: "routes",
         });
       });
-      console.log("🚪 頁面狀態重建完成");      
+      console.log("🚪 頁面狀態重建完成");
 
       // // 情況1: 沒有任何參數,默認為 create
       // if (!action && !formId && !id) {
@@ -112,10 +117,12 @@ const routes = [
     beforeEnter: (to, from, next) => {
       const pageStateStore = usePageStateStore();
       const pageState = pageStateStore.getPageState("registration");
-      if(pageState.action === "create") {
-        console.log("🚪 進入 RegistrationEdit 路由，頁面狀態是action=create，所以狀態與頁面不匹配，重新導航");
+      if (pageState.action === "create") {
+        console.log(
+          "🚪 進入 RegistrationEdit 路由，頁面狀態是action=create，所以狀態與頁面不匹配，重新導航"
+        );
         next({
-          path: "/registration-list",          
+          path: "/registration-list",
           replace: true,
         });
         return;

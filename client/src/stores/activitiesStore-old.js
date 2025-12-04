@@ -1,6 +1,7 @@
 // src/stores/activitiesStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import mockActivities from "../data/mock_activities.json";
 
 export const useActivitiesStore = defineStore("activities", () => {
   // 状态
@@ -11,7 +12,7 @@ export const useActivitiesStore = defineStore("activities", () => {
       type: "ceremony",
       participants: 342,
       date: "2023-11-15",
-      status: "upcoming",
+      state: "upcoming",
       icon: "🕯️",
     },
     {
@@ -20,7 +21,7 @@ export const useActivitiesStore = defineStore("activities", () => {
       type: "ceremony",
       participants: 567,
       date: "2023-10-10",
-      status: "completed",
+      state: "completed",
       icon: "🙏",
     },
     {
@@ -29,7 +30,7 @@ export const useActivitiesStore = defineStore("activities", () => {
       type: "activity",
       participants: 289,
       date: "2023-09-20",
-      status: "completed",
+      state: "completed",
       icon: "⛰️",
     },
     {
@@ -38,7 +39,7 @@ export const useActivitiesStore = defineStore("activities", () => {
       type: "pudu",
       participants: 621,
       date: "2023-08-15",
-      status: "completed",
+      state: "completed",
       icon: "🍚",
     },
   ]);
@@ -67,14 +68,12 @@ export const useActivitiesStore = defineStore("activities", () => {
   });
 
   const upcomingActivities = computed(() => {
-    return activities.value.filter(
-      (activity) => activity.status === "upcoming"
-    );
+    return activities.value.filter((activity) => activity.state === "upcoming");
   });
 
   const completedActivities = computed(() => {
     return activities.value.filter(
-      (activity) => activity.status === "completed"
+      (activity) => activity.state === "completed"
     );
   });
 
@@ -98,7 +97,7 @@ export const useActivitiesStore = defineStore("activities", () => {
   });
 
   // Actions - 方法
-  const fetchActivities = async () => {
+  const getAllActivities = async () => {
     // 模拟API调用
     try {
       // 这里将来可以替换为真实的API调用
@@ -106,6 +105,7 @@ export const useActivitiesStore = defineStore("activities", () => {
       // activities.value = response.data
 
       console.log("获取活动数据成功");
+      activities.value = mockActivities;
       return activities.value;
     } catch (error) {
       console.error("获取活动数据失败:", error);
@@ -120,7 +120,7 @@ export const useActivitiesStore = defineStore("activities", () => {
         id: Math.max(...activities.value.map((a) => a.id)) + 1,
         ...newActivity,
         participants: 0,
-        status: "upcoming",
+        state: "upcoming",
       };
       activities.value.push(activity);
       return activity;
@@ -157,7 +157,7 @@ export const useActivitiesStore = defineStore("activities", () => {
     }
   };
 
-  const fetchMonthlyStats = async () => {
+  const gethMonthlyStats = async () => {
     // 模拟API调用获取月度统计
     try {
       // 这里将来可以替换为真实的API调用
@@ -185,10 +185,10 @@ export const useActivitiesStore = defineStore("activities", () => {
     chartData,
 
     // Actions
-    fetchActivities,
+    getAllActivities,
     addActivity,
     updateActivityParticipants,
     deleteActivity,
-    fetchMonthlyStats,
+    gethMonthlyStats,
   };
 });

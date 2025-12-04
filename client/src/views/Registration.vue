@@ -603,7 +603,7 @@ export default {
     });
 
     onMounted(async () => {
-      console.log('🚀 Registration 組件已掛載');
+      console.log("🚀 Registration 組件已掛載");
       await registrationStore.loadConfig();
 
       const state = myPageState.value;
@@ -835,56 +835,56 @@ export default {
 
     // wrapper: 將聯絡人加入消災人員（呼叫 store）
     const addContactAsBlessing = () => {
-      const res = registrationStore.addContactToBlessing();
-      if (res && res.status) {
-        if (res.status === "ok") {
-          ElMessage.success(res.message);
+      const response = registrationStore.addContactToBlessing();
+      if (response && response.status) {
+        if (response.status === "ok") {
+          ElMessage.success(response.message);
         } else if (
-          res.status === "invalid" ||
-          res.status === "warning" ||
-          res.status === "duplicate" ||
-          res.status === "max"
+          response.status === "invalid" ||
+          response.status === "warning" ||
+          response.status === "duplicate" ||
+          response.status === "max"
         ) {
-          ElMessage.warning(res.message);
+          ElMessage.warning(response.message);
         }
       }
-      return res;
+      return response;
     };
 
     // wrapper: 將聯絡人加入陽上人（呼叫 store）
     const addContactAsSurvivor = () => {
-      const res = registrationStore.addContactToSurvivors();
-      if (res && res.status) {
-        if (res.status === "ok") {
-          ElMessage.success(res.message);
+      const response = registrationStore.addContactToSurvivors();
+      if (response && response.status) {
+        if (response.status === "ok") {
+          ElMessage.success(response.message);
         } else if (
-          res.status === "invalid" ||
-          res.status === "warning" ||
-          res.status === "duplicate" ||
-          res.status === "max"
+          response.status === "invalid" ||
+          response.status === "warning" ||
+          response.status === "duplicate" ||
+          response.status === "max"
         ) {
-          ElMessage.warning(res.message);
+          ElMessage.warning(response.message);
         }
       }
-      return res;
+      return response;
     };
 
     // wrapper: 從消災人員載入陽上人（呼叫 store）
     const importFromBlessing = (person) => {
-      const res = registrationStore.importSurvivorFromBlessing(person);
-      if (res && res.status) {
-        if (res.status === "ok") {
-          ElMessage.success(res.message);
+      const response = registrationStore.importSurvivorFromBlessing(person);
+      if (response && response.status) {
+        if (response.status === "ok") {
+          ElMessage.success(response.message);
         } else if (
-          res.status === "invalid" ||
-          res.status === "warning" ||
-          res.status === "duplicate" ||
-          res.status === "max"
+          response.status === "invalid" ||
+          response.status === "warning" ||
+          response.status === "duplicate" ||
+          response.status === "max"
         ) {
-          ElMessage.warning(res.message);
+          ElMessage.warning(response.message);
         }
       }
-      return res;
+      return response;
     };
 
     // 重置表單處理

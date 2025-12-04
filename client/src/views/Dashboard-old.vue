@@ -28,6 +28,7 @@
         </div>
       </div>
     </div>
+
     <!-- 活动统计卡片 -->
     <div class="stats-grid">
       <div v-for="activity in activities" :key="activity.id" class="stat-card">
@@ -44,10 +45,10 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
-import { useActivitiesStore } from "../stores/activitiesStore.js";
+import { useActivitiesStore } from "../stores/activitiesStore-old.js";
 
 export default {
   name: "Dashboard",

@@ -866,7 +866,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 重置表單數據
       const initialForm = getInitialFormData();
-      initialForm.status = "reset";
+      initialForm.state = "reset";
       initialForm.createdAt = registrationForm.value.createdAt;
       initialForm.updatedAt = registrationForm.value.updatedAt;
       initialForm.formName = registrationForm.value.formName;
@@ -905,7 +905,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
         // 方法：逐個屬性重置，保持響應性
         // 1. 重置頂層屬性
-        initialForm.status = "reset";
+        initialForm.state = "reset";
         initialForm.createdAt = registrationForm.value.createdAt;
         initialForm.updatedAt = registrationForm.value.updatedAt;
         initialForm.formName = registrationForm.value.formName;
@@ -996,7 +996,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       // currentMock.createdAt = mockData.createdAt;
       // currentMock.updatedAt = mockData.updatedAt;
       // currentMock.id = mockData.id;
-      // currentMock.status = mockData.status;
+      // currentMock.state = mockData.state;
 
       // // 只更新數據字段，不改變表單狀態和 ID
       // if (mockData.contact) {

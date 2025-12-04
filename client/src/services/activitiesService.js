@@ -33,7 +33,7 @@ export class ActivitiesService {
   }
 
   // ========== CRUD 操作 ==========
-  
+
   /**
    * 創建新活動
    * @param {Object} activityData - 活動資料
@@ -77,7 +77,7 @@ export class ActivitiesService {
         type: activityData.type || "ceremony",
         participants: activityData.participants || 0,
         date: activityData.date || createISOTime,
-        status: activityData.status || "upcoming",
+        state: activityData.state || "upcoming",
         icon: activityData.icon || "🕯️",
         description: activityData.description || "",
         location: activityData.location || "",
@@ -304,7 +304,7 @@ export class ActivitiesService {
   }
 
   // ========== 查詢方法 ==========
-  
+
   /**
    * 根據活動 ID 獲取活動
    * @param {string} activityId - 活動 ID
@@ -333,13 +333,13 @@ export class ActivitiesService {
 
   /**
    * 根據狀態獲取活動
-   * @param {string} status - 活動狀態
+   * @param {string} state - 活動狀態
    * @returns {Promise<Object>} 活動列表
    */
-  async getActivitiesByStatus(status) {
+  async getActivitiesByState(state) {
     return this.getAllActivities({
       filter: {
-        status: { _eq: status },
+        state: { _eq: state },
       },
       sort: "-date", // 按日期降序排列
     });
@@ -350,7 +350,7 @@ export class ActivitiesService {
    * @returns {Promise<Object>} 活動列表
    */
   async getUpcomingActivities() {
-    return this.getActivitiesByStatus("upcoming");
+    return this.getActivitiesByState("upcoming");
   }
 
   /**
@@ -358,7 +358,7 @@ export class ActivitiesService {
    * @returns {Promise<Object>} 活動列表
    */
   async getCompletedActivities() {
-    return this.getActivitiesByStatus("completed");
+    return this.getActivitiesByState("completed");
   }
 
   /**
@@ -379,7 +379,7 @@ export class ActivitiesService {
   }
 
   // ========== 統計方法 ==========
-  
+
   /**
    * 獲取月度統計
    * @returns {Promise<Object>} 月度統計數據
@@ -398,7 +398,7 @@ export class ActivitiesService {
       // 這裡可以實現從 Directus 獲取統計數據的邏輯
       // 暫時返回計算出的統計
       const activitiesResult = await this.getAllActivities();
-      
+
       if (!activitiesResult.success) {
         return activitiesResult;
       }
@@ -423,18 +423,31 @@ export class ActivitiesService {
    */
   calculateMonthlyStats(activities) {
     const monthlyMap = new Map();
-    const months = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+    const months = [
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月",
+    ];
 
     // 初始化所有月份
-    months.forEach(month => {
+    months.forEach((month) => {
       monthlyMap.set(month, { month, participants: 0, events: 0 });
     });
 
     // 統計每個月的數據
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
       const date = new Date(activity.date);
       const month = `${date.getMonth() + 1}月`;
-      
+
       if (monthlyMap.has(month)) {
         const stats = monthlyMap.get(month);
         stats.participants += activity.participants || 0;
@@ -467,7 +480,7 @@ export class ActivitiesService {
   }
 
   // ========== 狀態管理 ==========
-  
+
   /**
    * 更新活動參與人數
    * @param {number|string} id - 活動 ID
@@ -488,7 +501,7 @@ export class ActivitiesService {
    */
   async completeActivity(id) {
     return this.updateActivity(id, {
-      status: "completed",
+      state: "completed",
       updatedAt: new Date().toISOString(),
     });
   }
@@ -500,7 +513,7 @@ export class ActivitiesService {
    */
   async cancelActivity(id) {
     return this.updateActivity(id, {
-      status: "cancelled",
+      state: "cancelled",
       updatedAt: new Date().toISOString(),
     });
   }

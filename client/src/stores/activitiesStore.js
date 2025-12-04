@@ -13,7 +13,7 @@ export const useActivitiesStore = defineStore("activities", () => {
   const error = ref(null);
 
   // ========== Getter - 計算屬性 ==========
-  
+
   /**
    * 計算總參與人數
    */
@@ -28,9 +28,7 @@ export const useActivitiesStore = defineStore("activities", () => {
    * 獲取即將到來的活動
    */
   const upcomingActivities = computed(() => {
-    return activities.value.filter(
-      (activity) => activity.status === "upcoming"
-    );
+    return activities.value.filter((activity) => activity.state === "upcoming");
   });
 
   /**
@@ -38,7 +36,7 @@ export const useActivitiesStore = defineStore("activities", () => {
    */
   const completedActivities = computed(() => {
     return activities.value.filter(
-      (activity) => activity.status === "completed"
+      (activity) => activity.state === "completed"
     );
   });
 
@@ -106,7 +104,7 @@ export const useActivitiesStore = defineStore("activities", () => {
   /**
    * 從服務器或 Mock 數據獲取活動列表
    */
-  const fetchActivities = async (params = {}) => {
+  const getAllActivities = async (params = {}) => {
     loading.value = true;
     error.value = null;
 
@@ -114,7 +112,7 @@ export const useActivitiesStore = defineStore("activities", () => {
       // 如果不是 directus 模式，使用 Mock 數據
       if (baseService.mode !== "directus") {
         console.log("📦 使用 Mock 活動數據");
-        activities.value = JSON.parse(JSON.stringify(mockActivities));
+        activities.value = mockActivities;
         return {
           success: true,
           data: activities.value,
@@ -163,7 +161,7 @@ export const useActivitiesStore = defineStore("activities", () => {
           activityId: activitiesService.generateActivityId(),
           ...newActivity,
           participants: newActivity.participants || 0,
-          status: newActivity.status || "upcoming",
+          status: newActivity.state || "upcoming",
           createdAt: new Date().toISOString(),
           createdUser: "system",
           updatedAt: "",
@@ -365,7 +363,7 @@ export const useActivitiesStore = defineStore("activities", () => {
 
       // 如果不是 directus 模式，只在本地更新
       if (baseService.mode !== "directus") {
-        activity.status = "completed";
+        activity.state = "completed";
         activity.updatedAt = new Date().toISOString();
         console.log("✅ Mock 模式：活動已標記為完成");
         return {
@@ -379,7 +377,7 @@ export const useActivitiesStore = defineStore("activities", () => {
       const result = await activitiesService.completeActivity(activityId);
 
       if (result.success) {
-        activity.status = "completed";
+        activity.state = "completed";
         activity.updatedAt = result.data.updatedAt;
         console.log("✅ 成功標記活動為完成");
         return result;
@@ -400,7 +398,7 @@ export const useActivitiesStore = defineStore("activities", () => {
   /**
    * 獲取月度統計數據
    */
-  const fetchMonthlyStats = async () => {
+  const getMonthlyStats = async () => {
     loading.value = true;
     error.value = null;
 
@@ -446,23 +444,33 @@ export const useActivitiesStore = defineStore("activities", () => {
    */
   const calculateMonthlyStatsFromActivities = () => {
     const months = [
-      "1月", "2月", "3月", "4月", "5月", "6月",
-      "7月", "8月", "9月", "10月", "11月", "12月"
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月",
     ];
 
     const statsMap = new Map();
-    
+
     // 初始化所有月份
-    months.forEach(month => {
+    months.forEach((month) => {
       statsMap.set(month, { month, participants: 0, events: 0 });
     });
 
     // 統計每個活動
-    activities.value.forEach(activity => {
+    activities.value.forEach((activity) => {
       const date = new Date(activity.date);
       const monthIndex = date.getMonth();
       const month = months[monthIndex];
-      
+
       const stats = statsMap.get(month);
       stats.participants += activity.participants || 0;
       stats.events += 1;
@@ -474,7 +482,7 @@ export const useActivitiesStore = defineStore("activities", () => {
   /**
    * 根據活動 ID 獲取活動
    */
-  const getActivityByActivityId = async (activityId) => {
+  const getByActivityId = async (activityId) => {
     loading.value = true;
     error.value = null;
 
@@ -570,34 +578,34 @@ export const useActivitiesStore = defineStore("activities", () => {
   /**
    * 根據狀態獲取活動
    */
-  const getActivitiesByStatus = async (status) => {
+  const getActivitiesByState = async (state) => {
     loading.value = true;
     error.value = null;
 
     try {
       // 如果不是 directus 模式，從本地過濾
       if (baseService.mode !== "directus") {
-        const filtered = activities.value.filter((a) => a.status === status);
+        const filtered = activities.value.filter((a) => a.state === state);
         return {
           success: true,
           data: filtered,
-          message: `找到 ${filtered.length} 個 ${status} 狀態的活動（本地）`,
+          message: `找到 ${filtered.length} 個 ${state} 狀態的活動（本地）`,
         };
       }
 
       // 從服務器獲取
-      const result = await activitiesService.getActivitiesByStatus(status);
+      const result = await activitiesService.getActivitiesByState(state);
 
       if (result.success) {
         return result;
       } else {
         error.value = result.message;
         // 失敗時從本地過濾
-        const filtered = activities.value.filter((a) => a.status === status);
+        const filtered = activities.value.filter((a) => a.state === state);
         return {
           success: true,
           data: filtered,
-          message: `找到 ${filtered.length} 個 ${status} 狀態的活動（本地後備）`,
+          message: `找到 ${filtered.length} 個 ${state} 狀態的活動（本地後備）`,
         };
       }
     } catch (err) {
@@ -614,8 +622,8 @@ export const useActivitiesStore = defineStore("activities", () => {
    */
   const initialize = async () => {
     console.log("🚀 初始化活動 Store...");
-    await fetchActivities();
-    await fetchMonthlyStats();
+    await getAllActivities();
+    await getMonthlyStats();
     console.log("✅ 活動 Store 初始化完成");
   };
 
@@ -655,16 +663,16 @@ export const useActivitiesStore = defineStore("activities", () => {
     activityTypeStats,
 
     // Actions
-    fetchActivities,
+    getAllActivities,
     addActivity,
     updateActivityParticipants,
     updateActivity,
     deleteActivity,
     completeActivity,
-    fetchMonthlyStats,
-    getActivityByActivityId,
+    getMonthlyStats,
+    getByActivityId,
     getActivitiesByType,
-    getActivitiesByStatus,
+    getActivitiesByState,
     initialize,
     clearError,
     getCurrentMode,
