@@ -22,18 +22,18 @@ class DirectusTester {
         },
       };
 
-      const req = lib.request(url, reqOptions, (res) => {
+      const req = lib.request(url, reqOptions, (response) => {
         let data = "";
 
-        res.on("data", (chunk) => {
+        response.on("data", (chunk) => {
           data += chunk;
         });
 
-        res.on("end", () => {
+        response.on("end", () => {
           try {
             const parsed = data ? JSON.parse(data) : {};
             resolve({
-              status: res.statusCode,
+              status: response.statusCode,
               data: parsed,
             });
           } catch (error) {
