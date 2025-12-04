@@ -107,7 +107,7 @@ const routes = [
   {
     path: "/registration-edit",
     name: "RegistrationEdit",
-    component: () => import("../views/Registration.vue"),
+    component: () => import("../views/RegistrationEdit.vue"),
     // 🛡️ Registration.vue路由進入前的驗證
     beforeEnter: (to, from, next) => {
       const pageStateStore = usePageStateStore();

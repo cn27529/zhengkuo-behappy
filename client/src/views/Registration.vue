@@ -573,27 +573,27 @@ export default {
     // 新增：模式判断
     const myPageState = computed(() => {
       const state = pageStateStore.loadPageState("registration");
-      console.log("🔧 myPageState 調試信息:", state);
+      console.log("🔧 myPageState 調試信息:", { state });
 
-      if (state.isEdit) {
-        const propsData = {
-          id: state.id,
-          formId: state.formId,
-          action: state.action,
-        };
-        //return;
-        new Promise((resolve) => {
-          registrationStore.loadFormData(propsData).then(() => {
-            resolve();
-          });
-        });
-        //await registrationStore.loadFormData(propsData);
-      }
-      if (state.isCreate) {
-        // 啟動自動同步機制
-        registrationStore.resetRegistrationForm(true);
-        console.log("[v0] 表單同步已啟動 - 創建模式");
-      }
+      // if (state.isEdit) {
+      //   const propsData = {
+      //     id: state.id,
+      //     formId: state.formId,
+      //     action: state.action,
+      //   };
+      //   //return;
+      //   new Promise((resolve) => {
+      //     registrationStore.loadFormData(propsData).then(() => {
+      //       resolve();
+      //     });
+      //   });
+      //   //await registrationStore.loadFormData(propsData);
+      // }
+      // if (state.isCreate) {
+      //   // 啟動自動同步機制
+      //   registrationStore.resetRegistrationForm(true);
+      //   console.log("[v0] 表單同步已啟動 - 創建模式");
+      // }
 
       return state;
     });
@@ -601,32 +601,31 @@ export default {
     onMounted(async () => {
       await registrationStore.loadConfig();
 
-      // const propsData = {
-      //   id: myPageState.value.id,
-      //   formId: myPageState.value.formId,
-      //   action: myPageState.value.action,
-      // };
-      // //return;
+      const state = myPageState.value;
+      const propsData = {
+        id: state.id,
+        formId: state.formId,
+        action: state.action,
+      };
 
-      // if (myPageState.value.isEdit) {
-      //   await registrationStore.loadFormData(propsData);
-      // }
-      // if (myPageState.value.isCreate) {
-      //   // 啟動自動同步機制
-      //   registrationStore.initializeFormArray();
-      //   console.log("[v0] 表單同步已啟動 - 創建模式");
-      // }
+      if (state.isEdit) {
+        await registrationStore.loadFormData(propsData);
+      }
+      if (state.isCreate) {
+        // 啟動自動同步機制
+        registrationStore.resetRegistrationForm(true);
+        console.log("[v0] 表單同步已啟動 - 創建模式");
+      }
     });
 
     // 載入測試 Mock 數據，進行快速測試
     const handleLoadMockData = async () => {
-      console.log("🔧  載入 Mock 調試信息:", { myPageState });
-
       try {
+        const state = myPageState.value;
         const propsData = {
-          id: myPageState.value.id,
-          formId: myPageState.value.formId,
-          action: myPageState.value.action,
+          id: state.id,
+          formId: state.formId,
+          action: state.action,
         };
         const success = await registrationStore.loadMockData(propsData);
 

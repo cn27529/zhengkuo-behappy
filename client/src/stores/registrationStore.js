@@ -31,7 +31,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 提取為顶层共用函数（在 setupFormSync 之前定义）
   const loadFormToRegistration = (formData) => {
-    console.log("📡 加載表單到報名表單中…", { formData });
+    //console.log("📡 加載表單到報名表單中…", { formData });
 
     Object.keys(formData).forEach((key) => {
       if (key !== "contact" && key !== "blessing" && key !== "salvation") {
