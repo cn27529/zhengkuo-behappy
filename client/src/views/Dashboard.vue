@@ -5,7 +5,14 @@
       <h2>登記儀表板</h2>
       <p style="display: none">查看登記情况和统计数据</p>
       <div class="total-participants">
-        年度总参与人数: <strong>{{ totalParticipants }}</strong> 人
+        年度总参与人数:
+        <AnimatedNumber
+          :value="totalParticipants"
+          :duration="10000"
+          separator=""
+          class=""
+        />
+        人
       </div>
     </div>
 
@@ -48,10 +55,14 @@ import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
 import { useActivitiesStore } from "../stores/activitiesStore.js";
+import AnimatedNumber from "../components/AnimatedNumber.vue";
 
 export default {
   name: "Dashboard",
 
+  components: {
+    AnimatedNumber,
+  },
   setup() {
     const router = useRouter();
     const authStore = useAuthStore();

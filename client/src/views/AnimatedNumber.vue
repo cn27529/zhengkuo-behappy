@@ -5,8 +5,8 @@
       <h3>{{ activity.name }}</h3>
       <div class="participants">
         <span class="label">參與人數：</span>
-        <AnimatedNumber 
-          :value="activity.participants" 
+        <AnimatedNumber
+          :value="activity.participants"
           suffix=" 人"
           class="number-highlight"
         />
@@ -18,8 +18,8 @@
       <h3>{{ activity2.name }}</h3>
       <div class="participants">
         <span class="label">參與人數：</span>
-        <AnimatedNumber 
-          :value="activity2.participants" 
+        <AnimatedNumber
+          :value="activity2.participants"
           :duration="3000"
           :delay="500"
           suffix=" 人"
@@ -32,8 +32,8 @@
     <!-- 示例 3：在活動列表中使用 -->
     <div class="activities-list">
       <h2>所有活動</h2>
-      <div 
-        v-for="(act, index) in activities" 
+      <div
+        v-for="(act, index) in activities"
         :key="act.id"
         class="activity-item"
       >
@@ -42,8 +42,8 @@
           <span class="activity-name">{{ act.name }}</span>
         </div>
         <div class="activity-stats">
-          <AnimatedNumber 
-            :value="act.participants" 
+          <AnimatedNumber
+            :value="act.participants"
             :duration="2000"
             :delay="index * 100"
             suffix=" 人"
@@ -57,8 +57,8 @@
     <!-- 示例 4：統計總人數（大數字展示） -->
     <div class="total-stats">
       <h2>總參與人數</h2>
-      <AnimatedNumber 
-        :value="totalParticipants" 
+      <AnimatedNumber
+        :value="totalParticipants"
         :duration="2500"
         separator=","
         class="total-number"
@@ -69,9 +69,9 @@
     <!-- 示例 5：手動控制動畫 -->
     <div class="manual-control">
       <h3>手動控制動畫</h3>
-      <AnimatedNumber 
+      <AnimatedNumber
         ref="manualNumber"
-        :value="manualValue" 
+        :value="manualValue"
         :autoplay="false"
         suffix=" 人"
         class="manual-number"
@@ -87,29 +87,29 @@
     <div class="stats-cards">
       <div class="stat-card upcoming">
         <div class="card-title">即將舉行</div>
-        <AnimatedNumber 
-          :value="upcomingCount" 
+        <AnimatedNumber
+          :value="upcomingCount"
           :duration="1500"
           class="card-number"
         />
         <div class="card-label">場活動</div>
       </div>
-      
+
       <div class="stat-card completed">
         <div class="card-title">已完成</div>
-        <AnimatedNumber 
-          :value="completedCount" 
+        <AnimatedNumber
+          :value="completedCount"
           :duration="1500"
           :delay="200"
           class="card-number"
         />
         <div class="card-label">場活動</div>
       </div>
-      
+
       <div class="stat-card total">
         <div class="card-title">累計參與</div>
-        <AnimatedNumber 
-          :value="totalParticipants" 
+        <AnimatedNumber
+          :value="totalParticipants"
           :duration="2000"
           :delay="400"
           separator=","
@@ -122,22 +122,22 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useActivitiesStore } from '../stores/activitiesStore.js';
-import AnimatedNumber from '../components/AnimatedNumber.vue';
+import { ref, computed, onMounted } from "vue";
+import { useActivitiesStore } from "../stores/activitiesStore.js";
+import AnimatedNumber from "../components/AnimatedNumber.vue";
 
 // Store
 const activitiesStore = useActivitiesStore();
 
 // 單個活動示例
 const activity = ref({
-  name: '2025年春季法會',
-  participants: 342
+  name: "2025年春季法會",
+  participants: 342,
 });
 
 const activity2 = ref({
-  name: '2024年中元普度',
-  participants: 1567
+  name: "2024年中元普度",
+  participants: 1567,
 });
 
 // 手動控制示例
@@ -158,7 +158,9 @@ const activities = computed(() => activitiesStore.activities);
 // 統計數據
 const totalParticipants = computed(() => activitiesStore.totalParticipants);
 const upcomingCount = computed(() => activitiesStore.upcomingActivities.length);
-const completedCount = computed(() => activitiesStore.completedActivities.length);
+const completedCount = computed(
+  () => activitiesStore.completedActivities.length
+);
 
 // 初始化
 onMounted(async () => {
@@ -392,11 +394,11 @@ onMounted(async () => {
   .total-number {
     font-size: 48px;
   }
-  
+
   .card-number {
     font-size: 36px;
   }
-  
+
   .stats-cards {
     grid-template-columns: 1fr;
   }
