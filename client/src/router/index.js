@@ -13,6 +13,7 @@ const routes = [
   { path: "/login", component: () => import("../views/Login.vue") },
   { path: "/contact", component: () => import("../views/Contact.vue") },
   { path: "/mock", component: () => import("../views/MockLogin.vue") },
+  { path: "/animated-number", component: () => import("../views/AnimatedNumber.vue") },
   {
     path: "/dashboard",
     component: () => import("../views/Dashboard.vue"),

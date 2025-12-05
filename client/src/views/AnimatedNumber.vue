@@ -123,8 +123,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useActivitiesStore } from '@/stores/activitiesStore.js';
-import AnimatedNumber from '@/components/AnimatedNumber.vue';
+import { useActivitiesStore } from '../stores/activitiesStore.js';
+import AnimatedNumber from '../components/AnimatedNumber.vue';
 
 // Store
 const activitiesStore = useActivitiesStore();
