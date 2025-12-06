@@ -1,5 +1,5 @@
 // src/services/activitiesService.js
-import { baseService, getApiUrl } from "../services/baseService.js";
+import { baseService, getApiUrl } from "./baseService.js";
 import { generateGitHash } from "../utils/generateGitHash.js";
 
 export class ActivitiesService {

@@ -11,22 +11,39 @@ const routes = [
   { path: "/env", component: () => import("../views/Env.vue") },
   { path: "/hash", component: () => import("../views/generatorHash.vue") },
   { path: "/login", component: () => import("../views/Login.vue") },
+  { path: "/logout", component: () => import("../views/Logout.vue") },
   { path: "/contact", component: () => import("../views/Contact.vue") },
   { path: "/mock", component: () => import("../views/MockLogin.vue") },
-  { path: "/animated-number", component: () => import("../views/AnimatedNumber.vue") },
+  {
+    path: "/animated-number",
+    component: () => import("../views/AnimatedNumber.vue"),
+  },
   {
     path: "/dashboard",
+    title: "儀表板",
     component: () => import("../views/Dashboard.vue"),
     meta: { requiresAuth: true },
   },
+
   {
-    path: "/dashboard-old",
-    component: () => import("../views/Dashboard-old.vue"),
-    meta: { requiresAuth: true },
+    path: "/activity-list",
+    title: "活動管理",
+    name: "ActivityList",
+    component: () => import("../views/ActivityList.vue"),
+    beforeEnter: (to, from, next) => {
+      console.log("🚪 進入 ActivityList 路由");
+      const pageStateStore = usePageStateStore();
+      pageStateStore.clearPageState("activity");
+      console.log("🚪 清除頁面狀態");
+      next();
+    },
+    meta: {
+      requiresAuth: true,
+    },
   },
-  { path: "/logout", component: () => import("../views/Logout.vue") },
   {
     path: "/registration-list",
+    title: "登記查詢",
     name: "RegistrationList",
     component: () => import("../views/RegistrationList.vue"),
     // 🛡️ RegistrationList.vue路由進入前的驗證
@@ -43,6 +60,7 @@ const routes = [
   },
   {
     path: "/registration",
+    title: "祈福登記",
     name: "Registration",
     component: () => import("../views/Registration.vue"),
     // 🛡️ Registration.vue路由進入前的驗證
@@ -112,6 +130,7 @@ const routes = [
   },
   {
     path: "/registration-edit",
+    title: "祈福登記編輯",
     name: "RegistrationEdit",
     component: () => import("../views/RegistrationEdit.vue"),
     // 🛡️ RegistrationEdit.vue路由進入前的驗證
@@ -134,8 +153,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/print-registration",
-    component: () => import("../views/PrintRegistration.vue"),
+    path: "/registration-print",
+    title: "祈福登記列印",
+    component: () => import("../views/RegistrationPrint.vue"),
     meta: { requiresAuth: true },
   },
   // 为未来功能预留路由
@@ -156,6 +176,8 @@ const routes = [
   },
   {
     path: "/taisui",
+    title: "太歲分析",
+    name: "TaiSui",
     component: () => import("../views/TaiSui.vue"),
     props: (route) => ({
       // 設定預設年份為當前年份，如果 URL 有參數則使用 URL 參數

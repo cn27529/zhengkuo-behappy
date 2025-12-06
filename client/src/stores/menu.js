@@ -40,12 +40,22 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 4,
+      name: "活動管理",
+      path: "/activity-list",
+      icon: "📅",
+      component: "ActivityList",
+      requiredAuth: true,
+      order: 4,
+      enabled: true,
+    },
+    {
+      id: 5,
       name: "太歲分析",
       path: "/taisui",
       icon: "📥",
       component: "TaiSui",
       requiredAuth: true,
-      order: 4,
+      order: 5,
       enabled: true,
     },
     {

@@ -383,7 +383,7 @@ export default {
         });
 
         router.push({
-          path: "/print-registration",
+          path: "/registration-print",
           query: {
             print_id: printId,
             print_data: printData,

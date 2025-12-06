@@ -1,11 +1,11 @@
-// src/stores/activitiesStore.js
+// src/stores/activityStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { activitiesService } from "../services/activitiesService.js";
+import { activitiesService } from "../services/activityService.js";
 import { baseService } from "../services/baseService.js";
 import mockActivities from "../data/mock_activities.json";
 
-export const useActivitiesStore = defineStore("activities", () => {
+export const useActivityStore = defineStore("activity", () => {
   // ========== 狀態 ==========
   const activities = ref([]);
   const monthlyStats = ref([]);

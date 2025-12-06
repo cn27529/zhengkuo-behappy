@@ -54,7 +54,7 @@
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
-import { useActivitiesStore } from "../stores/activitiesStore.js";
+import { useActivityStore } from "../stores/activityStore.js";
 import AnimatedNumber from "../components/AnimatedNumber.vue";
 
 export default {
@@ -66,16 +66,14 @@ export default {
   setup() {
     const router = useRouter();
     const authStore = useAuthStore();
-    const activitiesStore = useActivitiesStore();
+    const activityStore = useActivityStore();
 
     // 从store获取数据
-    const activities = computed(() => activitiesStore.activities);
-    const totalParticipants = computed(() => activitiesStore.totalParticipants);
-    const upcomingActivities = computed(
-      () => activitiesStore.upcomingActivities
-    );
+    const activities = computed(() => activityStore.activities);
+    const totalParticipants = computed(() => activityStore.totalParticipants);
+    const upcomingActivities = computed(() => activityStore.upcomingActivities);
     const completedActivities = computed(
-      () => activitiesStore.completedActivities
+      () => activityStore.completedActivities
     );
 
     const formatDate = (dateString) => {
@@ -89,7 +87,7 @@ export default {
     onMounted(async () => {
       // 初始化数据
       try {
-        await activitiesStore.getAllActivities();
+        await activityStore.getAllActivities();
       } catch (error) {
         console.error("初始化数据失败:", error);
       }
