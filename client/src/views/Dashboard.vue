@@ -12,9 +12,9 @@
     <!-- 活动状态统计 -->
     <div class="stats-grid">
       <div class="status-card upcoming">
-        <div class="status-icon">📅</div>
+        <div class="status-icon">⏳</div>
         <div class="status-info">
-          <h3>即將舉辦</h3>
+          <h3>即將到來</h3>
           <div class="status-count">{{ upcomingActivities.length }}</div>
           <div class="status-label">場活動</div>
         </div>
@@ -50,7 +50,7 @@
         <div class="stat-info">
           <h3>{{ activity.name }}</h3>
           <div class="stat-number">{{ activity.participants }}</div>
-          <div class="stat-label">報名人數</div>
+          <div class="stat-label">報名人次</div>
           <div class="activity-date">{{ formatDate(activity.date) }}</div>
         </div>
       </div>

@@ -486,9 +486,9 @@ export class ActivityService {
   // ========== 狀態管理 ==========
 
   /**
-   * 更新活動參與人數
+   * 更新活動參與人次
    * @param {number|string} id - 活動 ID
-   * @param {number} participants - 參與人數
+   * @param {number} participants - 參與人次
    * @returns {Promise<Object>} 更新結果
    */
   async updateParticipants(id, participants) {

@@ -4,7 +4,7 @@
     <div class="activity-card">
       <h3>{{ activity.name }}</h3>
       <div class="participants">
-        <span class="label">參與人數：</span>
+        <span class="label">參與人次：</span>
         <AnimatedNumber
           :value="activity.participants"
           suffix=" 人"
@@ -17,7 +17,7 @@
     <div class="activity-card">
       <h3>{{ activity2.name }}</h3>
       <div class="participants">
-        <span class="label">參與人數：</span>
+        <span class="label">參與人次：</span>
         <AnimatedNumber
           :value="activity2.participants"
           :duration="3000"
@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <!-- 示例 4：統計總人數（大數字展示） -->
+    <!-- 示例 4：統計總人次（大數字展示） -->
     <div class="total-stats">
       <h2>總參與人次</h2>
       <AnimatedNumber

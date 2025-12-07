@@ -125,7 +125,7 @@
     <div class="results-section">
       <!-- Tab 切換 -->
       <el-tabs v-model="selectedTab" @tab-change="handleTabChange">
-        <el-tab-pane label="即將到來" name="upcoming">
+        <el-tab-pane label="⏳即將到來" name="upcoming">
           <!-- 即將到來活動列表 -->
           <div
             v-if="loading && selectedTab === 'upcoming'"
@@ -214,11 +214,11 @@
 
               <el-table-column prop="location" label="地點" min-width="120" />
 
-              <el-table-column label="參與人數" min-width="120" align="center">
+              <el-table-column label="參與人次" min-width="120" align="center">
                 <template #default="{ row }">
                   <div class="participants-cell">
                     <span class="count">{{ row.participants || 0 }}</span>
-                    <el-tooltip content="更新參與人數" placement="top">
+                    <el-tooltip content="更新參與人次" placement="top">
                       <el-button
                         circle
                         size="small"
@@ -292,7 +292,7 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="已完成" name="completed">
+        <el-tab-pane label="✅已完成" name="completed">
           <!-- 已完成活動列表 -->
           <div
             v-if="loading && selectedTab === 'completed'"
@@ -374,7 +374,7 @@
 
               <el-table-column prop="location" label="地點" min-width="120" />
 
-              <el-table-column label="參與人數" min-width="120" align="center">
+              <el-table-column label="參與人次" min-width="120" align="center">
                 <template #default="{ row }">
                   <span class="count">{{ row.participants || 0 }}</span>
                 </template>
@@ -491,12 +491,12 @@
           />
         </el-form-item>
 
-        <el-form-item label="參與人數">
+        <el-form-item label="參與人次">
           <el-input-number
             v-model="newActivity.participants"
             :min="0"
             :max="1000"
-            placeholder="參與人數"
+            placeholder="參與人次"
           />
         </el-form-item>
       </el-form>
@@ -577,12 +577,12 @@
           />
         </el-form-item>
 
-        <el-form-item label="參與人數">
+        <el-form-item label="參與人次">
           <el-input-number
             v-model="editingActivity.participants"
             :min="0"
             :max="1000"
-            placeholder="參與人數"
+            placeholder="參與人次"
           />
         </el-form-item>
 
@@ -613,21 +613,21 @@
       </template>
     </el-dialog>
 
-    <!-- 更新參與人數 Dialog -->
+    <!-- 更新參與人次 Dialog -->
     <el-dialog
       v-model="showParticipantsModal"
-      :title="`更新參與人數 - ${selectedActivity?.name}`"
+      :title="`更新參與人次 - ${selectedActivity?.name}`"
       width="400px"
       :before-close="closeModal"
     >
       <el-form>
-        <el-form-item label="當前參與人數">
+        <el-form-item label="當前參與人次">
           <div class="current-count">
             {{ selectedActivity?.participants || 0 }}
           </div>
         </el-form-item>
 
-        <el-form-item label="新的參與人數" required>
+        <el-form-item label="新的參與人次" required>
           <el-input-number
             v-model="newParticipants"
             :min="0"
@@ -646,7 +646,7 @@
             @click="submitParticipantsUpdate"
             :loading="submitting"
           >
-            更新人數
+            更新人次
           </el-button>
         </span>
       </template>
@@ -1043,14 +1043,14 @@ const submitParticipantsUpdate = async () => {
     );
 
     if (result.success) {
-      ElMessage.success("參與人數更新成功");
+      ElMessage.success("參與人次更新成功");
       closeModal();
       await initialize(); // 重新加載數據
     } else {
       throw new Error(result.message);
     }
   } catch (err) {
-    ElMessage.error(err.message || "更新參與人數失敗");
+    ElMessage.error(err.message || "更新參與人次失敗");
   } finally {
     submitting.value = false;
   }
@@ -1192,7 +1192,7 @@ onMounted(() => {
   color: #666;
 }
 
-/* 參與人數單元格 */
+/* 參與人次單元格 */
 .participants-cell {
   display: flex;
   align-items: center;
@@ -1234,7 +1234,7 @@ onMounted(() => {
   margin-bottom: 1rem;
 }
 
-/* 當前人數顯示 */
+/* 當前人次顯示 */
 .current-count {
   font-size: 1.5rem;
   font-weight: 600;
