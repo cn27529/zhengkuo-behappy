@@ -788,13 +788,8 @@ export const useRegistrationStore = defineStore("registration", () => {
 
     try {
       const createISOTime = new Date().toISOString();
-      const getCurrentISOTime = () => new Date().toISOString();
-      console.log("ISO 時間:", createISOTime);
-      const hash = generateGitHash(createISOTime);
-      console.log(`formId=${hash}`);
-
       registrationForm.value.createdUser = getCurrentUser();
-      registrationForm.value.formId = hash;
+      registrationForm.value.formId = generateGitHash(createISOTime);
       registrationForm.value.createdAt = createISOTime;
       registrationForm.value.state = "submitted";
 

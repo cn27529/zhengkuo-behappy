@@ -803,7 +803,7 @@ export default {
     };
 
     // 提交表單處理
-    const submitForm = async () => {
+    const handleSubmitForm = async () => {
       // 先檢查 validationDetails
       const details = registrationStore.validationDetails;
       if (details && !details.valid) {
@@ -984,7 +984,7 @@ export default {
     // 修改後：
     return {
       // 本地變數、方法、計算屬性
-      submitForm,
+      submitForm: handleSubmitForm,
       addContactAsBlessing,
       addContactAsSurvivor,
       importFromBlessing,

@@ -1,11 +1,14 @@
 // src/services/activitiesService.js
 import { baseService, getApiUrl } from "./baseService.js";
-import { generateGitHash } from "../utils/generateGitHash.js";
+import {
+  generateGitHash,
+  generateGitHashBrowser,
+} from "../utils/generateGitHash.js";
 
-export class ActivitiesService {
+export class ActivityService {
   // ========== 建構函式 ==========
   constructor() {
-    console.log(`ActivitiesService 初始化: 當前模式為 ${baseService.mode}`);
+    console.log(`ActivityService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
   // ========== 通用方法 ==========
@@ -29,7 +32,8 @@ export class ActivitiesService {
 
   // ========== 生成活動 ID ==========
   generateActivityId() {
-    return generateGitHash();
+    const createISOTime = new Date().toISOString();
+    return generateGitHash(createISOTime);
   }
 
   // ========== CRUD 操作 ==========
@@ -72,9 +76,9 @@ export class ActivitiesService {
 
       // 準備提交數據
       const processedData = {
-        activityId: activityData.activityId || this.generateActivityId(),
+        activityId: this.generateActivityId(),
         name: activityData.name || "",
-        type: activityData.type || "ceremony",
+        item_type: activityData.item_type || "ceremony",
         participants: activityData.participants || 0,
         date: activityData.date || createISOTime,
         state: activityData.state || "upcoming",
@@ -320,13 +324,13 @@ export class ActivitiesService {
 
   /**
    * 根據類型獲取活動
-   * @param {string} type - 活動類型
+   * @param {string} item_type - 活動類型
    * @returns {Promise<Object>} 活動列表
    */
-  async getActivitiesByType(type) {
+  async getActivitiesByType(item_type) {
     return this.getAllActivities({
       filter: {
-        type: { _eq: type },
+        type: { _eq: item_type },
       },
     });
   }
@@ -569,11 +573,11 @@ export class ActivitiesService {
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
       baseService.mode = mode;
-      console.log(`ActivitiesService 模式已切換為: ${mode}`);
+      console.log(`ActivityService 模式已切換為: ${mode}`);
     } else {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
     }
   }
 }
 
-export const activitiesService = new ActivitiesService();
+export const activityService = new ActivityService();

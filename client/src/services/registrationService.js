@@ -32,7 +32,8 @@ export class RegistrationService {
 
   // ========== 生成表單 ID ==========
   generateFormId() {
-    return generateGitHash();
+    const createISOTime = new Date().toISOString();
+    return generateGitHash(createISOTime);
   }
 
   // ========== CRUD 操作 ==========

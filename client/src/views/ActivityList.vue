@@ -22,7 +22,7 @@
             </el-input>
 
             <el-select
-              v-model="selectedTypes"
+              v-model="selectedItemTypes"
               multiple
               placeholder="請選擇活動類型"
               :disabled="loading"
@@ -30,10 +30,10 @@
               style="min-width: 200px"
             >
               <el-option
-                v-for="type in activityTypes"
-                :key="type.value"
-                :label="type.label"
-                :value="type.value"
+                v-for="item_type in availableActivityItemTypes"
+                :key="item_type"
+                :label="getItemTypeLabel(item_type)"
+                :value="item_type"
               />
             </el-select>
 
@@ -65,7 +65,9 @@
       <div>currentPage: {{ currentPage }}</div>
       <div>pageSize: {{ pageSize }}</div>
       <div>selectedTab: {{ selectedTab }}</div>
-      <div>selectedTypes: {{ selectedTypes }}</div>
+      <div>selectedTypes: {{ selectedItemTypes }}</div>
+      <div>所有活動數: {{ activities.length }}</div>
+      <div>活動類型: {{ availableActivityItemTypes }}</div>
     </div>
 
     <!-- 統計卡片 -->
@@ -78,7 +80,7 @@
           </div>
         </template>
         <div class="stat-content">
-          <h3>{{ filteredActivities.length }}</h3>
+          <h3>{{ activities.length }}</h3>
         </div>
       </el-card>
 
@@ -203,8 +205,8 @@
 
               <el-table-column label="類型" min-width="100">
                 <template #default="{ row }">
-                  <el-tag :type="getTagType(row.type)" size="small">
-                    {{ row.type }}
+                  <el-tag :type="getTagItemType(row.item_type)" size="small">
+                    {{ getItemTypeLabel(row.item_type) }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -214,7 +216,7 @@
                   <div class="date-info">
                     <div>{{ formatDate(row.date) }}</div>
                     <div class="time">
-                      {{ formatTimeRange(row.startTime, row.endTime) }}
+                      {{ formatTime(row.date) }}
                     </div>
                   </div>
                 </template>
@@ -242,7 +244,7 @@
               <el-table-column
                 label="負責人"
                 min-width="120"
-                prop="organizer"
+                prop="createdUser"
               />
 
               <el-table-column
@@ -379,8 +381,8 @@
 
               <el-table-column label="類型" min-width="100">
                 <template #default="{ row }">
-                  <el-tag :type="getTagType(row.type)" size="small">
-                    {{ row.type }}
+                  <el-tag :type="getTagItemType(row.item_type)" size="small">
+                    {{ getItemTypeLabel(row.item_type) }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -390,7 +392,7 @@
                   <div class="date-info">
                     <div>{{ formatDate(row.date) }}</div>
                     <div class="time">
-                      {{ formatTimeRange(row.startTime, row.endTime) }}
+                      {{ formatTime(row.date) }}
                     </div>
                   </div>
                 </template>
@@ -407,7 +409,7 @@
               <el-table-column
                 label="負責人"
                 min-width="120"
-                prop="organizer"
+                prop="createdUser"
               />
 
               <el-table-column
@@ -479,17 +481,17 @@
           <el-input v-model="newActivity.name" placeholder="請輸入活動名稱" />
         </el-form-item>
 
-        <el-form-item label="活動類型" prop="type">
+        <el-form-item label="活動類型" prop="item_type">
           <el-select
-            v-model="newActivity.type"
+            v-model="newActivity.item_type"
             placeholder="請選擇類型"
             style="width: 100%"
           >
             <el-option
-              v-for="type in activityTypes"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value"
+              v-for="item_type in availableActivityItemTypes"
+              :key="item_type"
+              :label="getItemTypeLabel(item_type)"
+              :value="item_type"
             />
           </el-select>
         </el-form-item>
@@ -503,42 +505,16 @@
           />
         </el-form-item>
 
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="活動日期" prop="date">
-              <el-date-picker
-                v-model="newActivity.date"
-                type="date"
-                placeholder="選擇日期"
-                style="width: 100%"
-                format="YYYY-MM-DD"
-                value-format="YYYY-MM-DD"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="開始時間">
-              <el-time-picker
-                v-model="newActivity.startTime"
-                placeholder="開始時間"
-                style="width: 100%"
-                format="HH:mm"
-                value-format="HH:mm"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="結束時間">
-              <el-time-picker
-                v-model="newActivity.endTime"
-                placeholder="結束時間"
-                style="width: 100%"
-                format="HH:mm"
-                value-format="HH:mm"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="活動日期" prop="date">
+          <el-date-picker
+            v-model="newActivity.date"
+            type="datetime"
+            placeholder="選擇日期時間"
+            style="width: 100%"
+            format="YYYY-MM-DD HH:mm"
+            value-format="YYYY-MM-DD HH:mm"
+          />
+        </el-form-item>
 
         <el-form-item label="地點" prop="location">
           <el-input
@@ -556,7 +532,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="負責人">
+        <el-form-item label="負責人" style="display: none">
           <el-input
             v-model="newActivity.organizer"
             placeholder="請輸入負責人姓名"
@@ -569,7 +545,7 @@
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
           <el-button
             type="primary"
-            @click="submitNewActivity"
+            @click="handleSubmitForm"
             :loading="submitting"
           >
             新增活動
@@ -598,17 +574,17 @@
           />
         </el-form-item>
 
-        <el-form-item label="活動類型" prop="type">
+        <el-form-item label="活動類型" prop="item_type">
           <el-select
-            v-model="editingActivity.type"
+            v-model="editingActivity.item_type"
             placeholder="請選擇類型"
             style="width: 100%"
           >
             <el-option
-              v-for="type in activityTypes"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value"
+              v-for="item_type in availableActivityItemTypes"
+              :key="item_type"
+              :label="getItemTypeLabel(item_type)"
+              :value="item_type"
             />
           </el-select>
         </el-form-item>
@@ -622,42 +598,16 @@
           />
         </el-form-item>
 
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="活動日期" prop="date">
-              <el-date-picker
-                v-model="editingActivity.date"
-                type="date"
-                placeholder="選擇日期"
-                style="width: 100%"
-                format="YYYY-MM-DD"
-                value-format="YYYY-MM-DD"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="開始時間">
-              <el-time-picker
-                v-model="editingActivity.startTime"
-                placeholder="開始時間"
-                style="width: 100%"
-                format="HH:mm"
-                value-format="HH:mm"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="結束時間">
-              <el-time-picker
-                v-model="editingActivity.endTime"
-                placeholder="結束時間"
-                style="width: 100%"
-                format="HH:mm"
-                value-format="HH:mm"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="活動日期" prop="date">
+          <el-date-picker
+            v-model="editingActivity.date"
+            type="datetime"
+            placeholder="選擇日期時間"
+            style="width: 100%"
+            format="YYYY-MM-DD HH:mm"
+            value-format="YYYY-MM-DD HH:mm"
+          />
+        </el-form-item>
 
         <el-form-item label="地點" prop="location">
           <el-input
@@ -675,7 +625,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="負責人">
+        <el-form-item label="負責人" style="display: none">
           <el-input
             v-model="editingActivity.organizer"
             placeholder="請輸入負責人姓名"
@@ -754,11 +704,9 @@
 import { ref, computed, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
-import { useRouter } from "vue-router";
-import { useActivityStore } from "../stores/activityStore";
-import { authService } from "../services/authService";
+import { useActivityStore } from "../stores/activityStore.js";
+import { authService } from "../services/authService.js";
 
-const router = useRouter();
 const activityStore = useActivityStore();
 
 // 狀態
@@ -772,7 +720,7 @@ const isDev = ref(false);
 
 // 查詢條件
 const searchQuery = ref("");
-const selectedTypes = ref([]);
+const selectedItemTypes = ref([]);
 const selectedTab = ref("upcoming");
 
 // 分頁
@@ -782,11 +730,9 @@ const pageSize = ref(10);
 // 表單數據
 const newActivity = reactive({
   name: "",
-  type: "",
+  item_type: "",
   description: "",
   date: "",
-  startTime: "",
-  endTime: "",
   location: "",
   participants: 0,
   organizer: "",
@@ -800,36 +746,29 @@ const newParticipants = ref(0);
 // 表單驗證規則
 const activityRules = {
   name: [{ required: true, message: "請輸入活動名稱", trigger: "blur" }],
-  type: [{ required: true, message: "請選擇活動類型", trigger: "change" }],
+  item_type: [{ required: true, message: "請選擇活動類型", trigger: "change" }],
   date: [{ required: true, message: "請選擇活動日期", trigger: "change" }],
   location: [{ required: true, message: "請輸入活動地點", trigger: "blur" }],
   state: [{ required: true, message: "請選擇活動狀態", trigger: "change" }],
 };
-
-// 活動類型選項
-const activityTypes = [
-  { value: "法會", label: "法會" },
-  { value: "講座", label: "講座" },
-  { value: "禪修", label: "禪修" },
-  { value: "節慶", label: "節慶" },
-  { value: "義工", label: "義工" },
-  { value: "其他", label: "其他" },
-];
 
 // 計算屬性
 const activities = computed(() => activityStore.activities);
 const upcomingActivities = computed(() => activityStore.upcomingActivities);
 const completedActivities = computed(() => activityStore.completedActivities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
+const availableActivityItemTypes = computed(
+  () => activityStore.allActivityTypes
+);
 
 // 根據選中的tab和篩選條件過濾活動
 const upcomingFiltered = computed(() => {
   let filtered = upcomingActivities.value;
 
   // 類型篩選
-  if (selectedTypes.value.length > 0) {
+  if (selectedItemTypes.value.length > 0) {
     filtered = filtered.filter((activity) =>
-      selectedTypes.value.includes(activity.type)
+      selectedItemTypes.value.includes(activity.item_type)
     );
   }
 
@@ -841,7 +780,7 @@ const upcomingFiltered = computed(() => {
         activity.name.toLowerCase().includes(keyword) ||
         activity.description?.toLowerCase().includes(keyword) ||
         activity.location.toLowerCase().includes(keyword) ||
-        activity.organizer?.toLowerCase().includes(keyword)
+        activity.createdUser?.toLowerCase().includes(keyword)
     );
   }
 
@@ -852,9 +791,9 @@ const completedFiltered = computed(() => {
   let filtered = completedActivities.value;
 
   // 類型篩選
-  if (selectedTypes.value.length > 0) {
+  if (selectedItemTypes.value.length > 0) {
     filtered = filtered.filter((activity) =>
-      selectedTypes.value.includes(activity.type)
+      selectedItemTypes.value.includes(activity.item_type)
     );
   }
 
@@ -866,7 +805,7 @@ const completedFiltered = computed(() => {
         activity.name.toLowerCase().includes(keyword) ||
         activity.description?.toLowerCase().includes(keyword) ||
         activity.location.toLowerCase().includes(keyword) ||
-        activity.organizer?.toLowerCase().includes(keyword)
+        activity.createdUser?.toLowerCase().includes(keyword)
     );
   }
 
@@ -920,23 +859,48 @@ const formatDate = (dateString) => {
   });
 };
 
-const formatTimeRange = (startTime, endTime) => {
-  if (!startTime && !endTime) return "-";
-  if (!startTime) return `至 ${endTime.substring(0, 5)}`;
-  if (!endTime) return `${startTime.substring(0, 5)} 開始`;
-  return `${startTime.substring(0, 5)} - ${endTime.substring(0, 5)}`;
+const formatTime = (dateString) => {
+  if (!dateString) return "-";
+  const date = new Date(dateString);
+  return date.toLocaleTimeString("zh-TW", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
-const getTagType = (type) => {
+const getTagItemType = (type) => {
   const typeMap = {
+    ceremony: "warning",
     法會: "warning",
+    lecture: "success",
     講座: "success",
+    meditation: "info",
     禪修: "info",
+    festival: "danger",
     節慶: "danger",
+    volunteer: "primary",
     義工: "primary",
+    activity: "",
+    活動: "",
+    pudu: "warning",
+    other: "",
     其他: "",
   };
   return typeMap[type] || "";
+};
+
+const getItemTypeLabel = (type) => {
+  const labelMap = {
+    ceremony: "法會",
+    lecture: "講座",
+    meditation: "禪修",
+    festival: "節慶",
+    volunteer: "義工",
+    activity: "活動",
+    pudu: "普度",
+    other: "其他",
+  };
+  return labelMap[type] || type || "其他";
 };
 
 const handleSearch = () => {
@@ -947,7 +911,7 @@ const handleSearch = () => {
 
 const handleClear = () => {
   searchQuery.value = "";
-  selectedTypes.value = [];
+  selectedItemTypes.value = [];
   currentPage.value = 1;
   ElMessage.success("搜尋條件已清空");
 };
@@ -973,7 +937,11 @@ const showUpdateParticipants = (activity) => {
 };
 
 const editActivity = (activity) => {
-  editingActivity.value = { ...activity };
+  // 處理 mock 數據的類型轉換
+  editingActivity.value = {
+    ...activity,
+    item_type: activity.item_type, // 確保 type 欄位存在
+  };
   showEditModal.value = true;
 };
 
@@ -1035,11 +1003,9 @@ const closeModal = () => {
   // 重置表單
   Object.assign(newActivity, {
     name: "",
-    type: "",
+    item_type: "",
     description: "",
     date: "",
-    startTime: "",
-    endTime: "",
     location: "",
     participants: 0,
     organizer: "",
@@ -1052,11 +1018,17 @@ const closeModal = () => {
   submitting.value = false;
 };
 
-const submitNewActivity = async () => {
+const handleSubmitForm = async () => {
   submitting.value = true;
 
   try {
-    const result = await activityStore.addActivity(newActivity);
+    // 格式化日期時間
+    const activityData = {
+      ...newActivity,
+      date: newActivity.date ? `${newActivity.date}:00.000Z` : null,
+    };
+
+    const result = await activityStore.submitActivity(activityData);
 
     if (result.success) {
       ElMessage.success("活動新增成功");
@@ -1078,9 +1050,17 @@ const submitEditActivity = async () => {
   submitting.value = true;
 
   try {
+    // 格式化日期時間
+    const activityData = {
+      ...editingActivity.value,
+      date: editingActivity.value.date
+        ? `${editingActivity.value.date}:00.000Z`
+        : editingActivity.value.date,
+    };
+
     const result = await activityStore.updateActivity(
       editingActivity.value.id,
-      editingActivity.value
+      activityData
     );
 
     if (result.success) {
@@ -1124,7 +1104,7 @@ const submitParticipantsUpdate = async () => {
 
 // 生命週期
 onMounted(() => {
-  console.log("✅ ActivitiesList 組件已載入");
+  console.log("✅ ActivityList 組件已載入");
   initialize();
   isDev.value = authService.getCurrentDev();
 });

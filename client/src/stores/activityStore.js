@@ -1,7 +1,8 @@
 // src/stores/activityStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { activitiesService } from "../services/activityService.js";
+import { generateGitHash } from "../utils/generateGitHash.js";
+import { activityService } from "../services/activityService.js";
 import { baseService } from "../services/baseService.js";
 import mockActivities from "../data/mock_activities.json";
 
@@ -71,7 +72,7 @@ export const useActivityStore = defineStore("activity", () => {
   const activitiesByType = computed(() => {
     const grouped = {};
     activities.value.forEach((activity) => {
-      const type = activity.type || "other";
+      const type = activity.type || activity.item_type || "other";
       if (!grouped[type]) {
         grouped[type] = [];
       }
@@ -86,7 +87,7 @@ export const useActivityStore = defineStore("activity", () => {
   const activityTypeStats = computed(() => {
     const stats = {};
     activities.value.forEach((activity) => {
-      const type = activity.type || "other";
+      const type = activity.type || activity.item_type || "other";
       if (!stats[type]) {
         stats[type] = {
           count: 0,
@@ -97,6 +98,20 @@ export const useActivityStore = defineStore("activity", () => {
       stats[type].participants += activity.participants || 0;
     });
     return stats;
+  });
+
+  /**
+   * 獲取所有活動類型
+   */
+  const allActivityTypes = computed(() => {
+    const types = new Set();
+    activities.value.forEach((activity) => {
+      const type = activity.type || activity.item_type;
+      if (type) {
+        types.add(type);
+      }
+    });
+    return Array.from(types).sort();
   });
 
   // ========== Actions - 方法 ==========
@@ -112,17 +127,22 @@ export const useActivityStore = defineStore("activity", () => {
       // 如果不是 directus 模式，使用 Mock 數據
       if (baseService.mode !== "directus") {
         console.log("📦 使用 Mock 活動數據");
-        activities.value = mockActivities;
+        // 處理 mock 數據，確保 type 欄位存在
+        const processedActivities = mockActivities.map((activity) => ({
+          ...activity,
+          type: activity.item_type || "其他", // 將 item_type 映射到 type
+        }));
+        activities.value = processedActivities;
         return {
           success: true,
-          data: activities.value,
+          data: processedActivities,
           message: "成功加載 Mock 活動數據",
         };
       }
 
       // 從服務器獲取數據
       console.log("🔄 從服務器獲取活動數據...");
-      const result = await activitiesService.getAllActivities(params);
+      const result = await activityService.getAllActivities(params);
 
       if (result.success) {
         activities.value = result.data || [];
@@ -132,14 +152,22 @@ export const useActivityStore = defineStore("activity", () => {
         error.value = result.message;
         console.error("❌ 獲取活動數據失敗:", result.message);
         // 失敗時使用 Mock 數據作為後備
-        activities.value = JSON.parse(JSON.stringify(mockActivities));
+        const processedActivities = mockActivities.map((activity) => ({
+          ...activity,
+          type: activity.item_type || "其他",
+        }));
+        activities.value = processedActivities;
         return result;
       }
     } catch (err) {
       error.value = err.message;
       console.error("❌ 獲取活動數據異常:", err);
       // 異常時使用 Mock 數據作為後備
-      activities.value = JSON.parse(JSON.stringify(mockActivities));
+      const processedActivities = mockActivities.map((activity) => ({
+        ...activity,
+        type: activity.item_type || "其他",
+      }));
+      activities.value = processedActivities;
       throw err;
     } finally {
       loading.value = false;
@@ -149,24 +177,27 @@ export const useActivityStore = defineStore("activity", () => {
   /**
    * 添加新活動
    */
-  const addActivity = async (newActivity) => {
+  const submitActivity = async (newActivity) => {
     loading.value = true;
     error.value = null;
 
     try {
+      const createISOTime = new Date().toISOString();
+      const activity = {
+        id: Math.max(...activities.value.map((a) => a.id), 0) + 1,
+        activityId: generateGitHash(createISOTime),
+        ...newActivity,
+        item_type: newActivity.item_type, // 保存 item_type 以兼容 mock 數據
+        participants: newActivity.participants || 0,
+        state: newActivity.state || "upcoming",
+        createdAt: createISOTime,
+        createdUser: "system",
+        updatedAt: "",
+        updatedUser: "",
+      };
+
       // 如果不是 directus 模式，只在本地添加
       if (baseService.mode !== "directus") {
-        const activity = {
-          id: Math.max(...activities.value.map((a) => a.id), 0) + 1,
-          activityId: activitiesService.generateActivityId(),
-          ...newActivity,
-          participants: newActivity.participants || 0,
-          status: newActivity.state || "upcoming",
-          createdAt: new Date().toISOString(),
-          createdUser: "system",
-          updatedAt: "",
-          updatedUser: "",
-        };
         activities.value.push(activity);
         console.log("✅ Mock 模式：活動已添加到本地");
         return {
@@ -177,7 +208,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器創建活動
-      const result = await activitiesService.createActivity(newActivity);
+      const result = await activityService.createActivity(newActivity);
 
       if (result.success) {
         activities.value.push(result.data);
@@ -224,7 +255,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器更新活動
-      const result = await activitiesService.updateParticipants(
+      const result = await activityService.updateParticipants(
         activityId,
         newParticipants
       );
@@ -267,6 +298,7 @@ export const useActivityStore = defineStore("activity", () => {
         activities.value[index] = {
           ...activities.value[index],
           ...activityData,
+          item_type: activityData.type, // 同步更新 item_type
           updatedAt: new Date().toISOString(),
         };
         console.log("✅ Mock 模式：活動已更新");
@@ -278,7 +310,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器更新活動
-      const result = await activitiesService.updateActivity(
+      const result = await activityService.updateActivity(
         activityId,
         activityData
       );
@@ -328,7 +360,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器刪除活動
-      const result = await activitiesService.deleteActivity(activityId);
+      const result = await activityService.deleteActivity(activityId);
 
       if (result.success) {
         activities.value.splice(index, 1);
@@ -374,7 +406,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器更新狀態
-      const result = await activitiesService.completeActivity(activityId);
+      const result = await activityService.completeActivity(activityId);
 
       if (result.success) {
         activity.state = "completed";
@@ -415,7 +447,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器獲取統計數據
-      const result = await activitiesService.getMonthlyStats();
+      const result = await activityService.getMonthlyStats();
 
       if (result.success) {
         monthlyStats.value = result.data || [];
@@ -508,7 +540,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器查找
-      const result = await activitiesService.getActivitiesByActivityId(
+      const result = await activityService.getActivitiesByActivityId(
         activityId
       );
 
@@ -543,7 +575,9 @@ export const useActivityStore = defineStore("activity", () => {
     try {
       // 如果不是 directus 模式，從本地過濾
       if (baseService.mode !== "directus") {
-        const filtered = activities.value.filter((a) => a.type === type);
+        const filtered = activities.value.filter(
+          (a) => a.type === type || a.item_type === type
+        );
         return {
           success: true,
           data: filtered,
@@ -552,14 +586,16 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器獲取
-      const result = await activitiesService.getActivitiesByType(type);
+      const result = await activityService.getActivitiesByType(type);
 
       if (result.success) {
         return result;
       } else {
         error.value = result.message;
         // 失敗時從本地過濾
-        const filtered = activities.value.filter((a) => a.type === type);
+        const filtered = activities.value.filter(
+          (a) => a.type === type || a.item_type === type
+        );
         return {
           success: true,
           data: filtered,
@@ -594,7 +630,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器獲取
-      const result = await activitiesService.getActivitiesByState(state);
+      const result = await activityService.getActivitiesByState(state);
 
       if (result.success) {
         return result;
@@ -638,11 +674,11 @@ export const useActivityStore = defineStore("activity", () => {
    * 模式管理
    */
   const getCurrentMode = () => {
-    return activitiesService.getCurrentMode();
+    return activityService.getCurrentMode();
   };
 
   const setMode = (mode) => {
-    activitiesService.setMode(mode);
+    activityService.setMode(mode);
   };
 
   // ========== 返回 Store 接口 ==========
@@ -661,10 +697,11 @@ export const useActivityStore = defineStore("activity", () => {
     chartData,
     activitiesByType,
     activityTypeStats,
+    allActivityTypes,
 
     // Actions
     getAllActivities,
-    addActivity,
+    submitActivity,
     updateActivityParticipants,
     updateActivity,
     deleteActivity,
