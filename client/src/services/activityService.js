@@ -92,7 +92,7 @@ export class ActivityService {
       };
 
       const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.itemsActivities),
+        getApiUrl(baseService.apiEndpoints.itemsActivity),
         {
           method: "POST",
           headers: await this.getAuthHeaders(),
@@ -134,7 +134,7 @@ export class ActivityService {
       };
 
       const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsActivities)}/${id}`,
+        `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`,
         {
           method: "PATCH",
           headers: await this.getAuthHeaders(),
@@ -168,7 +168,7 @@ export class ActivityService {
 
     try {
       const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsActivities)}/${id}?fields=*`,
+        `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}?fields=*`,
         {
           method: "GET",
           headers: await this.getAuthHeaders(),
@@ -225,7 +225,7 @@ export class ActivityService {
       }
 
       const apiUrl = `${getApiUrl(
-        baseService.apiEndpoints.itemsActivities
+        baseService.apiEndpoints.itemsActivity
       )}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
@@ -283,7 +283,7 @@ export class ActivityService {
 
     try {
       const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsActivities)}/${id}`,
+        `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`,
         {
           method: "DELETE",
           headers: await this.getAuthHeaders(),

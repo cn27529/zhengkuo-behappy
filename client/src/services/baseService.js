@@ -101,7 +101,7 @@ export class BaseService {
       itemsRegistration: "/items/registrationDB", // 新增 registrationDB 端點
       serverPing: "/server/ping", // 伺服器連線檢查端點
       serverInfo: "/server/info", // 伺服器資訊端點
-      itemsActivity: "items/activityDB", // 新增 activityDB 端點
+      itemsActivity: "/items/activityDB", // 新增 activityDB 端點
     };
 
     // 模擬 API 延遲（毫秒）

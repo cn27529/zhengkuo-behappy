@@ -222,7 +222,7 @@
                       <el-button
                         circle
                         size="small"
-                        @click="showUpdateParticipants(row)"
+                        @click="handleShowUpdateParticipants(row)"
                       >
                         <el-icon><Edit /></el-icon>
                       </el-button>
@@ -242,7 +242,7 @@
                     <el-tooltip content="編輯活動" placement="top">
                       <el-button
                         circle
-                        @click="editActivity(row)"
+                        @click="handleEditActivity(row)"
                         type="primary"
                         size="small"
                       >
@@ -253,7 +253,7 @@
                     <el-tooltip content="標記完成" placement="top">
                       <el-button
                         circle
-                        @click="completeActivity(row.id)"
+                        @click="handleCompleteActivity(row.id)"
                         type="success"
                         size="small"
                       >
@@ -264,7 +264,7 @@
                     <el-tooltip content="刪除活動" placement="top">
                       <el-button
                         circle
-                        @click="deleteActivity(row)"
+                        @click="handleDeleteActivity(row)"
                         type="danger"
                         size="small"
                       >
@@ -391,7 +391,7 @@
                     <el-tooltip content="編輯活動" placement="top">
                       <el-button
                         circle
-                        @click="editActivity(row)"
+                        @click="handleEditActivity(row)"
                         type="primary"
                         size="small"
                       >
@@ -402,7 +402,7 @@
                     <el-tooltip content="刪除活動" placement="top">
                       <el-button
                         circle
-                        @click="deleteActivity(row)"
+                        @click="handleDeleteActivity(row)"
                         type="danger"
                         size="small"
                       >
@@ -436,9 +436,11 @@
     <el-dialog
       v-model="showAddModal"
       title="新增活動"
-      width="600px"
+      width="450px"
+      align-center
       :before-close="closeModal"
     >
+      <!-- Element Plus 表單 -->
       <el-form
         ref="addFormRef"
         :model="newActivity"
@@ -456,7 +458,7 @@
             style="width: 100%"
           >
             <el-option
-              v-for="item_type in availableActivityItemTypes"
+              v-for="item_type in geAllItemTypes()"
               :key="item_type"
               :label="getItemTypeLabel(item_type)"
               :value="item_type"
@@ -480,7 +482,8 @@
             placeholder="選擇日期時間"
             style="width: 100%"
             format="YYYY-MM-DD HH:mm"
-            value-format="YYYY-MM-DD HH:mm"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            :disabled-date="disabledDate"
           />
         </el-form-item>
 
@@ -491,7 +494,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="參與人次">
+        <el-form-item label="參與人次" style="display: none">
           <el-input-number
             v-model="newActivity.participants"
             :min="0"
@@ -503,6 +506,14 @@
 
       <template #footer>
         <span class="dialog-footer">
+          <!-- 載入 Mock 數據 -->
+          <el-button
+            type="success"
+            class="dev-button"
+            @click="handleLoadMockData"
+            >🎲 載入 Mock 數據</el-button
+          >
+
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
           <el-button
             type="primary"
@@ -519,11 +530,13 @@
     <el-dialog
       v-model="showEditModal"
       title="編輯活動"
-      width="600px"
+      width="450px"
+      align-center
       :before-close="closeModal"
     >
       <el-form
         ref="editFormRef"
+        v-if="editingActivity"
         :model="editingActivity"
         :rules="activityRules"
         label-width="100px"
@@ -566,7 +579,8 @@
             placeholder="選擇日期時間"
             style="width: 100%"
             format="YYYY-MM-DD HH:mm"
-            value-format="YYYY-MM-DD HH:mm"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            :disabled-date="disabledDate"
           />
         </el-form-item>
 
@@ -577,7 +591,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="參與人次">
+        <el-form-item label="參與人次" style="display: none">
           <el-input-number
             v-model="editingActivity.participants"
             :min="0"
@@ -586,7 +600,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="狀態" prop="state">
+        <el-form-item label="狀態" prop="state" style="display: none">
           <el-select
             v-model="editingActivity.state"
             placeholder="請選擇狀態"
@@ -703,7 +717,17 @@ const activityRules = {
   item_type: [{ required: true, message: "請選擇活動類型", trigger: "change" }],
   date: [{ required: true, message: "請選擇活動日期", trigger: "change" }],
   location: [{ required: true, message: "請輸入活動地點", trigger: "blur" }],
-  state: [{ required: true, message: "請選擇活動狀態", trigger: "change" }],
+  state: [{ required: true, message: "請選擇活動狀態", trigger: "change" }], // 狀態在編輯表單中也是必填
+};
+
+// 添加表單引用
+const addFormRef = ref(null);
+const editFormRef = ref(null);
+// 禁用過去的日期（可選）
+const disabledDate = (time) => {
+  // 如果需要禁用過去的日期
+  return time.getTime() < Date.now() - 24 * 60 * 60 * 1000;
+  //return false;
 };
 
 // 計算屬性
@@ -850,6 +874,19 @@ const formatTime = (dateString) => {
   });
 };
 
+const geAllItemTypes = () => {
+  const item_type = {
+    ceremony: "法會",
+    lecture: "講座",
+    meditation: "禪修",
+    festival: "節慶",
+    volunteer: "志工",
+    pudu: "普度",
+    other: "其他",
+  };
+  return item_type;
+};
+
 const getTagItemType = (item_type) => {
   const typeMap = {
     ceremony: "warning",
@@ -910,22 +947,21 @@ const handleCurrentChange = (newPage) => {
   currentPage.value = newPage;
 };
 
-const showUpdateParticipants = (activity) => {
+const handleShowUpdateParticipants = (activity) => {
   selectedActivity.value = activity;
   newParticipants.value = activity.participants || 0;
   showParticipantsModal.value = true;
 };
 
-const editActivity = (activity) => {
+const handleEditActivity = (activity) => {
   // 處理 mock 數據的類型轉換
   editingActivity.value = {
     ...activity,
-    item_type: activity.item_type, // 確保 type 欄位存在
   };
   showEditModal.value = true;
 };
 
-const completeActivity = async (activityId) => {
+const handleCompleteActivity = async (activityId) => {
   try {
     await ElMessageBox.confirm("確定要標記此活動為已完成嗎？", "確認操作", {
       confirmButtonText: "確定",
@@ -948,7 +984,7 @@ const completeActivity = async (activityId) => {
   }
 };
 
-const deleteActivity = async (activity) => {
+const handleDeleteActivity = async (activity) => {
   try {
     await ElMessageBox.confirm(
       `確定要刪除活動 "${activity.name}" 嗎？此操作無法復原。`,
@@ -1002,10 +1038,31 @@ const handleSubmitForm = async () => {
   submitting.value = true;
 
   try {
+    // 1. 先進行表單驗證
+    if (!addFormRef.value) {
+      ElMessage.error("表單未正確初始化");
+      return;
+    }
+
+    // 2. 調用 Element Plus 的表單驗證方法
+    const isValid = await addFormRef.value.validate().catch((error) => {
+      console.error("表單驗證失敗:", error);
+      return false;
+    });
+
+    // 3. 如果驗證失敗，不提交
+    if (!isValid) {
+      ElMessage.warning("請填寫所有必填欄位");
+      submitting.value = false;
+      return;
+    }
+
+    // 4. 準備提交數據（確保日期格式正確）
+    newActivity.date = new Date(newActivity.date).toISOString();
+
     // 格式化日期時間
     const activityData = {
       ...newActivity,
-      date: newActivity.date ? `${newActivity.date}:00.000Z` : null,
     };
 
     const result = await activityStore.submitActivity(activityData);
@@ -1030,12 +1087,31 @@ const submitEditActivity = async () => {
   submitting.value = true;
 
   try {
+    // 1. 先進行表單驗證
+    if (!editFormRef.value) {
+      ElMessage.error("表單未正確初始化");
+      return;
+    }
+
+    // 2. 調用 Element Plus 的表單驗證方法
+    const isValid = await editFormRef.value.validate().catch((error) => {
+      console.error("表單驗證失敗:", error);
+      return false;
+    });
+
+    // 3. 如果驗證失敗，不提交
+    if (!isValid) {
+      ElMessage.warning("請填寫所有必填欄位");
+      submitting.value = false;
+      return;
+    }
+
+    // 4. 準備提交數據（確保日期格式正確）
+    editingActivity.date = new Date(editingActivity.date).toISOString();
+
     // 格式化日期時間
     const activityData = {
       ...editingActivity.value,
-      date: editingActivity.value.date
-        ? `${editingActivity.value.date}:00.000Z`
-        : editingActivity.value.date,
     };
 
     const result = await activityStore.updateActivity(
@@ -1079,6 +1155,32 @@ const submitParticipantsUpdate = async () => {
     ElMessage.error(err.message || "更新參與人次失敗");
   } finally {
     submitting.value = false;
+  }
+};
+
+const handleLoadMockData = async () => {
+  try {
+    const mockData = await activityStore.loadMockData();
+
+    Object.assign(newActivity, {
+      name: mockData.name,
+      item_type: mockData.item_type,
+      description: mockData.description,
+      date: mockData.date,
+      location: mockData.location,
+      //participants: mockData.participants,
+      //organizer: mockData.organizer,
+      //state: mockData.state,
+    });
+
+    if (mockData) {
+      ElMessage.success("Mock 數據載入成功");
+    } else {
+      ElMessage.error("載入 Mock 數據失敗");
+    }
+  } catch (error) {
+    console.error("載入 Mock 數據錯誤:", error);
+    ElMessage.error("載入 Mock 數據時發生錯誤");
   }
 };
 

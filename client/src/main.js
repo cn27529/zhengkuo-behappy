@@ -6,6 +6,8 @@ import { authService } from "./services/authService.js";
 import App from "./App.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
+// 導入中文語言包
+import zhTW from "element-plus/dist/locale/zh-tw.mjs";
 import "./style.css";
 
 // 导入路由配置
@@ -62,7 +64,11 @@ const app = createApp(App);
 // 使用路由和状态管理
 app.use(router);
 app.use(pinia);
-app.use(ElementPlus); // 使用Element Plus组件库
+
+// 使用Element Plus组件库
+app.use(ElementPlus, {
+  locale: zhTW, // 使用中文語言包
+});
 
 // 挂载应用
 app.mount("#app");

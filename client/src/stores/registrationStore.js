@@ -6,7 +6,7 @@ import { ref, computed, watch } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
 import { baseService, getCurrentISOTime } from "../services/baseService.js";
-import mockRegistrations from "../data/mock_registrations.json";
+import mockDatas from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { usePageStateStore } from "./pageStateStore.js";
 
@@ -939,7 +939,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   // 載入 Mock 數據
   const loadMockData = async (propsData) => {
     try {
-      if (!mockRegistrations || mockRegistrations.length === 0) {
+      if (!mockDatas || mockDatas.length === 0) {
         console.error("Mock 數據為空或未找到");
         return false;
       }
@@ -947,10 +947,10 @@ export const useRegistrationStore = defineStore("registration", () => {
       let mockData = null;
 
       // 隨機選擇一筆數據
-      const randomIndex = Math.floor(Math.random() * mockRegistrations.length);
-      mockData = mockRegistrations[randomIndex];
+      const randomIndex = Math.floor(Math.random() * mockDatas.length);
+      mockData = mockDatas[randomIndex];
 
-      console.log("📡 從 Mock 載入表單數據", mockData);
+      //console.log("📡 從 Mock 載入表單數據", mockData);
 
       // 如果是edit模式，formId與id不變，可以保存修改
       if (
@@ -960,9 +960,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       ) {
         if (baseService.mode === "mock") {
           // mock模式嘗試找到對應的數據
-          mockData = mockRegistrations.find(
-            (item) => item.formId === propsData.formId
-          );
+          mockData = mockDatas.find((item) => item.formId === propsData.formId);
         }
         mockData.formId = propsData.formId;
         mockData.id = propsData.id;

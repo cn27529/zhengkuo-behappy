@@ -4,7 +4,7 @@ import { ref, computed } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { activityService } from "../services/activityService.js";
 import { baseService, getCurrentISOTime } from "../services/baseService.js";
-import mockActivities from "../data/mock_activities.json";
+import mockDatas from "../data/mock_activities.json";
 
 export const useActivityStore = defineStore("activity", () => {
   // ========== 狀態 ==========
@@ -38,8 +38,8 @@ export const useActivityStore = defineStore("activity", () => {
 
     // 2. 按日期排序（最新在前）
     return filtered.sort((a, b) => {
-      const dateA = new Date(a.createdAt);
-      const dateB = new Date(b.createdAt);
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
       return dateB - dateA; // 降序排序（最新在前）
     });
   };
@@ -147,17 +147,37 @@ export const useActivityStore = defineStore("activity", () => {
    * 獲取所有活動類型
    */
   const allActivityItemTypes = computed(() => {
-    const types = new Set();
+    const item_types = new Set();
     allActivities.value.forEach((activity) => {
       const type = activity.item_type;
       if (type) {
-        types.add(type);
+        item_types.add(type);
       }
     });
-    return Array.from(types).sort();
+    console.log("🚀 所有活動類型:", item_types);
+    return Array.from(item_types).sort();
   });
 
   // ========== Actions - 方法 ==========
+
+  // 取得 Mock 數據
+  const loadMockData = async () => {
+    try {
+      if (!mockDatas || mockDatas.length === 0) {
+        console.error("Mock 數據為空或未找到");
+        return false;
+      }
+      let mockData = null;
+      // 隨機選擇一筆數據
+      const randomIndex = Math.floor(Math.random() * mockDatas.length);
+      mockData = mockDatas[randomIndex];
+      //console.log("📡 從 Mock 載入表單數據", mockData);
+      return mockData;
+    } catch (error) {
+      console.error("載入 Mock 數據失敗:", error);
+      return null;
+    }
+  };
 
   /**
    * 從服務器或 Mock 數據獲取活動列表
@@ -171,7 +191,7 @@ export const useActivityStore = defineStore("activity", () => {
       if (baseService.mode !== "directus") {
         console.log("📦 使用 Mock 活動數據");
         // 處理 mock 數據，確保 type 欄位存在
-        const processedActivities = mockActivities.map((activity) => ({
+        const processedActivities = mockDatas.map((activity) => ({
           ...activity,
           type: activity.item_type || "其他", // 將 item_type 映射到 type
         }));
@@ -195,7 +215,7 @@ export const useActivityStore = defineStore("activity", () => {
         error.value = result.message;
         console.error("❌ 獲取活動數據失敗:", result.message);
         // 失敗時使用 Mock 數據作為後備
-        const processedActivities = mockActivities.map((activity) => ({
+        const processedActivities = mockDatas.map((activity) => ({
           ...activity,
           type: activity.item_type || "其他",
         }));
@@ -206,7 +226,7 @@ export const useActivityStore = defineStore("activity", () => {
       error.value = err.message;
       console.error("❌ 獲取活動數據異常:", err);
       // 異常時使用 Mock 數據作為後備
-      const processedActivities = mockActivities.map((activity) => ({
+      const processedActivities = mockDatas.map((activity) => ({
         ...activity,
         type: activity.item_type || "其他",
       }));
@@ -624,7 +644,7 @@ export const useActivityStore = defineStore("activity", () => {
   /**
    * 根據類型獲取活動
    */
-  const getActivitiesByItemType = async (type) => {
+  const getActivitiesByItemType = async (item_type) => {
     loading.value = true;
     error.value = null;
 
@@ -632,17 +652,17 @@ export const useActivityStore = defineStore("activity", () => {
       // 如果不是 directus 模式，從本地過濾
       if (baseService.mode !== "directus") {
         const filtered = allActivities.value.filter(
-          (a) => a.type === type || a.item_type === type
+          (a) => a.type === item_type || a.item_type === item_type
         );
         return {
           success: true,
           data: filtered,
-          message: `找到 ${filtered.length} 個 ${type} 類型的活動（本地）`,
+          message: `找到 ${filtered.length} 個 ${item_type} 類型的活動（本地）`,
         };
       }
 
       // 從服務器獲取
-      const result = await activityService.getActivitiesByItemType(type);
+      const result = await activityService.getActivitiesByItemType(item_type);
 
       if (result.success) {
         return result;
@@ -650,12 +670,12 @@ export const useActivityStore = defineStore("activity", () => {
         error.value = result.message;
         // 失敗時從本地過濾
         const filtered = allActivities.value.filter(
-          (a) => a.type === type || a.item_type === type
+          (a) => a.type === item_type || a.item_type === item_type
         );
         return {
           success: true,
           data: filtered,
-          message: `找到 ${filtered.length} 個 ${type} 類型的活動（本地後備）`,
+          message: `找到 ${filtered.length} 個 ${item_type} 類型的活動（本地後備）`,
         };
       }
     } catch (err) {
@@ -771,5 +791,6 @@ export const useActivityStore = defineStore("activity", () => {
     clearError,
     getCurrentMode,
     setMode,
+    loadMockData,
   };
 });
