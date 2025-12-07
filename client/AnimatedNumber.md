@@ -74,7 +74,7 @@ integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 <template>
   <!-- 組件會繼承父元素的樣式 -->
   <div class="participants" style="color: blue; font-size: 20px;">
-    參與人數：
+    參與人次：
     <AnimatedNumber :value="342" suffix=" 人" />
     <!-- ↑ 會繼承藍色和 20px 字體 -->
   </div>
@@ -105,7 +105,7 @@ integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   <el-statistic 
     :value="displayValue"
     suffix="人"
-    title="參與人數"
+    title="參與人次"
   />
 </template>
 
