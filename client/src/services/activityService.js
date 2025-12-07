@@ -327,7 +327,7 @@ export class ActivityService {
    * @param {string} item_type - 活動類型
    * @returns {Promise<Object>} 活動列表
    */
-  async getActivitiesByType(item_type) {
+  async getActivitiesByItemType(item_type) {
     return this.getAllActivities({
       filter: {
         type: { _eq: item_type },

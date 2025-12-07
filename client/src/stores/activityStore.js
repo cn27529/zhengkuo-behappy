@@ -16,7 +16,7 @@ export const useActivityStore = defineStore("activity", () => {
   // ========== Getter - 計算屬性 ==========
 
   /**
-   * 計算總參與人數
+   * 計算總參與人次
    */
   const totalParticipants = computed(() => {
     return activities.value.reduce(
@@ -69,10 +69,10 @@ export const useActivityStore = defineStore("activity", () => {
   /**
    * 根據類型分組的活動
    */
-  const activitiesByType = computed(() => {
+  const activitiesByItemType = computed(() => {
     const grouped = {};
     activities.value.forEach((activity) => {
-      const type = activity.type || activity.item_type || "other";
+      const type = activity.item_type || "other";
       if (!grouped[type]) {
         grouped[type] = [];
       }
@@ -84,10 +84,10 @@ export const useActivityStore = defineStore("activity", () => {
   /**
    * 活動類型統計
    */
-  const activityTypeStats = computed(() => {
+  const activityItemTypeStats = computed(() => {
     const stats = {};
     activities.value.forEach((activity) => {
-      const type = activity.type || activity.item_type || "other";
+      const type = activity.item_type || "other";
       if (!stats[type]) {
         stats[type] = {
           count: 0,
@@ -103,10 +103,10 @@ export const useActivityStore = defineStore("activity", () => {
   /**
    * 獲取所有活動類型
    */
-  const allActivityTypes = computed(() => {
+  const allActivityItemTypes = computed(() => {
     const types = new Set();
     activities.value.forEach((activity) => {
-      const type = activity.type || activity.item_type;
+      const type = activity.item_type;
       if (type) {
         types.add(type);
       }
@@ -568,7 +568,7 @@ export const useActivityStore = defineStore("activity", () => {
   /**
    * 根據類型獲取活動
    */
-  const getActivitiesByType = async (type) => {
+  const getActivitiesByItemType = async (type) => {
     loading.value = true;
     error.value = null;
 
@@ -586,7 +586,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       // 從服務器獲取
-      const result = await activityService.getActivitiesByType(type);
+      const result = await activityService.getActivitiesByItemType(type);
 
       if (result.success) {
         return result;
@@ -695,9 +695,9 @@ export const useActivityStore = defineStore("activity", () => {
     completedActivities,
     getActivityById,
     chartData,
-    activitiesByType,
-    activityTypeStats,
-    allActivityTypes,
+    activitiesByItemType,
+    activityItemTypeStats,
+    allActivityItemTypes,
 
     // Actions
     getAllActivities,
@@ -708,7 +708,7 @@ export const useActivityStore = defineStore("activity", () => {
     completeActivity,
     getMonthlyStats,
     getByActivityId,
-    getActivitiesByType,
+    getActivitiesByItemType,
     getActivitiesByState,
     initialize,
     clearError,

@@ -4,15 +4,8 @@
     <div class="page-header">
       <h2>登記儀表板</h2>
       <p style="display: none">查看登記情况和统计数据</p>
-      <div class="total-participants">
-        年度总参与人数:
-        <AnimatedNumber
-          :value="totalParticipants"
-          :duration="10000"
-          separator=""
-          class=""
-        />
-        人
+      <div style="display: none" class="total-participants">
+        總參與人次:？人
       </div>
     </div>
 
@@ -21,9 +14,9 @@
       <div class="status-card upcoming">
         <div class="status-icon">📅</div>
         <div class="status-info">
-          <h3>即将举办</h3>
+          <h3>即將舉辦</h3>
           <div class="status-count">{{ upcomingActivities.length }}</div>
-          <div class="status-label">场活动</div>
+          <div class="status-label">場活動</div>
         </div>
       </div>
       <div class="status-card completed">
@@ -31,7 +24,22 @@
         <div class="status-info">
           <h3>已完成</h3>
           <div class="status-count">{{ completedActivities.length }}</div>
-          <div class="status-label">场活动</div>
+          <div class="status-label">場活動</div>
+        </div>
+      </div>
+      <div class="status-card all-participants">
+        <div class="status-icon">👥</div>
+        <div class="status-info">
+          <h3>總參與人次</h3>
+          <div class="status-count">
+            <AnimatedNumber
+              :value="totalParticipants"
+              :duration="10000"
+              separator=""
+              class=""
+            />
+          </div>
+          <div class="status-label">人次</div>
         </div>
       </div>
     </div>
@@ -42,7 +50,7 @@
         <div class="stat-info">
           <h3>{{ activity.name }}</h3>
           <div class="stat-number">{{ activity.participants }}</div>
-          <div class="stat-label">报名人数</div>
+          <div class="stat-label">報名人數</div>
           <div class="activity-date">{{ formatDate(activity.date) }}</div>
         </div>
       </div>
@@ -53,6 +61,7 @@
 <script>
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { useAuthStore } from "../stores/authStore.js";
 import { useActivityStore } from "../stores/activityStore.js";
 import AnimatedNumber from "../components/AnimatedNumber.vue";
@@ -272,6 +281,10 @@ export default {
 
 .status-card.completed {
   border-left: 4px solid #66bb6a;
+}
+
+.status-card.all-participants {
+  border-left: 4px solid #26afff;
 }
 
 .status-icon {

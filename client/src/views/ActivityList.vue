@@ -2,7 +2,7 @@
   <div class="main-content">
     <div class="page-header">
       <h2>活動管理</h2>
-      <p>管理寺廟的各種活動，包括法會、講座、禪修等</p>
+      <p style="display: none">管理寺廟的各種活動，包括法會、講座、禪修等</p>
     </div>
 
     <!-- 查詢區 -->
@@ -13,7 +13,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="活動名稱、描述、地點、負責人"
+              placeholder="活動名稱、描述、地點"
               @keyup.enter="handleSearch"
               :disabled="loading"
               clearable
@@ -71,7 +71,7 @@
     </div>
 
     <!-- 統計卡片 -->
-    <div class="stats-cards">
+    <div class="stats-cards" style="display: none">
       <el-card class="stat-card">
         <template #header>
           <div class="stat-header">
@@ -88,7 +88,7 @@
         <template #header>
           <div class="stat-header">
             <span class="stat-icon">👥</span>
-            <span class="stat-title">總參與人數</span>
+            <span class="stat-title">總參與人次</span>
           </div>
         </template>
         <div class="stat-content">
@@ -182,13 +182,11 @@
               :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
               v-loading="loading && selectedTab === 'upcoming'"
             >
-              <el-table-column
-                label="活動編號"
-                min-width="100"
-                prop="activityId"
-              >
+              <el-table-column label="類型" min-width="80" prop="activityId">
                 <template #default="{ row }">
-                  <span class="font-mono">{{ row.activityId }}</span>
+                  <el-tag :type="getTagItemType(row.item_type)" size="small">
+                    {{ getItemTypeLabel(row.item_type) }}
+                  </el-tag>
                 </template>
               </el-table-column>
 
@@ -200,14 +198,6 @@
                       {{ row.description || "無描述" }}
                     </div>
                   </div>
-                </template>
-              </el-table-column>
-
-              <el-table-column label="類型" min-width="100">
-                <template #default="{ row }">
-                  <el-tag :type="getTagItemType(row.item_type)" size="small">
-                    {{ getItemTypeLabel(row.item_type) }}
-                  </el-tag>
                 </template>
               </el-table-column>
 
@@ -240,12 +230,6 @@
                   </div>
                 </template>
               </el-table-column>
-
-              <el-table-column
-                label="負責人"
-                min-width="120"
-                prop="createdUser"
-              />
 
               <el-table-column
                 label="操作"
@@ -358,13 +342,11 @@
               :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
               v-loading="loading && selectedTab === 'completed'"
             >
-              <el-table-column
-                label="活動編號"
-                min-width="100"
-                prop="activityId"
-              >
+              <el-table-column label="類型" min-width="80" prop="activityId">
                 <template #default="{ row }">
-                  <span class="font-mono">{{ row.activityId }}</span>
+                  <el-tag :type="getTagItemType(row.item_type)" size="small">
+                    {{ getItemTypeLabel(row.item_type) }}
+                  </el-tag>
                 </template>
               </el-table-column>
 
@@ -376,14 +358,6 @@
                       {{ row.description || "無描述" }}
                     </div>
                   </div>
-                </template>
-              </el-table-column>
-
-              <el-table-column label="類型" min-width="100">
-                <template #default="{ row }">
-                  <el-tag :type="getTagItemType(row.item_type)" size="small">
-                    {{ getItemTypeLabel(row.item_type) }}
-                  </el-tag>
                 </template>
               </el-table-column>
 
@@ -407,14 +381,8 @@
               </el-table-column>
 
               <el-table-column
-                label="負責人"
-                min-width="120"
-                prop="createdUser"
-              />
-
-              <el-table-column
                 label="操作"
-                width="120"
+                width="180"
                 fixed="right"
                 align="center"
               >
@@ -531,13 +499,6 @@
             placeholder="參與人數"
           />
         </el-form-item>
-
-        <el-form-item label="負責人" style="display: none">
-          <el-input
-            v-model="newActivity.organizer"
-            placeholder="請輸入負責人姓名"
-          />
-        </el-form-item>
       </el-form>
 
       <template #footer>
@@ -622,13 +583,6 @@
             :min="0"
             :max="1000"
             placeholder="參與人數"
-          />
-        </el-form-item>
-
-        <el-form-item label="負責人" style="display: none">
-          <el-input
-            v-model="editingActivity.organizer"
-            placeholder="請輸入負責人姓名"
           />
         </el-form-item>
 
@@ -758,7 +712,7 @@ const upcomingActivities = computed(() => activityStore.upcomingActivities);
 const completedActivities = computed(() => activityStore.completedActivities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
 const availableActivityItemTypes = computed(
-  () => activityStore.allActivityTypes
+  () => activityStore.allActivityItemTypes
 );
 
 // 根據選中的tab和篩選條件過濾活動
@@ -868,7 +822,7 @@ const formatTime = (dateString) => {
   });
 };
 
-const getTagItemType = (type) => {
+const getTagItemType = (item_type) => {
   const typeMap = {
     ceremony: "warning",
     法會: "warning",
@@ -886,7 +840,7 @@ const getTagItemType = (type) => {
     other: "",
     其他: "",
   };
-  return typeMap[type] || "";
+  return typeMap[item_type] || "info";
 };
 
 const getItemTypeLabel = (type) => {
@@ -1146,7 +1100,7 @@ onMounted(() => {
 
 .search-input-group .el-input {
   flex: 1;
-  min-width: 300px;
+  /* min-width: 300px; */
 }
 
 .search-hint {

@@ -56,7 +56,7 @@
 
     <!-- 示例 4：統計總人數（大數字展示） -->
     <div class="total-stats">
-      <h2>總參與人數</h2>
+      <h2>總參與人次</h2>
       <AnimatedNumber
         :value="totalParticipants"
         :duration="2500"
