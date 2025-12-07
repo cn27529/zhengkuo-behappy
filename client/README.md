@@ -1,6 +1,18 @@
 
-# zk-client-v0-13 版本
+# zk-client-v2 版本
 ## 手記
+2025-12-10
+建構 活動管理 /activity
+
+2025-12-05
+
+完成 祈福登記、登記查詢
+
+2025-11-23
+
+建構 祈福登記 /registration
+建構 登記查詢 /registration-list
+
 2025-10-20
 
 使用ElementPlus套件
