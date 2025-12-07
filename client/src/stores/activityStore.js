@@ -56,7 +56,7 @@ export const useActivityStore = defineStore("activity", () => {
       labels: monthlyStats.value.map((stat) => stat.month),
       datasets: [
         {
-          label: "法會參與人數",
+          label: "法會參與人次",
           data: monthlyStats.value.map((stat) => stat.participants),
           backgroundColor: "rgba(139, 69, 19, 0.6)",
           borderColor: "rgba(139, 69, 19, 1)",
@@ -229,7 +229,7 @@ export const useActivityStore = defineStore("activity", () => {
   };
 
   /**
-   * 更新活動參與人數
+   * 更新活動參與人次
    */
   const updateActivityParticipants = async (activityId, newParticipants) => {
     loading.value = true;
@@ -246,11 +246,11 @@ export const useActivityStore = defineStore("activity", () => {
       if (baseService.mode !== "directus") {
         activity.participants = newParticipants;
         activity.updatedAt = new Date().toISOString();
-        console.log("✅ Mock 模式：參與人數已更新");
+        console.log("✅ Mock 模式：參與人次已更新");
         return {
           success: true,
           data: activity,
-          message: "參與人數已更新（Mock 模式）",
+          message: "參與人次已更新（Mock 模式）",
         };
       }
 
@@ -263,16 +263,16 @@ export const useActivityStore = defineStore("activity", () => {
       if (result.success) {
         activity.participants = newParticipants;
         activity.updatedAt = result.data.updatedAt;
-        console.log("✅ 成功更新參與人數");
+        console.log("✅ 成功更新參與人次");
         return result;
       } else {
         error.value = result.message;
-        console.error("❌ 更新參與人數失敗:", result.message);
+        console.error("❌ 更新參與人次失敗:", result.message);
         return result;
       }
     } catch (err) {
       error.value = err.message;
-      console.error("❌ 更新參與人數異常:", err);
+      console.error("❌ 更新參與人次異常:", err);
       throw err;
     } finally {
       loading.value = false;

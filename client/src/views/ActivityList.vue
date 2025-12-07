@@ -833,28 +833,26 @@ const getTagItemType = (item_type) => {
     festival: "danger",
     節慶: "danger",
     volunteer: "primary",
-    義工: "primary",
-    activity: "",
-    活動: "",
+    志工: "primary",
     pudu: "warning",
+    普度: "warning",
     other: "",
     其他: "",
   };
-  return typeMap[item_type] || "info";
+  return typeMap[item_type] || "ceremony";
 };
 
-const getItemTypeLabel = (type) => {
+const getItemTypeLabel = (item_type) => {
   const labelMap = {
     ceremony: "法會",
     lecture: "講座",
     meditation: "禪修",
     festival: "節慶",
-    volunteer: "義工",
-    activity: "活動",
+    volunteer: "志工",
     pudu: "普度",
     other: "其他",
   };
-  return labelMap[type] || type || "其他";
+  return labelMap[item_type] || item_type || "法會";
 };
 
 const handleSearch = () => {
