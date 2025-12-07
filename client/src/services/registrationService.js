@@ -1,5 +1,9 @@
 // src/services/registrationService.js
-import { baseService, getApiUrl } from "../services/baseService.js";
+import {
+  baseService,
+  getApiUrl,
+  getCurrentISOTime,
+} from "../services/baseService.js";
 import {
   generateGitHash,
   generateMultipleHashes,
@@ -32,15 +36,13 @@ export class RegistrationService {
 
   // ========== 生成表單 ID ==========
   generateFormId() {
-    const createISOTime = new Date().toISOString();
+    const createISOTime = getCurrentISOTime();
     return generateGitHash(createISOTime);
   }
 
   // ========== CRUD 操作 ==========
   async createRegistration(registrationData) {
-    // 在 registrationService.js 頂部添加時間工具函數
-    const getCurrentISOTime = () => new Date().toISOString();
-    const createISOTime = new Date().toISOString();
+    const createISOTime = getCurrentISOTime();
 
     if (baseService.mode !== "directus") {
       console.warn(

@@ -5,7 +5,7 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
-import { baseService } from "../services/baseService.js";
+import { baseService, getCurrentISOTime } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { usePageStateStore } from "./pageStateStore.js";
@@ -92,8 +92,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 獲取初始表單資料（深拷貝）
   const getInitialFormData = () => {
-    const createISOTime = new Date().toISOString();
-    const getCurrentISOTime = () => new Date().toISOString();
+    const createISOTime = getCurrentISOTime();
 
     // 聯絡人
     const myContact = {
@@ -787,17 +786,13 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     try {
-      const createISOTime = new Date().toISOString();
+      const createISOTime = getCurrentISOTime();
       registrationForm.value.createdUser = getCurrentUser();
       registrationForm.value.formId = generateGitHash(createISOTime);
       registrationForm.value.createdAt = createISOTime;
       registrationForm.value.state = "submitted";
 
       if (baseService.mode !== "directus") {
-        console.warn(
-          "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
-        );
-
         return {
           success: true,
           message:

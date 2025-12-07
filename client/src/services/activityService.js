@@ -1,5 +1,5 @@
 // src/services/activitiesService.js
-import { baseService, getApiUrl } from "./baseService.js";
+import { baseService, getApiUrl, getCurrentISOTime } from "./baseService.js";
 import {
   generateGitHash,
   generateGitHashBrowser,
@@ -32,7 +32,7 @@ export class ActivityService {
 
   // ========== 生成活動 ID ==========
   generateActivityId() {
-    const createISOTime = new Date().toISOString();
+    const createISOTime = getCurrentISOTime();
     return generateGitHash(createISOTime);
   }
 
@@ -44,7 +44,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 創建結果
    */
   async createActivity(activityData) {
-    const createISOTime = new Date().toISOString();
+    const createISOTime = getCurrentISOTime();
 
     if (baseService.mode !== "directus") {
       console.warn(

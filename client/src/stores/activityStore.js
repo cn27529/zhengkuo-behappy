@@ -3,23 +3,62 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { activityService } from "../services/activityService.js";
-import { baseService } from "../services/baseService.js";
+import { baseService, getCurrentISOTime } from "../services/baseService.js";
 import mockActivities from "../data/mock_activities.json";
 
 export const useActivityStore = defineStore("activity", () => {
   // ========== 狀態 ==========
-  const activities = ref([]);
+  const allActivities = ref([]);
   const monthlyStats = ref([]);
   const loading = ref(false);
   const error = ref(null);
 
+  // ========== 工具函數 ==========
+
+  /**
+   * 計算一年前的日期
+   */
+  const getOneYearAgo = () => {
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    return oneYearAgo;
+  };
+
+  /**
+   * 過濾近一年的活動
+   */
+  const filterRecentActivities = (activitiesList) => {
+    const oneYearAgo = getOneYearAgo();
+    // 1. 先過濾近一年的活動
+    const filtered = activitiesList.filter((activity) => {
+      if (!activity.date) return false;
+      const activityDate = new Date(activity.date);
+      return activityDate >= oneYearAgo;
+    });
+
+    // 2. 按日期排序（最新在前）
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return dateB - dateA; // 降序排序（最新在前）
+    });
+  };
+
   // ========== Getter - 計算屬性 ==========
+
+  /**
+   * 只顯示近一年的活動
+   */
+  const activities1Year = computed(() => {
+    let myActivityies = filterRecentActivities(allActivities.value);
+    return myActivityies;
+  });
 
   /**
    * 計算總參與人次
    */
   const totalParticipants = computed(() => {
-    return activities.value.reduce(
+    return activities1Year.value.reduce(
       (sum, activity) => sum + (activity.participants || 0),
       0
     );
@@ -29,35 +68,39 @@ export const useActivityStore = defineStore("activity", () => {
    * 獲取即將到來的活動
    */
   const upcomingActivities = computed(() => {
-    return activities.value.filter((activity) => activity.state === "upcoming");
+    return activities1Year.value.filter((activity) => {
+      return activity.state === "upcoming";
+    });
   });
 
   /**
    * 獲取已完成的活動
    */
   const completedActivities = computed(() => {
-    return activities.value.filter(
-      (activity) => activity.state === "completed"
-    );
+    return activities1Year.value.filter((activity) => {
+      return activity.state === "completed";
+    });
   });
 
   /**
    * 根據 ID 獲取活動
    */
   const getActivityById = computed(() => {
-    return (id) => activities.value.find((activity) => activity.id === id);
+    return (id) => activities1Year.value.find((activity) => activity.id === id);
   });
 
   /**
    * 圖表數據
    */
   const chartData = computed(() => {
+    // 只使用近一年的數據計算統計
+    const recentStats = calculateMonthlyStatsFromRecentActivities();
     return {
-      labels: monthlyStats.value.map((stat) => stat.month),
+      labels: recentStats.value.map((stat) => stat.month),
       datasets: [
         {
           label: "法會參與人次",
-          data: monthlyStats.value.map((stat) => stat.participants),
+          data: recentStats.value.map((stat) => stat.participants),
           backgroundColor: "rgba(139, 69, 19, 0.6)",
           borderColor: "rgba(139, 69, 19, 1)",
           borderWidth: 2,
@@ -71,7 +114,7 @@ export const useActivityStore = defineStore("activity", () => {
    */
   const activitiesByItemType = computed(() => {
     const grouped = {};
-    activities.value.forEach((activity) => {
+    activities1Year.value.forEach((activity) => {
       const type = activity.item_type || "other";
       if (!grouped[type]) {
         grouped[type] = [];
@@ -86,7 +129,7 @@ export const useActivityStore = defineStore("activity", () => {
    */
   const activityItemTypeStats = computed(() => {
     const stats = {};
-    activities.value.forEach((activity) => {
+    activities1Year.value.forEach((activity) => {
       const type = activity.item_type || "other";
       if (!stats[type]) {
         stats[type] = {
@@ -105,7 +148,7 @@ export const useActivityStore = defineStore("activity", () => {
    */
   const allActivityItemTypes = computed(() => {
     const types = new Set();
-    activities.value.forEach((activity) => {
+    allActivities.value.forEach((activity) => {
       const type = activity.item_type;
       if (type) {
         types.add(type);
@@ -132,7 +175,7 @@ export const useActivityStore = defineStore("activity", () => {
           ...activity,
           type: activity.item_type || "其他", // 將 item_type 映射到 type
         }));
-        activities.value = processedActivities;
+        allActivities.value = processedActivities;
         return {
           success: true,
           data: processedActivities,
@@ -145,8 +188,8 @@ export const useActivityStore = defineStore("activity", () => {
       const result = await activityService.getAllActivities(params);
 
       if (result.success) {
-        activities.value = result.data || [];
-        console.log(`✅ 成功獲取 ${activities.value.length} 個活動`);
+        allActivities.value = result.data || [];
+        console.log(`✅ 成功獲取 ${allActivities.value.length} 個活動`);
         return result;
       } else {
         error.value = result.message;
@@ -156,7 +199,7 @@ export const useActivityStore = defineStore("activity", () => {
           ...activity,
           type: activity.item_type || "其他",
         }));
-        activities.value = processedActivities;
+        allActivities.value = processedActivities;
         return result;
       }
     } catch (err) {
@@ -167,11 +210,22 @@ export const useActivityStore = defineStore("activity", () => {
         ...activity,
         type: activity.item_type || "其他",
       }));
-      activities.value = processedActivities;
+      allActivities.value = processedActivities;
       throw err;
     } finally {
       loading.value = false;
     }
+  };
+
+  // 獲取用戶信息
+  const getCurrentUser = () => {
+    const userInfo = sessionStorage.getItem("auth-user");
+    console.log("獲取到的用戶信息:", userInfo);
+    if (userInfo) {
+      const user = JSON.parse(userInfo);
+      return user.id || user.username || user.displayName || "unknown";
+    }
+    return "anonymous";
   };
 
   /**
@@ -182,28 +236,30 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      const createISOTime = new Date().toISOString();
+      const createISOTime = getCurrentISOTime();
       const activity = {
-        id: Math.max(...activities.value.map((a) => a.id), 0) + 1,
+        id: Math.max(...allActivities.value.map((a) => a.id), 0) + 1,
         activityId: generateGitHash(createISOTime),
         ...newActivity,
-        item_type: newActivity.item_type, // 保存 item_type 以兼容 mock 數據
+        item_type: newActivity.item_type,
         participants: newActivity.participants || 0,
         state: newActivity.state || "upcoming",
         createdAt: createISOTime,
-        createdUser: "system",
+        createdUser: getCurrentUser(),
         updatedAt: "",
         updatedUser: "",
       };
 
+      console.log("📦 添加新活動:", activity);
+
       // 如果不是 directus 模式，只在本地添加
       if (baseService.mode !== "directus") {
-        activities.value.push(activity);
-        console.log("✅ Mock 模式：活動已添加到本地");
+        allActivities.value.push(activity);
         return {
           success: true,
           data: activity,
-          message: "活動已添加（Mock 模式）",
+          message:
+            "活動創建成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式",
         };
       }
 
@@ -211,7 +267,7 @@ export const useActivityStore = defineStore("activity", () => {
       const result = await activityService.createActivity(newActivity);
 
       if (result.success) {
-        activities.value.push(result.data);
+        allActivities.value.push(result.data);
         console.log("✅ 成功創建活動:", result.data.name);
         return result;
       } else {
@@ -237,7 +293,7 @@ export const useActivityStore = defineStore("activity", () => {
 
     try {
       // 在本地查找活動
-      const activity = activities.value.find((a) => a.id === activityId);
+      const activity = allActivities.value.find((a) => a.id === activityId);
       if (!activity) {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
@@ -288,15 +344,15 @@ export const useActivityStore = defineStore("activity", () => {
 
     try {
       // 在本地查找活動
-      const index = activities.value.findIndex((a) => a.id === activityId);
+      const index = allActivities.value.findIndex((a) => a.id === activityId);
       if (index === -1) {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
       // 如果不是 directus 模式，只在本地更新
       if (baseService.mode !== "directus") {
-        activities.value[index] = {
-          ...activities.value[index],
+        allActivities.value[index] = {
+          ...allActivities.value[index],
           ...activityData,
           item_type: activityData.type, // 同步更新 item_type
           updatedAt: new Date().toISOString(),
@@ -304,7 +360,7 @@ export const useActivityStore = defineStore("activity", () => {
         console.log("✅ Mock 模式：活動已更新");
         return {
           success: true,
-          data: activities.value[index],
+          data: allActivities.value[index],
           message: "活動已更新（Mock 模式）",
         };
       }
@@ -316,8 +372,8 @@ export const useActivityStore = defineStore("activity", () => {
       );
 
       if (result.success) {
-        activities.value[index] = {
-          ...activities.value[index],
+        allActivities.value[index] = {
+          ...allActivities.value[index],
           ...result.data,
         };
         console.log("✅ 成功更新活動");
@@ -344,14 +400,14 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      const index = activities.value.findIndex((a) => a.id === activityId);
+      const index = allActivities.value.findIndex((a) => a.id === activityId);
       if (index === -1) {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
       // 如果不是 directus 模式，只在本地刪除
       if (baseService.mode !== "directus") {
-        activities.value.splice(index, 1);
+        allActivities.value.splice(index, 1);
         console.log("✅ Mock 模式：活動已刪除");
         return {
           success: true,
@@ -363,7 +419,7 @@ export const useActivityStore = defineStore("activity", () => {
       const result = await activityService.deleteActivity(activityId);
 
       if (result.success) {
-        activities.value.splice(index, 1);
+        allActivities.value.splice(index, 1);
         console.log("✅ 成功刪除活動");
         return result;
       } else {
@@ -388,7 +444,7 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      const activity = activities.value.find((a) => a.id === activityId);
+      const activity = allActivities.value.find((a) => a.id === activityId);
       if (!activity) {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
@@ -498,7 +554,7 @@ export const useActivityStore = defineStore("activity", () => {
     });
 
     // 統計每個活動
-    activities.value.forEach((activity) => {
+    allActivities.value.forEach((activity) => {
       const date = new Date(activity.date);
       const monthIndex = date.getMonth();
       const month = months[monthIndex];
@@ -520,7 +576,7 @@ export const useActivityStore = defineStore("activity", () => {
 
     try {
       // 先在本地查找
-      const localActivity = activities.value.find(
+      const localActivity = allActivities.value.find(
         (a) => a.activityId === activityId
       );
       if (localActivity) {
@@ -575,7 +631,7 @@ export const useActivityStore = defineStore("activity", () => {
     try {
       // 如果不是 directus 模式，從本地過濾
       if (baseService.mode !== "directus") {
-        const filtered = activities.value.filter(
+        const filtered = allActivities.value.filter(
           (a) => a.type === type || a.item_type === type
         );
         return {
@@ -593,7 +649,7 @@ export const useActivityStore = defineStore("activity", () => {
       } else {
         error.value = result.message;
         // 失敗時從本地過濾
-        const filtered = activities.value.filter(
+        const filtered = allActivities.value.filter(
           (a) => a.type === type || a.item_type === type
         );
         return {
@@ -621,7 +677,7 @@ export const useActivityStore = defineStore("activity", () => {
     try {
       // 如果不是 directus 模式，從本地過濾
       if (baseService.mode !== "directus") {
-        const filtered = activities.value.filter((a) => a.state === state);
+        const filtered = allActivities.value.filter((a) => a.state === state);
         return {
           success: true,
           data: filtered,
@@ -637,7 +693,7 @@ export const useActivityStore = defineStore("activity", () => {
       } else {
         error.value = result.message;
         // 失敗時從本地過濾
-        const filtered = activities.value.filter((a) => a.state === state);
+        const filtered = allActivities.value.filter((a) => a.state === state);
         return {
           success: true,
           data: filtered,
@@ -684,7 +740,8 @@ export const useActivityStore = defineStore("activity", () => {
   // ========== 返回 Store 接口 ==========
   return {
     // 狀態
-    activities,
+    activities: activities1Year,
+    allActivities,
     monthlyStats,
     loading,
     error,

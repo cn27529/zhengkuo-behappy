@@ -707,13 +707,41 @@ const activityRules = {
 };
 
 // 計算屬性
-const activities = computed(() => activityStore.activities);
+const activities = computed(() => activityStore.activities); // 已經是近一年資料
 const upcomingActivities = computed(() => activityStore.upcomingActivities);
 const completedActivities = computed(() => activityStore.completedActivities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
 const availableActivityItemTypes = computed(
   () => activityStore.allActivityItemTypes
 );
+
+/**
+ * 計算一年前的日期
+ */
+const getOneYearAgo = () => {
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  return oneYearAgo;
+};
+
+/**
+ * 過濾近一年的活動
+ */
+const filterRecentActivities = (activitiesList) => {
+  const oneYearAgo = getOneYearAgo();
+  return activitiesList.filter((activity) => {
+    if (!activity.date) return false;
+    const activityDate = new Date(activity.date);
+    return activityDate >= oneYearAgo;
+  });
+};
+
+/**
+ * 只顯示近一年的活動
+ */
+const activities123 = computed(() => {
+  return filterRecentActivities(allActivities.value); // ← 使用 allActivities
+});
 
 // 根據選中的tab和篩選條件過濾活動
 const upcomingFiltered = computed(() => {
