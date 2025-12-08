@@ -222,6 +222,7 @@ import { useRouter } from "vue-router";
 import { authService } from "../services/authService";
 import { useQueryStore } from "../stores/queryStore.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 export default {
   name: "RegistrationList",
@@ -407,6 +408,7 @@ export default {
     };
 
     const formatDate = (dateString) => {
+      return DateUtils.formatDateLong(dateString);
       if (!dateString) return "-";
       try {
         const date = new Date(dateString);
