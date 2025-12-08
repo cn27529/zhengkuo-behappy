@@ -149,11 +149,14 @@ export const useActivityStore = defineStore("activity", () => {
    */
   const allActivityItemTypes = computed(() => {
     const item_types = new Set();
+
+    Object.keys(getAllItemTypes()).forEach((type) => item_types.add(type));
+    console.log("🚀 所有活動類型:", item_types);
+    return Array.from(item_types).sort();
+
     allActivities.value.forEach((activity) => {
       const type = activity.item_type;
-      if (type) {
-        item_types.add(type);
-      }
+      if (type) item_types.add(type);
     });
     console.log("🚀 所有活動類型:", item_types);
     return Array.from(item_types).sort();

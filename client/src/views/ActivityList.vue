@@ -27,12 +27,12 @@
               placeholder="請選擇活動類型"
               :disabled="loading"
               size="large"
-              style="min-width: 200px"
+              style="display: none"
             >
               <el-option
-                v-for="item_type in getAllItemTypes"
+                v-for="item_type in availableActivityItemTypes"
                 :key="item_type"
-                :label="getLabel_ItemType(item_type)"
+                :label="getLable_ItemType(item_type)"
                 :value="item_type"
               />
             </el-select>
@@ -67,7 +67,7 @@
       <div>selectedTab: {{ selectedTab }}</div>
       <div>selectedTypes: {{ selectedItemTypes }}</div>
       <div>所有活動數: {{ activities.length }}</div>
-      <div>活動類型: {{ allActivityItemTypes }}</div>
+      <div>活動類型: {{ availableActivityItemTypes }}</div>
     </div>
 
     <!-- 統計卡片 -->
@@ -125,7 +125,7 @@
     <div class="results-section">
       <!-- Tab 切換 -->
       <el-tabs v-model="selectedTab" @tab-change="handleTabChange">
-        <el-tab-pane label="⏳即將到來" name="upcoming">
+        <el-tab-pane label="⏳&nbsp;即將到來" name="upcoming">
           <!-- 即將到來活動列表 -->
           <div
             v-if="loading && selectedTab === 'upcoming'"
@@ -182,10 +182,23 @@
               :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
               v-loading="loading && selectedTab === 'upcoming'"
             >
-              <el-table-column label="類型" min-width="80" prop="activityId">
+              <el-table-column
+                label="圖標"
+                min-width="50"
+                prop="activityId"
+                align="center"
+              >
                 <template #default="{ row }">
-                  <el-tag :type="getTag_ItemType(row.item_type)" size="small">
-                    {{ getLabel_ItemType(row.item_type) }}
+                  <el-icon size="large">
+                    {{ row.icon }}
+                  </el-icon>
+                </template>
+              </el-table-column>
+
+              <el-table-column label="類型" min-width="80" v-if="false">
+                <template #default="{ row }">
+                  <el-tag :type="getTag_ItemType(row.item_type)">
+                    {{ getLable_ItemType(row.item_type) }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -201,30 +214,23 @@
                 </template>
               </el-table-column>
 
-              <el-table-column label="日期時間" min-width="150">
+              <el-table-column label="日期時間" min-width="130">
                 <template #default="{ row }">
                   <div class="date-info">
-                    <div>{{ DateUtils.formatDate(row.date) }}</div>
-                    <div class="time">
-                      {{ DateUtils.formatTime(row.date) }}
-                    </div>
+                    <div>{{ formatDateLong(row.date) }}</div>
                   </div>
                 </template>
               </el-table-column>
 
-              <el-table-column prop="location" label="地點" min-width="120" />
+              <el-table-column prop="location" label="地點" min-width="100" />
 
-              <el-table-column label="參與人次" min-width="120" align="center">
+              <el-table-column label="參與人次" min-width="80" align="center">
                 <template #default="{ row }">
                   <div class="participants-cell">
                     <span class="count">{{ row.participants || 0 }}</span>
                     <el-tooltip content="更新參與人次" placement="top">
-                      <el-button
-                        circle
-                        size="small"
-                        @click="handleShowUpdateParticipants(row)"
-                      >
-                        <el-icon><Edit /></el-icon>
+                      <el-button circle @click="showUpdateParticipants(row)">
+                        🔄️
                       </el-button>
                     </el-tooltip>
                   </div>
@@ -242,20 +248,18 @@
                     <el-tooltip content="編輯活動" placement="top">
                       <el-button
                         circle
-                        @click="handleEditActivity(row)"
+                        @click="editActivity(row)"
                         type="primary"
-                        size="small"
                       >
-                        <el-icon><Edit /></el-icon>
+                        📝
                       </el-button>
                     </el-tooltip>
 
                     <el-tooltip content="標記完成" placement="top">
                       <el-button
                         circle
-                        @click="handleCompleteActivity(row.id)"
+                        @click="completeActivity(row.id)"
                         type="success"
-                        size="small"
                       >
                         <el-icon><Check /></el-icon>
                       </el-button>
@@ -264,9 +268,8 @@
                     <el-tooltip content="刪除活動" placement="top">
                       <el-button
                         circle
-                        @click="handleDeleteActivity(row)"
+                        @click="deleteActivity(row)"
                         type="danger"
-                        size="small"
                       >
                         <el-icon><Delete /></el-icon>
                       </el-button>
@@ -292,7 +295,7 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="✅已完成" name="completed">
+        <el-tab-pane label="✅&nbsp;已完成" name="completed">
           <!-- 已完成活動列表 -->
           <div
             v-if="loading && selectedTab === 'completed'"
@@ -342,10 +345,23 @@
               :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
               v-loading="loading && selectedTab === 'completed'"
             >
-              <el-table-column label="類型" min-width="80" prop="activityId">
+              <el-table-column
+                label="圖標"
+                min-width="50"
+                prop="activityId"
+                align="center"
+              >
                 <template #default="{ row }">
-                  <el-tag :type="getTag_ItemType(row.item_type)" size="small">
-                    {{ getLabel_ItemType(row.item_type) }}
+                  <el-icon size="large">
+                    {{ row.icon }}
+                  </el-icon>
+                </template>
+              </el-table-column>
+
+              <el-table-column label="類型" min-width="80" v-if="false">
+                <template #default="{ row }">
+                  <el-tag :type="getTag_ItemType(row.item_type)">
+                    {{ getLable_ItemType(row.item_type) }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -361,20 +377,17 @@
                 </template>
               </el-table-column>
 
-              <el-table-column label="日期時間" min-width="150">
+              <el-table-column label="日期時間" min-width="130">
                 <template #default="{ row }">
                   <div class="date-info">
-                    <div>{{ DateUtils.formatDate(row.date) }}</div>
-                    <div class="time">
-                      {{ DateUtils.formatTime(row.date) }}
-                    </div>
+                    <div>{{ formatDateLong(row.date) }}</div>
                   </div>
                 </template>
               </el-table-column>
 
-              <el-table-column prop="location" label="地點" min-width="120" />
+              <el-table-column prop="location" label="地點" min-width="100" />
 
-              <el-table-column label="參與人次" min-width="120" align="center">
+              <el-table-column label="參與人次" min-width="80" align="center">
                 <template #default="{ row }">
                   <span class="count">{{ row.participants || 0 }}</span>
                 </template>
@@ -391,20 +404,18 @@
                     <el-tooltip content="編輯活動" placement="top">
                       <el-button
                         circle
-                        @click="handleEditActivity(row)"
+                        @click="editActivity(row)"
                         type="primary"
-                        size="small"
                       >
-                        <el-icon><Edit /></el-icon>
+                        📝
                       </el-button>
                     </el-tooltip>
 
-                    <el-tooltip content="刪除活動" placement="top">
+                    <el-tooltip v-if="false" content="刪除活動" placement="top">
                       <el-button
                         circle
-                        @click="handleDeleteActivity(row)"
+                        @click="deleteActivity(row)"
                         type="danger"
-                        size="small"
                       >
                         <el-icon><Delete /></el-icon>
                       </el-button>
@@ -434,33 +445,36 @@
 
     <!-- 新增活動 Dialog -->
     <el-dialog
+      align-center
       v-model="showAddModal"
       title="新增活動"
-      width="450px"
-      align-center
+      width="600px"
       :before-close="closeModal"
     >
-      <!-- Element Plus 表單 -->
       <el-form
         ref="addFormRef"
         :model="newActivity"
         :rules="activityRules"
         label-width="100px"
       >
+        <el-form-item label="圖標" prop="icon">
+          <IconSelector v-model="newActivity.icon" />
+        </el-form-item>
+
         <el-form-item label="活動名稱" prop="name">
           <el-input v-model="newActivity.name" placeholder="請輸入活動名稱" />
         </el-form-item>
 
-        <el-form-item label="活動類型" prop="item_type">
+        <el-form-item label="活動類型" prop="item_type" style="display: none">
           <el-select
             v-model="newActivity.item_type"
             placeholder="請選擇類型"
             style="width: 100%"
           >
             <el-option
-              v-for="item_type in getAllItemTypes"
+              v-for="item_type in availableActivityItemTypes"
               :key="item_type"
-              :label="getLabel_ItemType(item_type)"
+              :label="getLable_ItemType(item_type)"
               :value="item_type"
             />
           </el-select>
@@ -482,7 +496,7 @@
             placeholder="選擇日期時間"
             style="width: 100%"
             format="YYYY-MM-DD HH:mm"
-            value-format="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm"
             :disabled-date="disabledDate"
           />
         </el-form-item>
@@ -494,7 +508,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="參與人次" style="display: none">
+        <el-form-item label="參與人次">
           <el-input-number
             v-model="newActivity.participants"
             :min="0"
@@ -513,11 +527,10 @@
             @click="handleLoadMockData"
             >🎲 載入 Mock 數據</el-button
           >
-
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
           <el-button
             type="primary"
-            @click="handleSubmitForm"
+            @click="handleNewActivity"
             :loading="submitting"
           >
             新增活動
@@ -528,19 +541,23 @@
 
     <!-- 編輯活動 Dialog -->
     <el-dialog
+      align-center
+      v-if="editingActivity"
       v-model="showEditModal"
       title="編輯活動"
-      width="450px"
-      align-center
+      width="600px"
       :before-close="closeModal"
     >
       <el-form
         ref="editFormRef"
-        v-if="editingActivity"
         :model="editingActivity"
         :rules="activityRules"
         label-width="100px"
       >
+        <el-form-item label="圖標" prop="icon">
+          <IconSelector v-model="editingActivity.icon" />
+        </el-form-item>
+
         <el-form-item label="活動名稱" prop="name">
           <el-input
             v-model="editingActivity.name"
@@ -548,16 +565,16 @@
           />
         </el-form-item>
 
-        <el-form-item label="活動類型" prop="item_type">
+        <el-form-item label="活動類型" prop="item_type" style="display: none">
           <el-select
             v-model="editingActivity.item_type"
             placeholder="請選擇類型"
             style="width: 100%"
           >
             <el-option
-              v-for="item_type in getAllItemTypes"
+              v-for="item_type in availableActivityItemTypes"
               :key="item_type"
-              :label="getLabel_ItemType(item_type)"
+              :label="getLable_ItemType(item_type)"
               :value="item_type"
             />
           </el-select>
@@ -579,7 +596,7 @@
             placeholder="選擇日期時間"
             style="width: 100%"
             format="YYYY-MM-DD HH:mm"
-            value-format="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm"
             :disabled-date="disabledDate"
           />
         </el-form-item>
@@ -591,7 +608,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="參與人次" style="display: none">
+        <el-form-item label="參與人次">
           <el-input-number
             v-model="editingActivity.participants"
             :min="0"
@@ -600,7 +617,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="狀態" prop="state" style="display: none">
+        <el-form-item label="狀態" prop="state">
           <el-select
             v-model="editingActivity.state"
             placeholder="請選擇狀態"
@@ -618,7 +635,7 @@
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
           <el-button
             type="primary"
-            @click="submitEditActivity"
+            @click="handleEditActivity"
             :loading="submitting"
           >
             更新活動
@@ -675,6 +692,7 @@ import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
 import { useActivityStore } from "../stores/activityStore.js";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import IconSelector from "../components/IconSelector.vue";
 
 const activityStore = useActivityStore();
 
@@ -715,16 +733,18 @@ const newParticipants = ref(0);
 // 表單驗證規則
 const activityRules = {
   name: [{ required: true, message: "請輸入活動名稱", trigger: "blur" }],
-  item_type: [{ required: true, message: "請選擇活動類型", trigger: "change" }],
+  item_type: [
+    { required: false, message: "請選擇活動類型", trigger: "change" },
+  ],
   date: [{ required: true, message: "請選擇活動日期", trigger: "change" }],
   location: [{ required: true, message: "請輸入活動地點", trigger: "blur" }],
-  state: [{ required: true, message: "請選擇活動狀態", trigger: "change" }], // 狀態在編輯表單中也是必填
+  state: [{ required: true, message: "請選擇活動狀態", trigger: "change" }],
 };
 
-// 添加表單引用
+// el-dialog 添加表單引用
 const addFormRef = ref(null);
 const editFormRef = ref(null);
-// 禁用過去的日期（可選）
+// el-date-picker 禁用過去的日期（可選）
 const disabledDate = (time) => {
   // 如果需要禁用過去的日期
   return time.getTime() < Date.now() - 24 * 60 * 60 * 1000;
@@ -736,36 +756,10 @@ const activities = computed(() => activityStore.activities); // 已經是近一�
 const upcomingActivities = computed(() => activityStore.upcomingActivities);
 const completedActivities = computed(() => activityStore.completedActivities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
-const allActivityItemTypes = computed(() => activityStore.allActivityItemTypes);
-const getAllItemTypes = computed(() => activityStore.getAllItemTypes);
 
-/**
- * 計算一年前的日期
- */
-const getOneYearAgo = () => {
-  const oneYearAgo = new Date();
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-  return oneYearAgo;
-};
-
-/**
- * 過濾近一年的活動
- */
-const filterRecentActivities = (activitiesList) => {
-  const oneYearAgo = getOneYearAgo();
-  return activitiesList.filter((activity) => {
-    if (!activity.date) return false;
-    const activityDate = new Date(activity.date);
-    return activityDate >= oneYearAgo;
-  });
-};
-
-/**
- * 只顯示近一年的活動
- */
-const activities123 = computed(() => {
-  return filterRecentActivities(allActivities.value); // ← 使用 allActivities
-});
+const availableActivityItemTypes = computed(
+  () => activityStore.allActivityItemTypes
+);
 
 // 根據選中的tab和篩選條件過濾活動
 const upcomingFiltered = computed(() => {
@@ -843,6 +837,7 @@ const filteredActivities = computed(() => {
 const initialize = async () => {
   loading.value = true;
   error.value = null;
+
   try {
     await activityStore.initialize();
     ElMessage.success("活動數據加載成功");
@@ -854,8 +849,11 @@ const initialize = async () => {
   }
 };
 
+const formatDateLong = (dateString) => {
+  return DateUtils.formatDateLong(dateString);
+};
+
 const getTag_ItemType = (item_type) => {
-  console.log("🚀 getTagItemType:", item_type);
   const typeMap = {
     ceremony: "warning",
     法會: "warning",
@@ -875,10 +873,17 @@ const getTag_ItemType = (item_type) => {
   return typeMap[item_type] || "ceremony";
 };
 
-const getLabel_ItemType = (item_type) => {
-  console.log("🚀 getItemTypeLabel:", item_type);
-  const labelMap = activityStore.getAllItemTypes();
-  return labelMap[item_type] || "法會";
+const getLable_ItemType = (item_type) => {
+  const labelMap = {
+    ceremony: "法會",
+    lecture: "講座",
+    meditation: "禪修",
+    festival: "節慶",
+    volunteer: "志工",
+    pudu: "普度",
+    other: "其他",
+  };
+  return labelMap[item_type] || item_type || "法會";
 };
 
 const handleSearch = () => {
@@ -908,21 +913,22 @@ const handleCurrentChange = (newPage) => {
   currentPage.value = newPage;
 };
 
-const handleShowUpdateParticipants = (activity) => {
+const showUpdateParticipants = (activity) => {
   selectedActivity.value = activity;
   newParticipants.value = activity.participants || 0;
   showParticipantsModal.value = true;
 };
 
-const handleEditActivity = (activity) => {
+const editActivity = (activity) => {
   // 處理 mock 數據的類型轉換
   editingActivity.value = {
     ...activity,
+    item_type: activity.item_type, // 確保 type 欄位存在
   };
   showEditModal.value = true;
 };
 
-const handleCompleteActivity = async (activityId) => {
+const completeActivity = async (activityId) => {
   try {
     await ElMessageBox.confirm("確定要標記此活動為已完成嗎？", "確認操作", {
       confirmButtonText: "確定",
@@ -945,7 +951,7 @@ const handleCompleteActivity = async (activityId) => {
   }
 };
 
-const handleDeleteActivity = async (activity) => {
+const deleteActivity = async (activity) => {
   try {
     await ElMessageBox.confirm(
       `確定要刪除活動 "${activity.name}" 嗎？此操作無法復原。`,
@@ -995,7 +1001,7 @@ const closeModal = () => {
   submitting.value = false;
 };
 
-const handleSubmitForm = async () => {
+const handleNewActivity = async () => {
   submitting.value = true;
 
   try {
@@ -1019,11 +1025,9 @@ const handleSubmitForm = async () => {
     }
 
     // 4. 準備提交數據（確保日期格式正確）
-    newActivity.date = new Date(newActivity.date).toISOString();
-
-    // 格式化日期時間
     const activityData = {
       ...newActivity,
+      date: newActivity.date ? `${newActivity.date}` : null,
     };
 
     const result = await activityStore.submitActivity(activityData);
@@ -1042,7 +1046,7 @@ const handleSubmitForm = async () => {
   }
 };
 
-const submitEditActivity = async () => {
+const handleEditActivity = async () => {
   if (!editingActivity.value) return;
 
   submitting.value = true;
@@ -1068,11 +1072,11 @@ const submitEditActivity = async () => {
     }
 
     // 4. 準備提交數據（確保日期格式正確）
-    editingActivity.date = new Date(editingActivity.date).toISOString();
-
-    // 格式化日期時間
     const activityData = {
       ...editingActivity.value,
+      date: editingActivity.value.date
+        ? `${editingActivity.value.date}`
+        : editingActivity.value.date,
     };
 
     const result = await activityStore.updateActivity(
@@ -1129,9 +1133,10 @@ const handleLoadMockData = async () => {
       description: mockData.description,
       date: mockData.date,
       location: mockData.location,
-      //participants: mockData.participants,
-      //organizer: mockData.organizer,
-      //state: mockData.state,
+      icon: mockData.icon || "🕯️",
+      participants: 0,
+      organizer: "",
+      state: "upcoming",
     });
 
     if (mockData) {
@@ -1260,7 +1265,7 @@ onMounted(() => {
 }
 
 .activity-desc {
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   color: #666;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1434,6 +1439,11 @@ onMounted(() => {
 :deep(.el-dialog__header) {
   padding: 1.5rem 1.5rem 1rem;
   border-bottom: 1px solid #eee;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 1.25rem;
+  color: #eee;
 }
 
 :deep(.el-dialog__body) {
