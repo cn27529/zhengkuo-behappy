@@ -3,7 +3,8 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { activityService } from "../services/activityService.js";
-import { baseService, getCurrentISOTime } from "../services/baseService.js";
+import { baseService } from "../services/baseService.js";
+import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_activities.json";
 
 export const useActivityStore = defineStore("activity", () => {
@@ -256,7 +257,7 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      const createISOTime = getCurrentISOTime();
+      const createISOTime = DateUtils.getCurrentISOTime();
       const activity = {
         id: Math.max(...allActivities.value.map((a) => a.id), 0) + 1,
         activityId: generateGitHash(createISOTime),

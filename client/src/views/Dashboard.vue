@@ -96,7 +96,7 @@ export default {
     onMounted(async () => {
       // 初始化数据
       try {
-        await activityStore.getAllActivities();
+        await activityStore.initialize();
       } catch (error) {
         console.error("初始化数据失败:", error);
       }

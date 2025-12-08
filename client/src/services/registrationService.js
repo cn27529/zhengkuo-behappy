@@ -1,13 +1,7 @@
 // src/services/registrationService.js
-import {
-  baseService,
-  getApiUrl,
-  getCurrentISOTime,
-} from "../services/baseService.js";
-import {
-  generateGitHash,
-  generateMultipleHashes,
-} from "../utils/generateGitHash.js";
+import { baseService, getApiUrl } from "../services/baseService.js";
+import { generateGitHash } from "../utils/generateGitHash.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 export class RegistrationService {
   // ========== 建構函式 ==========
@@ -36,13 +30,13 @@ export class RegistrationService {
 
   // ========== 生成表單 ID ==========
   generateFormId() {
-    const createISOTime = getCurrentISOTime();
+    const createISOTime = DateUtils.getCurrentISOTime();
     return generateGitHash(createISOTime);
   }
 
   // ========== CRUD 操作 ==========
   async createRegistration(registrationData) {
-    const createISOTime = getCurrentISOTime();
+    const createISOTime = DateUtils.getCurrentISOTime();
 
     if (baseService.mode !== "directus") {
       console.warn(

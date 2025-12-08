@@ -5,7 +5,8 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
-import { baseService, getCurrentISOTime } from "../services/baseService.js";
+import { baseService } from "../services/baseService.js";
+import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { usePageStateStore } from "./pageStateStore.js";
@@ -92,7 +93,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 獲取初始表單資料（深拷貝）
   const getInitialFormData = () => {
-    const createISOTime = getCurrentISOTime();
+    const createISOTime = DateUtils.getCurrentISOTime();
 
     // 聯絡人
     const myContact = {
@@ -786,7 +787,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     try {
-      const createISOTime = getCurrentISOTime();
+      const createISOTime = DateUtils.getCurrentISOTime();
       registrationForm.value.createdUser = getCurrentUser();
       registrationForm.value.formId = generateGitHash(createISOTime);
       registrationForm.value.createdAt = createISOTime;
