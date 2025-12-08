@@ -145,7 +145,7 @@ export const useActivityStore = defineStore("activity", () => {
   });
 
   /**
-   * 獲取所有活動類型
+   * 獲取己建立活動的所有類型
    */
   const allActivityItemTypes = computed(() => {
     const item_types = new Set();
@@ -158,6 +158,19 @@ export const useActivityStore = defineStore("activity", () => {
     console.log("🚀 所有活動類型:", item_types);
     return Array.from(item_types).sort();
   });
+
+  const getAllItemTypes = () => {
+    const item_type = {
+      ceremony: "法會",
+      lecture: "講座",
+      meditation: "禪修",
+      festival: "節慶",
+      volunteer: "志工",
+      pudu: "普度",
+      other: "其他",
+    };
+    return item_type;
+  };
 
   // ========== Actions - 方法 ==========
 
@@ -778,6 +791,7 @@ export const useActivityStore = defineStore("activity", () => {
     allActivityItemTypes,
 
     // Actions
+    getAllItemTypes,
     getAllActivities,
     submitActivity,
     updateActivityParticipants,

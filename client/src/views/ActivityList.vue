@@ -30,9 +30,9 @@
               style="min-width: 200px"
             >
               <el-option
-                v-for="item_type in availableActivityItemTypes"
+                v-for="item_type in getAllItemTypes"
                 :key="item_type"
-                :label="getItemTypeLabel(item_type)"
+                :label="getLabel_ItemType(item_type)"
                 :value="item_type"
               />
             </el-select>
@@ -67,7 +67,7 @@
       <div>selectedTab: {{ selectedTab }}</div>
       <div>selectedTypes: {{ selectedItemTypes }}</div>
       <div>所有活動數: {{ activities.length }}</div>
-      <div>活動類型: {{ availableActivityItemTypes }}</div>
+      <div>活動類型: {{ allActivityItemTypes }}</div>
     </div>
 
     <!-- 統計卡片 -->
@@ -184,8 +184,8 @@
             >
               <el-table-column label="類型" min-width="80" prop="activityId">
                 <template #default="{ row }">
-                  <el-tag :type="getTagItemType(row.item_type)" size="small">
-                    {{ getItemTypeLabel(row.item_type) }}
+                  <el-tag :type="getTag_ItemType(row.item_type)" size="small">
+                    {{ getLabel_ItemType(row.item_type) }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -204,9 +204,9 @@
               <el-table-column label="日期時間" min-width="150">
                 <template #default="{ row }">
                   <div class="date-info">
-                    <div>{{ formatDate(row.date) }}</div>
+                    <div>{{ DateUtils.formatDate(row.date) }}</div>
                     <div class="time">
-                      {{ formatTime(row.date) }}
+                      {{ DateUtils.formatTime(row.date) }}
                     </div>
                   </div>
                 </template>
@@ -344,8 +344,8 @@
             >
               <el-table-column label="類型" min-width="80" prop="activityId">
                 <template #default="{ row }">
-                  <el-tag :type="getTagItemType(row.item_type)" size="small">
-                    {{ getItemTypeLabel(row.item_type) }}
+                  <el-tag :type="getTag_ItemType(row.item_type)" size="small">
+                    {{ getLabel_ItemType(row.item_type) }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -364,9 +364,9 @@
               <el-table-column label="日期時間" min-width="150">
                 <template #default="{ row }">
                   <div class="date-info">
-                    <div>{{ formatDate(row.date) }}</div>
+                    <div>{{ DateUtils.formatDate(row.date) }}</div>
                     <div class="time">
-                      {{ formatTime(row.date) }}
+                      {{ DateUtils.formatTime(row.date) }}
                     </div>
                   </div>
                 </template>
@@ -458,9 +458,9 @@
             style="width: 100%"
           >
             <el-option
-              v-for="item_type in geAllItemTypes()"
+              v-for="item_type in getAllItemTypes"
               :key="item_type"
-              :label="getItemTypeLabel(item_type)"
+              :label="getLabel_ItemType(item_type)"
               :value="item_type"
             />
           </el-select>
@@ -555,9 +555,9 @@
             style="width: 100%"
           >
             <el-option
-              v-for="item_type in availableActivityItemTypes"
+              v-for="item_type in getAllItemTypes"
               :key="item_type"
-              :label="getItemTypeLabel(item_type)"
+              :label="getLabel_ItemType(item_type)"
               :value="item_type"
             />
           </el-select>
@@ -674,6 +674,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
 import { useActivityStore } from "../stores/activityStore.js";
 import { authService } from "../services/authService.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 const activityStore = useActivityStore();
 
@@ -735,9 +736,8 @@ const activities = computed(() => activityStore.activities); // 已經是近一�
 const upcomingActivities = computed(() => activityStore.upcomingActivities);
 const completedActivities = computed(() => activityStore.completedActivities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
-const availableActivityItemTypes = computed(
-  () => activityStore.allActivityItemTypes
-);
+const allActivityItemTypes = computed(() => activityStore.allActivityItemTypes);
+const getAllItemTypes = computed(() => activityStore.getAllItemTypes);
 
 /**
  * 計算一年前的日期
@@ -843,7 +843,6 @@ const filteredActivities = computed(() => {
 const initialize = async () => {
   loading.value = true;
   error.value = null;
-
   try {
     await activityStore.initialize();
     ElMessage.success("活動數據加載成功");
@@ -855,39 +854,8 @@ const initialize = async () => {
   }
 };
 
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("zh-TW", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
-
-const formatTime = (dateString) => {
-  if (!dateString) return "-";
-  const date = new Date(dateString);
-  return date.toLocaleTimeString("zh-TW", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-const geAllItemTypes = () => {
-  const item_type = {
-    ceremony: "法會",
-    lecture: "講座",
-    meditation: "禪修",
-    festival: "節慶",
-    volunteer: "志工",
-    pudu: "普度",
-    other: "其他",
-  };
-  return item_type;
-};
-
-const getTagItemType = (item_type) => {
+const getTag_ItemType = (item_type) => {
+  console.log("🚀 getTagItemType:", item_type);
   const typeMap = {
     ceremony: "warning",
     法會: "warning",
@@ -907,17 +875,10 @@ const getTagItemType = (item_type) => {
   return typeMap[item_type] || "ceremony";
 };
 
-const getItemTypeLabel = (item_type) => {
-  const labelMap = {
-    ceremony: "法會",
-    lecture: "講座",
-    meditation: "禪修",
-    festival: "節慶",
-    volunteer: "志工",
-    pudu: "普度",
-    other: "其他",
-  };
-  return labelMap[item_type] || item_type || "法會";
+const getLabel_ItemType = (item_type) => {
+  console.log("🚀 getItemTypeLabel:", item_type);
+  const labelMap = activityStore.getAllItemTypes();
+  return labelMap[item_type] || "法會";
 };
 
 const handleSearch = () => {
