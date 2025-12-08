@@ -4,57 +4,64 @@
     <div class="page-header">
       <h2>登記儀表板</h2>
       <p style="display: none">查看登記情况和统计数据</p>
-      <div style="display: none" class="total-participants">
-        總參與人次:？人
+      <div style="" class="total-participants">
+        總參與人次&nbsp;
+        <AnimatedNumber
+          :value="totalParticipants"
+          :duration="2500"
+          separator=""
+          class=""
+        />
       </div>
     </div>
 
-    <!-- 活动状态统计 -->
-    <div class="stats-grid">
-      <div class="status-card upcoming">
-        <div class="status-icon">⏳</div>
-        <div class="status-info">
-          <h3>即將到來</h3>
-          <div class="status-count">{{ upcomingActivities.length }}</div>
-          <div class="status-label">場活動</div>
-        </div>
-      </div>
-      <div class="status-card completed">
-        <div class="status-icon">✅</div>
-        <div class="status-info">
-          <h3>已完成</h3>
-          <div class="status-count">{{ completedActivities.length }}</div>
-          <div class="status-label">場活動</div>
-        </div>
-      </div>
-      <div class="status-card all-participants">
-        <div class="status-icon">👥</div>
-        <div class="status-info">
-          <h3>總參與人次</h3>
-          <div class="status-count">
-            <AnimatedNumber
-              :value="totalParticipants"
-              :duration="10000"
-              separator=""
-              class=""
-            />
+    <!-- 活動狀態統計 -->
+    <el-row :gutter="24" class="stats-grid">
+      <el-col :xs="24" :sm="12" :md="12" :lg="12">
+        <el-card shadow="hover" class="status-card upcoming">
+          <div class="status-icon">⏳</div>
+          <div class="status-info">
+            <h3>即將到來</h3>
+            <div class="status-count">{{ upcomingActivities.length }}</div>
+            <div class="status-label">場活動</div>
           </div>
-          <div class="status-label">人次</div>
-        </div>
-      </div>
-    </div>
-    <!-- 活动统计卡片 -->
-    <div class="stats-grid">
-      <div v-for="activity in activities" :key="activity.id" class="stat-card">
-        <div class="stat-icon">{{ activity.icon }}</div>
-        <div class="stat-info">
-          <h3>{{ activity.name }}</h3>
-          <div class="stat-number">{{ activity.participants }}</div>
-          <div class="stat-label">報名人次</div>
-          <div class="activity-date">{{ formatDate(activity.date) }}</div>
-        </div>
-      </div>
-    </div>
+        </el-card>
+      </el-col>
+
+      <el-col :xs="24" :sm="12" :md="12" :lg="12">
+        <el-card shadow="hover" class="status-card completed">
+          <div class="status-icon">✅</div>
+          <div class="status-info">
+            <h3>已完成</h3>
+            <div class="status-count">{{ completedActivities.length }}</div>
+            <div class="status-label">場活動</div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- 活動統計卡片 -->
+    <el-row :gutter="24" class="stats-grid">
+      <el-col
+        v-for="activity in activities"
+        :key="activity.id"
+        :xs="24"
+        :sm="12"
+        :md="8"
+        :lg="6"
+        :xl="6"
+      >
+        <el-card shadow="hover" class="stat-card">
+          <div class="stat-icon">{{ activity.icon }}</div>
+          <div class="stat-info">
+            <h3>{{ activity.name }}</h3>
+            <div class="stat-number">{{ activity.participants }}</div>
+            <div class="stat-label">報名人次</div>
+            <div class="activity-date">{{ formatDate(activity.date) }}</div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </main>
 </template>
 
@@ -65,6 +72,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { useAuthStore } from "../stores/authStore.js";
 import { useActivityStore } from "../stores/activityStore.js";
 import AnimatedNumber from "../components/AnimatedNumber.vue";
+import { DateUtils } from "../utils/dateUtils.js";
 
 export default {
   name: "Dashboard",
@@ -86,11 +94,7 @@ export default {
     );
 
     const formatDate = (dateString) => {
-      return new Date(dateString).toLocaleDateString("zh-TW", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
+      return DateUtils.formatDate(dateString);
     };
 
     onMounted(async () => {
@@ -118,28 +122,33 @@ export default {
 </script>
 
 <style scoped>
+.el-col {
+  margin-bottom: 24px; /* 增加卡片之間的垂直間距 */
+}
+
 /* 统计卡片网格 */
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .stat-card {
-  background: white;
   border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border-left: 4px solid var(--primary-color);
+  height: 100%;
 }
 
 .stat-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card :deep(.el-card__body) {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
 }
 
 .stat-icon {
@@ -262,13 +271,11 @@ export default {
 }
 
 .status-card {
-  background: white;
   border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   transition: transform 0.3s ease;
+  height: 100%;
 }
 
 .status-card:hover {
@@ -279,8 +286,20 @@ export default {
   border-left: 4px solid #ffa726;
 }
 
+.status-card.upcoming :deep(.el-card__body) {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+}
+
 .status-card.completed {
   border-left: 4px solid #66bb6a;
+}
+
+.status-card.completed :deep(.el-card__body) {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
 }
 
 .status-card.all-participants {
