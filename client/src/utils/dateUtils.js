@@ -30,10 +30,12 @@ export const formatDate = (dateString) => {
   if (!dateString) return "-";
   try {
     const date = new Date(dateString);
-    return date.toLocaleDateString("zh-TW", {
+    return date.toLocaleString("zh-TW", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
+      //hour: "2-digit",
+      //minute: "2-digit",
     });
   } catch {
     return dateString;
@@ -49,14 +51,28 @@ export const formatDateLong = (dateString) => {
   if (!dateString) return "-";
   try {
     const date = new Date(dateString);
-    return date.toLocaleDateString("zh-TW", {
+    return date.toLocaleString("zh-TW", {
       year: "numeric",
-      month: "long",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch {
     return dateString;
   }
+
+  // if (!dateString) return "-";
+  // try {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString("zh-TW", {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //   });
+  // } catch {
+  //   return dateString;
+  // }
 };
 
 /**
