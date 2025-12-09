@@ -1385,7 +1385,7 @@ onMounted(() => {
 }
 
 :deep(.el-tabs__content) {
-  padding: 1.5rem;
+  padding: 1.5rem 0rem 0rem 0rem;
 }
 
 /* 對話框樣式優化 */
