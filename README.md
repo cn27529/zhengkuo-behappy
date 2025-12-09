@@ -2,7 +2,7 @@
 A zhengkuo-behappy project for client and server apps
 
 ## frontent
-/client 忻福登記系統
+/client 消災超度登記系統
 
 ## backend
 /server 資料串接API
@@ -19,7 +19,7 @@ tree -L 2 -I "node_modules|.git|dist" ./server > server-tree.txt
 git checkout zk-client-netlify
 
 ## 2. 重設為與 v0-13 相同的內容
-git reset --hard zk-client-v1-1123
+git reset --hard zk-client-v2-1210
 
 ## 3. 推送覆蓋遠端（⚠️小心使用）
 git push origin zk-client-netlify --force
