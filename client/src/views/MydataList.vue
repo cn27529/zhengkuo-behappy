@@ -102,7 +102,7 @@ export default {
           ...this.newForm,
           ...randomData,
         };
-        
+
         const result = await mydataService.createMydata(this.newForm);
 
         if (result.success) {
@@ -112,7 +112,11 @@ export default {
           // 重新載入列表
           await this.loadMydata();
           //alert("創建成功！");
-          ElMessage.success(` ${this.newForm.formName} 己創建成功！${JSON.stringify(this.newForm.contact)}`);
+          ElMessage.success(
+            ` ${this.newForm.formName} 己創建成功！${JSON.stringify(
+              this.newForm.contact
+            )}`
+          );
         } else {
           //alert(`創建失敗: ${result.message}`);
           ElMessage.error(`創建失敗: ${result.message}`);
@@ -131,16 +135,15 @@ export default {
       //if (!confirm("確定要刪除這個項目嗎？")) return;
 
       await ElMessageBox.confirm(
-          '確定要刪除這個項目嗎？此操作無法撤銷。',
-          '確認刪除',
-          {
-            confirmButtonText: '確定刪除',
-            cancelButtonText: '取消',
-            type: 'warning',
-            center: true
-          }
-        )
-
+        "確定要刪除這個項目嗎？此操作無法撤銷。",
+        "確認刪除",
+        {
+          confirmButtonText: "確定刪除",
+          cancelButtonText: "取消",
+          type: "warning",
+          center: true,
+        }
+      );
 
       this.deletingId = id;
 
@@ -189,8 +192,4 @@ export default {
   padding: 1rem;
   border-radius: 4px;
 }
-
-
-
-
 </style>

@@ -72,7 +72,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "./stores/authStore.js";
 import { useMenuStore } from "./stores/menu.js";
@@ -82,190 +82,162 @@ import DevTools from "./components/DevTools.vue";
 import { usePageStateStore } from "./stores/pageStateStore.js";
 import { ElMessage } from "element-plus";
 
-export default {
-  name: "App",
-  components: {
-    DevTools,
-  },
-  setup() {
-    const router = useRouter();
-    const route = useRoute();
-    const authStore = useAuthStore();
-    const menuStore = useMenuStore();
-    const pageStateStore = usePageStateStore();
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
+const menuStore = useMenuStore();
+const pageStateStore = usePageStateStore();
 
-    const myPageState = computed(() =>
-      pageStateStore.loadPageState("registration")
-    );
+//const appTitle = ref(appConfig.title);
+const appTitle = computed(() => appConfig.title);
 
-    const menuPosition = ref(sessionStorage.getItem("menuPosition") || "left");
+const myPageState = computed(() =>
+  pageStateStore.loadPageState("registration")
+);
 
-    // 顶部导航栏显示控制：在非打印页面显示，將三個 UI 可見性預設為 false，等待子組件載入完成後再設定
-    const showHeader = ref(false);
+const menuPosition = ref(sessionStorage.getItem("menuPosition") || "left");
 
-    // 侧边菜单栏显示控制：在非打印页面且非登录/登出页面显示
-    const showSidebar = ref(false);
+// 顶部导航栏显示控制：在非打印页面显示，將三個 UI 可見性預設為 false，等待子組件載入完成後再設定
+const showHeader = ref(false);
 
-    // 底部显示控制：在非打印页面显示
-    const showFooter = ref(false);
+// 侧边菜单栏显示控制：在非打印页面且非登录/登出页面显示
+const showSidebar = ref(false);
 
-    // layoutReady: 在子組件完成渲染（nextTick）後才變 true，避免先顯示後隱藏的閃爍
-    const layoutReady = ref(false);
+// 底部显示控制：在非打印页面显示
+const showFooter = ref(false);
 
-    const userDisplayName = ref("");
+// layoutReady: 在子組件完成渲染（nextTick）後才變 true，避免先顯示後隱藏的閃爍
+const layoutReady = ref(false);
 
-    // 計算是否為列印路由（供判斷用）
-    const isPrintRoute = computed(
-      () => route.path && route.path.includes("print")
-    );
+const userDisplayName = ref("");
 
-    // 依賴 showHeader 的顯示條件（確保在尚未載入時不會顯示）
-    const showUserInfo = computed(() => {
-      return (
-        showHeader.value &&
-        !isPrintRoute.value &&
-        route.path !== "/login" &&
-        route.path !== "/logout"
-      );
-    });
+// 計算是否為列印路由（供判斷用）
+const isPrintRoute = computed(() => route.path && route.path.includes("print"));
 
-    const showLogoutLink = computed(() => {
-      return (
-        showHeader.value &&
-        !isPrintRoute.value &&
-        route.path !== "/login" &&
-        route.path !== "/logout"
-      );
-    });
+// 依賴 showHeader 的顯示條件（確保在尚未載入時不會顯示）
+const showUserInfo = computed(() => {
+  return (
+    showHeader.value &&
+    !isPrintRoute.value &&
+    route.path !== "/login" &&
+    route.path !== "/logout"
+  );
+});
 
-    const availableMenuItems = computed(() => {
-      return menuStore.availableMenuItems;
-    });
+const showLogoutLink = computed(() => {
+  return (
+    showHeader.value &&
+    !isPrintRoute.value &&
+    route.path !== "/login" &&
+    route.path !== "/logout"
+  );
+});
 
-    // 方法
-    const isMenuActive = (menuItem) => {
-      return menuStore.activeMenuId === menuItem.id;
-    };
+const availableMenuItems = computed(() => {
+  return menuStore.availableMenuItems;
+});
 
-    const handleMenuClick = (menuItem) => {
-      menuStore.setActiveMenu(menuItem.id);
-    };
-
-    // 计算顶部导航栏、侧边菜单栏、底部的预期可见性（不直接改变 ref，供 updateLayoutVisibility 使用）
-    const computeVisibility = () => {
-      const isPrint = route.path && route.path.includes("print");
-      return {
-        header: !isPrint, // 顶部导航栏：非打印页面显示
-        sidebar:
-          !isPrint && route.path !== "/login" && route.path !== "/logout", // 侧边菜单栏：非打印页面且非登录/登出页面显示
-        footer: !isPrint, // 底部：非打印页面显示
-      };
-    };
-
-    // 在 nextTick 后更新三个 UI 状态（确保子组件已完成 mounted / DOM 已更新）
-    // 根据路由条件控制顶部导航栏、侧边菜单栏、底部的显示/隐藏
-    const updateLayoutVisibility = async () => {
-      await nextTick();
-      const v = computeVisibility();
-      showHeader.value = v.header; // 更新顶部导航栏显示状态
-      showSidebar.value = v.sidebar; // 更新侧边菜单栏显示状态
-      showFooter.value = v.footer; // 更新底部显示状态
-      // 完成更新后标记 layout 已准备好，template 才会显示 header/sidebar/footer
-      layoutReady.value = true;
-    };
-
-    // 監聽路由變化以更新 menu active
-    watch(
-      () => route.path,
-      (newPath) => {
-        menuStore.setActiveMenuByPath(newPath);
-      }
-    );
-
-    // 每次路由切換開始時，先把 layoutReady 關閉，避免中途顯示舊 layout
-    router.beforeEach((to, from, next) => {
-      layoutReady.value = false;
-      next();
-    });
-
-    // 當 menuPosition 改變時，同步到 sessionStorage
-    watch(menuPosition, (val) => {
-      try {
-        sessionStorage.setItem("menuPosition", val);
-      } catch (e) {
-        // ignore quota errors
-      }
-    });
-
-    // 在组件挂载前初始化认证状态
-    const initializeApp = async () => {
-      // // 确保认证状态已恢复
-      // if (sessionStorage.getItem("auth-user")) {
-      //   authStore.initializeAuth();
-      // }
-
-      // // 检查当前路由是否需要重定向
-      // if (route.meta.requiresAuth && !authStore.isAuthenticated) {
-      //   await router.push("/login");
-      //   return;
-      // }
-
-      // if (route.meta.requiresGuest && authStore.isAuthenticated) {
-      //   await router.push("/");
-      //   return;
-      // }
-
-      // 初始化菜单
-      menuStore.initializeActiveMenu();
-      // 更新布局可见性
-      await updateLayoutVisibility();
-    };
-
-    // 监听 authStore.user 的变化
-    watch(
-      () => authStore.user,
-      (newUser) => {
-        userDisplayName.value = newUser ? newUser.displayName : "訪客";
-      },
-      { immediate: true }
-    );
-
-    onMounted(() => {
-      initializeApp();
-      // 初始化菜单
-      menuStore.initializeActiveMenu();
-
-      // 修改用户昵称的计算方式
-      userDisplayName.value = authStore.user
-        ? authStore.user.displayName
-        : "訪客";
-
-      // 初始載入時，在 nextTick 後設定 header/sidebar/footer
-      updateLayoutVisibility();
-
-      // 每次路由切換後，在 nextTick 後更新（確保 router-view 的子組件已渲染完成）
-      router.afterEach(() => {
-        updateLayoutVisibility();
-      });
-    });
-
-    return {
-      menuPosition,
-      showSidebar,
-      showHeader,
-      showFooter,
-      layoutReady,
-      showUserInfo,
-      showLogoutLink,
-      availableMenuItems,
-      isMenuActive,
-      handleMenuClick,
-      appTitle: appConfig.title,
-      userDisplayName,
-      myPageState,
-    };
-  },
+// 方法
+const isMenuActive = (menuItem) => {
+  return menuStore.activeMenuId === menuItem.id;
 };
+
+const handleMenuClick = (menuItem) => {
+  menuStore.setActiveMenu(menuItem.id);
+};
+
+// 计算顶部导航栏、侧边菜单栏、底部的预期可见性（不直接改变 ref，供 updateLayoutVisibility 使用）
+const computeVisibility = () => {
+  const isPrint = route.path && route.path.includes("print");
+  return {
+    header: !isPrint, // 顶部导航栏：非打印页面显示
+    sidebar: !isPrint && route.path !== "/login" && route.path !== "/logout", // 侧边菜单栏：非打印页面且非登录/登出页面显示
+    footer: !isPrint, // 底部：非打印页面显示
+  };
+};
+
+// 在 nextTick 后更新三个 UI 状态（确保子组件已完成 mounted / DOM 已更新）
+// 根据路由条件控制顶部导航栏、侧边菜单栏、底部的显示/隐藏
+const updateLayoutVisibility = async () => {
+  await nextTick();
+  const v = computeVisibility();
+  showHeader.value = v.header; // 更新顶部导航栏显示状态
+  showSidebar.value = v.sidebar; // 更新侧边菜单栏显示状态
+  showFooter.value = v.footer; // 更新底部显示状态
+  // 完成更新后标记 layout 已准备好，template 才会显示 header/sidebar/footer
+  layoutReady.value = true;
+};
+
+// 監聽路由變化以更新 menu active
+watch(
+  () => route.path,
+  (newPath) => {
+    menuStore.setActiveMenuByPath(newPath);
+  }
+);
+
+// 每次路由切換開始時，先把 layoutReady 關閉，避免中途顯示舊 layout
+router.beforeEach((to, from, next) => {
+  layoutReady.value = false;
+  next();
+});
+
+// 當 menuPosition 改變時，同步到 sessionStorage
+watch(menuPosition, (val) => {
+  try {
+    sessionStorage.setItem("menuPosition", val);
+  } catch (e) {}
+});
+
+// 监听 authStore.user 的变化
+watch(
+  () => authStore.user,
+  (newUser) => {
+    userDisplayName.value = newUser ? newUser.displayName : "訪客";
+  },
+  { immediate: true }
+);
+
+// 在组件挂载前初始化认证状态
+const initializeApp = async () => {
+  // // 确保认证状态已恢复
+  // if (sessionStorage.getItem("auth-user")) {
+  //   authStore.initializeAuth();
+  // }
+
+  // // 检查当前路由是否需要重定向
+  // if (route.meta.requiresAuth && !authStore.isAuthenticated) {
+  //   await router.push("/login");
+  //   return;
+  // }
+
+  // if (route.meta.requiresGuest && authStore.isAuthenticated) {
+  //   await router.push("/");
+  //   return;
+  // }
+
+  // 初始化菜单
+  menuStore.initializeActiveMenu();
+  // 更新布局可见性
+  await updateLayoutVisibility();
+};
+
+onMounted(() => {
+  initializeApp();
+  // 初始化菜单
+  menuStore.initializeActiveMenu();
+
+  // 修改用户昵称的计算方式
+  userDisplayName.value = authStore.user ? authStore.user.displayName : "訪客";
+
+  // 初始載入時，在 nextTick 後設定 header/sidebar/footer
+  updateLayoutVisibility();
+
+  // 每次路由切換後，在 nextTick 後更新（確保 router-view 的子組件已渲染完成）
+  router.afterEach(() => {
+    updateLayoutVisibility();
+  });
+});
 
 // 增加粘性标题时的样式
 // window.addEventListener('scroll', function() {

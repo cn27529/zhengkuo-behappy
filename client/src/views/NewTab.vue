@@ -6,11 +6,7 @@
     </header>
 
     <div class="methods-grid">
-      <div 
-        v-for="method in methods" 
-        :key="method.id" 
-        class="method-card"
-      >
+      <div v-for="method in methods" :key="method.id" class="method-card">
         <h3 class="method-title">
           <span class="method-icon">{{ method.icon }}</span>
           {{ method.title }}
@@ -19,10 +15,7 @@
         <div class="code-block">
           <pre><code>{{ method.code }}</code></pre>
         </div>
-        <button 
-          class="demo-btn" 
-          @click="executeMethod(method.id)"
-        >
+        <button class="demo-btn" @click="executeMethod(method.id)">
           測試此方法
         </button>
       </div>
@@ -31,38 +24,26 @@
     <div class="demo-section">
       <h2 class="demo-title">自定義測試</h2>
       <div class="demo-controls">
-        <input 
-          v-model="customUrl" 
-          type="text" 
-          placeholder="輸入網址 (例如: https://example.com)" 
+        <input
+          v-model="customUrl"
+          type="text"
+          placeholder="輸入網址 (例如: https://example.com)"
           class="url-input"
-        >
-        <button 
-          class="demo-btn" 
-          @click="openCustomUrl('_blank')"
-        >
+        />
+        <button class="demo-btn" @click="openCustomUrl('_blank')">
           開啟自定義網址
         </button>
-        <button 
-          class="demo-btn secondary" 
-          @click="openCustomUrl('_self')"
-        >
+        <button class="demo-btn secondary" @click="openCustomUrl('_self')">
           在當前分頁開啟
         </button>
       </div>
       <div class="options">
         <label class="option">
-          <input 
-            v-model="options.noopener" 
-            type="checkbox" 
-          >
+          <input v-model="options.noopener" type="checkbox" />
           添加 noopener
         </label>
         <label class="option">
-          <input 
-            v-model="options.noreferrer" 
-            type="checkbox" 
-          >
+          <input v-model="options.noreferrer" type="checkbox" />
           添加 noreferrer
         </label>
       </div>
@@ -72,31 +53,37 @@
       <h2>注意事項</h2>
       <ul>
         <li>瀏覽器可能會阻擋彈出視窗，請允許此網站開啟新分頁</li>
-        <li>使用 <code>noopener</code> 可增強安全性，防止新分頁訪問原始分頁的 window 對象</li>
+        <li>
+          使用 <code>noopener</code> 可增強安全性，防止新分頁訪問原始分頁的
+          window 對象
+        </li>
         <li>使用 <code>noreferrer</code> 可防止發送 Referer header</li>
-        <li>現代瀏覽器通常會自動為 <code>target="_blank"</code> 添加 <code>rel="noopener"</code></li>
+        <li>
+          現代瀏覽器通常會自動為 <code>target="_blank"</code> 添加
+          <code>rel="noopener"</code>
+        </li>
       </ul>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive } from "vue";
 
 // 響應式數據
-const customUrl = ref('https://example.com')
+const customUrl = ref("https://example.com");
 const options = reactive({
   noopener: true,
-  noreferrer: false
-})
+  noreferrer: false,
+});
 
 // 方法定義
 const methods = ref([
   {
-    id: 'windowOpen',
-    icon: '🪟',
-    title: 'window.open() 方法',
-    description: '最常用的開啟新分頁方法，可自定義視窗特性',
+    id: "windowOpen",
+    icon: "🪟",
+    title: "window.open() 方法",
+    description: "最常用的開啟新分頁方法，可自定義視窗特性",
     code: `// 基本用法
 window.open('https://example.com', '_blank');
 
@@ -105,13 +92,13 @@ window.open(
   'https://example.com', 
   '_blank', 
   'noopener,noreferrer'
-);`
+);`,
   },
   {
-    id: 'anchorTag',
-    icon: '🔗',
-    title: 'Anchor 標籤方法',
-    description: '使用 HTML 連結元素開啟新分頁',
+    id: "anchorTag",
+    icon: "🔗",
+    title: "Anchor 標籤方法",
+    description: "使用 HTML 連結元素開啟新分頁",
     code: `// 動態創建連結元素
 const link = document.createElement('a');
 link.href = 'https://example.com';
@@ -120,13 +107,13 @@ link.rel = 'noopener noreferrer';
 link.click();
 
 // 或者在模板中使用
-// <a href="https://example.com" target="_blank" rel="noopener">連結</a>`
+// <a href="https://example.com" target="_blank" rel="noopener">連結</a>`,
   },
   {
-    id: 'formSubmit',
-    icon: '📝',
-    title: '表單提交方法',
-    description: '通過表單提交在新分頁中開啟 URL',
+    id: "formSubmit",
+    icon: "📝",
+    title: "表單提交方法",
+    description: "通過表單提交在新分頁中開啟 URL",
     code: `// 動態創建表單
 const form = document.createElement('form');
 form.method = 'GET';
@@ -134,80 +121,80 @@ form.action = 'https://example.com';
 form.target = '_blank';
 document.body.appendChild(form);
 form.submit();
-document.body.removeChild(form);`
+document.body.removeChild(form);`,
   },
   {
-    id: 'locationHref',
-    icon: '📍',
-    title: 'window.location 方法',
-    description: '在當前分頁或新分頁中導航',
+    id: "locationHref",
+    icon: "📍",
+    title: "window.location 方法",
+    description: "在當前分頁或新分頁中導航",
     code: `// 當前分頁導航
 window.location.href = 'https://example.com';
 
-// 無法直接在新分頁中開啟，但可配合其他方法使用`
-  }
-])
+// 無法直接在新分頁中開啟，但可配合其他方法使用`,
+  },
+]);
 
 // 方法執行函數
 const executeMethod = (methodId) => {
-  const url = 'https://example.com'
-  
+  const url = "https://example.com";
+
   switch (methodId) {
-    case 'windowOpen':
-      window.open(url, '_blank', 'noopener,noreferrer')
-      break
-    case 'anchorTag':
-      const link = document.createElement('a')
-      link.href = url
-      link.target = '_blank'
-      link.rel = 'noopener noreferrer'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      break
-    case 'formSubmit':
-      const form = document.createElement('form')
-      form.method = 'GET'
-      form.action = url
-      form.target = '_blank'
-      document.body.appendChild(form)
-      form.submit()
-      document.body.removeChild(form)
-      break
-    case 'locationHref':
-      window.location.href = url
-      break
+    case "windowOpen":
+      window.open(url, "_blank", "noopener,noreferrer");
+      break;
+    case "anchorTag":
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      break;
+    case "formSubmit":
+      const form = document.createElement("form");
+      form.method = "GET";
+      form.action = url;
+      form.target = "_blank";
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+      break;
+    case "locationHref":
+      window.location.href = url;
+      break;
   }
-}
+};
 
 // 自定義 URL 開啟函數
 const openCustomUrl = (target) => {
   if (!customUrl.value) {
-    alert('請輸入有效的網址')
-    return
+    alert("請輸入有效的網址");
+    return;
   }
 
   // 驗證 URL 格式
   try {
-    new URL(customUrl.value)
+    new URL(customUrl.value);
   } catch {
-    alert('請輸入有效的網址格式 (例如: https://example.com)')
-    return
+    alert("請輸入有效的網址格式 (例如: https://example.com)");
+    return;
   }
 
   // 構建 rel 屬性
-  let rel = ''
-  if (options.noopener) rel += 'noopener '
-  if (options.noreferrer) rel += 'noreferrer'
-  rel = rel.trim()
+  let rel = "";
+  if (options.noopener) rel += "noopener ";
+  if (options.noreferrer) rel += "noreferrer";
+  rel = rel.trim();
 
   // 開啟 URL
-  if (target === '_blank') {
-    window.open(customUrl.value, '_blank', rel)
+  if (target === "_blank") {
+    window.open(customUrl.value, "_blank", rel);
   } else {
-    window.location.href = customUrl.value
+    window.location.href = customUrl.value;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -215,7 +202,7 @@ const openCustomUrl = (target) => {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .container {
@@ -290,7 +277,7 @@ h1 {
   color: #f8f8f2;
   padding: 15px;
   border-radius: 8px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   margin-bottom: 20px;
   overflow-x: auto;
   font-size: 0.9rem;
@@ -411,26 +398,26 @@ code {
   background: #f1f1f1;
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 @media (max-width: 768px) {
   .container {
     padding: 20px;
   }
-  
+
   h1 {
     font-size: 2rem;
   }
-  
+
   .methods-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .demo-controls {
     flex-direction: column;
   }
-  
+
   .url-input {
     min-width: auto;
   }

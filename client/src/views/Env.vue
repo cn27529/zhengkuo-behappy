@@ -1,33 +1,23 @@
 <!-- src/views/Placeholder.vue -->
 <template>
   <div class="main-content">
-      <div class="page-header">
-        <h2>環境檢查</h2>
-      </div>
-      <div class="form-header">
-      </div>
-      <div class="form-content">
-        <div class="form-section">
-          <EnvForm />
-        </div>
+    <div class="page-header">
+      <h2>環境檢查</h2>
+    </div>
+    <div class="form-header"></div>
+    <div class="form-content">
+      <div class="form-section">
+        <EnvForm />
       </div>
     </div>
+  </div>
 </template>
 
-<script>
-import EnvForm from "../components/EnvTest.vue"
-
-export default {
-  name: 'Env',
-  components: {
-    EnvForm
-  }
-}
+<script setup>
+import EnvForm from "../components/EnvTest.vue";
 </script>
 
 <style scoped>
-
-
 .placeholder-icon {
   font-size: 4rem;
   margin-bottom: 1.5rem;

@@ -70,113 +70,95 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive, onMounted } from "vue";
 import { useAuthStore } from "../stores/authStore.js";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 
-export default {
-  name: "LoginForm",
-  setup() {
-    const authStore = useAuthStore();
-    const router = useRouter();
-    const rememberMe = ref(false);
+const authStore = useAuthStore();
+const router = useRouter();
+const rememberMe = ref(false);
 
-    const showDeviceDialog = ref(false);
+const showDeviceDialog = ref(false);
 
-    // 確認對話框
-    const confirmDeviceDialog = () => {
-      showDeviceDialog.value = false;
-      // 可選：將用戶選擇存儲在本地，避免每次都要顯示
-      //sessionStorage.setItem('device-warning-confirmed', 'true');
-    };
-
-    const loginForm = reactive({
-      username: "",
-      password: "",
-    });
-
-    //const success = ref(false)
-    const loading = ref(false);
-
-    const validateForm = () => {
-      let isValid = true;
-
-      // 重置错误信息
-      //Object.keys(errors).forEach(key => errors[key] = '')
-
-      // 用户名验证
-      if (!loginForm.username.trim()) {
-        ElMessage.error("请输入用户名");
-        isValid = false;
-      } else if (loginForm.username.length < 3) {
-        ElMessage.error("用户名至少需要3个字符");
-        isValid = false;
-      }
-
-      // 密码验证
-      if (!loginForm.password) {
-        ElMessage.error("请输入密码");
-        isValid = false;
-      } else if (loginForm.password.length < 6) {
-        ElMessage.error("密码至少需要6个字符");
-        isValid = false;
-      }
-
-      return isValid;
-    };
-
-    const handleLogin = async () => {
-      if (!validateForm()) return;
-
-      loading.value = true;
-
-      try {
-        await authStore.login(loginForm.username, loginForm.password);
-
-        ElMessage.success("登录成功！正在跳转至主页...👍👍");
-
-        // 模拟跳转延迟
-        setTimeout(() => {
-          //success.value = false
-          router.push("/dashboard");
-        }, 1500);
-      } catch (error) {
-        //alert(error.message);
-        ElMessage.error("登入失敗: " + error.message);
-        console.error("登入失敗:", error);
-      } finally {
-        loading.value = false;
-      }
-    };
-
-    onMounted(() => {
-      // // 檢查用戶是否已經確認過提示
-      // const hasConfirmed = sessionStorage.getItem('device-warning-confirmed');
-
-      if (
-        authStore.isMobileDevice() ||
-        authStore.detectDeviceType() === "mobile"
-      ) {
-        // 延迟显示，确保页面加载完成
-        setTimeout(() => {
-          showDeviceDialog.value = true;
-        }, 800);
-      }
-    });
-
-    return {
-      loginForm,
-      //success,
-      loading,
-      handleLogin,
-      rememberMe,
-      showDeviceDialog,
-      confirmDeviceDialog,
-    };
-  },
+// 確認對話框
+const confirmDeviceDialog = () => {
+  showDeviceDialog.value = false;
+  // 可選：將用戶選擇存儲在本地，避免每次都要顯示
+  //sessionStorage.setItem('device-warning-confirmed', 'true');
 };
+
+const loginForm = reactive({
+  username: "",
+  password: "",
+});
+
+//const success = ref(false)
+const loading = ref(false);
+
+const validateForm = () => {
+  let isValid = true;
+
+  // 重置错误信息
+  //Object.keys(errors).forEach(key => errors[key] = '')
+
+  // 用户名验证
+  if (!loginForm.username.trim()) {
+    ElMessage.error("请输入用户名");
+    isValid = false;
+  } else if (loginForm.username.length < 3) {
+    ElMessage.error("用户名至少需要3个字符");
+    isValid = false;
+  }
+
+  // 密码验证
+  if (!loginForm.password) {
+    ElMessage.error("请输入密码");
+    isValid = false;
+  } else if (loginForm.password.length < 6) {
+    ElMessage.error("密码至少需要6个字符");
+    isValid = false;
+  }
+
+  return isValid;
+};
+
+const handleLogin = async () => {
+  if (!validateForm()) return;
+
+  loading.value = true;
+
+  try {
+    await authStore.login(loginForm.username, loginForm.password);
+
+    ElMessage.success("登录成功！正在跳转至主页...👍👍");
+
+    // 模拟跳转延迟
+    setTimeout(() => {
+      //success.value = false
+      router.push("/dashboard");
+    }, 1500);
+  } catch (error) {
+    //alert(error.message);
+    ElMessage.error("登入失敗: " + error.message);
+    console.error("登入失敗:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  // // 檢查用戶是否已經確認過提示
+  // const hasConfirmed = sessionStorage.getItem('device-warning-confirmed');
+
+  if (authStore.isMobileDevice() || authStore.detectDeviceType() === "mobile") {
+    // 延迟显示，确保页面加载完成
+    setTimeout(() => {
+      showDeviceDialog.value = true;
+    }, 800);
+  }
+});
 </script>
 
 <style scoped>

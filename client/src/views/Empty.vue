@@ -30,16 +30,9 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Empty",
-  setup() {
-    return {
-      currentFormIndex: 0,
-      formArray: [{ formName: "表單 1", status: "creating" }],
-    };
-  },
-};
+<script setup>
+const currentFormIndex = 0;
+const formArray = [{ formName: "表單 1", status: "creating" }];
 </script>
 
 <style scoped>
@@ -196,7 +189,6 @@ input:focus {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-
   .form-grid {
     grid-template-columns: 1fr;
   }

@@ -310,8 +310,7 @@ const copyHash = async (hash) => {
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {  
-
+@media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
   }

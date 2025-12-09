@@ -4,26 +4,15 @@
     <div class="welcome-message">
       <p>欢迎使用{{ appTitle }}，请登录用户</p>
     </div>
-    
     <LoginForm />
   </div>
 </template>
 
-<script>
-import LoginForm from "../components/LoginForm.vue"
-import appConfig from "../config/appConfig.js"
+<script setup>
+import { computed } from "vue";
+import LoginForm from "../components/LoginForm.vue";
+import appConfig from "../config/appConfig.js";
 
-export default {
-  name: 'Login',
-  setup() {
-    
-    return {
-      appTitle: appConfig.title,
-    }
-
-  },
-  components: {
-    LoginForm
-  }
-}
+//const appTitle = ref(appConfig.title);
+const appTitle = computed(() => appConfig.title);
 </script>

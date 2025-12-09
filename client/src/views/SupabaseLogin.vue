@@ -10,20 +10,12 @@
 </template>
 
 <script>
-import SupabaseLoginForm from "../components/SupabaseLoginForm.vue"
-import appConfig from "../config/appConfig"
+import { computed } from "vue";
+import SupabaseLoginForm from "../components/SupabaseLoginForm.vue";
+import appConfig from "../config/appConfig";
 
-export default {
-  name: 'SupabaseLogin',
-  setup() {
-    return {
-      appTitle: appConfig.title,
-    }
-  },
-  components: {
-    SupabaseLoginForm
-  }
-}
+//const appTitle = ref(appConfig.title);
+const appTitle = computed(() => appConfig.title);
 </script>
 
 <style scoped>

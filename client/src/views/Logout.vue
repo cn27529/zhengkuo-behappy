@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/authStore.js";
@@ -18,46 +18,36 @@ import { useAuthStore } from "../stores/authStore.js";
 import { ElMessage } from "element-plus";
 import appConfig from "../config/appConfig";
 
-export default {
-  name: "Logout",
-  setup() {
-    const router = useRouter();
-    const authStore = useAuthStore();
-    //const supabaseAuthStore = useSupabaseAuthStore()
+const router = useRouter();
+const authStore = useAuthStore();
+//const supabaseAuthStore = useSupabaseAuthStore()
+const appTitle = ref(appConfig.title);
+//const appTitle = computed(() => appConfig.title);
 
-    // const errors = reactive({
-    //   name: '',
-    //   email: '',
-    //   phone: '',
-    //   subject: '',
-    //   message: ''
-    // })
+// const errors = reactive({
+//   name: '',
+//   email: '',
+//   phone: '',
+//   subject: '',
+//   message: ''
+// })
 
-    //const success = ref(false)
-    //const loading = ref(false)
+//const success = ref(false)
+//const loading = ref(false)
 
-    onMounted(() => {
-      // 显示退出登录消息
-      ElMessage.success("您已成功退出登录！👋👋");
+onMounted(() => {
+  // 显示退出登录消息
+  ElMessage.success("您已成功退出登录！👋👋");
 
-      // 执行退出登录操作
-      authStore.logout();
-      //supabaseAuthStore.logout()
+  // 执行退出登录操作
+  authStore.logout();
+  //supabaseAuthStore.logout()
 
-      // 可选：添加延迟后自动跳转到登录页
-      setTimeout(() => {
-        router.push("/login");
-      }, 1500); // 3秒后跳转
-    });
-
-    return {
-      appTitle: appConfig.title,
-      //errors,
-      //success,
-      //loading,
-    };
-  },
-};
+  // 可选：添加延迟后自动跳转到登录页
+  setTimeout(() => {
+    router.push("/login");
+  }, 1500); // 3秒后跳转
+});
 </script>
 
 <style scoped>

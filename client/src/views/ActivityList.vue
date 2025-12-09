@@ -693,6 +693,7 @@ import { useActivityStore } from "../stores/activityStore.js";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import IconSelector from "../components/IconSelector.vue";
+import { storeToRefs } from "pinia";
 
 const activityStore = useActivityStore();
 
@@ -705,14 +706,10 @@ const showParticipantsModal = ref(false);
 const submitting = ref(false);
 const isDev = ref(false);
 
-// 查詢條件
-const searchQuery = ref("");
-const selectedItemTypes = ref([]);
-const selectedTab = ref("upcoming");
-
-// 分頁
-const currentPage = ref(1);
-const pageSize = ref(10);
+// 查詢條件, 分頁
+// 修改後 (從 store 取得，會保留)
+const { searchQuery, selectedItemTypes, selectedTab, currentPage, pageSize } =
+  storeToRefs(activityStore);
 
 // 表單數據
 const newActivity = reactive({
@@ -887,6 +884,7 @@ const getLable_ItemType = (item_type) => {
 };
 
 const handleSearch = () => {
+  //initialize();
   currentPage.value = 1;
   // 搜尋邏輯已經在計算屬性中實現
   ElMessage.info(`找到 ${filteredActivities.value.length} 個活動`);

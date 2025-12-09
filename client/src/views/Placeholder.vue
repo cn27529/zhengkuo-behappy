@@ -12,11 +12,7 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Placeholder'
-}
-</script>
+<script setup></script>
 
 <style scoped>
 .placeholder-container {

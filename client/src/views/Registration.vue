@@ -514,7 +514,7 @@
           v-if="myPageState.isCreate"
           type="button"
           class="btn btn-primary"
-          @click="submitForm"
+          @click="handleSubmitForm"
           :disabled="submitting"
         >
           {{ submitting ? "提交中..." : "提交報名" }}
@@ -984,7 +984,7 @@ export default {
     // 修改後：
     return {
       // 本地變數、方法、計算屬性
-      submitForm: handleSubmitForm,
+      handleSubmitForm,
       addContactAsBlessing,
       addContactAsSurvivor,
       importFromBlessing,
@@ -1006,22 +1006,11 @@ export default {
       currentFormSummary,
       formSummaries,
       isDev,
-      //pageTitle,
       myPageState,
-      //isEditMode,
-      //isCreateMode,
-      //actionMode,
-      //formId,
-      //id,
-      //actionResult,
 
       // store 中只暴露需要的屬性和方法，不要使用展開運算符
       registrationForm: registrationStore.registrationForm,
       formConfig: configStore.formConfig,
-      //currentFormIndex: registrationStore.currentFormIndex,
-      //formArray: registrationStore.formArray,
-      //currentFormSummary: registrationStore.currentFormSummary,
-      //formSummaries: registrationStore.formSummaries,
       validationDetails: registrationStore.validationDetails,
       // store 中方法
       addBlessingPerson: registrationStore.addBlessingPerson,
@@ -1502,7 +1491,6 @@ select:focus {
     padding: 1rem;
   }
 
-  
   .form-grid {
     grid-template-columns: 1fr;
   }

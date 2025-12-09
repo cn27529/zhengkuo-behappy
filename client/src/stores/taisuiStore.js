@@ -1,4 +1,4 @@
-// src/stores/taisui.js
+// src/stores/taisuiStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 

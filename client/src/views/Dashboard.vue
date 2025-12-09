@@ -65,7 +65,7 @@
   </main>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -74,51 +74,32 @@ import { useActivityStore } from "../stores/activityStore.js";
 import AnimatedNumber from "../components/AnimatedNumber.vue";
 import { DateUtils } from "../utils/dateUtils.js";
 
-export default {
-  name: "Dashboard",
+const router = useRouter();
+const authStore = useAuthStore();
+const activityStore = useActivityStore();
 
-  components: {
-    AnimatedNumber,
-  },
-  setup() {
-    const router = useRouter();
-    const authStore = useAuthStore();
-    const activityStore = useActivityStore();
+// 从store获取数据
+const activities = computed(() => activityStore.activities);
+const totalParticipants = computed(() => activityStore.totalParticipants);
+const upcomingActivities = computed(() => activityStore.upcomingActivities);
+const completedActivities = computed(() => activityStore.completedActivities);
 
-    // 从store获取数据
-    const activities = computed(() => activityStore.activities);
-    const totalParticipants = computed(() => activityStore.totalParticipants);
-    const upcomingActivities = computed(() => activityStore.upcomingActivities);
-    const completedActivities = computed(
-      () => activityStore.completedActivities
-    );
-
-    const formatDate = (dateString) => {
-      return DateUtils.formatDate(dateString);
-    };
-
-    onMounted(async () => {
-      // 初始化数据
-      try {
-        await activityStore.initialize();
-      } catch (error) {
-        console.error("初始化数据失败:", error);
-      }
-    });
-
-    onUnmounted(() => {
-      // 清理工作
-    });
-
-    return {
-      activities,
-      totalParticipants,
-      upcomingActivities,
-      completedActivities,
-      formatDate,
-    };
-  },
+const formatDate = (dateString) => {
+  return DateUtils.formatDate(dateString);
 };
+
+onMounted(async () => {
+  // 初始化数据
+  try {
+    await activityStore.initialize();
+  } catch (error) {
+    console.error("初始化数据失败:", error);
+  }
+});
+
+onUnmounted(() => {
+  // 清理工作
+});
 </script>
 
 <style scoped>
