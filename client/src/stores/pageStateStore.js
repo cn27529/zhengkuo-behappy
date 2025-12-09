@@ -88,7 +88,7 @@ export const usePageStateStore = defineStore("pageState", () => {
 
   const getPageTitle = (action) => {
     const titles = {
-      create: "消災超度登記",
+      create: "忻福登記",
       edit: "編輯表單",
       view: "查看表單",
     };

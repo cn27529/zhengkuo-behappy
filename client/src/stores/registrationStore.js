@@ -1,5 +1,5 @@
 // src/stores/registration.js
-// 本檔為報名表單的 Pinia store，管理整個消災超度登記表的狀態與操作。
+// 本檔為報名表單的 Pinia store，管理整個忻福登記表的狀態與操作。
 // 🔄 重構重點：實現 registrationForm 和 formArray[currentFormIndex] 的雙向實時同步
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
