@@ -469,44 +469,7 @@ export default {
 </script>
 
 <style scoped>
-/* 搜尋區域 */
-.search-section {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
 
-.search-input-group {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.search-hint {
-  margin-top: 0.5rem;
-  color: #666;
-  font-size: 0.875rem;
-}
-
-/* 結果區域 */
-.results-section {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  padding: 1.5rem;
-}
-
-.results-header {
-  margin-bottom: 1rem;
-}
-
-.results-header h3 {
-  margin: 0;
-  color: #333;
-}
 
 /* 表單標籤 */
 .form-name {
@@ -664,13 +627,6 @@ export default {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .search-section {
-    padding: 1rem;
-  }
-
-  .search-input-group {
-    flex-direction: column;
-  }
 
   .search-input-group .el-input {
     width: 100%;

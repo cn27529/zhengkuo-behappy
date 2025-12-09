@@ -1502,9 +1502,7 @@ select:focus {
     padding: 1rem;
   }
 
-  .form-section {
-    padding: 1.5rem;
-  }
+  
   .form-grid {
     grid-template-columns: 1fr;
   }

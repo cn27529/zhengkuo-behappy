@@ -1159,38 +1159,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.main-content {
-  padding: 1.5rem;
-}
-
-.page-header {
-  margin-bottom: 1.5rem;
-}
-
-.page-header h2 {
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-}
-
-.page-header p {
-  color: #666;
-}
-
-/* 搜尋區域 */
-.search-section {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.5rem;
-}
-
-.search-input-group {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
 
 .search-input-group .el-input {
   flex: 1;
@@ -1347,17 +1315,6 @@ onMounted(() => {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
-  }
-
-  .search-section {
-    padding: 1rem;
-  }
-
-  .search-input-group {
-    flex-direction: column;
-  }
 
   .search-input-group .el-input,
   .search-input-group .el-select {
