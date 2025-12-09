@@ -22,10 +22,12 @@ body {
   line-height: 1.6;
 }
 
+/* 全局样式 */
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f5f7fa;
 }
 
 header {
@@ -71,19 +73,19 @@ header {
   align-items: center;
 }
 
-.logo {
+.header-logo {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.logo-icon {
-  font-size: 2rem;
-}
-
-.logo h1 {
+.header-logo h1 {
   font-size: 1.5rem;
   font-weight: 600;
+}
+
+.logo-icon {
+  font-size: 2rem;
 }
 
 nav ul {
@@ -257,7 +259,7 @@ canvas {
 /* 主内容区域 */
 .main-content {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem 1.5rem 1rem 1.5rem;
   overflow-y: auto;
   background-color: #f8f9fa;
   order: 0;
@@ -362,7 +364,7 @@ canvas {
     text-align: center;
     margin-top: 0rem;
     margin-bottom: 0rem;
-  } 
+  }
 
   .main-content {
     flex: 1;
@@ -373,11 +375,15 @@ canvas {
   }
 
   .form-section {
-    padding: 1.5rem;    
+    padding: 1.5rem;
   }
 
   .header-content {
     gap: 1rem;
+  }
+
+  .header-logo h1 {
+    display: none;
   }
 
   .search-section {
@@ -394,9 +400,5 @@ canvas {
 
   .page {
     padding: 1.5rem;
-  }
-
-  .logo h1 {
-    display: none;
   }
 }

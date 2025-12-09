@@ -189,9 +189,9 @@
                 align="center"
               >
                 <template #default="{ row }">
-                  <el-icon size="large">
+                  <div class="results-icon">
                     {{ row.icon }}
-                  </el-icon>
+                  </div>
                 </template>
               </el-table-column>
 
@@ -352,9 +352,9 @@
                 align="center"
               >
                 <template #default="{ row }">
-                  <el-icon size="large">
+                  <div class="results-icon">
                     {{ row.icon }}
-                  </el-icon>
+                  </div>
                 </template>
               </el-table-column>
 
@@ -608,7 +608,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="參與人次">
+        <el-form-item label="參與人次" style="display: none">
           <el-input-number
             v-model="editingActivity.participants"
             :min="0"
@@ -1159,7 +1159,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .search-input-group .el-input {
   flex: 1;
   /* min-width: 300px; */
@@ -1205,6 +1204,12 @@ onMounted(() => {
 }
 
 /* 結果區域 */
+.results-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  text-align: center;
+}
+
 .results-section {
   background: white;
   border-radius: 10px;
@@ -1218,6 +1223,7 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 1rem;
   padding: 0 0.5rem;
+  min-width: 100%;
 }
 
 .results-header h3 {
@@ -1315,7 +1321,6 @@ onMounted(() => {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-
   .search-input-group .el-input,
   .search-input-group .el-select {
     width: 100%;
@@ -1394,7 +1399,7 @@ onMounted(() => {
 }
 
 :deep(.el-dialog__header) {
-  padding: 1.5rem 1.5rem 1rem;
+  /* padding: 1.5rem 1.5rem 1rem;*/
   border-bottom: 1px solid #eee;
 }
 
@@ -1404,11 +1409,11 @@ onMounted(() => {
 }
 
 :deep(.el-dialog__body) {
-  padding: 1rem 1.5rem;
+  padding: 0.75rem;
 }
 
 :deep(.el-dialog__footer) {
-  padding: 1rem 1.5rem 1.5rem;
+  /* padding: 1rem 1.5rem 1.5rem;*/
   border-top: 1px solid #eee;
 }
 
@@ -1416,6 +1421,6 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-  width: 100%;
+  /* width: 100%; */
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="app-container">
     <header v-if="layoutReady && showHeader">
       <div class="header-content">
-        <div class="logo">
+        <div class="header-logo">
           <div class="logo-icon">🛕</div>
           <h1>{{ appTitle }}</h1>
           <div class="user-info" v-if="showUserInfo">
@@ -279,12 +279,6 @@ export default {
 </script>
 
 <style>
-/* 全局样式 */
-.app-container {
-  min-height: 100vh;
-  background-color: #f5f7fa;
-}
-
 .dashboard-header {
   background: linear-gradient(
     to right,
@@ -299,20 +293,20 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.header-left .logo {
+.header-left .header-logo {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.logo-icon {
-  font-size: 2rem;
 }
 
 .header-right {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+}
+
+.logo-icon {
+  font-size: 2rem;
 }
 
 .app-content {
@@ -404,15 +398,6 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* 主内容区域 */
-.main-content {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  background-color: #f8f9fa;
-  order: 0;
 }
 
 .main-content::-webkit-scrollbar-track {

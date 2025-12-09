@@ -8,7 +8,7 @@
       </p>
     </div>
 
-    <!-- 查詢表單 -->
+    <!-- 查詢區 -->
     <div class="search-section">
       <div class="search-form">
         <div class="form-group">
@@ -213,10 +213,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import { Search, Printer } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { authService } from "../services/authService";
@@ -224,253 +223,203 @@ import { useQueryStore } from "../stores/queryStore.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
-export default {
-  name: "RegistrationList",
-  setup() {
-    const pageStateStore = usePageStateStore();
-    const queryStore = useQueryStore();
-    const isDev = ref(false);
-    const router = useRouter();
+const pageStateStore = usePageStateStore();
+const queryStore = useQueryStore();
+const isDev = ref(false);
+const router = useRouter();
 
-    // 使用 storeToRefs 保持響應性 - 包含分頁狀態
-    const {
-      searchResults,
-      searchQuery,
-      isLoading,
-      hasSearched,
-      currentPage,
-      pageSize,
-    } = storeToRefs(queryStore);
+// 使用 storeToRefs 保持響應性 - 包含分頁狀態
+const {
+  searchResults,
+  searchQuery,
+  isLoading,
+  hasSearched,
+  currentPage,
+  pageSize,
+} = storeToRefs(queryStore);
 
-    // 計算屬性 - 添加防護檢查
-    const totalItems = computed(() => {
-      return Array.isArray(searchResults.value)
-        ? searchResults.value.length
-        : 0;
-    });
+// 計算屬性 - 添加防護檢查
+const totalItems = computed(() => {
+  return Array.isArray(searchResults.value) ? searchResults.value.length : 0;
+});
 
-    const paginatedResults = computed(() => {
-      if (
-        !Array.isArray(searchResults.value) ||
-        searchResults.value.length === 0
-      ) {
-        return [];
+const paginatedResults = computed(() => {
+  if (!Array.isArray(searchResults.value) || searchResults.value.length === 0) {
+    return [];
+  }
+
+  // 如果是手機設備，返回所有結果不分頁
+  if (isMobile.value) {
+    return searchResults.value;
+  }
+
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return searchResults.value.slice(start, end);
+});
+
+const isMobile = computed(() => {
+  return queryStore.isMobile();
+});
+
+// 方法
+const handleSearch = async () => {
+  queryStore.resetPagination();
+
+  const query = searchQuery.value ? searchQuery.value.trim() : "";
+  console.log("開始搜尋,查詢條件:", query);
+
+  try {
+    const queryData = {
+      query: query,
+    };
+
+    const result = await queryStore.queryRegistrationData(queryData);
+    console.log("查詢結果筆數:", searchResults.value.length);
+    //console.log("searchResults 內容:", searchResults.value);
+
+    if (result.success) {
+      if (!result.data || result.data.length === 0) {
+        ElMessage.info("查無符合條件的資料");
+      } else {
+        ElMessage.success(`找到 ${result.data.length} 筆資料`);
       }
-
-      // 如果是手機設備，返回所有結果不分頁
-      if (isMobile.value) {
-        return searchResults.value;
-      }
-
-      const start = (currentPage.value - 1) * pageSize.value;
-      const end = start + pageSize.value;
-      return searchResults.value.slice(start, end);
-    });
-
-    const isMobile = computed(() => {
-      return queryStore.isMobile();
-    });
-
-    // 方法
-    const handleSearch = async () => {
-      queryStore.resetPagination();
-
-      const query = searchQuery.value ? searchQuery.value.trim() : "";
-      console.log("開始搜尋,查詢條件:", query);
-
-      try {
-        const queryData = {
-          query: query,
-        };
-
-        const result = await queryStore.queryRegistrationData(queryData);
-        console.log("查詢結果筆數:", searchResults.value.length);
-        //console.log("searchResults 內容:", searchResults.value);
-
-        if (result.success) {
-          if (!result.data || result.data.length === 0) {
-            ElMessage.info("查無符合條件的資料");
-          } else {
-            ElMessage.success(`找到 ${result.data.length} 筆資料`);
-          }
-        } else {
-          ElMessage.error(result.message || "查詢失敗");
-        }
-      } catch (error) {
-        console.error("查詢錯誤:", error);
-        ElMessage.error("查詢過程中發生錯誤");
-      }
-    };
-
-    const handleClear = () => {
-      queryStore.clearSearch();
-      queryStore.resetPagination();
-    };
-
-    const handleSizeChange = (newSize) => {
-      // 手機設備不需要分頁處理
-      if (isMobile.value) return;
-
-      queryStore.setPageSize(newSize);
-      queryStore.setCurrentPage(1);
-    };
-
-    const handleCurrentChange = (newPage) => {
-      // 手機設備不需要分頁處理
-      if (isMobile.value) return;
-
-      queryStore.setCurrentPage(newPage);
-
-      // 可選:滾動到表格頂部
-      const tableContainer = document.querySelector(".el-table");
-      if (tableContainer) {
-        //tableContainer.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    };
-
-    // 將某筆資料傳遞給表單編輯
-    const handleEdit = async (item) => {
-      try {
-        console.group("🔧 編輯操作調試信息");
-        console.log("1. 開始處理編輯操作", item);
-
-        // 檢查必要的數據
-        if (!item.formId) {
-          throw new Error("表單ID不存在");
-        }
-
-        console.log("2. 準備保存狀態到 Store");
-        // 儲存狀態
-        const pageState = new Promise(async () => {
-          await pageStateStore.setPageState("registration", {
-            action: "edit",
-            formId: item.formId,
-            id: item.id,
-            source: "list",
-          });
-        });
-        pageState.then(() => {
-          console.log("🚪 3. 頁面狀態重建完成");
-        });
-
-        console.log("4. 開始導航到表單頁面");
-        console.groupEnd();
-
-        router.push("/registration-edit");
-      } catch (error) {
-        console.error("❌ 編輯操作失敗:", error);
-        ElMessage.error("操作失敗，請重試");
-      }
-    };
-
-    // 列印表單
-    const handlePrint = (item) => {
-      try {
-        const formId = item.formId;
-        const printData = JSON.stringify(item);
-
-        console.log("準備列印數據:", { formId, printData });
-        ElMessage.info(`準備列印表單: ${formId}`);
-
-        const printId = `print_form_${formId}_${Math.floor(
-          Math.random() * 1000
-        )}`;
-        console.log("列印表單 ID:", printId);
-
-        sessionStorage.setItem(printId, printData);
-        console.log("儲存列印數據:", {
-          printId,
-          data: JSON.parse(printData),
-        });
-
-        router.push({
-          path: "/registration-print",
-          query: {
-            print_id: printId,
-            print_data: printData,
-          },
-        });
-      } catch (error) {
-        console.error("導航到列印頁面失敗:", error);
-        ElMessage.error("導航到列印頁面失敗");
-      }
-    };
-
-    const getStatusText = (state) => {
-      const statusMap = {
-        creating: "建立中",
-        editing: "編輯中",
-        saved: "已儲存",
-        submitted: "已提交",
-        completed: "已完成",
-      };
-      return statusMap[state] || state;
-    };
-
-    const formatDate = (dateString) => {
-      return DateUtils.formatDateLong(dateString);
-      if (!dateString) return "-";
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleString("zh-TW", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      } catch {
-        return dateString;
-      }
-    };
-
-    const truncateAddress = (address) => {
-      if (!address) return "-";
-      return address.length > 10 ? address.substring(0, 10) + "..." : address;
-    };
-
-    // 初始化
-    onMounted(() => {
-      console.log("✅ RegistrationList 組件已載入");
-      console.log("清除頁面狀態");
-      pageStateStore.clearPageState("registration");
-      //console.log("當前 searchResults:", searchResults.value);
-      isDev.value = authService.getCurrentDev();
-    });
-
-    return {
-      // 響應式數據(來自 Store)
-      searchQuery,
-      searchResults,
-      isLoading,
-      hasSearched,
-      currentPage,
-      pageSize,
-
-      // 計算屬性
-      totalItems,
-      paginatedResults,
-      isDev,
-      isMobile,
-
-      // 方法
-      handleSearch,
-      handleClear,
-      handleSizeChange,
-      handleCurrentChange,
-      handlePrint,
-      handleEdit,
-      getStatusText,
-      formatDate,
-      truncateAddress,
-    };
-  },
+    } else {
+      ElMessage.error(result.message || "查詢失敗");
+    }
+  } catch (error) {
+    console.error("查詢錯誤:", error);
+    ElMessage.error("查詢過程中發生錯誤");
+  }
 };
+
+const handleClear = () => {
+  queryStore.clearSearch();
+  queryStore.resetPagination();
+};
+
+const handleSizeChange = (newSize) => {
+  // 手機設備不需要分頁處理
+  if (isMobile.value) return;
+
+  queryStore.setPageSize(newSize);
+  queryStore.setCurrentPage(1);
+};
+
+const handleCurrentChange = (newPage) => {
+  // 手機設備不需要分頁處理
+  if (isMobile.value) return;
+
+  queryStore.setCurrentPage(newPage);
+
+  // 可選:滾動到表格頂部
+  const tableContainer = document.querySelector(".el-table");
+  if (tableContainer) {
+    //tableContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
+// 將某筆資料傳遞給表單編輯
+const handleEdit = async (item) => {
+  try {
+    console.group("🔧 編輯操作調試信息");
+    console.log("1. 開始處理編輯操作", item);
+
+    // 檢查必要的數據
+    if (!item.formId) {
+      throw new Error("表單ID不存在");
+    }
+
+    console.log("2. 準備保存狀態到 Store");
+    // 儲存狀態
+    const pageState = new Promise(async () => {
+      await pageStateStore.setPageState("registration", {
+        action: "edit",
+        formId: item.formId,
+        id: item.id,
+        source: "list",
+      });
+    });
+    pageState.then(() => {
+      console.log("🚪 3. 頁面狀態重建完成");
+    });
+
+    console.log("4. 開始導航到表單頁面");
+    console.groupEnd();
+
+    router.push("/registration-edit");
+  } catch (error) {
+    console.error("❌ 編輯操作失敗:", error);
+    ElMessage.error("操作失敗，請重試");
+  }
+};
+
+// 列印表單
+const handlePrint = (item) => {
+  try {
+    const formId = item.formId;
+    const printData = JSON.stringify(item);
+
+    console.log("準備列印數據:", { formId, printData });
+    ElMessage.info(`準備列印表單: ${formId}`);
+
+    const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
+    console.log("列印表單 ID:", printId);
+
+    sessionStorage.setItem(printId, printData);
+    console.log("儲存列印數據:", {
+      printId,
+      data: JSON.parse(printData),
+    });
+
+    router.push({
+      path: "/registration-print",
+      query: {
+        print_id: printId,
+        print_data: printData,
+      },
+    });
+  } catch (error) {
+    console.error("導航到列印頁面失敗:", error);
+    ElMessage.error("導航到列印頁面失敗");
+  }
+};
+
+const getStatusText = (state) => {
+  const statusMap = {
+    creating: "建立中",
+    editing: "編輯中",
+    saved: "已儲存",
+    submitted: "已提交",
+    completed: "已完成",
+  };
+  return statusMap[state] || state;
+};
+
+const formatDate = (dateString) => {
+  return DateUtils.formatDateLong(dateString);
+};
+
+const truncateAddress = (address) => {
+  if (!address) return "-";
+  return address.length > 10 ? address.substring(0, 10) + "..." : address;
+};
+
+onMounted(() => {
+  console.log("✅ RegistrationList 組件已載入");
+  console.log("清除頁面狀態");
+  pageStateStore.clearPageState("registration");
+  //console.log("當前 searchResults:", searchResults.value);
+  isDev.value = authService.getCurrentDev();
+  //handleSearch();
+});
 </script>
 
 <style scoped>
-
-
+.search-input-group .el-input {
+  flex: 1;
+  /* min-width: 300px; */
+}
 /* 表單標籤 */
 .form-name {
   font-weight: 600;
@@ -627,11 +576,6 @@ export default {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-
-  .search-input-group .el-input {
-    width: 100%;
-  }
-
   .search-input-group .el-button {
     width: 100%;
   }

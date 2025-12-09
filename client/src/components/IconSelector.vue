@@ -102,10 +102,10 @@ const clearSelection = () => {
 
 .icon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
   gap: 0.5rem;
   padding: 0.5rem;
-  background: #f8f9fa;
+  background: #ecf0f1;
   border-radius: 4px;
   max-height: 200px;
   overflow-y: auto;
