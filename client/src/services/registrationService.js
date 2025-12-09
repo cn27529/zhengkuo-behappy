@@ -124,7 +124,7 @@ export class RegistrationService {
     try {
       const updateData = {
         ...registrationData,
-        updatedAt: new Date().toISOString(),
+        updatedAt: DateUtils.getCurrentISOTime(),
         updatedUser: registrationData.updatedUser || "system",
       };
 
@@ -342,14 +342,14 @@ export class RegistrationService {
   async submitRegistration(id) {
     return this.updateRegistration(id, {
       state: "submitted",
-      updatedAt: new Date().toISOString(),
+      updatedAt: DateUtils.getCurrentISOTime(),
     });
   }
 
   async completeRegistration(id) {
     return this.updateRegistration(id, {
       state: "completed",
-      updatedAt: new Date().toISOString(),
+      updatedAt: DateUtils.getCurrentISOTime(),
     });
   }
 
@@ -357,7 +357,7 @@ export class RegistrationService {
     return this.updateRegistration(id, {
       ...registrationData,
       state: "saved",
-      updatedAt: new Date().toISOString(),
+      updatedAt: DateUtils.getCurrentISOTime(),
     });
   }
 

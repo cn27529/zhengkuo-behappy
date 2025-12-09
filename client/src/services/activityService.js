@@ -1,7 +1,7 @@
 // src/services/activitiesService.js
 import { baseService, getApiUrl } from "./baseService.js";
-import { DateUtils } from "../utils/dateUtils.js";
 import { generateGitHash } from "../utils/generateGitHash.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 export class ActivityService {
   // ========== 建構函式 ==========
@@ -127,7 +127,7 @@ export class ActivityService {
     try {
       const updateData = {
         ...activityData,
-        updatedAt: new Date().toISOString(),
+        updatedAt: DateUtils.getCurrentISOTime(),
         updatedUser: activityData.updatedUser || "system",
       };
 
@@ -492,7 +492,7 @@ export class ActivityService {
   async updateParticipants(id, participants) {
     return this.updateActivity(id, {
       participants: participants,
-      updatedAt: new Date().toISOString(),
+      updatedAt: DateUtils.getCurrentISOTime(),
     });
   }
 
@@ -504,7 +504,7 @@ export class ActivityService {
   async completeActivity(id) {
     return this.updateActivity(id, {
       state: "completed",
-      updatedAt: new Date().toISOString(),
+      updatedAt: DateUtils.getCurrentISOTime(),
     });
   }
 
@@ -516,7 +516,7 @@ export class ActivityService {
   async cancelActivity(id) {
     return this.updateActivity(id, {
       state: "cancelled",
-      updatedAt: new Date().toISOString(),
+      updatedAt: DateUtils.getCurrentISOTime(),
     });
   }
 

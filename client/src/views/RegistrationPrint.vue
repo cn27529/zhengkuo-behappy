@@ -239,145 +239,142 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 
-export default {
-  name: "PrintRegistration",
-  setup() {
-    const router = useRouter();
-    const printContent = ref({});
-    const isPrinting = ref(false);
-    const printTime = ref("");
-    const formId = ref("");
-    const printId = ref(""); // URL 參數中的列印 ID
-    const printData = ref(""); // URL 參數中的列印數據
-    const showDownloadMenu = ref(false);
-    const loading = ref(false);
+const router = useRouter();
+const printContent = ref({});
+const isPrinting = ref(false);
+const printTime = ref("");
+const formId = ref("");
+const printId = ref(""); // URL 參數中的列印 ID
+const printData = ref(""); // URL 參數中的列印數據
+const showDownloadMenu = ref(false);
+const loading = ref(false);
 
-    // 計算屬性：過濾有效數據
-    const availableBlessingPersons = computed(() => {
-      return (printContent.value.blessing?.persons || []).filter(
-        (person) => person.name && person.name.trim() !== ""
-      );
-    });
+// 計算屬性：過濾有效數據
+const availableBlessingPersons = computed(() => {
+  return (printContent.value.blessing?.persons || []).filter(
+    (person) => person.name && person.name.trim() !== ""
+  );
+});
 
-    const availableAncestors = computed(() => {
-      return (printContent.value.salvation?.ancestors || []).filter(
-        (ancestor) => ancestor.surname && ancestor.surname.trim() !== ""
-      );
-    });
+const availableAncestors = computed(() => {
+  return (printContent.value.salvation?.ancestors || []).filter(
+    (ancestor) => ancestor.surname && ancestor.surname.trim() !== ""
+  );
+});
 
-    const availableSurvivors = computed(() => {
-      return (printContent.value.salvation?.survivors || []).filter(
-        (survivor) => survivor.name && survivor.name.trim() !== ""
-      );
-    });
+const availableSurvivors = computed(() => {
+  return (printContent.value.salvation?.survivors || []).filter(
+    (survivor) => survivor.name && survivor.name.trim() !== ""
+  );
+});
 
-    const currentHouseholdHeadsCount = computed(() => {
-      return availableBlessingPersons.value.filter(
-        (person) => person.isHouseholdHead
-      ).length;
-    });
+const currentHouseholdHeadsCount = computed(() => {
+  return availableBlessingPersons.value.filter(
+    (person) => person.isHouseholdHead
+  ).length;
+});
 
-    // 載入列印數據
-    const loadPrintData = () => {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        printId.value = urlParams.get("print_id");
-        printData.value = urlParams.get("print_data");
+// 載入列印數據
+const loadPrintData = () => {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    printId.value = urlParams.get("print_id");
+    printData.value = urlParams.get("print_data");
 
-        console.log("列印數據，ID:", printId.value);
-        console.log("列印數據，數據:", printData.value);
+    console.log("列印數據，ID:", printId.value);
+    console.log("列印數據，數據:", printData.value);
 
-        if (!printId.value) {
-          throw new Error("無效的列印ID");
-        }
+    if (!printId.value) {
+      throw new Error("無效的列印ID");
+    }
 
-        const storedData =
-          sessionStorage.getItem(printId.value) ||
-          decodeURIComponent(printData.value || "null");
+    const storedData =
+      sessionStorage.getItem(printId.value) ||
+      decodeURIComponent(printData.value || "null");
 
-        console.log("獲取的列印數據:", storedData);
+    console.log("獲取的列印數據:", storedData);
 
-        // 驗證資料存在且不是字串 'undefined' 或空字串
-        if (!storedData || storedData === "undefined") {
-          ElMessage.error("找不到列印數據或資料無效，請返回重新操作");
-        }
+    // 驗證資料存在且不是字串 'undefined' 或空字串
+    if (!storedData || storedData === "undefined") {
+      ElMessage.error("找不到列印數據或資料無效，請返回重新操作");
+    }
 
-        let parsed = {};
-        try {
-          parsed = JSON.parse(storedData);
-          console.log("解析後的列印數據:", parsed);
-          printContent.value = parsed;
-          if (!parsed || typeof parsed !== "object") {
-            throw new Error("解析後的列印數據不是有效對象");
-          }
-          formId.value = printContent.value.formId;
-        } catch (e) {
-          console.error("解析列印數據失敗，可能格式錯誤", {
-            printId,
-            storedData,
-            error: e,
-          });
-          throw new Error("列印數據格式錯誤");
-        }
-
-        // 成功載入資料後再設定 document.title，確保使用到最新資料
-        try {
-          const contactName = (printContent.value.contact?.name || "未填寫")
-            .toString()
-            .trim();
-          document.title = `${contactName}-忻福登記表`;
-        } catch (e) {
-          // 如果意外錯誤，不阻斷流程
-          console.warn("設定 document.title 失敗:", e);
-        }
-      } catch (error) {
-        console.error("載入列印數據失敗:", error);
-        // 可以顯示錯誤訊息或導回原頁面
-        ElMessage.error("載入列印數據失敗，請返回重新操作");
-        //handleBack()
+    let parsed = {};
+    try {
+      parsed = JSON.parse(storedData);
+      console.log("解析後的列印數據:", parsed);
+      printContent.value = parsed;
+      if (!parsed || typeof parsed !== "object") {
+        throw new Error("解析後的列印數據不是有效對象");
       }
-    };
-
-    // 設置列印時間
-    const setPrintTime = () => {
-      const now = new Date();
-      printTime.value = now.toLocaleString("zh-TW", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
+      formId.value = printContent.value.formId;
+    } catch (e) {
+      console.error("解析列印數據失敗，可能格式錯誤", {
+        printId,
+        storedData,
+        error: e,
       });
-    };
+      throw new Error("列印數據格式錯誤");
+    }
 
-    const closeDownloadMenu = (event) => {
-      if (!event.target.closest(".download-dropdown")) {
-        showDownloadMenu.value = false;
-      }
-    };
+    // 成功載入資料後再設定 document.title，確保使用到最新資料
+    try {
+      const contactName = (printContent.value.contact?.name || "未填寫")
+        .toString()
+        .trim();
+      document.title = `${contactName}-忻福登記表`;
+    } catch (e) {
+      // 如果意外錯誤，不阻斷流程
+      console.warn("設定 document.title 失敗:", e);
+    }
+  } catch (error) {
+    console.error("載入列印數據失敗:", error);
+    // 可以顯示錯誤訊息或導回原頁面
+    ElMessage.error("載入列印數據失敗，請返回重新操作");
+    //handleBack()
+  }
+};
 
-    // 切換下載選單
-    const toggleDownloadMenu = () => {
-      showDownloadMenu.value = !showDownloadMenu.value;
-    };
+// 設置列印時間
+const setPrintTime = () => {
+  const now = new Date();
+  printTime.value = now.toLocaleString("zh-TW", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+};
 
-    // 1. 下載為 PDF（使用瀏覽器列印功能）
-    const handleDownloadPDF = async () => {
-      loading.value = true;
-      showDownloadMenu.value = false;
+const closeDownloadMenu = (event) => {
+  if (!event.target.closest(".download-dropdown")) {
+    showDownloadMenu.value = false;
+  }
+};
 
-      try {
-        // 使用瀏覽器列印功能生成 PDF
-        const printWindow = window.open("", "_blank");
-        const printContent = document.getElementById("print-content").innerHTML;
+// 切換下載選單
+const toggleDownloadMenu = () => {
+  showDownloadMenu.value = !showDownloadMenu.value;
+};
 
-        printWindow.document.write(`
+// 1. 下載為 PDF（使用瀏覽器列印功能）
+const handleDownloadPDF = async () => {
+  loading.value = true;
+  showDownloadMenu.value = false;
+
+  try {
+    // 使用瀏覽器列印功能生成 PDF
+    const printWindow = window.open("", "_blank");
+    const printContent = document.getElementById("print-content").innerHTML;
+
+    printWindow.document.write(`
           <!DOCTYPE html>
           <html>
             <head>
@@ -403,321 +400,283 @@ export default {
           </html>
         `);
 
-        printWindow.document.close();
+    printWindow.document.close();
 
-        setTimeout(() => {
-          printWindow.print();
-          loading.value = false;
-          ElMessage.success("PDF 下載已開始");
-        }, 500);
-      } catch (error) {
-        console.error("PDF 下載失敗:", error);
-        ElMessage.error("PDF 下載失敗");
-        loading.value = false;
-      }
-    };
-
-    // 2. 下載為 Excel
-    const handleDownloadExcel = () => {
-      loading.value = true;
-      showDownloadMenu.value = false;
-
-      try {
-        // 建立 Excel 內容
-        let excelContent = `${document.title}\n\n`;
-        // excelContent += `聯絡人: ${
-        //   printContent.value.contact?.name || "未填寫"
-        // }\n`;
-        // excelContent += `手機: ${
-        //   printContent.value.contact?.mobile || "未填寫"
-        // }\n`;
-        // excelContent += `電話: ${
-        //   printContent.value.contact?.phone || "未填寫"
-        // }\n`;
-        // excelContent += `關係: ${
-        //   printContent.value.contact?.relationship || "未填寫"
-        // }\n\n`;
-
-        excelContent += "聯絡人:\n";
-        excelContent += ",姓名,手機,電話,關係\n";
-        excelContent += `,${printContent.value.contact?.name || "未填寫"},${
-          printContent.value.contact?.mobile || "未填寫"
-        },${printContent.value.contact?.phone || "未填寫"},${
-          printContent.value.contact?.relationship || "未填寫"
-        }\n`;
-
-        // 消災人員
-        excelContent += "\n消災人員:\n";
-        excelContent += ",姓名,生肖,備註,戶長\n";
-        availableBlessingPersons.value.forEach((person, index) => {
-          excelContent += `${index + 1},${person.name || ""},${
-            person.zodiac || ""
-          },${person.notes || ""},${person.isHouseholdHead ? "是" : "否"}\n`;
-        });
-
-        excelContent += "\n歷代祖先:\n";
-        excelContent += ",姓氏,備註\n";
-        availableAncestors.value.forEach((ancestor, index) => {
-          excelContent += `${index + 1},${ancestor.surname || ""},${
-            ancestor.notes || ""
-          }\n`;
-        });
-
-        excelContent += "\n陽上人:\n";
-        excelContent += ",姓名,生肖,備註\n";
-        availableSurvivors.value.forEach((survivor, index) => {
-          excelContent += `${index + 1},${survivor.name || ""},${
-            survivor.zodiac || ""
-          },${survivor.notes || ""}\n`;
-        });
-
-        // 建立 Blob 並下載
-        const blob = new Blob([excelContent], {
-          type: "application/vnd.ms-excel;charset=utf-8",
-        });
-        downloadBlob(blob, `${document.title}_${formId.value}.xls`);
-        ElMessage.success("Excel 檔案下載成功");
-      } catch (error) {
-        console.error("Excel 下載失敗:", error);
-        ElMessage.error("Excel 下載失敗");
-      } finally {
-        loading.value = false;
-      }
-    };
-
-    // 3. 下載為 JSON
-    const handleDownloadJSON = () => {
-      showDownloadMenu.value = false;
-
-      try {
-        const jsonData = {
-          formId: formId.value,
-          printTime: printTime.value,
-          ...printContent.value,
-        };
-
-        const jsonString = JSON.stringify(jsonData, null, 2);
-        const blob = new Blob([jsonString], { type: "application/json" });
-        downloadBlob(blob, `${document.title}_${formId.value}.json`);
-        ElMessage.success("JSON 檔案下載成功");
-      } catch (error) {
-        console.error("JSON 下載失敗:", error);
-        ElMessage.error("JSON 下載失敗");
-      }
-    };
-
-    // 4. 下載為圖片（使用 html2canvas）
-    const handleDownloadImage = async () => {
-      loading.value = true;
-      showDownloadMenu.value = false;
-
-      try {
-        // 檢查是否已載入 html2canvas
-        if (typeof html2canvas === "undefined") {
-          // 動態載入 html2canvas
-          await loadHtml2Canvas();
-        }
-
-        const element = document.getElementById("print-content");
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#ffffff",
-        });
-
-        canvas.toBlob((blob) => {
-          downloadBlob(blob, `${document.title}_${formId.value}.png`);
-          ElMessage.success("圖片下載成功");
-          loading.value = false;
-        });
-      } catch (error) {
-        console.error("圖片下載失敗:", error);
-        ElMessage.error("圖片下載失敗，請稍後再試");
-        loading.value = false;
-      }
-    };
-
-    // 5. 下載為文字檔
-    const handleDownloadText = () => {
-      showDownloadMenu.value = false;
-
-      try {
-        let textContent = `${document.title}\n`;
-        textContent += "=".repeat(50) + "\n\n";
-
-        textContent += `聯絡人: ${
-          printContent.value.contact?.name || "未填寫"
-        }\n`;
-        textContent += `手機: ${
-          printContent.value.contact?.mobile || "未填寫"
-        }\n`;
-        textContent += `電話: ${
-          printContent.value.contact?.phone || "未填寫"
-        }\n`;
-        textContent += `關係: ${
-          printContent.value.contact?.relationship || "未填寫"
-        }\n\n`;
-
-        textContent += "消災人員:\n";
-        textContent += "-".repeat(30) + "\n";
-        availableBlessingPersons.value.forEach((person, index) => {
-          textContent += `${index + 1}. ${person.name || ""} (${
-            person.zodiac || ""
-          }) - ${person.notes || ""} ${
-            person.isHouseholdHead ? "[戶長]" : ""
-          }\n`;
-        });
-
-        textContent += "\n歷代祖先:\n";
-        textContent += "-".repeat(30) + "\n";
-        availableAncestors.value.forEach((ancestor, index) => {
-          textContent += `${index + 1}. ${ancestor.surname || ""}氏歷代祖先 - ${
-            ancestor.notes || ""
-          }\n`;
-        });
-
-        textContent += "\n陽上人:\n";
-        textContent += "-".repeat(30) + "\n";
-        availableSurvivors.value.forEach((survivor, index) => {
-          textContent += `${index + 1}. ${survivor.name || ""} (${
-            survivor.zodiac || ""
-          }) - ${survivor.notes || ""}\n`;
-        });
-
-        const blob = new Blob([textContent], {
-          type: "text/plain;charset=utf-8",
-        });
-        downloadBlob(blob, `${document.title}_${formId.value}.txt`);
-        ElMessage.success("文字檔下載成功");
-      } catch (error) {
-        console.error("文字檔下載失敗:", error);
-        ElMessage.error("文字檔下載失敗");
-      }
-    };
-
-    // 通用下載函數
-    const downloadBlob = (blob, filename) => {
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    };
-
-    // 動態載入 html2canvas
-    const loadHtml2Canvas = () => {
-      return new Promise((resolve, reject) => {
-        if (typeof html2canvas !== "undefined") {
-          resolve();
-          return;
-        }
-
-        const script = document.createElement("script");
-        script.src =
-          "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
-    };
-
-    // 返回表單頁面
-    const handleBack = () => {
-      // 清理本地存儲的列印數據（可選）
-      if (printId.value) {
-        sessionStorage.removeItem(printId.value);
-        console.log("已清理列印數據，ID:", printId.value);
-      }
-
-      // 返回上一頁或指定頁面
-      router.back();
-      // 或者使用 router.push('/registration') 導航到特定頁面
-    };
-
-    // 列印處理
-    const handlePrint = () => {
-      isPrinting.value = true;
-
-      // 延遲執行列印，確保樣式已應用
-      setTimeout(() => {
-        window.print();
-        // 列印後恢復狀態
-        setTimeout(() => {
-          isPrinting.value = false;
-        }, 1000);
-      }, 500);
-    };
-
-    // 關閉視窗
-    const handleClose = () => {
-      // 清理本地存儲的列印數據
-      if (printId.value) {
-        sessionStorage.removeItem(printId.value);
-        console.log("已清理列印數據，ID:", printId.value);
-      }
-      window.close();
-    };
-
-    // 監聽列印事件
-    const beforePrint = () => {
-      isPrinting.value = true;
-    };
-
-    const afterPrint = () => {
-      isPrinting.value = false;
-    };
-
-    onMounted(() => {
-      setPrintTime();
-      loadPrintData();
-
-      // 添加列印事件監聽
-      window.addEventListener("beforeprint", beforePrint);
-      window.addEventListener("afterprint", afterPrint);
-      //window.addEventListener('onbeforeunload', handleClose)
-      //window.addEventListener('unload', handleClose)
-
-      // 自動觸發列印（可選）
-      //handlePrint()
-    });
-
-    onUnmounted(() => {
-      // 清理事件監聽
-      window.removeEventListener("beforeprint", beforePrint);
-      window.removeEventListener("afterprint", afterPrint);
-      //window.removeEventListener('onbeforeunload', handleClose)
-      //window.removeEventListener('unload', handleClose)
-    });
-
-    return {
-      printContent,
-      isPrinting,
-      printTime,
-      formId,
-      printId,
-      printData,
-      showDownloadMenu,
-      loading,
-      availableBlessingPersons,
-      availableAncestors,
-      availableSurvivors,
-      currentHouseholdHeadsCount,
-      handlePrint,
-      handleClose,
-      handleBack,
-      toggleDownloadMenu,
-      handleDownloadPDF,
-      handleDownloadExcel,
-      handleDownloadJSON,
-      handleDownloadImage,
-      handleDownloadText,
-    };
-  },
+    setTimeout(() => {
+      printWindow.print();
+      loading.value = false;
+      ElMessage.success("PDF 下載已開始");
+    }, 500);
+  } catch (error) {
+    console.error("PDF 下載失敗:", error);
+    ElMessage.error("PDF 下載失敗");
+    loading.value = false;
+  }
 };
+
+// 2. 下載為 Excel
+const handleDownloadExcel = () => {
+  loading.value = true;
+  showDownloadMenu.value = false;
+
+  try {
+    // 建立 Excel 內容
+    let excelContent = `${document.title}\n\n`;
+    // excelContent += `聯絡人: ${
+    //   printContent.value.contact?.name || "未填寫"
+    // }\n`;
+    // excelContent += `手機: ${
+    //   printContent.value.contact?.mobile || "未填寫"
+    // }\n`;
+    // excelContent += `電話: ${
+    //   printContent.value.contact?.phone || "未填寫"
+    // }\n`;
+    // excelContent += `關係: ${
+    //   printContent.value.contact?.relationship || "未填寫"
+    // }\n\n`;
+
+    excelContent += "聯絡人:\n";
+    excelContent += ",姓名,手機,電話,關係\n";
+    excelContent += `,${printContent.value.contact?.name || "未填寫"},${
+      printContent.value.contact?.mobile || "未填寫"
+    },${printContent.value.contact?.phone || "未填寫"},${
+      printContent.value.contact?.relationship || "未填寫"
+    }\n`;
+
+    // 消災人員
+    excelContent += "\n消災人員:\n";
+    excelContent += ",姓名,生肖,備註,戶長\n";
+    availableBlessingPersons.value.forEach((person, index) => {
+      excelContent += `${index + 1},${person.name || ""},${
+        person.zodiac || ""
+      },${person.notes || ""},${person.isHouseholdHead ? "是" : "否"}\n`;
+    });
+
+    excelContent += "\n歷代祖先:\n";
+    excelContent += ",姓氏,備註\n";
+    availableAncestors.value.forEach((ancestor, index) => {
+      excelContent += `${index + 1},${ancestor.surname || ""},${
+        ancestor.notes || ""
+      }\n`;
+    });
+
+    excelContent += "\n陽上人:\n";
+    excelContent += ",姓名,生肖,備註\n";
+    availableSurvivors.value.forEach((survivor, index) => {
+      excelContent += `${index + 1},${survivor.name || ""},${
+        survivor.zodiac || ""
+      },${survivor.notes || ""}\n`;
+    });
+
+    // 建立 Blob 並下載
+    const blob = new Blob([excelContent], {
+      type: "application/vnd.ms-excel;charset=utf-8",
+    });
+    downloadBlob(blob, `${document.title}_${formId.value}.xls`);
+    ElMessage.success("Excel 檔案下載成功");
+  } catch (error) {
+    console.error("Excel 下載失敗:", error);
+    ElMessage.error("Excel 下載失敗");
+  } finally {
+    loading.value = false;
+  }
+};
+
+// 3. 下載為 JSON
+const handleDownloadJSON = () => {
+  showDownloadMenu.value = false;
+
+  try {
+    const jsonData = {
+      formId: formId.value,
+      printTime: printTime.value,
+      ...printContent.value,
+    };
+
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    downloadBlob(blob, `${document.title}_${formId.value}.json`);
+    ElMessage.success("JSON 檔案下載成功");
+  } catch (error) {
+    console.error("JSON 下載失敗:", error);
+    ElMessage.error("JSON 下載失敗");
+  }
+};
+
+// 4. 下載為圖片（使用 html2canvas）
+const handleDownloadImage = async () => {
+  loading.value = true;
+  showDownloadMenu.value = false;
+
+  try {
+    // 檢查是否已載入 html2canvas
+    if (typeof html2canvas === "undefined") {
+      // 動態載入 html2canvas
+      await loadHtml2Canvas();
+    }
+
+    const element = document.getElementById("print-content");
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+    });
+
+    canvas.toBlob((blob) => {
+      downloadBlob(blob, `${document.title}_${formId.value}.png`);
+      ElMessage.success("圖片下載成功");
+      loading.value = false;
+    });
+  } catch (error) {
+    console.error("圖片下載失敗:", error);
+    ElMessage.error("圖片下載失敗，請稍後再試");
+    loading.value = false;
+  }
+};
+
+// 5. 下載為文字檔
+const handleDownloadText = () => {
+  showDownloadMenu.value = false;
+
+  try {
+    let textContent = `${document.title}\n`;
+    textContent += "=".repeat(50) + "\n\n";
+
+    textContent += `聯絡人: ${printContent.value.contact?.name || "未填寫"}\n`;
+    textContent += `手機: ${printContent.value.contact?.mobile || "未填寫"}\n`;
+    textContent += `電話: ${printContent.value.contact?.phone || "未填寫"}\n`;
+    textContent += `關係: ${
+      printContent.value.contact?.relationship || "未填寫"
+    }\n\n`;
+
+    textContent += "消災人員:\n";
+    textContent += "-".repeat(30) + "\n";
+    availableBlessingPersons.value.forEach((person, index) => {
+      textContent += `${index + 1}. ${person.name || ""} (${
+        person.zodiac || ""
+      }) - ${person.notes || ""} ${person.isHouseholdHead ? "[戶長]" : ""}\n`;
+    });
+
+    textContent += "\n歷代祖先:\n";
+    textContent += "-".repeat(30) + "\n";
+    availableAncestors.value.forEach((ancestor, index) => {
+      textContent += `${index + 1}. ${ancestor.surname || ""}氏歷代祖先 - ${
+        ancestor.notes || ""
+      }\n`;
+    });
+
+    textContent += "\n陽上人:\n";
+    textContent += "-".repeat(30) + "\n";
+    availableSurvivors.value.forEach((survivor, index) => {
+      textContent += `${index + 1}. ${survivor.name || ""} (${
+        survivor.zodiac || ""
+      }) - ${survivor.notes || ""}\n`;
+    });
+
+    const blob = new Blob([textContent], {
+      type: "text/plain;charset=utf-8",
+    });
+    downloadBlob(blob, `${document.title}_${formId.value}.txt`);
+    ElMessage.success("文字檔下載成功");
+  } catch (error) {
+    console.error("文字檔下載失敗:", error);
+    ElMessage.error("文字檔下載失敗");
+  }
+};
+
+// 通用下載函數
+const downloadBlob = (blob, filename) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+// 動態載入 html2canvas
+const loadHtml2Canvas = () => {
+  return new Promise((resolve, reject) => {
+    if (typeof html2canvas !== "undefined") {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+};
+
+// 返回表單頁面
+const handleBack = () => {
+  // 清理本地存儲的列印數據（可選）
+  if (printId.value) {
+    sessionStorage.removeItem(printId.value);
+    console.log("已清理列印數據，ID:", printId.value);
+  }
+
+  // 返回上一頁或指定頁面
+  router.back();
+  // 或者使用 router.push('/registration') 導航到特定頁面
+};
+
+// 列印處理
+const handlePrint = () => {
+  isPrinting.value = true;
+
+  // 延遲執行列印，確保樣式已應用
+  setTimeout(() => {
+    window.print();
+    // 列印後恢復狀態
+    setTimeout(() => {
+      isPrinting.value = false;
+    }, 1000);
+  }, 500);
+};
+
+// 關閉視窗
+const handleClose = () => {
+  // 清理本地存儲的列印數據
+  if (printId.value) {
+    sessionStorage.removeItem(printId.value);
+    console.log("已清理列印數據，ID:", printId.value);
+  }
+  window.close();
+};
+
+// 監聽列印事件
+const beforePrint = () => (isPrinting.value = true);
+
+const afterPrint = () => (isPrinting.value = false);
+
+onMounted(() => {
+  setPrintTime();
+  loadPrintData();
+
+  // 添加列印事件監聽
+  window.addEventListener("beforeprint", beforePrint);
+  window.addEventListener("afterprint", afterPrint);
+  //window.addEventListener('onbeforeunload', handleClose)
+  //window.addEventListener('unload', handleClose)
+
+  // 自動觸發列印（可選）
+  //handlePrint()
+});
+
+onUnmounted(() => {
+  // 清理事件監聽
+  window.removeEventListener("beforeprint", beforePrint);
+  window.removeEventListener("afterprint", afterPrint);
+  //window.removeEventListener('onbeforeunload', handleClose)
+  //window.removeEventListener('unload', handleClose)
+});
 </script>
 
 <style scoped>
