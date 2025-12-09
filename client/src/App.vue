@@ -7,7 +7,7 @@
           <h1>{{ appTitle }}</h1>
           <div class="user-info" v-if="showUserInfo">
             <span>{{ userDisplayName }}</span
-            >&nbsp;<span>你好</span>🙏
+            >&nbsp;<span>🙏</span>
           </div>
         </div>
         <!-- 顶部导航栏 -->
