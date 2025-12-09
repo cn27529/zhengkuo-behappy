@@ -1125,7 +1125,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
 
       // 更新时间
-      registrationForm.value.updatedAt = new Date().toISOString();
+      registrationForm.value.updatedAt = DateUtils.getCurrentISOTime();
       registrationForm.value.updatedUser = getCurrentUser();
       registrationForm.value.state = "updated"; // 更新后状态改为已提交
 

@@ -14,6 +14,13 @@ export const useActivityStore = defineStore("activity", () => {
   const loading = ref(false);
   const error = ref(null);
 
+  // ✅ 新增：搜尋與分頁狀態
+  const searchQuery = ref("");
+  const selectedItemTypes = ref([]);
+  const selectedTab = ref("upcoming");
+  const currentPage = ref(1);
+  const pageSize = ref(10);
+
   // ========== 工具函數 ==========
 
   /**
@@ -30,18 +37,16 @@ export const useActivityStore = defineStore("activity", () => {
    */
   const filterRecentActivities = (activitiesList) => {
     const oneYearAgo = getOneYearAgo();
-    // 1. 先過濾近一年的活動
     const filtered = activitiesList.filter((activity) => {
       if (!activity.date) return false;
       const activityDate = new Date(activity.date);
       return activityDate >= oneYearAgo;
     });
 
-    // 2. 按日期排序（最新在前）
     return filtered.sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-      return dateB - dateA; // 降序排序（最新在前）
+      return dateB - dateA;
     });
   };
 
@@ -84,6 +89,80 @@ export const useActivityStore = defineStore("activity", () => {
   });
 
   /**
+   * ✅ 新增：過濾後的即將到來活動
+   */
+  const upcomingFiltered = computed(() => {
+    let filtered = upcomingActivities.value;
+
+    // 類型篩選
+    if (selectedItemTypes.value.length > 0) {
+      filtered = filtered.filter((activity) =>
+        selectedItemTypes.value.includes(activity.item_type)
+      );
+    }
+
+    // 關鍵字搜尋
+    if (searchQuery.value) {
+      const keyword = searchQuery.value.toLowerCase();
+      filtered = filtered.filter(
+        (activity) =>
+          activity.name.toLowerCase().includes(keyword) ||
+          activity.description?.toLowerCase().includes(keyword) ||
+          activity.location.toLowerCase().includes(keyword) ||
+          activity.createdUser?.toLowerCase().includes(keyword)
+      );
+    }
+
+    return filtered;
+  });
+
+  /**
+   * ✅ 新增：過濾後的已完成活動
+   */
+  const completedFiltered = computed(() => {
+    let filtered = completedActivities.value;
+
+    // 類型篩選
+    if (selectedItemTypes.value.length > 0) {
+      filtered = filtered.filter((activity) =>
+        selectedItemTypes.value.includes(activity.item_type)
+      );
+    }
+
+    // 關鍵字搜尋
+    if (searchQuery.value) {
+      const keyword = searchQuery.value.toLowerCase();
+      filtered = filtered.filter(
+        (activity) =>
+          activity.name.toLowerCase().includes(keyword) ||
+          activity.description?.toLowerCase().includes(keyword) ||
+          activity.location.toLowerCase().includes(keyword) ||
+          activity.createdUser?.toLowerCase().includes(keyword)
+      );
+    }
+
+    return filtered;
+  });
+
+  /**
+   * ✅ 新增：分頁後的即將到來活動
+   */
+  const upcomingPaginated = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value;
+    const end = start + pageSize.value;
+    return upcomingFiltered.value.slice(start, end);
+  });
+
+  /**
+   * ✅ 新增：分頁後的已完成活動
+   */
+  const completedPaginated = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value;
+    const end = start + pageSize.value;
+    return completedFiltered.value.slice(start, end);
+  });
+
+  /**
    * 根據 ID 獲取活動
    */
   const getActivityById = computed(() => {
@@ -94,7 +173,6 @@ export const useActivityStore = defineStore("activity", () => {
    * 圖表數據
    */
   const chartData = computed(() => {
-    // 只使用近一年的數據計算統計
     const recentStats = calculateMonthlyStatsFromRecentActivities();
     return {
       labels: recentStats.value.map((stat) => stat.month),
@@ -145,20 +223,11 @@ export const useActivityStore = defineStore("activity", () => {
   });
 
   /**
-   * 獲取己建立活動的所有類型
+   * 獲取已建立活動的所有類型
    */
   const allActivityItemTypes = computed(() => {
     const item_types = new Set();
-
     Object.keys(getAllItemTypes()).forEach((type) => item_types.add(type));
-    console.log("🚀 所有活動類型:", item_types);
-    return Array.from(item_types).sort();
-
-    allActivities.value.forEach((activity) => {
-      const type = activity.item_type;
-      if (type) item_types.add(type);
-    });
-    console.log("🚀 所有活動類型:", item_types);
     return Array.from(item_types).sort();
   });
 
@@ -177,7 +246,58 @@ export const useActivityStore = defineStore("activity", () => {
 
   // ========== Actions - 方法 ==========
 
-  // 取得 Mock 數據
+  /**
+   * ✅ 新增：設置搜尋條件
+   */
+  const setSearchQuery = (query) => {
+    searchQuery.value = query;
+  };
+
+  /**
+   * ✅ 新增：設置類型篩選
+   */
+  const setSelectedItemTypes = (types) => {
+    selectedItemTypes.value = types;
+  };
+
+  /**
+   * ✅ 新增：設置當前標籤
+   */
+  const setSelectedTab = (tab) => {
+    selectedTab.value = tab;
+  };
+
+  /**
+   * ✅ 新增：設置當前頁碼
+   */
+  const setCurrentPage = (page) => {
+    currentPage.value = page;
+  };
+
+  /**
+   * ✅ 新增：設置每頁數量
+   */
+  const setPageSize = (size) => {
+    pageSize.value = size;
+  };
+
+  /**
+   * ✅ 新增：重置分頁
+   */
+  const resetPagination = () => {
+    currentPage.value = 1;
+  };
+
+  /**
+   * ✅ 新增：清空搜尋條件
+   */
+  const clearSearch = () => {
+    searchQuery.value = "";
+    selectedItemTypes.value = [];
+    resetPagination();
+  };
+
+  // 獲得 Mock 數據
   const loadMockData = async () => {
     try {
       if (!mockDatas || mockDatas.length === 0) {
@@ -185,10 +305,8 @@ export const useActivityStore = defineStore("activity", () => {
         return false;
       }
       let mockData = null;
-      // 隨機選擇一筆數據
       const randomIndex = Math.floor(Math.random() * mockDatas.length);
       mockData = mockDatas[randomIndex];
-      //console.log("📡 從 Mock 載入表單數據", mockData);
       return mockData;
     } catch (error) {
       console.error("載入 Mock 數據失敗:", error);
@@ -204,13 +322,11 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      // 如果不是 directus 模式，使用 Mock 數據
       if (baseService.mode !== "directus") {
         console.log("📦 使用 Mock 活動數據");
-        // 處理 mock 數據，確保 type 欄位存在
         const processedActivities = mockDatas.map((activity) => ({
           ...activity,
-          type: activity.item_type || "其他", // 將 item_type 映射到 type
+          type: activity.item_type || "其他",
         }));
         allActivities.value = processedActivities;
         return {
@@ -220,8 +336,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      // 從服務器獲取數據
-      console.log("🔄 從服務器獲取活動數據...");
+      console.log("📄 從服務器獲取活動數據...");
       const result = await activityService.getAllActivities(params);
 
       if (result.success) {
@@ -231,7 +346,6 @@ export const useActivityStore = defineStore("activity", () => {
       } else {
         error.value = result.message;
         console.error("❌ 獲取活動數據失敗:", result.message);
-        // 失敗時使用 Mock 數據作為後備
         const processedActivities = mockDatas.map((activity) => ({
           ...activity,
           type: activity.item_type || "其他",
@@ -242,7 +356,6 @@ export const useActivityStore = defineStore("activity", () => {
     } catch (err) {
       error.value = err.message;
       console.error("❌ 獲取活動數據異常:", err);
-      // 異常時使用 Mock 數據作為後備
       const processedActivities = mockDatas.map((activity) => ({
         ...activity,
         type: activity.item_type || "其他",
@@ -257,7 +370,6 @@ export const useActivityStore = defineStore("activity", () => {
   // 獲取用戶信息
   const getCurrentUser = () => {
     const userInfo = sessionStorage.getItem("auth-user");
-    console.log("獲取到的用戶信息:", userInfo);
     if (userInfo) {
       const user = JSON.parse(userInfo);
       return user.id || user.username || user.displayName || "unknown";
@@ -289,7 +401,6 @@ export const useActivityStore = defineStore("activity", () => {
 
       console.log("📦 添加新活動:", activity);
 
-      // 如果不是 directus 模式，只在本地添加
       if (baseService.mode !== "directus") {
         allActivities.value.push(activity);
         return {
@@ -300,7 +411,6 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      // 從服務器創建活動
       const result = await activityService.createActivity(newActivity);
 
       if (result.success) {
@@ -329,25 +439,22 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      // 在本地查找活動
       const activity = allActivities.value.find((a) => a.id === activityId);
       if (!activity) {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
-      // 如果不是 directus 模式，只在本地更新
       if (baseService.mode !== "directus") {
         activity.participants = newParticipants;
-        activity.updatedAt = new Date().toISOString();
+        activity.updatedAt = DateUtils.getCurrentISOTime();
         console.log("✅ Mock 模式：參與人次已更新");
         return {
           success: true,
           data: activity,
-          message: "參與人次已更新（Mock 模式）",
+          message: "參與人次已更新(Mock 模式)",
         };
       }
 
-      // 從服務器更新活動
       const result = await activityService.updateParticipants(
         activityId,
         newParticipants
@@ -380,29 +487,26 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      // 在本地查找活動
       const index = allActivities.value.findIndex((a) => a.id === activityId);
       if (index === -1) {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
-      // 如果不是 directus 模式，只在本地更新
       if (baseService.mode !== "directus") {
         allActivities.value[index] = {
           ...allActivities.value[index],
           ...activityData,
-          item_type: activityData.type, // 同步更新 item_type
-          updatedAt: new Date().toISOString(),
+          item_type: activityData.type,
+          updatedAt: DateUtils.getCurrentISOTime(),
         };
         console.log("✅ Mock 模式：活動已更新");
         return {
           success: true,
           data: allActivities.value[index],
-          message: "活動已更新（Mock 模式）",
+          message: "活動已更新(Mock 模式)",
         };
       }
 
-      // 從服務器更新活動
       const result = await activityService.updateActivity(
         activityId,
         activityData
@@ -442,17 +546,15 @@ export const useActivityStore = defineStore("activity", () => {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
-      // 如果不是 directus 模式，只在本地刪除
       if (baseService.mode !== "directus") {
         allActivities.value.splice(index, 1);
         console.log("✅ Mock 模式：活動已刪除");
         return {
           success: true,
-          message: "活動已刪除（Mock 模式）",
+          message: "活動已刪除(Mock 模式)",
         };
       }
 
-      // 從服務器刪除活動
       const result = await activityService.deleteActivity(activityId);
 
       if (result.success) {
@@ -486,19 +588,17 @@ export const useActivityStore = defineStore("activity", () => {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
-      // 如果不是 directus 模式，只在本地更新
       if (baseService.mode !== "directus") {
         activity.state = "completed";
-        activity.updatedAt = new Date().toISOString();
+        activity.updatedAt = DateUtils.getCurrentISOTime();
         console.log("✅ Mock 模式：活動已標記為完成");
         return {
           success: true,
           data: activity,
-          message: "活動已標記為完成（Mock 模式）",
+          message: "活動已標記為完成(Mock 模式)",
         };
       }
 
-      // 從服務器更新狀態
       const result = await activityService.completeActivity(activityId);
 
       if (result.success) {
@@ -528,18 +628,16 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      // 如果不是 directus 模式，使用計算的統計數據
       if (baseService.mode !== "directus") {
         console.log("📊 使用本地計算的月度統計");
         monthlyStats.value = calculateMonthlyStatsFromActivities();
         return {
           success: true,
           data: monthlyStats.value,
-          message: "成功獲取月度統計（本地計算）",
+          message: "成功獲取月度統計(本地計算)",
         };
       }
 
-      // 從服務器獲取統計數據
       const result = await activityService.getMonthlyStats();
 
       if (result.success) {
@@ -549,14 +647,12 @@ export const useActivityStore = defineStore("activity", () => {
       } else {
         error.value = result.message;
         console.error("❌ 獲取月度統計失敗:", result.message);
-        // 失敗時使用本地計算
         monthlyStats.value = calculateMonthlyStatsFromActivities();
         return result;
       }
     } catch (err) {
       error.value = err.message;
       console.error("❌ 獲取月度統計異常:", err);
-      // 異常時使用本地計算
       monthlyStats.value = calculateMonthlyStatsFromActivities();
       throw err;
     } finally {
@@ -584,18 +680,14 @@ export const useActivityStore = defineStore("activity", () => {
     ];
 
     const statsMap = new Map();
-
-    // 初始化所有月份
     months.forEach((month) => {
       statsMap.set(month, { month, participants: 0, events: 0 });
     });
 
-    // 統計每個活動
     allActivities.value.forEach((activity) => {
       const date = new Date(activity.date);
       const monthIndex = date.getMonth();
       const month = months[monthIndex];
-
       const stats = statsMap.get(month);
       stats.participants += activity.participants || 0;
       stats.events += 1;
@@ -612,7 +704,6 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      // 先在本地查找
       const localActivity = allActivities.value.find(
         (a) => a.activityId === activityId
       );
@@ -624,15 +715,13 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      // 如果不是 directus 模式，只能本地查找
       if (baseService.mode !== "directus") {
         return {
           success: false,
-          message: "找不到該活動（Mock 模式）",
+          message: "找不到該活動(Mock 模式)",
         };
       }
 
-      // 從服務器查找
       const result = await activityService.getActivitiesByActivityId(
         activityId
       );
@@ -666,7 +755,6 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      // 如果不是 directus 模式，從本地過濾
       if (baseService.mode !== "directus") {
         const filtered = allActivities.value.filter(
           (a) => a.type === item_type || a.item_type === item_type
@@ -674,25 +762,23 @@ export const useActivityStore = defineStore("activity", () => {
         return {
           success: true,
           data: filtered,
-          message: `找到 ${filtered.length} 個 ${item_type} 類型的活動（本地）`,
+          message: `找到 ${filtered.length} 個 ${item_type} 類型的活動(本地)`,
         };
       }
 
-      // 從服務器獲取
       const result = await activityService.getActivitiesByItemType(item_type);
 
       if (result.success) {
         return result;
       } else {
         error.value = result.message;
-        // 失敗時從本地過濾
         const filtered = allActivities.value.filter(
           (a) => a.type === item_type || a.item_type === item_type
         );
         return {
           success: true,
           data: filtered,
-          message: `找到 ${filtered.length} 個 ${item_type} 類型的活動（本地後備）`,
+          message: `找到 ${filtered.length} 個 ${item_type} 類型的活動(本地後備)`,
         };
       }
     } catch (err) {
@@ -712,29 +798,26 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      // 如果不是 directus 模式，從本地過濾
       if (baseService.mode !== "directus") {
         const filtered = allActivities.value.filter((a) => a.state === state);
         return {
           success: true,
           data: filtered,
-          message: `找到 ${filtered.length} 個 ${state} 狀態的活動（本地）`,
+          message: `找到 ${filtered.length} 個 ${state} 狀態的活動(本地)`,
         };
       }
 
-      // 從服務器獲取
       const result = await activityService.getActivitiesByState(state);
 
       if (result.success) {
         return result;
       } else {
         error.value = result.message;
-        // 失敗時從本地過濾
         const filtered = allActivities.value.filter((a) => a.state === state);
         return {
           success: true,
           data: filtered,
-          message: `找到 ${filtered.length} 個 ${state} 狀態的活動（本地後備）`,
+          message: `找到 ${filtered.length} 個 ${state} 狀態的活動(本地後備)`,
         };
       }
     } catch (err) {
@@ -782,11 +865,22 @@ export const useActivityStore = defineStore("activity", () => {
     monthlyStats,
     loading,
     error,
+    // ✅ 新增：搜尋與分頁狀態
+    searchQuery,
+    selectedItemTypes,
+    selectedTab,
+    currentPage,
+    pageSize,
 
     // Getters
     totalParticipants,
     upcomingActivities,
     completedActivities,
+    // ✅ 新增：過濾與分頁計算屬性
+    upcomingFiltered,
+    completedFiltered,
+    upcomingPaginated,
+    completedPaginated,
     getActivityById,
     chartData,
     activitiesByItemType,
@@ -810,5 +904,13 @@ export const useActivityStore = defineStore("activity", () => {
     getCurrentMode,
     setMode,
     loadMockData,
+    // ✅ 新增：搜尋與分頁方法
+    setSearchQuery,
+    setSelectedItemTypes,
+    setSelectedTab,
+    setCurrentPage,
+    setPageSize,
+    resetPagination,
+    clearSearch,
   };
 });
