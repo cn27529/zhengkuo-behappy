@@ -47,9 +47,8 @@ export const useCardStore = defineStore("card", () => {
           items: droppedItems.value,
           lastUpdated: new Date().toISOString(),
         };
-
         // 保存到 localStorage（模擬保存到數據庫）
-        localStorage.setItem("cardDesign", JSON.stringify(designData));
+        sessionStorage.setItem("cardDesign", JSON.stringify(designData));
         console.log("設計已保存:", designData);
         resolve(designData);
       }, 500);
@@ -58,7 +57,7 @@ export const useCardStore = defineStore("card", () => {
 
   // 從本地存儲加載設計
   const loadSavedDesign = () => {
-    const savedDesign = localStorage.getItem("cardDesign");
+    const savedDesign = sessionStorage.getItem("cardDesign");
     if (savedDesign) {
       try {
         const designData = JSON.parse(savedDesign);
@@ -73,7 +72,7 @@ export const useCardStore = defineStore("card", () => {
   // 重置設計
   const resetDesign = () => {
     droppedItems.value = [];
-    localStorage.removeItem("cardDesign");
+    sessionStorage.removeItem("cardDesign");
   };
 
   // 獲取完整的設計數據（用於 API 提交）
