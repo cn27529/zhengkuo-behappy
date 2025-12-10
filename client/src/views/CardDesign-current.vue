@@ -20,27 +20,26 @@
                 v-for="item in cardStore.droppedItems"
                 :key="item.id"
                 class="dropped-item"
-                :style="getDroppedItemStyle(item)"
+                :style="{ left: `${item.x}px`, top: `${item.y}px` }"
                 @mousedown="startDragging(item.id, $event)"
                 @mouseenter="hoveredItemId = item.id"
                 @mouseleave="hoveredItemId = null"
                 :class="{ selected: selectedItemId === item.id }"
               >
-                <!-- 垂直排列的文字 -->
+                <div class="item-content">{{ item.content }}</div>
                 <div
                   style="
-                    font-size: 1.5rem;
+                    font-size: 2.2rem;
                     font-family: 標楷體;
                     color: #333;
                     text-align: center;
-                    margin: -6px;
+                    margin: -10px;
                     border: 0px solid #333;
                     font-weight: bold;
                   "
-                  v-for="(char, index) in item.content"
-                  :key="index"
+                  v-for="value in item.content.length"
                 >
-                  {{ char }}
+                  {{ item.content[value - 1] }}
                 </div>
                 <button
                   class="delete-btn"
@@ -78,6 +77,7 @@
             @dragstart="onDragStart($event, 'name')"
             @dragend="onDragEnd"
           >
+            <!-- <div class="data-label">姓名</div> -->
             <div class="data-value">{{ cardStore.cardData.name }}</div>
           </div>
 
@@ -87,6 +87,7 @@
             @dragstart="onDragStart($event, 'nickname')"
             @dragend="onDragEnd"
           >
+            <!-- <div class="data-label">暱稱</div> -->
             <div class="data-value">{{ cardStore.cardData.nickname }}</div>
           </div>
         </div>
@@ -137,9 +138,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted, nextTick, computed } from "vue";
+import { ref, reactive, onMounted, onUnmounted, nextTick } from "vue";
 import { useCardStore } from "../stores/cardStore.js";
-import { Delete } from "@element-plus/icons-vue";
+import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
+// 移除直接導入 html2canvas
+// import html2canvas from 'html2canvas'
 import { ElMessage, ElMessageBox } from "element-plus";
 
 // 使用卡片 store
@@ -147,7 +150,7 @@ const cardStore = useCardStore();
 
 // DOM 引用
 const dropZoneRef = ref(null);
-const cardContainerRef = ref(null);
+// 獲取 card-bg 元素的實際尺寸和位置
 const cardBgRef = ref(null);
 
 // 響應式狀態
@@ -155,48 +158,6 @@ const hoveredItemId = ref(null);
 const selectedItemId = ref(null);
 const saving = ref(false);
 const printing = ref(false);
-
-// 卡片尺寸狀態
-const cardDimensions = reactive({
-  width: 0,
-  height: 0,
-  offsetX: 0,
-  offsetY: 0,
-  scale: 1,
-});
-
-// 計算背景圖位置
-const calculateCardDimensions = () => {
-  if (!cardBgRef.value) return;
-
-  const container = cardBgRef.value;
-  const bgImage = new Image();
-  bgImage.src = "../data/card-template-001.jpg";
-
-  // 獲取容器尺寸
-  const containerWidth = container.clientWidth;
-  const containerHeight = container.clientHeight;
-
-  // 計算圖片縮放比例（假設圖片原始比例）
-  const imageAspectRatio = 2 / 3; // 假設卡片模板是2:3比例
-  const containerAspectRatio = containerWidth / containerHeight;
-
-  if (containerAspectRatio > imageAspectRatio) {
-    // 容器較寬，圖片高度填滿
-    cardDimensions.height = containerHeight;
-    cardDimensions.width = containerHeight * imageAspectRatio;
-    cardDimensions.offsetX = (containerWidth - cardDimensions.width) / 2;
-    cardDimensions.offsetY = 0;
-  } else {
-    // 容器較高，圖片寬度填滿
-    cardDimensions.width = containerWidth;
-    cardDimensions.height = containerWidth / imageAspectRatio;
-    cardDimensions.offsetX = 0;
-    cardDimensions.offsetY = (containerHeight - cardDimensions.height) / 2;
-  }
-
-  console.log("卡片尺寸計算:", cardDimensions);
-};
 
 // 拖拽狀態
 const dragState = reactive({
@@ -214,19 +175,6 @@ const itemDragState = reactive({
   offsetY: 0,
 });
 
-// 計算拖拽元素樣式
-const getDroppedItemStyle = (item) => {
-  // 根據卡片實際顯示位置調整坐標
-  const adjustedX = item.x - cardDimensions.offsetX;
-  const adjustedY = item.y - cardDimensions.offsetY;
-
-  return {
-    left: `${adjustedX}px`,
-    top: `${adjustedY}px`,
-    transform: "translate(0, 0)", // 避免transform影響定位
-  };
-};
-
 // 初始化數據
 onMounted(() => {
   // 從 store 加載已保存的設計
@@ -235,21 +183,12 @@ onMounted(() => {
   // 添加全局鼠標事件監聽器
   document.addEventListener("mousemove", onMouseMove);
   document.addEventListener("mouseup", onMouseUp);
-
-  // 計算卡片尺寸
-  setTimeout(() => {
-    calculateCardDimensions();
-
-    // 監聽窗口大小變化
-    window.addEventListener("resize", calculateCardDimensions);
-  }, 100);
 });
 
 // 清理事件監聽器
 onUnmounted(() => {
   document.removeEventListener("mousemove", onMouseMove);
   document.removeEventListener("mouseup", onMouseUp);
-  window.removeEventListener("resize", calculateCardDimensions);
 });
 
 // 拖拽開始處理
@@ -323,13 +262,12 @@ const onDrop = (event) => {
   }
 
   // 獲取放置位置（相對於放置區域）
-  const rect = dropZoneRef.value.getBoundingClientRect();
-  let x = event.clientX - rect.left;
-  let y = event.clientY - rect.top;
+  //const rect = dropZoneRef.value.getBoundingClientRect();
 
-  // 調整坐標到卡片實際顯示區域
-  x -= cardDimensions.offsetX;
-  y -= cardDimensions.offsetY;
+  //改用 cardBgRef.value.getBoundingClientRect() 來計算放置位置,而不是 dropZoneRef
+  const rect = cardBgRef.value.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
 
   // 獲取拖拽數據
   let data;
@@ -423,20 +361,24 @@ const onMouseMove = (event) => {
   let newX = event.clientX - dropZoneRect.left - itemDragState.offsetX;
   let newY = event.clientY - dropZoneRect.top - itemDragState.offsetY;
 
-  // 調整坐標到卡片實際顯示區域
-  newX -= cardDimensions.offsetX;
-  newY -= cardDimensions.offsetY;
+  // 計算cardBg新位置
+  const cardBgRect = cardBgRef.value.getBoundingClientRect();
+  newX = event.clientX - cardBgRect.left - itemDragState.offsetX;
+  newY = event.clientY - cardBgRect.top - itemDragState.offsetY;
 
-  // 確保元素不會完全移出卡片顯示區域
-  const elementWidth = 150; // 固定寬度
-  const elementHeight =
-    cardStore.droppedItems.find(
-      (item) => item.id === itemDragState.draggingItemId
-    )?.content?.length * 30 || 80;
+  // 確保元素不會完全移出放置區域
+  const element = document.querySelector(
+    `[data-id="${itemDragState.draggingItemId}"]`
+  );
+  const elementWidth = element ? element.offsetWidth : 200;
+  const elementHeight = element ? element.offsetHeight : 80;
 
-  // 限制在卡片範圍內
-  newX = Math.max(0, Math.min(newX, cardDimensions.width - elementWidth));
-  newY = Math.max(0, Math.min(newY, cardDimensions.height - elementHeight));
+  //newX = Math.max(0, Math.min(newX, dropZoneRect.width - elementWidth));
+  //newY = Math.max(0, Math.min(newY, dropZoneRect.height - elementHeight));
+
+  //使用 cardBgRect.width 和 cardBgRect.height 作為邊界
+  newX = Math.max(0, Math.min(newX, cardBgRect.width - elementWidth));
+  newY = Math.max(0, Math.min(newY, cardBgRect.height - elementHeight));
 
   // 更新 store 中元素的位置
   cardStore.updateItemPosition(itemDragState.draggingItemId, newX, newY);
@@ -472,6 +414,30 @@ const deleteItem = (itemId) => {
   });
 };
 
+// 保存設計
+const handleSaveDesign = async () => {
+  try {
+    saving.value = true;
+    await cardStore.saveDesign();
+
+    ElMessage({
+      message: "設計已保存成功！",
+      type: "success",
+      duration: 3000,
+    });
+  } catch (error) {
+    console.error("保存設計時出錯:", error);
+
+    ElMessage({
+      message: "保存失敗，請重試",
+      type: "error",
+      duration: 3000,
+    });
+  } finally {
+    saving.value = false;
+  }
+};
+
 // 動態加載 html2canvas（與 RegistrationPrint.vue 相同的方式）
 const loadHtml2Canvas = () => {
   return new Promise((resolve, reject) => {
@@ -497,30 +463,6 @@ const loadHtml2Canvas = () => {
   });
 };
 
-// 保存設計
-const handleSaveDesign = async () => {
-  try {
-    saving.value = true;
-    await cardStore.saveDesign();
-
-    ElMessage({
-      message: "設計已保存成功！",
-      type: "success",
-      duration: 3000,
-    });
-  } catch (error) {
-    console.error("保存設計時出錯:", error);
-
-    ElMessage({
-      message: "保存失敗，請重試",
-      type: "error",
-      duration: 3000,
-    });
-  } finally {
-    saving.value = false;
-  }
-};
-
 // 列印/下載卡片（使用與 RegistrationPrint.vue 相同的方式）
 const handlePrintCard = async () => {
   try {
@@ -528,7 +470,7 @@ const handlePrintCard = async () => {
 
     // 使用 Element Plus 消息提示
     ElMessage({
-      message: "正在生成卡片圖片，請稍候...",
+      message: "正在生成圖片，請稍候...",
       type: "info",
       duration: 2000,
     });
@@ -539,73 +481,21 @@ const handlePrintCard = async () => {
       await loadHtml2Canvas();
     }
 
+    // 使用html2canvas將卡片區域轉換為圖片
+    //const cardContainer = document.querySelector(".card-container");
+    const cardContainer = document.querySelector(".card-bg");
+
+    console.log("cardContainer:", cardContainer.innerHTML);
+
     // 等待下一個渲染周期確保所有元素都已渲染
     await nextTick();
 
-    // 方法1：直接捕捉卡片背景區域（最準確）
-    const printElement = document.querySelector(".card-bg");
-
-    // 臨時調整元素位置為絕對定位在卡片上
-    const tempAdjustments = [];
-    const droppedItems = document.querySelectorAll(".dropped-item");
-
-    console.log("droppedItems", droppedItems);
-
-    // 保存原始位置並調整為相對卡片背景
-    droppedItems.forEach((item) => {
-      const rect = item.getBoundingClientRect();
-      const cardRect = printElement.getBoundingClientRect();
-
-      // 計算相對位置
-      const relativeLeft = rect.left - cardRect.left;
-      const relativeTop = rect.top - cardRect.top;
-
-      // 保存原始樣式
-      tempAdjustments.push({
-        element: item,
-        originalLeft: item.style.left,
-        originalTop: item.style.top,
-        originalPosition: item.style.position,
-      });
-
-      // 設置為相對卡片背景的絕對定位
-      item.style.position = "absolute";
-      item.style.left = `${relativeLeft}px`;
-      item.style.top = `${relativeTop}px`;
-      item.style.transform = "none"; // 移除transform
-    });
-
-    console.log("開始捕捉卡片...", printElement);
-
-    const canvas = await window.html2canvas(printElement, {
-      backgroundColor: null, // 設置為null以保持透明背景
+    const canvas = await window.html2canvas(cardContainer, {
+      backgroundColor: "#f8f0e3",
       scale: 2, // 提高分辨率
       useCORS: true,
       allowTaint: true,
-      logging: true, // 開啟日誌
-      removeContainer: true,
-      width: printElement.clientWidth,
-      height: printElement.clientHeight,
-      x: 0,
-      y: 0,
-      scrollX: 0,
-      scrollY: 0,
-      ignoreElements: (element) => {
-        // 忽略不需要的元素
-        return (
-          element.classList.contains("delete-btn") ||
-          element.classList.contains("empty-state")
-        );
-      },
-    });
-
-    // 恢復原始樣式
-    tempAdjustments.forEach((adjustment) => {
-      if (adjustment.element) {
-        adjustment.element.style.left = adjustment.originalLeft;
-        adjustment.element.style.top = adjustment.originalTop;
-        adjustment.element.style.position = adjustment.originalPosition;
-      }
+      backgroundColor: "#ffffff",
     });
 
     // 創建下載鏈接
@@ -738,21 +628,35 @@ h1 {
   border: 0px solid #e6d8c3;
   opacity: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .card-bg {
+  /* 固定卡片尺寸比例，例如 A4 直式比例 */
   width: 100%;
-  height: 100%;
-  max-width: 600px; /* 限制最大寬度 */
-  max-height: 900px; /* 限制最大高度 */
+  max-width: 600px;
+  aspect-ratio: 2/5; /* 或根據您的模板實際比例調整 */
   background-image: url("../data/card-template-001.jpg");
-  background-size: contain;
+  background-size: 100% 100%; /* 完全填滿容器 */
   background-repeat: no-repeat;
-  background-position: center; /* 保持居中顯示 */
+  background-position: 0 0; /* 從左上角開始 */
   position: relative;
-  margin: auto; /* 確保居中 */
+}
+
+.item-content {
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+  opacity: 0;
+}
+
+.item-type {
+  font-size: 0.75rem;
+  color: #d63384;
+  margin-bottom: 4px;
+  font-weight: bold;
+  display: none;
 }
 
 .drop-zone {
@@ -762,35 +666,19 @@ h1 {
   top: 0;
   left: 0;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .dropped-item {
   position: absolute;
+  /* padding: 12px 18px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
   border: 0px solid rgba(214, 51, 132, 0.3);
   max-width: 150px;
   cursor: move;
+  /* transition: box-shadow 0.2s; */
   z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 2px;
-  padding: 5px;
-}
-
-.vertical-text {
-  font-size: 1.3rem;
-  font-family: "標楷體", "Microsoft JhengHei", sans-serif;
-  color: #333;
-  text-align: center;
-  margin: 0;
-  font-weight: bold;
-  line-height: 1.2;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
 }
 
 .dropped-item:hover {
@@ -801,6 +689,7 @@ h1 {
 }
 
 .dropped-item.selected {
+  /* border: 0px solid #d63384; */
   box-shadow: 0 0 0 0px rgba(214, 51, 132, 0.2);
 }
 
@@ -808,6 +697,7 @@ h1 {
   position: absolute;
   top: -8px;
   right: -8px;
+  /* background-color: #ff4757; */
   opacity: 0;
   color: white;
   border: none;
@@ -817,10 +707,6 @@ h1 {
   font-size: 12px;
   cursor: pointer;
   z-index: 101;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 71, 87, 0.8);
 }
 
 .delete-btn:hover {
@@ -871,8 +757,14 @@ h1 {
   cursor: grabbing;
 }
 
+.data-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
 .data-value {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #333;
   font-weight: 500;
 }
