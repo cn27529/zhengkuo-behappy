@@ -3,7 +3,7 @@
     <div class="main-content">
       <!-- 左側卡片預覽區域 -->
       <section class="card-preview">
-        <h2 class="section-title">卡片預覽區</h2>
+        <h2 class="section-title"><i class="fas fa-palette"></i> 卡片預覽區</h2>
         <div class="card-container">
           <div class="card-bg" id="cardBg">
             <div
@@ -26,20 +26,8 @@
                 @mouseleave="hoveredItemId = null"
                 :class="{ selected: selectedItemId === item.id }"
               >
+                <div class="item-type">{{ getItemTypeLabel(item.type) }}</div>
                 <div class="item-content">{{ item.content }}</div>
-                <div
-                  style="
-                    font-size: 1.3rem;
-                    font-family: 標楷體;
-                    color: #333;
-                    text-align: center;
-                    margin: 0px;
-                    border: 0px solid #333;
-                  "
-                  v-for="value in item.content.length"
-                >
-                  {{ item.content[value - 1] }}
-                </div>
                 <button
                   class="delete-btn"
                   @click.stop="deleteItem(item.id)"
@@ -47,7 +35,7 @@
                     hoveredItemId === item.id || selectedItemId === item.id
                   "
                 >
-                  <el-icon><Delete /></el-icon>
+                  <i class="fas fa-times"></i>
                 </button>
               </div>
 
@@ -56,8 +44,8 @@
                 class="empty-state"
                 v-if="cardStore.droppedItems.length === 0"
               >
-                <p>從右側拖拽祝賀詞</p>
-                <p>到這裡</p>
+                <i class="fas fa-arrow-alt-circle-left"></i>
+                <p>從右側拖拽祝賀詞到這裡</p>
               </div>
             </div>
           </div>
@@ -66,17 +54,19 @@
 
       <!-- 右側數據區域 -->
       <section class="card-data">
-        <h2 class="section-title">卡片數據區</h2>
+        <h2 class="section-title">
+          <i class="fas fa-database"></i> 卡片數據區
+        </h2>
 
         <div class="data-section">
-          <h3 class="section-title">基本信息</h3>
+          <h3 class="section-title"><i class="fas fa-user"></i> 基本信息</h3>
           <div
             class="data-item"
             draggable="true"
             @dragstart="onDragStart($event, 'name')"
             @dragend="onDragEnd"
           >
-            <!-- <div class="data-label">姓名</div> -->
+            <div class="data-label">姓名</div>
             <div class="data-value">{{ cardStore.cardData.name }}</div>
           </div>
 
@@ -86,13 +76,15 @@
             @dragstart="onDragStart($event, 'nickname')"
             @dragend="onDragEnd"
           >
-            <!-- <div class="data-label">暱稱</div> -->
+            <div class="data-label">暱稱</div>
             <div class="data-value">{{ cardStore.cardData.nickname }}</div>
           </div>
         </div>
 
         <div class="data-section">
-          <h3 class="section-title">祝賀詞</h3>
+          <h3 class="section-title">
+            <i class="fas fa-comment-dots"></i> 祝賀詞
+          </h3>
           <div class="blessings-list">
             <div
               v-for="(blessing, index) in cardStore.cardData.blessings"
@@ -108,28 +100,50 @@
         </div>
 
         <div class="instructions">
-          <h3>使用說明</h3>
+          <h3><i class="fas fa-info-circle"></i> 使用說明</h3>
           <ul>
             <li>從右側拖拽任意數據到左側卡片區域</li>
             <li>在卡片區域內拖拽元素可以調整位置</li>
             <li>鼠標懸停在元素上，點擊右上角刪除按鈕可以移除</li>
-            <li>點擊"保存"保存當前設計</li>
-            <li>點擊"列印"下載卡片</li>
+            <li>點擊"立即保存"保存當前設計</li>
+            <li>點擊"列印"下載卡片圖片</li>
           </ul>
         </div>
-
-        <!-- 按鈕區域 - 使用 Element Plus 按鈕 -->
-        <div class="form-actions">
-          <el-button type="success" @click="saveDesign" :loading="saving"
-            >🚀 保存
-          </el-button>
-
-          <el-button type="primary" @click="printCard" :loading="printing"
-            >🖨️ 列印/下載卡片
-          </el-button>
-          <el-button type="info" @click="resetDesign"> 🔄️ 重置設計 </el-button>
-        </div>
       </section>
+    </div>
+
+    <!-- 按鈕區域 - 使用 Element Plus 按鈕 -->
+    <div class="actions">
+      <el-button
+        type="success"
+        @click="saveDesign"
+        :loading="saving"
+        class="btn"
+      >
+        <template #icon>
+          <i class="fas fa-save"></i>
+        </template>
+        立即保存
+      </el-button>
+
+      <el-button
+        type="primary"
+        @click="printCard"
+        :loading="printing"
+        class="btn"
+      >
+        <template #icon>
+          <i class="fas fa-print"></i>
+        </template>
+        列印/下載圖片
+      </el-button>
+
+      <el-button type="info" @click="resetDesign" class="btn">
+        <template #icon>
+          <i class="fas fa-redo"></i>
+        </template>
+        重置設計
+      </el-button>
     </div>
   </div>
 </template>
@@ -137,9 +151,8 @@
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, nextTick } from "vue";
 import { useCardStore } from "../stores/cardStore.js";
-import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
 // 移除直接導入 html2canvas
-// import html2canvas from 'html2canvas'
+// import html2canvas from "html2canvas"
 import { ElMessage, ElMessageBox } from "element-plus";
 
 // 使用卡片 store
@@ -446,7 +459,7 @@ const loadHtml2Canvas = () => {
   });
 };
 
-// 列印/下載卡片（使用與 RegistrationPrint.vue 相同的方式）
+// 列印/下載卡片圖片（使用與 RegistrationPrint.vue 相同的方式）
 const printCard = async () => {
   try {
     printing.value = true;
@@ -537,19 +550,6 @@ const resetDesign = () => {
 </script>
 
 <style scoped>
-.form-actions {
-  flex-direction: column;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid #e9ecef;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -561,7 +561,7 @@ const resetDesign = () => {
   max-width: 1400px;
   margin: 0 auto;
   background-color: white;
-  border-radius: 12px;
+  /* border-radius: 12px; */
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
@@ -569,7 +569,7 @@ const resetDesign = () => {
 header {
   background: linear-gradient(135deg, #d63384, #9c27b0);
   color: white;
-  padding: 22px 30px;
+  /* padding: 22px 30px; */
   text-align: center;
 }
 
@@ -602,13 +602,12 @@ h1 {
 .card-container {
   flex: 1;
   /* background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f8f0e3"/><path d="M0,20 L100,20 M0,40 L100,40 M0,60 L100,60 M0,80 L100,80 M20,0 L20,100 M40,0 L40,100 M60,0 L60,100 M80,0 L80,100" stroke="%23e6d8c3" stroke-width="0.5"/></svg>'); */
-  /* background-color: #f8f0e3; */
+  background-color: #f8f0e3;
   border-radius: 8px;
   box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
   border: 1px solid #e6d8c3;
-  opacity: 1;
 }
 
 .card-bg {
@@ -619,7 +618,6 @@ h1 {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  position: relative;
 }
 
 .drop-zone {
@@ -634,33 +632,30 @@ h1 {
 .dropped-item {
   position: absolute;
   /* padding: 12px 18px;
-  background-color: rgba(255, 255, 255, 0.85);
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
-  border: 0px solid rgba(214, 51, 132, 0.3);
-  max-width: 150px;
+  background-color: rgba(255, 255, 255, 0.85); 
+  border-radius: 6px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(214, 51, 132, 0.3);*/
+  max-width: 20px;
   cursor: move;
-  /* transition: box-shadow 0.2s; */
+  transition: box-shadow 0.2s;
   z-index: 10;
 }
 
 .dropped-item:hover {
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(214, 51, 132, 0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   z-index: 100;
 }
 
 .dropped-item.selected {
-  /* border: 0px solid #d63384; */
-  box-shadow: 0 0 0 0px rgba(214, 51, 132, 0.2);
+  /* border: 1px solid #d63384; */
+  box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.2);
 }
 
 .item-content {
-  font-size: 0.5rem;
+  font-size: 2rem;
   color: #333;
-  text-align: center;
-  opacity: 0;
+  word-break: break-word;
 }
 
 .item-type {
@@ -668,15 +663,13 @@ h1 {
   color: #d63384;
   margin-bottom: 4px;
   font-weight: bold;
-  display: none;
 }
 
 .delete-btn {
   position: absolute;
   top: -8px;
   right: -8px;
-  /* background-color: #ff4757; */
-  opacity: 0;
+  background-color: #ff4757;
   color: white;
   border: none;
   border-radius: 50%;
@@ -685,11 +678,6 @@ h1 {
   font-size: 12px;
   cursor: pointer;
   z-index: 101;
-}
-
-.delete-btn:hover {
-  background-color: #ff4757;
-  opacity: 1;
 }
 
 /* 右側數據區域 */
@@ -784,6 +772,7 @@ h1 {
   padding: 25px;
   display: flex;
   justify-content: center;
+  gap: 20px;
   border-top: 1px solid #eee;
   background-color: #f9f9f9;
 }

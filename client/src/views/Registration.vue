@@ -1309,6 +1309,10 @@ select:focus {
 }
 
 .form-actions {
+  flex-direction: column;
+}
+
+.form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -1503,10 +1507,6 @@ select:focus {
   .section-info {
     width: 100%;
     justify-content: space-between;
-  }
-
-  .form-actions {
-    flex-direction: column;
   }
 
   .btn {
