@@ -14,6 +14,7 @@ const routes = [
   { path: "/logout", component: () => import("../views/Logout.vue") },
   { path: "/contact", component: () => import("../views/Contact.vue") },
   { path: "/mock", component: () => import("../views/MockLogin.vue") },
+  { path: "/card-design", component: () => import("../views/CardDesign.vue") },
   {
     path: "/animated-number",
     component: () => import("../views/AnimatedNumber.vue"),
