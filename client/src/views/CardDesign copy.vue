@@ -622,7 +622,7 @@ h1 {
   background-image: url("../data/card-template-001.jpg");
   background-size: contain;
   background-repeat: no-repeat;
-  /* background-position: center; */
+  background-position: center;
   position: relative;
 }
 
