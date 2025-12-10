@@ -5,7 +5,7 @@
       <h2>Git Flow 哈希生成器</h2>
     </div>
 
-    <!-- 表单管理区域 -->
+    <!-- 表單管理区域 -->
     <div class="form-header">
       <p>生成类似Git提交哈希的7位代码</p>
     </div>
@@ -309,7 +309,7 @@ const copyHash = async (hash) => {
   /* border-top: 1px solid #e9ecef; */
 }
 
-/* 响应式设计 */
+/* 响應式設計 */
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;

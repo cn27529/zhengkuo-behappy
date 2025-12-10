@@ -58,7 +58,7 @@ console.log("當前開發模式:", authService.getCurrentDev());
 // 在控制台暴露 authService 方便調試
 window.$authService = authService;
 
-// 创建Vue应用
+// 创建Vue應用
 const app = createApp(App);
 
 // 使用路由和状态管理
@@ -70,7 +70,7 @@ app.use(ElementPlus, {
   locale: zhTW, // 使用中文語言包
 });
 
-// 挂载应用
+// 挂载應用
 app.mount("#app");
 
 // 在控制台暴露 regiStore

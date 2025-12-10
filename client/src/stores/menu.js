@@ -6,7 +6,7 @@ import { useRouter } from "vue-router";
 export const useMenuStore = defineStore("menu", () => {
   const router = useRouter();
 
-  // 菜单数据状态
+  // 菜單數據状态
   const menuItems = ref([
     {
       id: 1,
@@ -22,7 +22,7 @@ export const useMenuStore = defineStore("menu", () => {
       id: 2,
       name: "祈福登記",
       path: "/registration", // 修改路徑
-      icon: "📝",
+      icon: "🖥️",
       component: "Registration", // 修改組件名稱
       requiredAuth: true,
       order: 2,
@@ -32,7 +32,7 @@ export const useMenuStore = defineStore("menu", () => {
       id: 3,
       name: "登記查詢",
       path: "/registration-list", //路徑
-      icon: "📝",
+      icon: "🔎",
       component: "RegistrationList",
       requiredAuth: true,
       order: 3,
@@ -52,7 +52,7 @@ export const useMenuStore = defineStore("menu", () => {
       id: 5,
       name: "太歲分析",
       path: "/taisui",
-      icon: "📥",
+      icon: "🐯",
       component: "TaiSui",
       requiredAuth: true,
       order: 5,
@@ -62,7 +62,7 @@ export const useMenuStore = defineStore("menu", () => {
       id: 6,
       name: "卡片設計",
       path: "/card-design",
-      icon: "📥",
+      icon: "🎨",
       component: "CardDesign",
       requiredAuth: false,
       order: 5,
@@ -90,7 +90,7 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 99,
-      name: "数据导入",
+      name: "數據导入",
       path: "/data-import",
       icon: "📥",
       component: "DataImport",
@@ -111,22 +111,22 @@ export const useMenuStore = defineStore("menu", () => {
     // },
   ]);
 
-  // 当前激活的菜单项
+  // 当前激活的菜單项
   const activeMenuId = ref(1);
 
-  // Getter - 获取可用的菜单项（按order排序）
+  // Getter - 获取可用的菜單项（按order排序）
   const availableMenuItems = computed(() => {
     return menuItems.value
       .filter((item) => item.enabled)
       .sort((a, b) => a.order - b.order);
   });
 
-  // Getter - 根据路径获取菜单项
+  // Getter - 根据路径获取菜單项
   const getMenuByPath = computed(() => {
     return (path) => menuItems.value.find((item) => item.path === path);
   });
 
-  // Getter - 当前激活的菜单项
+  // Getter - 当前激活的菜單项
   const activeMenuItem = computed(() => {
     return menuItems.value.find((item) => item.id === activeMenuId.value);
   });
@@ -153,7 +153,7 @@ export const useMenuStore = defineStore("menu", () => {
     }
   };
 
-  // 初始化菜单激活状态
+  // 初始化菜單激活状态
   const initializeActiveMenu = () => {
     const currentPath = router.currentRoute.value.path;
     setActiveMenuByPath(currentPath);
@@ -161,22 +161,22 @@ export const useMenuStore = defineStore("menu", () => {
 
   // 未来可以添加的API相关方法
   const fetchMenuItems = async () => {
-    // 模拟API调用获取菜单数据
+    // 模拟API调用获取菜單數據
     try {
       // 这里将来可以替换为真实的API调用
       // const response = await api.get('/menu')
       // menuItems.value = response.data
 
-      console.log("获取菜单数据成功");
+      console.log("获取菜單數據成功");
       return menuItems.value;
     } catch (error) {
-      console.error("获取菜单数据失败:", error);
+      console.error("获取菜單數據失败:", error);
       throw error;
     }
   };
 
   const updateMenuItem = async (menuId, updates) => {
-    // 模拟API调用更新菜单项
+    // 模拟API调用更新菜單项
     try {
       const index = menuItems.value.findIndex((item) => item.id === menuId);
       if (index !== -1) {
@@ -184,7 +184,7 @@ export const useMenuStore = defineStore("menu", () => {
       }
       return menuItems.value[index];
     } catch (error) {
-      console.error("更新菜单项失败:", error);
+      console.error("更新菜單项失败:", error);
       throw error;
     }
   };

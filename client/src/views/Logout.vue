@@ -112,7 +112,7 @@ h2 {
   transform: translateY(-2px);
 }
 
-/* 响应式设计 */
+/* 响應式設計 */
 @media (max-width: 480px) {
   .logout-container {
     padding: 1rem;

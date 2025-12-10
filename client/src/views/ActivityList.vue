@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>活動管理</h2>
+      <h2>活動設置</h2>
       <p style="display: none">管理寺廟的各種活動，包括法會、講座、禪修等</p>
     </div>
 

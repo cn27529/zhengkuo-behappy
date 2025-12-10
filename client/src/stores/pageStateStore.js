@@ -9,7 +9,7 @@ export const usePageStateStore = defineStore("pageState", () => {
   const router = useRouter();
   const route = useRoute();
 
-  // 设置页面状态
+  // 設置页面状态
   const setPageState = async (pageName, state) => {
     return new Promise((resolve) => {
       console.log("🔄 開始設置頁面狀態");
@@ -88,7 +88,7 @@ export const usePageStateStore = defineStore("pageState", () => {
 
   const getPageTitle = (action) => {
     const titles = {
-      create: "忻福登記",
+      create: "祈福登記",
       edit: "編輯表單",
       view: "查看表單",
     };

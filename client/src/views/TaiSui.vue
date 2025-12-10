@@ -508,7 +508,7 @@ onMounted(() => {
   border-top: 1px solid #e9ecef;
 }
 
-/* 响应式设计 */
+/* 响應式設計 */
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;

@@ -2,8 +2,8 @@
   <!-- 主内容区域 -->
   <main class="main-content">
     <div class="page-header">
-      <h2>登記儀表板</h2>
-      <p style="display: none">查看登記情况和统计数据</p>
+      <h2>儀表板</h2>
+      <p style="display: none">查看登記情況和統計數據</p>
       <div style="" class="total-participants">
         總參與人次&nbsp;
         <AnimatedNumber
@@ -78,7 +78,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const activityStore = useActivityStore();
 
-// 从store获取数据
+// 从store获取數據
 const activities = computed(() => activityStore.activities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
 const upcomingActivities = computed(() => activityStore.upcomingActivities);
@@ -89,11 +89,11 @@ const formatDate = (dateString) => {
 };
 
 onMounted(async () => {
-  // 初始化数据
+  // 初始化數據
   try {
     await activityStore.initialize();
   } catch (error) {
-    console.error("初始化数据失败:", error);
+    console.error("初始化數據失败:", error);
   }
 });
 
@@ -107,7 +107,7 @@ onUnmounted(() => {
   margin-bottom: 24px; /* 增加卡片之間的垂直間距 */
 }
 
-/* 统计卡片网格 */
+/* 統計卡片网格 */
 .stats-grid {
   margin-bottom: 2rem;
 }

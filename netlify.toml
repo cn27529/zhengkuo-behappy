@@ -6,7 +6,7 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# 重定向设置（单页应用需要）
+# 重定向設置（單頁應用需要）
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -24,7 +24,7 @@
     </header>
     <!-- 父内容区 -->
     <div class="app-content">
-      <!-- 侧边菜单栏 -->
+      <!-- 側邊菜單栏 -->
       <aside
         v-if="layoutReady && showSidebar"
         :class="[
@@ -36,7 +36,7 @@
         ]"
       >
         <div class="menu-toggle" style="display: none">
-          <label>菜单位置：</label>
+          <label>菜單位置：</label>
           <select v-model="menuPosition" class="position-select">
             <option value="left">左侧</option>
             <option value="right">右侧</option>
@@ -100,7 +100,7 @@ const menuPosition = ref(sessionStorage.getItem("menuPosition") || "left");
 // 顶部导航栏显示控制：在非打印页面显示，將三個 UI 可見性預設為 false，等待子組件載入完成後再設定
 const showHeader = ref(false);
 
-// 侧边菜单栏显示控制：在非打印页面且非登录/登出页面显示
+// 側邊菜單栏显示控制：在非打印页面且非登录/登出页面显示
 const showSidebar = ref(false);
 
 // 底部显示控制：在非打印页面显示
@@ -146,23 +146,23 @@ const handleMenuClick = (menuItem) => {
   menuStore.setActiveMenu(menuItem.id);
 };
 
-// 计算顶部导航栏、侧边菜单栏、底部的预期可见性（不直接改变 ref，供 updateLayoutVisibility 使用）
+// 计算顶部导航栏、側邊菜單栏、底部的预期可见性（不直接改变 ref，供 updateLayoutVisibility 使用）
 const computeVisibility = () => {
   const isPrint = route.path && route.path.includes("print");
   return {
     header: !isPrint, // 顶部导航栏：非打印页面显示
-    sidebar: !isPrint && route.path !== "/login" && route.path !== "/logout", // 侧边菜单栏：非打印页面且非登录/登出页面显示
+    sidebar: !isPrint && route.path !== "/login" && route.path !== "/logout", // 側邊菜單栏：非打印页面且非登录/登出页面显示
     footer: !isPrint, // 底部：非打印页面显示
   };
 };
 
 // 在 nextTick 后更新三个 UI 状态（确保子组件已完成 mounted / DOM 已更新）
-// 根据路由条件控制顶部导航栏、侧边菜单栏、底部的显示/隐藏
+// 根据路由条件控制顶部导航栏、側邊菜單栏、底部的显示/隐藏
 const updateLayoutVisibility = async () => {
   await nextTick();
   const v = computeVisibility();
   showHeader.value = v.header; // 更新顶部导航栏显示状态
-  showSidebar.value = v.sidebar; // 更新侧边菜单栏显示状态
+  showSidebar.value = v.sidebar; // 更新側邊菜單栏显示状态
   showFooter.value = v.footer; // 更新底部显示状态
   // 完成更新后标记 layout 已准备好，template 才会显示 header/sidebar/footer
   layoutReady.value = true;
@@ -216,7 +216,7 @@ const initializeApp = async () => {
   //   return;
   // }
 
-  // 初始化菜单
+  // 初始化菜單
   menuStore.initializeActiveMenu();
   // 更新布局可见性
   await updateLayoutVisibility();
@@ -224,7 +224,7 @@ const initializeApp = async () => {
 
 onMounted(() => {
   initializeApp();
-  // 初始化菜单
+  // 初始化菜單
   menuStore.initializeActiveMenu();
 
   // 修改用户昵称的计算方式
@@ -286,7 +286,7 @@ onMounted(() => {
   min-height: calc(100vh - 80px);
 }
 
-/* 侧边栏样式 - 修正部分 */
+/* 側邊栏样式 - 修正部分 */
 .sidebar {
   width: 230px;
   background: white;
@@ -319,7 +319,7 @@ onMounted(() => {
   margin-top: 0.5rem;
 }
 
-/* 修正侧边导航样式 */
+/* 修正側邊导航样式 */
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
@@ -385,7 +385,7 @@ onMounted(() => {
   background: #a8a8a8;
 }
 
-/* 响应式设计 */
+/* 响應式設計 */
 @media (max-width: 768px) {
 }
 

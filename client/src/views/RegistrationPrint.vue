@@ -38,7 +38,7 @@
     <div class="print-content" id="print-content">
       <!-- 表頭 -->
       <div class="print-header">
-        <h1>{{ printContent.contact?.name || "未填寫" }}-忻福登記表</h1>
+        <h1>{{ printContent.contact?.name || "未填寫" }}-祈福登記表</h1>
         <div class="print-meta">
           <!-- <p>｜列印時間：{{ printTime }}｜列印編號：{{ printId }}｜</p> -->
         </div>
@@ -327,7 +327,7 @@ const loadPrintData = () => {
       const contactName = (printContent.value.contact?.name || "未填寫")
         .toString()
         .trim();
-      document.title = `${contactName}-忻福登記表`;
+      document.title = `${contactName}-祈福登記表`;
     } catch (e) {
       // 如果意外錯誤，不阻斷流程
       console.warn("設定 document.title 失敗:", e);

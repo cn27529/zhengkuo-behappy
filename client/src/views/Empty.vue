@@ -5,7 +5,7 @@
       <h2>页面标题</h2>
     </div>
 
-    <!-- 表单管理区域 -->
+    <!-- 表單管理区域 -->
     <div class="form-header"></div>
 
     <div class="form-content">
@@ -23,7 +23,7 @@
       <!-- 操作按钮 -->
       <div class="form-actions">
         <button type="button" class="btn btn-secondary">重置</button>
-        <button type="button" class="btn btn-outline">新增表单</button>
+        <button type="button" class="btn btn-outline">新增表單</button>
         <button type="button" class="btn btn-primary">提交</button>
       </div>
     </div>
@@ -68,7 +68,7 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.1);
 }
 
-/* 表单切换器样式 */
+/* 表單切换器样式 */
 .form-switcher {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
@@ -187,7 +187,7 @@ input:focus {
   color: white;
 }
 
-/* 响应式设计 */
+/* 响應式設計 */
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;

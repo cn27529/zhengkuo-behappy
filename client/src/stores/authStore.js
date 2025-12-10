@@ -340,7 +340,7 @@ export const useAuthStore = defineStore("auth", () => {
     return authService.getCurrentDev();
   };
 
-  // 检测是否为移动设备
+  // 检测是否为移动設备
   const isMobileDevice = () => {
     const userAgent = navigator.userAgent.toLowerCase();
     const screenWidth = window.innerWidth;

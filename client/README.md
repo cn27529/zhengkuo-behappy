@@ -2,7 +2,7 @@
 # zk-client-v2 版本
 ## 手記
 2025-12-10
-建構 活動管理 /activity
+建構 活動設置 /activity
 
 2025-12-05
 
@@ -25,9 +25,9 @@
 
 仪表板 /dashboard 只有頁面，不能互動
 
-完成 忻福登記表 /registration
+完成 祈福登記表 /registration
 
-完成 列印忻福登記表 /print-registration
+完成 列印祈福登記表 /print-registration
 
 完成 netlify的部署計劃 詳見netlify.toml
 
@@ -38,12 +38,12 @@ https://zkapp.netlify.app
 
 
 ## user guide 
-請評估多張表單的需求的可行性，registration.js是報名表單的 Pinia store，管理整個忻福登記表的狀態與操作。
+請評估多張表單的需求的可行性，registration.js是報名表單的 Pinia store，管理整個祈福登記表的狀態與操作。
 使用者想加一個按鈕(增加表單)，可以填寫第2張表單。我的想法是這樣，將目前在填的表單在使用者按了(增加表單)之後，能將現有表單的registrationForm物件做(表單陣列formArray)存放起來，此時(表單陣列formArray)中會有1筆資料，表單頁面上能出現(表單張數)表示第n張...以此類推，表單陣列數字暫定在class="form-header"位置，這時頁面填寫的是第2張，這時除了會有(表單張數)，當使用者點擊(表單張數)如選擇第1張時這個時候頁面上就會返回(表單陣列formArray[0])的數據，反之使用者點擊(表單張數)如選擇第2張時這個時候頁面上就會返回(表單陣列formArray[1])的數據，使用者按了(增加表單)之後就再加一筆，如此規畫，分析看看以現在的registration.js是否可行？如做資料檢核 表單提交 多表單之間切換 會不會有問題，有沒有缺漏什麼考量的．
 
 # 部署
 ## netlify
-假设你的项目结构檔案建在這，其它都不用理
+假設你的项目结构檔案建在這，其它都不用理
 
 my-project/
 ├── backend/
@@ -70,7 +70,7 @@ src/components/registration/
 
 运行 npm run dev 启动开发服务器
 
-访问 http://localhost:8055 查看应用
+访问 http://localhost:8055 查看應用
 
 功能特点
 使用Vue 3 Composition API
@@ -79,9 +79,9 @@ src/components/registration/
 
 使用Vue Router进行路由管理
 
-响应式设计，适配移动设备
+响應式設計，适配移动設备
 
-表单验证和错误处理
+表單验证和错误处理
 
 模拟API调用
 

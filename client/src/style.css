@@ -250,7 +250,7 @@ footer {
   background-color: #5a6268;
 }
 
-/* 图表容器响应式 */
+/* 图表容器响應式 */
 canvas {
   max-width: 100%;
   height: auto !important;

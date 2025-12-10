@@ -5,9 +5,9 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// 检查环境变量是否设置
+// 检查环境变量是否設置
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("❌ Supabase 环境变量未设置！");
+  console.error("❌ Supabase 环境变量未設置！");
   console.log("请检查 .env 文件是否包含：");
   console.log("VITE_SUPABASE_URL=" + supabaseUrl);
   console.log("VITE_SUPABASE_ANON_KEY=" + supabaseAnonKey);

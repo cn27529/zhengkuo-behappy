@@ -155,12 +155,12 @@ export default {
 
       // 模拟API调用
       setTimeout(() => {
-        console.log("提交的联系表单数据:", contactForm);
+        console.log("提交的联系表單數據:", contactForm);
 
         // 显示成功消息
         success.value = true;
 
-        // 重置表单
+        // 重置表單
         Object.keys(contactForm).forEach((key) => (contactForm[key] = ""));
 
         // 3秒后隐藏成功消息

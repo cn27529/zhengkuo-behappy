@@ -7,9 +7,9 @@
     <input type="text-area" v-model="env.supabaseAnonKey" />
     <p>VITE_SUPABASE_PUBLIC_KEY: {{ env.supabasePublicKey }}</p>
     <p>MODE: {{ env.mode }}</p>
-    <p>应用标题: {{ env.appTitle }}</p>
-    <p>应用版本: {{ env.appVersion }}</p>
-    <p>环境变量加载: {{ env.loaded ? '成功' : '失败' }}</p>
+    <p>應用标题: {{ env.appTitle }}</p>
+    <p>應用版本: {{ env.appVersion }}</p>
+    <p>环境变量加载: {{ env.loaded ? "成功" : "失败" }}</p>
   </div>
 </template>
 
@@ -24,14 +24,17 @@ export default {
       appTitle: import.meta.env.VITE_APP_TITLE,
       appVersion: import.meta.env.VITE_APP_VERSION,
       // 判断是否加载成功
-      loaded: !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
-    }
-    
-    console.log('环境变量:', env)
-    
+      loaded: !!(
+        import.meta.env.VITE_SUPABASE_URL &&
+        import.meta.env.VITE_SUPABASE_ANON_KEY
+      ),
+    };
+
+    console.log("环境变量:", env);
+
     return {
-      env
-    }
-  }
-}
+      env,
+    };
+  },
+};
 </script>

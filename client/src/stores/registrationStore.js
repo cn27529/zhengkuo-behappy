@@ -1,5 +1,5 @@
 // src/stores/registration.js
-// 本檔為報名表單的 Pinia store，管理整個忻福登記表的狀態與操作。
+// 本檔為報名表單的 Pinia store，管理整個祈福登記表的狀態與操作。
 // 🔄 重構重點：實現 registrationForm 和 formArray[currentFormIndex] 的雙向實時同步
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
@@ -891,7 +891,7 @@ export const useRegistrationStore = defineStore("registration", () => {
           JSON.parse(JSON.stringify(registrationForm.value))
         );
       } else {
-        // 替换当前表单为初始状态
+        // 替换当前表單为初始状态
         const initialForm = getInitialFormData();
 
         // 方法：逐個屬性重置，保持響應性
@@ -1032,7 +1032,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // 统一的表单加载方法
+  // 统一的表單加载方法
   const loadFormData = async (propsData) => {
     try {
       // 檢查必要的參數
@@ -1060,7 +1060,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         return false;
       }
 
-      // 从服务器获取表单数据
+      // 从服务器获取表單數據
       const result = await registrationService.getRegistrationById(
         propsData.id
       );
@@ -1097,7 +1097,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
-  // 更新表单
+  // 更新表單
   const updateFormData = async () => {
     if (!isFormValid.value) {
       throw new Error("表單驗證失敗，請檢查所有必填欄位");
@@ -1144,7 +1144,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       console.log(`🔄 開始更新表單: formId=${formId}, id=${id}`);
 
-      // 更新报名的表单
+      // 更新报名的表單
       const result = await registrationService.updateRegistration(
         id,
         registrationForm.value
@@ -1153,7 +1153,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       if (result.success) {
         console.log("✅ 表單更新成功！");
 
-        // 更新本地数据
+        // 更新本地數據
         if (formArray.value.length > 0 && currentFormIndex.value >= 0) {
           formArray.value[currentFormIndex.value] = JSON.parse(
             JSON.stringify(registrationForm.value)
