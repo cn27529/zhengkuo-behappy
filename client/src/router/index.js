@@ -28,7 +28,7 @@ const routes = [
 
   {
     path: "/activity-list",
-    title: "活動管理",
+    title: "活動設置",
     name: "ActivityList",
     component: () => import("../views/ActivityList.vue"),
     beforeEnter: (to, from, next) => {

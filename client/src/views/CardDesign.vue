@@ -35,6 +35,7 @@
                     text-align: center;
                     margin: 0px;
                     border: 0px solid #333;
+                    font-weight:bold;                    
                   "
                   v-for="value in item.content.length"
                 >
@@ -120,14 +121,14 @@
 
         <!-- 按鈕區域 - 使用 Element Plus 按鈕 -->
         <div class="form-actions">
-          <el-button type="success" @click="saveDesign" :loading="saving"
+          <el-button type="success" @click="handleSaveDesign" :loading="saving"
             >🚀 保存
           </el-button>
 
-          <el-button type="primary" @click="printCard" :loading="printing"
+          <el-button type="primary" @click="handlePrintCard" :loading="printing"
             >🖨️ 列印/下載卡片
           </el-button>
-          <el-button type="info" @click="resetDesign"> 🔄️ 重置設計 </el-button>
+          <el-button type="info" @click="handleResetDesign"> 🔄️ 重置設計 </el-button>
         </div>
       </section>
     </div>
@@ -398,7 +399,7 @@ const deleteItem = (itemId) => {
 };
 
 // 保存設計
-const saveDesign = async () => {
+const handleSaveDesign = async () => {
   try {
     saving.value = true;
     await cardStore.saveDesign();
@@ -447,7 +448,7 @@ const loadHtml2Canvas = () => {
 };
 
 // 列印/下載卡片（使用與 RegistrationPrint.vue 相同的方式）
-const printCard = async () => {
+const handlePrintCard = async () => {
   try {
     printing.value = true;
 
@@ -465,7 +466,10 @@ const printCard = async () => {
     }
 
     // 使用html2canvas將卡片區域轉換為圖片
-    const cardContainer = document.querySelector(".card-container");
+    const cardContainer = document.querySelector(".card-container");    
+    //const cardContainer = document.querySelector(".card-bg");
+
+    console.log("cardContainer:", cardContainer.innerHTML);
 
     // 等待下一個渲染周期確保所有元素都已渲染
     await nextTick();
@@ -508,7 +512,7 @@ const printCard = async () => {
 };
 
 // 重置設計
-const resetDesign = () => {
+const handleResetDesign = () => {
   ElMessageBox.confirm("確定要重置所有設計嗎？此操作不可撤銷。", "重置確認", {
     confirmButtonText: "確定",
     cancelButtonText: "取消",
@@ -603,11 +607,11 @@ h1 {
   flex: 1;
   /* background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f8f0e3"/><path d="M0,20 L100,20 M0,40 L100,40 M0,60 L100,60 M0,80 L100,80 M20,0 L20,100 M40,0 L40,100 M60,0 L60,100 M80,0 L80,100" stroke="%23e6d8c3" stroke-width="0.5"/></svg>'); */
   /* background-color: #f8f0e3; */
-  border-radius: 8px;
+  border-radius: 0px;
   box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
-  border: 1px solid #e6d8c3;
+  border: 0px solid #e6d8c3;
   opacity: 1;
 }
 
