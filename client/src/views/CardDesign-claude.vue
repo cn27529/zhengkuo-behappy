@@ -57,8 +57,8 @@
                 class="empty-state"
                 v-if="cardStore.droppedItems.length === 0"
               >
-                <p>從右側拖拽祝賀詞</p>
-                <p>到這裡</p>
+                <p>從右側拖拽</p>
+                <p>祈福到這裡</p>
               </div>
             </div>
           </div>

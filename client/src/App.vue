@@ -288,10 +288,10 @@ onMounted(() => {
 
 /* 側邊栏样式 - 修正部分 */
 .sidebar {
-  width: 230px;
+  width: 190px;
   background: white;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  padding: 1.5rem 0 1.5rem 1rem;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -350,15 +350,8 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
-.nav-link:hover,
-.nav-link.active {
-  background-color: var(--light-color);
-  color: var(--primary-color);
-  transform: translateX(5px);
-}
-
 .nav-icon {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   margin-right: 0.75rem;
   width: 24px;
   text-align: center;
@@ -411,12 +404,20 @@ onMounted(() => {
   width: 6px;
 }
 
+.nav-link:hover,
+.nav-link.active {
+  background-color: var(--light-color);
+  color: var(--primary-color);
+  transform: translateX(5px);
+}
+
 /* 保持原有的样式不变，只添加active状态的样式增强 */
 .nav-link.active {
   background-color: var(--light-color) !important;
   color: var(--primary-color) !important;
   font-weight: 600;
   border-left: 3px solid var(--primary-color);
+  /* background-image: linear-gradient(to right, var(--light-color), #f8f9fa); */
 }
 
 .nav-link.active .nav-icon {
@@ -465,11 +466,6 @@ onMounted(() => {
 
   .dashboard-header {
     padding: 1rem;
-  }
-
-  .nav-link:hover,
-  .nav-link.active {
-    transform: translateY(2px);
   }
 
   .dialog-content {

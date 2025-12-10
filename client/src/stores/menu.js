@@ -22,7 +22,7 @@ export const useMenuStore = defineStore("menu", () => {
       id: 2,
       name: "祈福登記",
       path: "/registration", // 修改路徑
-      icon: "🖥️",
+      icon: "🧧",
       component: "Registration", // 修改組件名稱
       requiredAuth: true,
       order: 2,
