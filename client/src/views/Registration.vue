@@ -1309,10 +1309,6 @@ select:focus {
 }
 
 .form-actions {
-  flex-direction: column;
-}
-
-.form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -1495,6 +1491,9 @@ select:focus {
     padding: 1rem;
   }
 
+  .form-section {
+    padding: 1.5rem;
+  }
   .form-grid {
     grid-template-columns: 1fr;
   }
@@ -1507,6 +1506,10 @@ select:focus {
   .section-info {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .form-actions {
+    flex-direction: column;
   }
 
   .btn {
