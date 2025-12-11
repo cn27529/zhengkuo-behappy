@@ -29,11 +29,11 @@
                 <!-- 垂直排列的文字 -->
                 <div
                   style="
-                    font-size: 1.5rem;
+                    font-size: 1.3rem;
                     font-family: 標楷體;
                     color: #333;
                     text-align: center;
-                    margin: -6px;
+                    margin: -5px;
                     border: 0px solid #333;
                     font-weight: bold;
                   "
@@ -747,7 +747,7 @@ h1 {
   height: 100%;
   max-width: 600px; /* 限制最大寬度 */
   max-height: 900px; /* 限制最大高度 */
-  background-image: url("../data/card-template-001.jpg");
+  background-image: url("../data/card-template-zk01.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center; /* 保持居中顯示 */
