@@ -68,10 +68,10 @@
 
       <!-- 右側數據區域 -->
       <section class="card-data">
-        <h2 class="section-title">卡片數據區</h2>
+        <!-- <h2 class="section-title">卡片數據區</h2> -->
 
         <div class="data-section">
-          <h3 class="section-title">基本信息</h3>
+          <h3 class="section-title">祈福數據區</h3>
           <div
             class="data-item"
             draggable="true"
@@ -92,17 +92,17 @@
         </div>
 
         <div class="data-section">
-          <h3 class="section-title">祝賀詞</h3>
-          <div class="blessings-list">
+          <!-- <h3 class="section-title">祝賀詞</h3> -->
+          <div class="data-list">
             <div
               v-for="(blessing, index) in cardStore.cardData.blessings"
               :key="index"
-              class="blessing-item"
+              class="data-item"
               draggable="true"
               @dragstart="onDragStart($event, 'blessing', blessing)"
               @dragend="onDragEnd"
             >
-              <div class="blessing-text">{{ blessing }}</div>
+              <div class="data-value">{{ blessing }}</div>
             </div>
           </div>
         </div>
@@ -852,9 +852,9 @@ h1 {
 
 .data-item {
   background-color: white;
-  border-radius: 8px;
+  /* border-radius: 8px;
   padding: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 15px; */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
   border: 1px solid #eee;
   cursor: grab;
@@ -877,16 +877,16 @@ h1 {
   font-weight: 500;
 }
 
-.blessings-list {
+.data-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0px;
 }
 
 .blessing-item {
   background-color: white;
-  border-radius: 8px;
-  padding: 15px;
+  /* border-radius: 8px;
+  padding: 15px; */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
   border: 1px solid #eee;
   cursor: grab;
