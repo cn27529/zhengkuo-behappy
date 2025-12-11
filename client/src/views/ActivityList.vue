@@ -938,7 +938,7 @@ const completeActivity = async (activityId) => {
 
     if (result.success) {
       ElMessage.success("活動已標記為完成");
-      await initialize(); // 重新加載數據
+      //await initialize(); // 重新加載數據
     } else {
       throw new Error(result.message);
     }
@@ -965,7 +965,7 @@ const deleteActivity = async (activity) => {
 
     if (result.success) {
       ElMessage.success("活動刪除成功");
-      await initialize(); // 重新加載數據
+      //await initialize(); // 重新加載數據
     } else {
       throw new Error(result.message);
     }
@@ -1033,7 +1033,7 @@ const handleNewActivity = async () => {
     if (result.success) {
       ElMessage.success("活動新增成功");
       closeModal();
-      await initialize(); // 重新加載數據
+      //await initialize(); // 重新加載數據
     } else {
       throw new Error(result.message);
     }
@@ -1085,7 +1085,7 @@ const handleEditActivity = async () => {
     if (result.success) {
       ElMessage.success("活動更新成功");
       closeModal();
-      await initialize(); // 重新加載數據
+      //await initialize(); // 重新加載數據
     } else {
       throw new Error(result.message);
     }
@@ -1110,7 +1110,7 @@ const submitParticipantsUpdate = async () => {
     if (result.success) {
       ElMessage.success("參與人次更新成功");
       closeModal();
-      await initialize(); // 重新加載數據
+      //await initialize(); // 重新加載數據
     } else {
       throw new Error(result.message);
     }
