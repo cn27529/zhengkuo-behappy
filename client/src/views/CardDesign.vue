@@ -1,138 +1,131 @@
 <template>
-  <div class="container">
-    <div class="main-content">
-      <!-- 左側卡片預覽區域 -->
-      <section class="card-preview">
-        <h2 class="section-title">卡片預覽區</h2>
-        <div class="card-container">
-          <div class="card-bg" id="cardBg" ref="cardBgRef">
+  <div class="card-content">
+    <!-- 左側卡片預覽區域 -->
+    <section class="card-preview">
+      <h2 class="section-title">卡片預覽區</h2>
+      <div class="card-container">
+        <div class="card-bg" id="cardBg" ref="cardBgRef">
+          <div
+            class="drop-zone"
+            id="dropZone"
+            @dragover.prevent="onDragOver"
+            @drop="onDrop"
+            @dragenter="onDragEnter"
+            @dragleave="onDragLeave"
+            ref="dropZoneRef"
+          >
+            <!-- 已放置的項目 -->
             <div
-              class="drop-zone"
-              id="dropZone"
-              @dragover.prevent="onDragOver"
-              @drop="onDrop"
-              @dragenter="onDragEnter"
-              @dragleave="onDragLeave"
-              ref="dropZoneRef"
+              v-for="item in cardStore.droppedItems"
+              :key="item.id"
+              class="dropped-item"
+              :style="getDroppedItemStyle(item)"
+              @mousedown="startDragging(item.id, $event)"
+              @mouseenter="hoveredItemId = item.id"
+              @mouseleave="hoveredItemId = null"
+              :class="{ selected: selectedItemId === item.id }"
             >
-              <!-- 已放置的項目 -->
+              <!-- 垂直排列的文字 -->
               <div
-                v-for="item in cardStore.droppedItems"
-                :key="item.id"
-                class="dropped-item"
-                :style="getDroppedItemStyle(item)"
-                @mousedown="startDragging(item.id, $event)"
-                @mouseenter="hoveredItemId = item.id"
-                @mouseleave="hoveredItemId = null"
-                :class="{ selected: selectedItemId === item.id }"
+                style="
+                  font-size: 1.3rem;
+                  font-family: 標楷體;
+                  color: #333;
+                  text-align: center;
+                  margin: -5px;
+                  border: 0px solid #333;
+                  font-weight: bold;
+                "
+                v-for="(char, index) in item.content"
+                :key="index"
               >
-                <!-- 垂直排列的文字 -->
-                <div
-                  style="
-                    font-size: 1.3rem;
-                    font-family: 標楷體;
-                    color: #333;
-                    text-align: center;
-                    margin: -5px;
-                    border: 0px solid #333;
-                    font-weight: bold;
-                  "
-                  v-for="(char, index) in item.content"
-                  :key="index"
-                >
-                  {{ char }}
-                </div>
-                <button
-                  class="delete-btn"
-                  @click.stop="deleteItem(item.id)"
-                  v-show="
-                    hoveredItemId === item.id || selectedItemId === item.id
-                  "
-                >
-                  <el-icon><Delete /></el-icon>
-                </button>
+                {{ char }}
               </div>
+              <button
+                class="delete-btn"
+                @click.stop="deleteItem(item.id)"
+                v-show="hoveredItemId === item.id || selectedItemId === item.id"
+              >
+                <el-icon><Delete /></el-icon>
+              </button>
+            </div>
 
-              <!-- 空狀態提示 -->
-              <div
-                class="empty-state"
-                v-if="cardStore.droppedItems.length === 0"
-              >
-                <p>從右側拖拽</p>
-                <p>祈福到這裡</p>
-              </div>
+            <!-- 空狀態提示 -->
+            <div class="empty-state" v-if="cardStore.droppedItems.length === 0">
+              <p>從右側拖拽</p>
+              <p>祈福到這裡</p>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- 右側數據區域 -->
-      <section class="card-data">
-        <h2 class="section-title">卡片數據區</h2>
+    <!-- 右側數據區域 -->
+    <section class="card-data">
+      <h2 class="section-title">卡片數據區</h2>
 
-        <div class="data-section">
-          <h3 class="section-title">基本信息</h3>
+      <div class="data-section">
+        <h3 class="section-title">基本信息</h3>
+        <div
+          class="data-item"
+          draggable="true"
+          @dragstart="onDragStart($event, 'name')"
+          @dragend="onDragEnd"
+        >
+          <div class="data-value">{{ cardStore.cardData.name }}</div>
+        </div>
+
+        <div
+          class="data-item"
+          draggable="true"
+          @dragstart="onDragStart($event, 'nickname')"
+          @dragend="onDragEnd"
+        >
+          <div class="data-value">{{ cardStore.cardData.nickname }}</div>
+        </div>
+      </div>
+
+      <div class="data-section">
+        <h3 class="section-title">祝賀詞</h3>
+        <div class="blessings-list">
           <div
-            class="data-item"
+            v-for="(blessing, index) in cardStore.cardData.blessings"
+            :key="index"
+            class="blessing-item"
             draggable="true"
-            @dragstart="onDragStart($event, 'name')"
+            @dragstart="onDragStart($event, 'blessing', blessing)"
             @dragend="onDragEnd"
           >
-            <div class="data-value">{{ cardStore.cardData.name }}</div>
-          </div>
-
-          <div
-            class="data-item"
-            draggable="true"
-            @dragstart="onDragStart($event, 'nickname')"
-            @dragend="onDragEnd"
-          >
-            <div class="data-value">{{ cardStore.cardData.nickname }}</div>
+            <div class="blessing-text">{{ blessing }}</div>
           </div>
         </div>
+      </div>
 
-        <div class="data-section">
-          <h3 class="section-title">祝賀詞</h3>
-          <div class="blessings-list">
-            <div
-              v-for="(blessing, index) in cardStore.cardData.blessings"
-              :key="index"
-              class="blessing-item"
-              draggable="true"
-              @dragstart="onDragStart($event, 'blessing', blessing)"
-              @dragend="onDragEnd"
-            >
-              <div class="blessing-text">{{ blessing }}</div>
-            </div>
-          </div>
-        </div>
+      <div class="use-help">
+        <h3>使用說明</h3>
+        <ul>
+          <li>從右側拖拽任意數據到左側卡片區域</li>
+          <li>在卡片區域內拖拽元素可以調整位置</li>
+          <li>鼠標懸停在元素上，點擊右上角刪除按鈕可以移除</li>
+          <li>點擊"保存"保存當前設計</li>
+          <li>點擊"列印"下載卡片</li>
+        </ul>
+      </div>
 
-        <div class="instructions">
-          <h3>使用說明</h3>
-          <ul>
-            <li>從右側拖拽任意數據到左側卡片區域</li>
-            <li>在卡片區域內拖拽元素可以調整位置</li>
-            <li>鼠標懸停在元素上，點擊右上角刪除按鈕可以移除</li>
-            <li>點擊"保存"保存當前設計</li>
-            <li>點擊"列印"下載卡片</li>
-          </ul>
-        </div>
+      <!-- 按鈕區域 - 使用 Element Plus 按鈕 -->
+      <div class="actions">
+        <el-button type="success" @click="handleSaveDesign" :loading="saving"
+          >🚀 保存
+        </el-button>
 
-        <!-- 按鈕區域 - 使用 Element Plus 按鈕 -->
-        <div class="form-actions">
-          <el-button type="success" @click="handleSaveDesign" :loading="saving"
-            >🚀 保存
-          </el-button>
-
-          <el-button type="primary" @click="handlePrintCard" :loading="printing"
-            >🖨️ 列印/下載卡片
-          </el-button>
-          <el-button type="info" @click="handleResetDesign">
-            🔄️ 重置設計
-          </el-button>
-        </div>
-      </section>
-    </div>
+        <el-button type="primary" @click="handlePrintCard" :loading="printing"
+          >🖨️ 列印/下載卡片
+        </el-button>
+        <el-button type="info" @click="handleResetDesign">
+          🔄️ 重置設計
+        </el-button>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -149,6 +142,7 @@ const cardStore = useCardStore();
 const dropZoneRef = ref(null);
 const cardContainerRef = ref(null);
 const cardBgRef = ref(null);
+const cardBgImage = ref("../data/card-template-zk01.png");
 
 // 響應式狀態
 const hoveredItemId = ref(null);
@@ -171,7 +165,7 @@ const calculateCardDimensions = () => {
 
   const container = cardBgRef.value;
   const bgImage = new Image();
-  bgImage.src = "../data/card-template-001.jpg";
+  bgImage.src = "../data/card-template-zk01.png";
 
   // 獲取容器尺寸
   const containerWidth = container.clientWidth;
@@ -667,33 +661,17 @@ const handleResetDesign = () => {
 </script>
 
 <style scoped>
-.form-actions {
+.actions {
   flex-direction: column;
 }
 
-.form-actions {
+.actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #e9ecef;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
-}
-
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
 }
 
 header {
@@ -714,32 +692,34 @@ h1 {
   opacity: 0.9;
 }
 
-.main-content {
+.card-content {
   display: flex;
   min-height: 700px;
-}
-
-/* 左側卡片區域 */
-.card-preview {
-  flex: 1;
-  background-color: #fff9f9;
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #eee;
+  border: 0px solid #000000;
 }
 
 .card-container {
   flex: 1;
   border-radius: 0px;
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+  /* box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05); */
   position: relative;
   overflow: hidden;
-  border: 0px solid #e6d8c3;
+  border: 0px solid #000000;
   opacity: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f8f0e3"/><path d="M0,20 L100,20 M0,40 L100,40 M0,60 L100,60 M0,80 L100,80 M20,0 L20,100 M40,0 L40,100 M60,0 L60,100 M80,0 L80,100" stroke="%23e6d8c3" stroke-width="0.5"/></svg>');
+}
+
+/* 左側卡片區域 */
+.card-preview {
+  flex: 1;
+  background-color: #f8f9fa;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  border: 0px solid #000000;
 }
 
 .card-bg {
@@ -747,7 +727,7 @@ h1 {
   height: 100%;
   max-width: 600px; /* 限制最大寬度 */
   max-height: 900px; /* 限制最大高度 */
-  background-image: url("../data/card-template-zk01.png");
+  background-image: url("../data/card-template-zk02.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center; /* 保持居中顯示 */
@@ -779,18 +759,6 @@ h1 {
   justify-content: flex-start;
   gap: 2px;
   padding: 5px;
-}
-
-.vertical-text {
-  font-size: 1.3rem;
-  font-family: "標楷體", "Microsoft JhengHei", sans-serif;
-  color: #333;
-  text-align: center;
-  margin: 0;
-  font-weight: bold;
-  line-height: 1.2;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
 }
 
 .dropped-item:hover {
@@ -838,16 +806,13 @@ h1 {
 
 .section-title {
   font-size: 1.3rem;
-  color: #d63384;
-  margin-bottom: 18px;
-  padding-bottom: 8px;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--light-color);
   border-bottom: 2px solid #eee;
   display: flex;
   align-items: center;
-}
-
-.section-title i {
-  margin-right: 10px;
 }
 
 .data-item {
@@ -935,7 +900,7 @@ h1 {
   transform: translateY(-2px);
 }
 
-.instructions {
+.use-help {
   background-color: #e7f3ff;
   border-radius: 8px;
   padding: 18px;
@@ -943,7 +908,7 @@ h1 {
   border-left: 4px solid #007bff;
 }
 
-.instructions h3 {
+.use-help h3 {
   color: #007bff;
   margin-bottom: 10px;
   display: flex;
@@ -951,11 +916,11 @@ h1 {
   gap: 8px;
 }
 
-.instructions ul {
+.use-help ul {
   padding-left: 20px;
 }
 
-.instructions li {
+.use-help li {
   margin-bottom: 8px;
   line-height: 1.5;
 }
@@ -981,7 +946,7 @@ h1 {
 }
 
 @media (max-width: 1200px) {
-  .main-content {
+  .card-content {
     flex-direction: column;
   }
 
