@@ -288,7 +288,7 @@ onMounted(() => {
 
 /* 側邊栏样式 - 修正部分 */
 .sidebar {
-  width: 190px;
+  width: 230px;
   background: white;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   padding: 1.5rem 0 1.5rem 1rem;

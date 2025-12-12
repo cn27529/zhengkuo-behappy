@@ -5,6 +5,7 @@
       <h2 class="section-title">卡片預覽區</h2>
       <div class="card-container">
         <div class="card-bg" id="cardBg" ref="cardBgRef">
+          <img :src="cardBgImage" class="card-bg-image" />
           <div
             class="drop-zone"
             id="dropZone"
@@ -62,8 +63,18 @@
 
     <!-- 右側數據區域 -->
     <section class="card-data">
-      <h2 class="section-title">卡片數據區</h2>
-
+      <div class="data-section">
+        <h3 class="section-title">卡片數據區</h3>
+        <div
+          v-for="value in 5"
+          class="blessing-item"
+          draggable="true"
+          @dragstart="onDragStart($event, 'blessing', value + 'AA')"
+          @dragend="onDragEnd"
+        >
+          <div class="data-value">{{ value + "AA" }}</div>
+        </div>
+      </div>
       <div class="data-section">
         <h3 class="section-title">基本信息</h3>
         <div
@@ -112,18 +123,34 @@
         </ul>
       </div>
 
-      <!-- 按鈕區域 - 使用 Element Plus 按鈕 -->
-      <div class="actions">
-        <el-button type="success" @click="handleSaveDesign" :loading="saving"
-          >🚀 保存
-        </el-button>
-
-        <el-button type="primary" @click="handlePrintCard" :loading="printing"
-          >🖨️ 列印/下載卡片
-        </el-button>
-        <el-button type="info" @click="handleResetDesign">
-          🔄️ 重置設計
-        </el-button>
+      <div class="data-section">
+        <h3 class="section-title">操作</h3>
+        <!-- 按鈕區域 - 使用 Element Plus 按鈕 -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="handleSaveDesign"
+            :loading="saving"
+          >
+            保存
+          </button>
+          <button
+            type="bu  tton"
+            class="btn btn-outline capsule-btn"
+            @click="handlePrintCard"
+            :loading="printing"
+          >
+            📥 下載卡片
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="handleResetDesign"
+          >
+            🔄️ 重置設計
+          </button>
+        </div>
       </div>
     </section>
   </div>
@@ -142,8 +169,12 @@ const cardStore = useCardStore();
 const dropZoneRef = ref(null);
 const cardContainerRef = ref(null);
 const cardBgRef = ref(null);
-const cardBgImage = ref("../data/card-template-zk01.png");
+const cardBgImage = ref("/src/data/card-template-zk01a.png");
 
+// 可以動態更換圖片
+const handleChangeImage = (cardName) => {
+  cardBgImage.value = `/src/data/card-template-${cardName}.png`;
+};
 // 響應式狀態
 const hoveredItemId = ref(null);
 const selectedItemId = ref(null);
@@ -661,19 +692,6 @@ const handleResetDesign = () => {
 </script>
 
 <style scoped>
-.actions {
-  flex-direction: column;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid #e9ecef;
-}
-
 header {
   background: linear-gradient(135deg, #d63384, #9c27b0);
   color: white;
@@ -704,22 +722,31 @@ h1 {
   /* box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05); */
   position: relative;
   overflow: hidden;
-  border: 0px solid #000000;
   opacity: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f8f0e3"/><path d="M0,20 L100,20 M0,40 L100,40 M0,60 L100,60 M0,80 L100,80 M20,0 L20,100 M40,0 L40,100 M60,0 L60,100 M80,0 L80,100" stroke="%23e6d8c3" stroke-width="0.5"/></svg>');
+  border: 0px solid #000000;
 }
 
 /* 左側卡片區域 */
 .card-preview {
   flex: 1;
   background-color: #f8f9fa;
-  padding: 25px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  border: 0px solid #000000;
+  border: 0px solid #007bff;
+}
+
+/* 右側數據區域 */
+.card-data {
+  width: 400px;
+  padding: 15px;
+  /* background-color: #f9f9f9; */
+  overflow-y: auto;
+  border: 0px solid #9c27b0;
 }
 
 .card-bg {
@@ -727,12 +754,31 @@ h1 {
   height: 100%;
   max-width: 600px; /* 限制最大寬度 */
   max-height: 900px; /* 限制最大高度 */
-  background-image: url("../data/card-template-zk01.png");
+  /* background-image: url("../data/card-template-zk01a.png"); 
   background-size: contain;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; */
   background-position: center; /* 保持居中顯示 */
   position: relative;
   margin: auto; /* 確保居中 */
+  border: 0px solid #000000;
+
+  /* 添加 flexbox */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-bg-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: 1px dashed #000000;
 }
 
 .drop-zone {
@@ -745,6 +791,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 0px solid #000000;
 }
 
 .dropped-item {
@@ -764,7 +811,7 @@ h1 {
 .dropped-item:hover {
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(214, 51, 132, 0.3);
+  border: 1px dashed #ff4757;
   z-index: 100;
 }
 
@@ -796,40 +843,31 @@ h1 {
   opacity: 1;
 }
 
-/* 右側數據區域 */
-.card-data {
-  width: 400px;
-  padding: 15px;
-  background-color: #f9f9f9;
-  overflow-y: auto;
-}
-
 .section-title {
-  font-size: 1.3rem;
+  font-size: 24px;
   color: var(--primary-color);
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
   border-bottom: 2px solid var(--light-color);
-  border-bottom: 2px solid #eee;
   display: flex;
   align-items: center;
+  border: 0px solid #000000;
 }
 
 .data-item {
   background-color: white;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
+  /* border-radius: 8px; */
+  padding: 5px;
+  /* margin-bottom: 15px; */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-  border: 1px solid #eee;
+  border: 1px dashed #aaaaaa;
   cursor: grab;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .data-item:hover {
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  border-color: #d63384;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px dashed #ff4757;
 }
 
 .data-item:active {
@@ -845,23 +883,23 @@ h1 {
 .blessings-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0px;
 }
 
 .blessing-item {
   background-color: white;
-  border-radius: 8px;
-  padding: 15px;
+  /* border-radius: 8px; */
+  padding: 5px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-  border: 1px solid #eee;
+  border: 1px dashed #aaaaaa;
   cursor: grab;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .blessing-item:hover {
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  border-color: #9c27b0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px dashed #ff4757;
 }
 
 .blessing-item:active {
@@ -872,32 +910,6 @@ h1 {
   font-size: 1.05rem;
   color: #333;
   line-height: 1.5;
-}
-
-/* 按鈕區域 */
-.actions {
-  padding: 25px;
-  display: flex;
-  justify-content: center;
-  border-top: 1px solid #eee;
-  background-color: #f9f9f9;
-}
-
-/* 調整 Element Plus 按鈕樣式以匹配原有設計 */
-.actions .el-button {
-  padding: 14px 32px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.3s;
-  border-radius: 8px;
-}
-
-.actions .el-button:hover {
-  transform: translateY(-2px);
 }
 
 .use-help {
@@ -945,6 +957,85 @@ h1 {
   font-size: 1.2rem;
 }
 
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--secondary-color);
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-outline:disabled {
+  border-color: #ccc;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.btn-danger:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 @media (max-width: 1200px) {
   .card-content {
     flex-direction: column;
@@ -954,14 +1045,16 @@ h1 {
     width: 100%;
   }
 
-  .actions {
-    flex-direction: column;
-    align-items: center;
+  .button {
+    max-width: 100%;
   }
 
-  .actions .el-button {
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
     width: 100%;
-    max-width: 300px;
   }
 }
 </style>
