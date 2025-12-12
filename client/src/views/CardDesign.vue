@@ -727,7 +727,7 @@ h1 {
   height: 100%;
   max-width: 600px; /* 限制最大寬度 */
   max-height: 900px; /* 限制最大高度 */
-  background-image: url("../data/card-template-zk02.png");
+  background-image: url("../data/card-template-zk01.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center; /* 保持居中顯示 */
