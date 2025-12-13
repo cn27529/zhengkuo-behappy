@@ -852,13 +852,13 @@ h1 {
 }
 
 .data-section {
-  margin-bottom: 25px;
+  margin-bottom: 10px;
 }
 
 .section-title {
   font-size: 24px;
   color: var(--primary-color);
-  margin-bottom: 1rem;
+  margin-bottom: 0px;
   border-bottom: 2px solid var(--light-color);
   display: flex;
   align-items: center;
