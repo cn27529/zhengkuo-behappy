@@ -5,6 +5,18 @@ export const useCardStore = defineStore("card", () => {
   // 卡片設計狀態
   const droppedItems = ref([]);
 
+  // 卡片模組列表
+  const cardTemplates = ref([
+    { id: "zk01a", name: "經典紅" },
+    { id: "zk02a", name: "清新綠" },
+    // 未來可以繼續添加更多模組
+    // { id: 'xk03a', name: '優雅藍' },
+    // { id: 'xk04a', name: '尊貴金' },
+  ]);
+
+  // 當前選中的模組 ID
+  const selectedTemplateId = ref("zk01a");
+
   // 硬編碼的卡片數據（之後會替換為 API 獲取）
   const cardData = reactive({
     name: "王小明",
@@ -48,10 +60,11 @@ export const useCardStore = defineStore("card", () => {
       // 模擬 API 調用延遲
       setTimeout(() => {
         const designData = {
+          selectedTemplateId: selectedTemplateId.value,
           items: droppedItems.value,
           lastUpdated: new Date().toISOString(),
         };
-        // 保存到 localStorage（模擬保存到數據庫）
+        // 保存到 sessionStorage（模擬保存到數據庫）
         sessionStorage.setItem("cardDesign", JSON.stringify(designData));
         console.log("設計已保存:", designData);
         resolve(designData);
@@ -66,6 +79,7 @@ export const useCardStore = defineStore("card", () => {
       try {
         const designData = JSON.parse(savedDesign);
         droppedItems.value = designData.items || [];
+        selectedTemplateId.value = designData.selectedTemplateId || "zk01a";
         console.log("已加載保存的設計:", designData);
       } catch (error) {
         console.error("加載保存的設計時出錯:", error);
@@ -76,12 +90,14 @@ export const useCardStore = defineStore("card", () => {
   // 重置設計
   const resetDesign = () => {
     droppedItems.value = [];
+    selectedTemplateId.value = "zk01a";
     sessionStorage.removeItem("cardDesign");
   };
 
   // 獲取完整的設計數據（用於 API 提交）
   const getDesignData = () => {
     return {
+      selectedTemplateId: selectedTemplateId.value,
       cardData: { ...cardData },
       droppedItems: [...droppedItems.value],
       lastUpdated: new Date().toISOString(),
@@ -91,6 +107,8 @@ export const useCardStore = defineStore("card", () => {
   return {
     droppedItems,
     cardData,
+    cardTemplates,
+    selectedTemplateId,
     addDroppedItem,
     updateItemPosition,
     deleteDroppedItem,

@@ -5,7 +5,7 @@
       <h2 class="section-title">卡片預覽區</h2>
       <div class="card-container">
         <div class="card-bg" id="cardBg" ref="cardBgRef">
-          <img :src="cardBgImage" class="card-bg-image" />
+          <img :src="cardBgImageSrc" class="card-bg-image" />
           <div
             class="drop-zone"
             id="dropZone"
@@ -64,15 +64,19 @@
     <!-- 右側數據區域 -->
     <section class="card-data">
       <div class="data-section">
-        <h3 class="section-title">卡片數據區</h3>
-        <div
-          v-for="value in 5"
-          class="blessing-item"
-          draggable="true"
-          @dragstart="onDragStart($event, 'blessing', value + 'AA')"
-          @dragend="onDragEnd"
-        >
-          <div class="data-value">{{ value + "AA" }}</div>
+        <h3 class="section-title">卡片模版</h3>
+        <div class="form-switcher">
+          <div class="form-tabs">
+            <div
+              class="form-tab"
+              v-for="template in cardStore.cardTemplates"
+              :key="template.id"
+              :class="{ active: selectedCardBgImage === template.id }"
+              @click="handleCardBgImage(template.id)"
+            >
+              🧧{{ template.name }}
+            </div>
+          </div>
         </div>
       </div>
       <div class="data-section">
@@ -136,9 +140,9 @@
             保存
           </button>
           <button
-            type="bu  tton"
+            type="button"
             class="btn btn-outline capsule-btn"
-            @click="handlePrintCard"
+            @click="handleDownloadCard"
             :loading="printing"
           >
             📥 下載卡片
@@ -169,17 +173,20 @@ const cardStore = useCardStore();
 const dropZoneRef = ref(null);
 const cardContainerRef = ref(null);
 const cardBgRef = ref(null);
-const cardBgImage = ref("/src/data/card-template-zk01a.png");
+const cardBgImageSrc = ref("/src/data/card-template-zk01a.png"); // 預設卡片模版
 
-// 可以動態更換圖片
-const handleChangeImage = (cardName) => {
-  cardBgImage.value = `/src/data/card-template-${cardName}.png`;
-};
 // 響應式狀態
 const hoveredItemId = ref(null);
 const selectedItemId = ref(null);
 const saving = ref(false);
 const printing = ref(false);
+const selectedCardBgImage = ref("zk01a"); // 預設選擇第一個模版
+
+// 可以動態更換圖片
+const handleCardBgImage = (cardName) => {
+  cardBgImageSrc.value = `/src/data/card-template-${cardName}.png`;
+  selectedCardBgImage.value = cardName;
+};
 
 // 卡片尺寸狀態
 const cardDimensions = reactive({
@@ -547,7 +554,7 @@ const handleSaveDesign = async () => {
 };
 
 // 列印/下載卡片（使用與 RegistrationPrint.vue 相同的方式）
-const handlePrintCard = async () => {
+const handleDownloadCard = async () => {
   try {
     printing.value = true;
 
@@ -778,7 +785,7 @@ h1 {
   width: auto;
   height: auto;
   object-fit: contain;
-  border: 1px dashed #000000;
+  border: 2px solid #aaaaaa;
 }
 
 .drop-zone {
@@ -1034,6 +1041,113 @@ h1 {
 .btn-danger:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+/* 表單切換器樣式 */
+.form-switcher {
+  background: #f8f9fa;
+  border: 0px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0rem;
+  margin-bottom: 0rem;
+}
+
+.form-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.form-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.form-tab:hover {
+  border-color: var(--primary-color);
+}
+
+.form-tab.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.tab-number {
+  font-weight: bold;
+}
+
+.tab-name {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-status {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 50px;
+  background: #e9ecef;
+}
+
+.tab-status.creating {
+  background: #fff3cd;
+  color: #856404;
+}
+.tab-status.editing {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+.tab-status.saved {
+  background: #d4edda;
+  color: #155724;
+}
+.tab-status.submitted {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.tab-close {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-close:hover {
+  color: #dc3545;
+}
+
+.form-tab-add {
+  background: transparent;
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.form-tab-add:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 @media (max-width: 1200px) {
