@@ -1,4 +1,4 @@
-<!-- src/views/generatorHash.vue -->
+<!-- src/views/GeneratorHash.vue -->
 <template>
   <div class="main-content">
     <div class="page-header">

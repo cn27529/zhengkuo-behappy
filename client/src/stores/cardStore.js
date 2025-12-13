@@ -7,11 +7,9 @@ export const useCardStore = defineStore("card", () => {
 
   // 卡片模組列表
   const cardTemplates = ref([
-    { id: "zk01a", name: "經典紅" },
-    { id: "zk02a", name: "清新綠" },
+    { id: "zk01a", name: "空白模版" },
+    { id: "zk02a", name: "中字模版" },
     // 未來可以繼續添加更多模組
-    { id: "zk01b", name: "優雅藍" },
-    { id: "zk02b", name: "尊貴金" },
   ]);
 
   // 當前選中的模組 ID
@@ -20,11 +18,11 @@ export const useCardStore = defineStore("card", () => {
   // 硬編碼的卡片數據（之後會替換為 API 獲取）
   const cardData = reactive({
     name: "王小明",
-    nickname: "王氏歷代祖先",
+    ancestors: "王氏歷代祖先",
     blessings: [
       "屏東縣屏東市自由路1000號",
       "高雄市左營區博愛三路500號",
-      "台北市中正區中山南路9號",
+      "嘉義市西區中山路800號",
     ],
   });
 

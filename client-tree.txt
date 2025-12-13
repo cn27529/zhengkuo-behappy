@@ -71,7 +71,7 @@
 │       ├── SupabaseLogin.vue
 │       ├── TaiSui.vue
 │       ├── TestPage.vue
-│       └── generatorHash.vue
+│       └── GeneratorHash.vue
 └── vite.config.js
 
 12 directories, 63 files
