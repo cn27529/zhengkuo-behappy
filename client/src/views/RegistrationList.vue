@@ -146,6 +146,11 @@
                 >🖨️</el-button
               >
             </el-tooltip>
+            <el-tooltip content="卡片設計" placement="top">
+              <el-button circle @click="handleCardDesign(row)" type="info">
+                💳
+              </el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -350,7 +355,7 @@ const handleEdit = async (item) => {
     router.push("/registration-edit");
   } catch (error) {
     console.error("❌ 編輯操作失敗:", error);
-    ElMessage.error("操作失敗，請重試");
+    ElMessage.error("編輯操作失敗，請重試");
   }
 };
 
@@ -382,6 +387,40 @@ const handlePrint = (item) => {
   } catch (error) {
     console.error("導航到列印頁面失敗:", error);
     ElMessage.error("導航到列印頁面失敗");
+  }
+};
+
+// 卡片設計
+const handleCardDesign = (item) => {
+  try {
+    console.group("🔧 卡片設計操作調試信息");
+    console.log("1. 開始處理卡片設計操作", item);
+
+    // 檢查必要的數據
+    if (!item.formId) {
+      throw new Error("表單ID不存在");
+    }
+
+    console.log("2. 準備保存狀態到 Store");
+    // 儲存狀態
+    const pageState = new Promise(async () => {
+      await pageStateStore.setPageState("registration", {
+        action: "edit",
+        formId: item.formId,
+        id: item.id,
+        source: "list",
+      });
+    });
+    pageState.then(() => {
+      console.log("🚪 3. 頁面狀態重建完成");
+    });
+
+    console.log("4. 開始導航到卡片設計頁面");
+    console.groupEnd();
+    router.push("/card-design");
+  } catch (error) {
+    console.error("❌ 卡片設計操作失敗:", error);
+    ElMessage.error("卡片設計操作失敗，請重試");
   }
 };
 

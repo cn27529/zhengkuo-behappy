@@ -63,8 +63,9 @@
 
     <!-- 右側數據區域 -->
     <section class="card-data">
-      <div class="data-section">
-        <h3 class="section-title">卡片模版</h3>
+      <h2 class="section-title">卡片數據</h2>
+      <div class="data-section" style="display: none">
+        <!-- <h3 class="section-title">卡片模版</h3> -->
         <div class="form-switcher">
           <div class="form-tabs">
             <div
@@ -89,19 +90,20 @@
         >
           <div class="data-value">{{ cardStore.cardData.name }}</div>
         </div>
+      </div>
 
+      <!-- 消災地址 -->
+      <div class="data-section">
+        <h3 class="section-title">消災地址</h3>
         <div
           class="data-item"
           draggable="true"
-          @dragstart="onDragStart($event, 'ancestors')"
+          @dragstart="onDragStart($event, 'blessingAddress')"
           @dragend="onDragEnd"
         >
-          <div class="data-value">{{ cardStore.cardData.ancestors }}</div>
+          <div class="data-value">{{ cardStore.cardData.blessingAddress }}</div>
         </div>
-      </div>
 
-      <div class="data-section">
-        <h3 class="section-title">祝賀詞</h3>
         <div class="data-list">
           <div
             v-for="(blessing, index) in cardStore.cardData.blessings"
@@ -112,6 +114,47 @@
             @dragend="onDragEnd"
           >
             <div class="data-value">{{ blessing }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 超度地址 -->
+      <div class="data-section">
+        <h3 class="section-title">超度地址</h3>
+        <div
+          class="data-item"
+          draggable="true"
+          @dragstart="onDragStart($event, 'survivorAddress')"
+          @dragend="onDragEnd"
+        >
+          <div class="data-value">{{ cardStore.cardData.survivorAddress }}</div>
+        </div>
+
+        <!-- 陽上人名單 -->
+        <div class="data-list">
+          <div
+            v-for="(survivor, index) in cardStore.cardData.survivors"
+            :key="index"
+            class="data-item"
+            draggable="true"
+            @dragstart="onDragStart($event, 'survivor', survivor)"
+            @dragend="onDragEnd"
+          >
+            <div class="data-value">{{ survivor }}</div>
+          </div>
+        </div>
+
+        <!-- 祖先 -->
+        <div class="data-list">
+          <div
+            v-for="(ancestor, index) in cardStore.cardData.ancestors"
+            :key="index"
+            class="data-item"
+            draggable="true"
+            @dragstart="onDragStart($event, 'ancestor', ancestor)"
+            @dragend="onDragEnd"
+          >
+            <div class="data-value">{{ ancestor }}</div>
           </div>
         </div>
       </div>
@@ -165,9 +208,13 @@ import { ref, reactive, onMounted, onUnmounted, nextTick, computed } from "vue";
 import { useCardStore } from "../stores/cardStore.js";
 import { Delete } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { usePageStateStore } from "../stores/pageStateStore.js";
+import { useRegistrationStore } from "../stores/registrationStore.js";
 
 // 使用卡片 store
 const cardStore = useCardStore();
+const pageStateStore = usePageStateStore();
+const registrationStore = useRegistrationStore();
 
 // DOM 引用
 const dropZoneRef = ref(null);
@@ -259,8 +306,32 @@ const getDroppedItemStyle = (item) => {
   };
 };
 
+// 新增：模式判断
+const myPageState = computed(() => {
+  const state = pageStateStore.loadPageState("registration");
+  console.log("🔧 myPageState 調試信息:", { state });
+  return state;
+});
+
+const loadFormData = async () => {
+  const state = myPageState.value;
+  const propsData = {
+    id: state.id,
+    formId: state.formId,
+    action: state.action,
+  };
+
+  if (state.action === "edit") {
+    await cardStore.loadFormData(propsData);
+  }
+};
+
 // 初始化數據
-onMounted(() => {
+onMounted(async () => {
+  console.log("🚀 CardDesign 組件已掛載");
+
+  await loadFormData();
+
   // 從 store 加載已保存的設計
   cardStore.loadSavedDesign();
 
@@ -271,7 +342,6 @@ onMounted(() => {
   // 計算卡片尺寸
   setTimeout(() => {
     calculateCardDimensions();
-
     // 監聽窗口大小變化
     window.addEventListener("resize", calculateCardDimensions);
   }, 100);
@@ -279,6 +349,7 @@ onMounted(() => {
 
 // 清理事件監聽器
 onUnmounted(() => {
+  console.log("🗑️ CardDesign 組件已卸載");
   document.removeEventListener("mousemove", onMouseMove);
   document.removeEventListener("mouseup", onMouseUp);
   window.removeEventListener("resize", calculateCardDimensions);
@@ -291,11 +362,20 @@ const onDragStart = (event, type, content = null) => {
   if (type === "name") {
     dragState.draggedItemType = "name";
     dragState.draggedItemContent = cardStore.cardData.name;
-  } else if (type === "nickname") {
-    dragState.draggedItemType = "nickname";
-    dragState.draggedItemContent = cardStore.cardData.ancestors;
+  } else if (type === "blessingAddress") {
+    dragState.draggedItemType = "blessingAddress";
+    dragState.draggedItemContent = cardStore.cardData.blessingAddress;
   } else if (type === "blessing" && content) {
     dragState.draggedItemType = "blessing";
+    dragState.draggedItemContent = content;
+  } else if (type === "survivorAddress") {
+    dragState.draggedItemType = "survivorAddress";
+    dragState.draggedItemContent = cardStore.cardData.survivorAddress;
+  } else if (type === "ancestor") {
+    dragState.draggedItemType = "ancestor";
+    dragState.draggedItemContent = content;
+  } else if (type === "survivor" && content) {
+    dragState.draggedItemType = "survivor";
     dragState.draggedItemContent = content;
   }
 

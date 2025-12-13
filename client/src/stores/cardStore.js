@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
+import { useRegistrationStore } from "./registrationStore.js";
 
 export const useCardStore = defineStore("card", () => {
   // 卡片設計狀態
   const droppedItems = ref([]);
+  const registrationStore = useRegistrationStore();
 
   // 卡片模組列表
   const cardTemplates = ref([
@@ -15,16 +17,197 @@ export const useCardStore = defineStore("card", () => {
   // 當前選中的模組 ID
   const selectedTemplateId = ref("zk01a");
 
-  // 硬編碼的卡片數據（之後會替換為 API 獲取）
-  const cardData = reactive({
-    name: "王小明",
-    ancestors: "王氏歷代祖先",
-    blessings: [
-      "屏東縣屏東市自由路1000號",
-      "高雄市左營區博愛三路500號",
-      "嘉義市西區中山路800號",
-    ],
+  const cardData = computed(() => {
+    console.log("📡 表單數據：", formData.value);
+
+    const data = {
+      // 基礎資訊
+      name: formData.value.contact?.name || "王小明",
+
+      // 消災人員，將表單數據轉換為卡片數據
+      blessings:
+        formData.value.blessing?.persons?.map((p) => p.name + p.zodiac) || [],
+      // 消災地址
+      blessingAddress: formData.value.blessing?.address || "",
+
+      // 祖先
+      ancestors:
+        formData.value.salvation?.ancestors?.map((p) => p.surname + p.notes) ||
+        [],
+      // 陽上人
+      survivors:
+        formData.value.salvation?.survivors?.map((p) => p.name + p.zodiac) ||
+        [],
+      // 祖先地址
+      survivorAddress: formData.value.salvation?.address || "",
+
+      // // 消災資料
+      // blessing: formData.value.blessing || {
+      //   address: "",
+      //   persons: [],
+      // },
+
+      // // 超度資料
+      // salvation: formData.value.salvation || {
+      //   address: "",
+      //   ancestors: [],
+      //   survivors: [],
+      // },
+    };
+
+    return data;
   });
+
+  // 硬編碼的卡片數據（之後會替換為 API 獲取）
+  //const cardData = ref(cardData2.value);
+  // const cardData = ref({
+  //   name: "王小明",
+  //   ancestors: "王氏歷代祖先",
+  //   blessings: [
+  //     "屏東縣屏東市自由路1000號",
+  //     "高雄市左營區博愛三路500號",
+  //     "嘉義市西區中山路800號",
+  //   ],
+  //   // 消災資料
+  //   blessing: {
+  //     // 消災地址
+  //     address: "台北市中正區中山南路1號",
+  //     // 消災人員
+  //     persons: [
+  //       {
+  //         id: 1,
+  //         name: "王大明",
+  //         zodiac: "龍",
+  //         notes: "",
+  //         isHouseholdHead: true,
+  //       },
+  //       {
+  //         id: 2,
+  //         name: "李小華",
+  //         zodiac: "蛇",
+  //         notes: "妻子",
+  //         isHouseholdHead: false,
+  //       },
+  //     ],
+  //   },
+  //   // 超度資料
+  //   salvation: {
+  //     // 超度地址
+  //     address: "台北市中正區中山南路1號",
+  //     // 祖先姓氏
+  //     ancestors: [
+  //       {
+  //         id: 1,
+  //         surname: "王府",
+  //         notes: "歷代祖先",
+  //       },
+  //     ],
+  //     // 陽上人資料
+  //     survivors: [
+  //       {
+  //         id: 1,
+  //         name: "王大明",
+  //         zodiac: "龍",
+  //         notes: "",
+  //       },
+  //       {
+  //         id: 2,
+  //         name: "李小華",
+  //         zodiac: "蛇",
+  //         notes: "",
+  //       },
+  //     ],
+  //   },
+  // });
+
+  /*
+    表單結構
+    {
+        "state": "submitted",
+        "createdAt": "2025-11-22T08:30:00.000Z",
+        "updatedAt": "2025-01-15T09:45:00.000Z",
+        "formName": "2025祈福登記表-001",
+        "formSource": "",
+        "formId": "a1b2c3d",
+        "id": 1,
+        "contact": {
+            "name": "王大明",
+            "phone": "02-12345678",
+            "mobile": "0912-345-678",
+            "relationship": "本家",
+            "otherRelationship": ""
+        },
+        // 消災資料
+        "blessing": {
+            // 消災地址
+            "address": "台北市中正區中山南路1號",
+            // 消災人員
+            "persons": [
+                {
+                    "id": 1,
+                    "name": "王大明",
+                    "zodiac": "龍",
+                    "notes": "",
+                    "isHouseholdHead": true
+                },
+                {
+                    "id": 2,
+                    "name": "李小華",
+                    "zodiac": "蛇",
+                    "notes": "妻子",
+                    "isHouseholdHead": false
+                }
+            ]
+        },
+        //超度資料
+        "salvation": {
+            // 超度地址
+            "address": "台北市中正區中山南路1號",
+            // 祖先姓氏
+            "ancestors": [
+                {
+                    "id": 1,
+                    "surname": "王府",
+                    "notes": "歷代祖先"
+                }
+            ],
+            // 陽上人資料
+            "survivors": [
+                {
+                    "id": 1,
+                    "name": "王大明",
+                    "zodiac": "龍",
+                    "notes": ""
+                },
+                {
+                    "id": 2,
+                    "name": "李小華",
+                    "zodiac": "蛇",
+                    "notes": ""
+                }
+            ]
+        }
+    }
+  */
+  const formData = ref(registrationStore.getInitialFormData());
+
+  const loadFormData = async (propsData) => {
+    try {
+      await registrationStore.loadConfig();
+      const result = await registrationStore.loadFormData(propsData);
+      if (result) {
+        // 直接更新 formData
+        formData.value = registrationStore.registrationForm;
+        console.log("✅ 表單載入成功，卡片數據自動更新");
+
+        // 不再需要手動調用 convertDataToCard
+        // cardData 會自動通過 computed 更新
+      }
+    } catch (error) {
+      console.error("載入表單數據失敗:", error);
+      throw error;
+    }
+  };
 
   // 添加已放置項目
   const addDroppedItem = (item) => {
@@ -114,5 +297,7 @@ export const useCardStore = defineStore("card", () => {
     loadSavedDesign,
     resetDesign,
     getDesignData,
+    loadFormData,
+    formData,
   };
 });
