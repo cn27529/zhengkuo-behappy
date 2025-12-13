@@ -10,8 +10,8 @@ export const useCardStore = defineStore("card", () => {
     { id: "zk01a", name: "經典紅" },
     { id: "zk02a", name: "清新綠" },
     // 未來可以繼續添加更多模組
-    // { id: 'xk03a', name: '優雅藍' },
-    // { id: 'xk04a', name: '尊貴金' },
+    { id: "zk01b", name: "優雅藍" },
+    { id: "zk02b", name: "尊貴金" },
   ]);
 
   // 當前選中的模組 ID

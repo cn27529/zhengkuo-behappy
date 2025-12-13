@@ -5,7 +5,22 @@
       <h2 class="section-title">卡片預覽區</h2>
       <div class="card-container">
         <div class="card-bg" id="cardBg" ref="cardBgRef">
-          <img :src="cardBgImageSrc" class="card-bg-image" />
+          <!-- 卡片背景圖片容器 -->
+          <div class="card-bg-container" ref="cardBgContainerRef">
+            <img
+              :src="cardBgImageSrc"
+              class="card-bg-image"
+              :class="imageClass"
+              :key="cardBgImageKey"
+            />
+            <!-- 上一張圖片（用於過渡效果） -->
+            <img
+              v-if="prevCardBgImageSrc"
+              :src="prevCardBgImageSrc"
+              class="card-bg-image prev-image"
+              :class="prevImageClass"
+            />
+          </div>
           <div
             class="drop-zone"
             id="dropZone"
@@ -64,7 +79,7 @@
     <!-- 右側數據區域 -->
     <section class="card-data">
       <div class="data-section">
-        <h3 class="section-title">卡片模版</h3>
+        <h3 class="section-title">卡片模組</h3>
         <div class="form-switcher">
           <div class="form-tabs">
             <div
@@ -173,19 +188,71 @@ const cardStore = useCardStore();
 const dropZoneRef = ref(null);
 const cardContainerRef = ref(null);
 const cardBgRef = ref(null);
-const cardBgImageSrc = ref("/src/data/card-template-zk01a.png"); // 預設卡片模版
+const cardBgContainerRef = ref(null);
+
+// 圖片切換相關狀態
+const cardBgImageSrc = ref("/src/data/card-template-zk01a.png");
+const prevCardBgImageSrc = ref(null);
+const cardBgImageKey = ref(0);
+const imageTransition = ref(false);
+const transitionDirection = ref("right"); // 'left' 或 'right'
+
+// 圖片類名計算
+const imageClass = computed(() => ({
+  "image-active": !imageTransition.value,
+  "image-slide-in":
+    imageTransition.value && transitionDirection.value === "right",
+  "image-slide-in-left":
+    imageTransition.value && transitionDirection.value === "left",
+}));
+
+const prevImageClass = computed(() => ({
+  "image-slide-out":
+    imageTransition.value && transitionDirection.value === "right",
+  "image-slide-out-right":
+    imageTransition.value && transitionDirection.value === "left",
+}));
 
 // 響應式狀態
 const hoveredItemId = ref(null);
 const selectedItemId = ref(null);
 const saving = ref(false);
 const printing = ref(false);
-const selectedCardBgImage = ref("zk01a"); // 預設選擇第一個模版
+const selectedCardBgImage = ref("zk01a"); // 預設選擇第一個模組
 
-// 可以動態更換圖片
-const handleCardBgImage = (cardName) => {
-  cardBgImageSrc.value = `/src/data/card-template-${cardName}.png`;
+// 動態更換圖片（帶有過渡效果）
+const handleCardBgImage = async (cardName) => {
+  if (selectedCardBgImage.value === cardName) return;
+
+  // 記錄過渡方向（根據模板索引判斷左右方向）
+  const currentIndex = cardStore.cardTemplates.findIndex(
+    (t) => t.id === selectedCardBgImage.value
+  );
+  const newIndex = cardStore.cardTemplates.findIndex((t) => t.id === cardName);
+
+  transitionDirection.value = newIndex > currentIndex ? "right" : "left";
+
+  // 設置過渡狀態
+  imageTransition.value = true;
+
+  // 保存當前圖片作為上一張圖片
+  prevCardBgImageSrc.value = cardBgImageSrc.value;
+
+  // 更新圖片源和選擇狀態
   selectedCardBgImage.value = cardName;
+
+  // 等待下一幀以確保DOM更新
+  await nextTick();
+
+  // 設置新圖片（通過更改key強制重新渲染）
+  cardBgImageSrc.value = `/src/data/card-template-${cardName}.png`;
+  cardBgImageKey.value++;
+
+  // 等待過渡動畫完成
+  setTimeout(() => {
+    imageTransition.value = false;
+    prevCardBgImageSrc.value = null;
+  }, 500); // 與CSS過渡時間保持一致
 };
 
 // 卡片尺寸狀態
@@ -202,14 +269,12 @@ const calculateCardDimensions = () => {
   if (!cardBgRef.value) return;
 
   const container = cardBgRef.value;
-  const bgImage = new Image();
-  bgImage.src = "../data/card-template-zk01.png";
 
   // 獲取容器尺寸
   const containerWidth = container.clientWidth;
   const containerHeight = container.clientHeight;
 
-  // 計算圖片縮放比例（假設圖片原始比例）
+  // 計算圖片縮放比例（假設卡片原始比例）
   const imageAspectRatio = 2 / 3; // 假設卡片模板是2:3比例
   const containerAspectRatio = containerWidth / containerHeight;
 
@@ -726,7 +791,6 @@ h1 {
 .card-container {
   flex: 1;
   border-radius: 0px;
-  /* box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05); */
   position: relative;
   overflow: hidden;
   opacity: 1;
@@ -751,9 +815,16 @@ h1 {
 .card-data {
   width: 400px;
   padding: 15px;
-  /* background-color: #f9f9f9; */
   overflow-y: auto;
   border: 0px solid #9c27b0;
+}
+
+/* 卡片背景圖片容器 */
+.card-bg-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .card-bg {
@@ -786,6 +857,79 @@ h1 {
   height: auto;
   object-fit: contain;
   border: 2px solid #aaaaaa;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  will-change: transform, opacity;
+}
+
+/* 圖片過渡動畫類 */
+.image-active {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.image-slide-in {
+  animation: slideInRight 0.5s ease forwards;
+}
+
+.image-slide-in-left {
+  animation: slideInLeft 0.5s ease forwards;
+}
+
+.image-slide-out {
+  animation: slideOutLeft 0.5s ease forwards;
+}
+
+.image-slide-out-right {
+  animation: slideOutRight 0.5s ease forwards;
+}
+
+.prev-image {
+  z-index: 1;
+}
+
+/* 動畫定義 */
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translate(-30%, -50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translate(-70%, -50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes slideOutLeft {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-70%, -50%);
+  }
+}
+
+@keyframes slideOutRight {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-30%, -50%);
+  }
 }
 
 .drop-zone {
@@ -794,7 +938,7 @@ h1 {
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -895,7 +1039,6 @@ h1 {
 
 .blessing-item {
   background-color: white;
-  /* border-radius: 8px; */
   padding: 5px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
   border: 1px dashed #aaaaaa;
@@ -1073,6 +1216,8 @@ h1 {
 
 .form-tab:hover {
   border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-tab.active {
