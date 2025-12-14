@@ -574,6 +574,27 @@ export default {
     const myPageState = computed(() => {
       const state = pageStateStore.loadPageState("registration");
       console.log("🔧 myPageState 調試信息:", { state });
+
+      // if (state.isEdit) {
+      //   const propsData = {
+      //     id: state.id,
+      //     formId: state.formId,
+      //     action: state.action,
+      //   };
+      //   //return;
+      //   new Promise((resolve) => {
+      //     registrationStore.loadFormData(propsData).then(() => {
+      //       resolve();
+      //     });
+      //   });
+      //   //await registrationStore.loadFormData(propsData);
+      // }
+      // if (state.isCreate) {
+      //   // 啟動自動同步機制
+      //   registrationStore.resetRegistrationForm(true);
+      //   console.log("[v0] 表單同步已啟動 - 創建模式");
+      // }
+
       return state;
     });
 

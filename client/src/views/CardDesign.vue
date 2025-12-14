@@ -64,6 +64,7 @@
     <!-- 右側數據區域 -->
     <section class="card-data">
       <h2 class="section-title">卡片數據</h2>
+
       <div class="data-section" style="display: none">
         <!-- <h3 class="section-title">卡片模版</h3> -->
         <div class="form-switcher">
@@ -80,12 +81,13 @@
           </div>
         </div>
       </div>
-      <div class="data-section">
+      <!-- 基本信息 -->
+      <div class="data-section" style="display: none">
         <h3 class="section-title">基本信息</h3>
         <div
           class="data-item"
           draggable="true"
-          @dragstart="onDragStart($event, 'name')"
+          @dragstart="onDragStart($event, 'name', cardStore.cardData.name)"
           @dragend="onDragEnd"
         >
           <div class="data-value">{{ cardStore.cardData.name }}</div>
@@ -98,7 +100,13 @@
         <div
           class="data-item"
           draggable="true"
-          @dragstart="onDragStart($event, 'blessingAddress')"
+          @dragstart="
+            onDragStart(
+              $event,
+              'blessingAddress',
+              cardStore.cardData.blessingAddress
+            )
+          "
           @dragend="onDragEnd"
         >
           <div class="data-value">{{ cardStore.cardData.blessingAddress }}</div>
@@ -106,14 +114,14 @@
 
         <div class="data-list">
           <div
-            v-for="(blessing, index) in cardStore.cardData.blessings"
+            v-for="(person, index) in cardStore.cardData.persons"
             :key="index"
             class="data-item"
             draggable="true"
-            @dragstart="onDragStart($event, 'blessing', blessing)"
+            @dragstart="onDragStart($event, 'person', person)"
             @dragend="onDragEnd"
           >
-            <div class="data-value">{{ blessing }}</div>
+            <div class="data-value">{{ person }}</div>
           </div>
         </div>
       </div>
@@ -124,13 +132,40 @@
         <div
           class="data-item"
           draggable="true"
-          @dragstart="onDragStart($event, 'survivorAddress')"
+          @dragstart="
+            onDragStart(
+              $event,
+              'salvationAddress',
+              cardStore.cardData.salvationAddress
+            )
+          "
           @dragend="onDragEnd"
         >
-          <div class="data-value">{{ cardStore.cardData.survivorAddress }}</div>
+          <div class="data-value">
+            {{ cardStore.cardData.salvationAddress }}
+          </div>
         </div>
 
-        <!-- 陽上人名單 -->
+        <!-- 祖先 -->
+        <div class="data-list">
+          <div
+            v-for="(ancestor, index) in cardStore.cardData.ancestors"
+            :key="index"
+            class="data-item"
+            draggable="true"
+            @dragstart="
+              onDragStart($event, 'ancestor', ancestor + '氏歷代祖先')
+            "
+            @dragend="onDragEnd"
+          >
+            <div class="data-value">{{ ancestor + "氏歷代祖先" }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 陽上人 -->
+      <div class="data-section">
+        <h3 class="section-title">陽上人</h3>
         <div class="data-list">
           <div
             v-for="(survivor, index) in cardStore.cardData.survivors"
@@ -143,22 +178,7 @@
             <div class="data-value">{{ survivor }}</div>
           </div>
         </div>
-
-        <!-- 祖先 -->
-        <div class="data-list">
-          <div
-            v-for="(ancestor, index) in cardStore.cardData.ancestors"
-            :key="index"
-            class="data-item"
-            draggable="true"
-            @dragstart="onDragStart($event, 'ancestor', ancestor)"
-            @dragend="onDragEnd"
-          >
-            <div class="data-value">{{ ancestor }}</div>
-          </div>
-        </div>
       </div>
-
       <div class="use-help">
         <h3>使用說明</h3>
         <ul>
@@ -220,14 +240,14 @@ const registrationStore = useRegistrationStore();
 const dropZoneRef = ref(null);
 const cardContainerRef = ref(null);
 const cardBgRef = ref(null);
-const cardBgImageSrc = ref("/src/data/card-template-zk01a.png"); // 預設卡片模版
+const cardBgImageSrc = ref("/src/data/card-template-zk01b.png"); // 預設卡片模版
 
 // 響應式狀態
 const hoveredItemId = ref(null);
 const selectedItemId = ref(null);
 const saving = ref(false);
 const printing = ref(false);
-const selectedCardBgImage = ref("zk01a"); // 預設選擇第一個模版
+const selectedCardBgImage = ref("zk01b"); // 預設選擇第一個模版
 
 // 可以動態更換圖片
 const handleCardBgImage = (cardName) => {
@@ -359,23 +379,33 @@ onUnmounted(() => {
 const onDragStart = (event, type, content = null) => {
   dragState.isDragging = true;
 
-  if (type === "name") {
-    dragState.draggedItemType = "name";
-    dragState.draggedItemContent = cardStore.cardData.name;
-  } else if (type === "blessingAddress") {
-    dragState.draggedItemType = "blessingAddress";
-    dragState.draggedItemContent = cardStore.cardData.blessingAddress;
-  } else if (type === "blessing" && content) {
-    dragState.draggedItemType = "blessing";
+  if (type === "name" && content) {
+    dragState.draggedItemType = type;
     dragState.draggedItemContent = content;
-  } else if (type === "survivorAddress") {
-    dragState.draggedItemType = "survivorAddress";
-    dragState.draggedItemContent = cardStore.cardData.survivorAddress;
-  } else if (type === "ancestor") {
-    dragState.draggedItemType = "ancestor";
+  }
+  // 消災地址
+  if (type === "blessingAddress" && content) {
+    dragState.draggedItemType = type;
     dragState.draggedItemContent = content;
-  } else if (type === "survivor" && content) {
-    dragState.draggedItemType = "survivor";
+  }
+  // 消災人員
+  if (type === "person" && content) {
+    dragState.draggedItemType = type;
+    dragState.draggedItemContent = content;
+  }
+  // 超度地址
+  if (type === "salvationAddress" && content) {
+    dragState.draggedItemType = type;
+    dragState.draggedItemContent = content;
+  }
+  // 祖先
+  if (type === "ancestor" && content) {
+    dragState.draggedItemType = type;
+    dragState.draggedItemContent = content;
+  }
+  // 陽上人
+  if (type === "survivor" && content) {
+    dragState.draggedItemType = type;
     dragState.draggedItemContent = content;
   }
 
@@ -842,7 +872,7 @@ h1 {
   height: 100%;
   max-width: 600px; /* 限制最大寬度 */
   max-height: 900px; /* 限制最大高度 */
-  /* background-image: url("../data/card-template-zk01a.png"); 
+  /* background-image: url("../data/card-template-zk01b.png"); 
   background-size: contain;
   background-repeat: no-repeat; */
   background-position: center; /* 保持居中顯示 */
@@ -866,7 +896,7 @@ h1 {
   width: auto;
   height: auto;
   object-fit: contain;
-  border: 1px dashed #aaaaaa;
+  border: 0.5px solid #000111;
 }
 
 .drop-zone {
