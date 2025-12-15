@@ -203,6 +203,260 @@ export const monthlyDonateService = {
     }
   },
 
+  // ========== donateItems 操作方法 ==========
+
+  /**
+   * 新增 donateItem 到指定贊助記錄
+   */
+  async addDonateItem(donateId, itemData) {
+    try {
+      if (baseService.mode === "directus") {
+        // 先獲取現有的贊助記錄
+        const donateResponse = await this.getMonthlyDonateById(donateId);
+
+        if (!donateResponse.success) {
+          return donateResponse;
+        }
+
+        const currentDonate = donateResponse.data;
+        const newDonateItem = {
+          ...itemData,
+          donateItemsId: DateUtils.getCurrentISOTime(), // 使用時間作為 donateItemsId
+          createdAt: DateUtils.getCurrentISOTime(),
+          createdUser: await this.getCurrentUser(),
+          updatedAt: null,
+          updatedUser: null,
+        };
+
+        // 添加新項目到 donateItems 數組
+        const updatedDonateItems = [
+          ...(currentDonate.donateItems || []),
+          newDonateItem,
+        ];
+
+        // 更新整個贊助記錄
+        const updateData = {
+          donateItems: updatedDonateItems,
+          updatedAt: DateUtils.getCurrentISOTime(),
+          updatedUser: await this.getCurrentUser(),
+        };
+
+        const response = await fetch(
+          getApiUrl(
+            `${baseService.apiEndpoints.itemsMonthlyDonate}/${donateId}`
+          ),
+          {
+            method: "PATCH",
+            headers: await this.getAuthHeaders(),
+            body: JSON.stringify(updateData),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        return {
+          success: true,
+          data: data.data,
+          message: "贊助項目添加成功",
+        };
+      } else {
+        // Mock 模式
+        const newDonateItem = {
+          ...itemData,
+          donateItemsId: DateUtils.getCurrentISOTime(),
+          createdAt: DateUtils.getCurrentISOTime(),
+          createdUser: "admin",
+          updatedAt: null,
+          updatedUser: null,
+        };
+
+        return {
+          success: true,
+          data: newDonateItem,
+          message: "Mock 模式：贊助項目添加成功",
+        };
+      }
+    } catch (error) {
+      console.error("❌ 添加贊助項目失敗:", error);
+      return {
+        success: false,
+        data: null,
+        message: `添加贊助項目失敗: ${error.message}`,
+      };
+    }
+  },
+
+  /**
+   * 更新指定 donateItem
+   */
+  async updateDonateItem(donateId, donateItemsId, itemData) {
+    try {
+      if (baseService.mode === "directus") {
+        // 先獲取現有的贊助記錄
+        const donateResponse = await this.getMonthlyDonateById(donateId);
+
+        if (!donateResponse.success) {
+          return donateResponse;
+        }
+
+        const currentDonate = donateResponse.data;
+        const donateItems = currentDonate.donateItems || [];
+
+        // 找到要更新的項目索引
+        const itemIndex = donateItems.findIndex(
+          (item) => item.donateItemsId === donateItemsId
+        );
+
+        if (itemIndex === -1) {
+          return {
+            success: false,
+            data: null,
+            message: `找不到 donateItemsId 為 ${donateItemsId} 的贊助項目`,
+          };
+        }
+
+        // 更新項目
+        const updatedItem = {
+          ...donateItems[itemIndex],
+          ...itemData,
+          updatedAt: DateUtils.getCurrentISOTime(),
+          updatedUser: await this.getCurrentUser(),
+        };
+
+        donateItems[itemIndex] = updatedItem;
+
+        // 更新整個贊助記錄
+        const updateData = {
+          donateItems: donateItems,
+          updatedAt: DateUtils.getCurrentISOTime(),
+          updatedUser: await this.getCurrentUser(),
+        };
+
+        const response = await fetch(
+          getApiUrl(
+            `${baseService.apiEndpoints.itemsRegistration}/${donateId}`
+          ),
+          {
+            method: "PATCH",
+            headers: await this.getAuthHeaders(),
+            body: JSON.stringify(updateData),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        return {
+          success: true,
+          data: data.data,
+          message: "贊助項目更新成功",
+        };
+      } else {
+        // Mock 模式
+        const updatedItem = {
+          donateItemsId,
+          ...itemData,
+          updatedAt: DateUtils.getCurrentISOTime(),
+          updatedUser: "admin",
+        };
+
+        return {
+          success: true,
+          data: updatedItem,
+          message: "Mock 模式：贊助項目更新成功",
+        };
+      }
+    } catch (error) {
+      console.error("❌ 更新贊助項目失敗:", error);
+      return {
+        success: false,
+        data: null,
+        message: `更新贊助項目失敗: ${error.message}`,
+      };
+    }
+  },
+
+  /**
+   * 刪除指定 donateItem
+   */
+  async deleteDonateItem(donateId, itemsId) {
+    try {
+      if (baseService.mode === "directus") {
+        // 先獲取現有的贊助記錄
+        const donateResponse = await this.getMonthlyDonateById(donateId);
+
+        if (!donateResponse.success) {
+          return donateResponse;
+        }
+
+        const currentDonate = donateResponse.data;
+        let donateItems = currentDonate.donateItems || [];
+
+        // 過濾掉要刪除的項目
+        const originalLength = donateItems.length;
+        donateItems = donateItems.filter(
+          (item) => item.donateItemsId !== itemsId
+        );
+
+        if (originalLength === donateItems.length) {
+          return {
+            success: false,
+            message: `找不到 donateItemsId 為 ${itemsId} 的贊助項目`,
+          };
+        }
+
+        // 更新整個贊助記錄
+        const updateData = {
+          donateItems: donateItems,
+          updatedAt: DateUtils.getCurrentISOTime(),
+          updatedUser: await this.getCurrentUser(),
+        };
+
+        const response = await fetch(
+          getApiUrl(
+            `${baseService.apiEndpoints.itemsRegistration}/${donateId}`
+          ),
+          {
+            method: "PATCH",
+            headers: await this.getAuthHeaders(),
+            body: JSON.stringify(updateData),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        return {
+          success: true,
+          data: data.data,
+          message: "贊助項目刪除成功",
+        };
+      } else {
+        // Mock 模式
+        return {
+          success: true,
+          message: "Mock 模式：贊助項目刪除成功",
+        };
+      }
+    } catch (error) {
+      console.error("❌ 刪除贊助項目失敗:", error);
+      return {
+        success: false,
+        message: `刪除贊助項目失敗: ${error.message}`,
+      };
+    }
+  },
+
   /**
    * 根據 ID 獲取單筆百元贊助記錄
    */

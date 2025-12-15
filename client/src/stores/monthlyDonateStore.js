@@ -5,6 +5,7 @@ import { generateGitHash } from "../utils/generateGitHash.js";
 import { baseService } from "../services/baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_monthlyDonates.json";
+import { monthlyDonateService } from "../services/monthlyDonateService.js";
 
 export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   // ========== 狀態 ==========
@@ -859,16 +860,16 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       // TODO: 未來串接 API
       console.log("📄 從服務器獲取贊助數據...");
-      // const result = await monthlyDonateService.getAllDonates(params);
-      // if (result.success) {
-      //   allDonates.value = result.data || [];
-      //   console.log(`✅ 成功獲取 ${allDonates.value.length} 個贊助記錄`);
-      //   return result;
-      // } else {
-      //   error.value = result.message;
-      //   allDonates.value = mockDatas;
-      //   return result;
-      // }
+      const result = await monthlyDonateService.getAllMonthlyDonates(params);
+      if (result.success) {
+        allDonates.value = result.data || [];
+        console.log(`✅ 成功獲取 ${allDonates.value.length} 個贊助記錄`);
+        return result;
+      } else {
+        error.value = result.message;
+        allDonates.value = mockDatas;
+        return result;
+      }
 
       // 暫時使用 Mock 數據
       allDonates.value = mockDatas;
@@ -881,79 +882,6 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       error.value = err.message;
       console.error("❌ 獲取贊助數據異常:", err);
       allDonates.value = mockDatas;
-      throw err;
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  /**
-   * 新增贊助項目（給現有贊助人）
-   */
-  const addDonateItem = async (donatorName, donateData) => {
-    loading.value = true;
-    error.value = null;
-
-    try {
-      const createISOTime = DateUtils.getCurrentISOTime();
-
-      // 查找是否已有該贊助人
-      const existingDonate = allDonates.value.find(
-        (d) => d.name === donatorName
-      );
-
-      const newDonateItem = {
-        donateItemsId: generateGitHash(createISOTime + donatorName),
-        price: donateData.amount,
-        months: donateData.selectedMonths || [],
-        createdAt: createISOTime,
-        createdUser: getCurrentUser(),
-        updatedAt: "",
-        updatedUser: "",
-      };
-
-      if (existingDonate) {
-        // 更新現有贊助人
-        existingDonate.donateItems.push(newDonateItem);
-        existingDonate.updatedAt = createISOTime;
-        existingDonate.updatedUser = getCurrentUser();
-
-        console.log(`✅ 新增贊助項目給 ${donatorName}:`, newDonateItem);
-
-        return {
-          success: true,
-          data: existingDonate,
-          message: "成功新增贊助項目",
-        };
-      } else {
-        // 創建新的贊助人
-        const newDonate = {
-          id: Math.max(...allDonates.value.map((d) => d.id), 0) + 1,
-          name: donatorName,
-          registrationId: -1,
-          donateId: generateGitHash(createISOTime),
-          donateType: "",
-          donateItems: [newDonateItem],
-          memo: donateData.memo || "",
-          icon: donateData.icon || "💰",
-          createdAt: createISOTime,
-          createdUser: getCurrentUser(),
-          updatedAt: "",
-          updatedUser: "",
-        };
-
-        allDonates.value.push(newDonate);
-        console.log(`✅ 創建新贊助人 ${donatorName}:`, newDonate);
-
-        return {
-          success: true,
-          data: newDonate,
-          message: "成功創建新贊助人並新增贊助項目",
-        };
-      }
-    } catch (err) {
-      error.value = err.message;
-      console.error("❌ 新增贊助項目異常:", err);
       throw err;
     } finally {
       loading.value = false;
@@ -1008,16 +936,16 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // TODO: 未來串接 API
-      // const result = await monthlyDonateService.createDonate(newDonate);
-      // if (result.success) {
-      //   allDonates.value.push(result.data);
-      //   console.log("✅ 成功創建贊助:", result.data.name);
-      //   return result;
-      // } else {
-      //   error.value = result.message;
-      //   console.error("❌ 創建贊助失敗:", result.message);
-      //   return result;
-      // }
+      const result = await monthlyDonateService.createMonthlyDonate(newDonate);
+      if (result.success) {
+        allDonates.value.push(result.data);
+        console.log("✅ 成功創建贊助:", result.data.name);
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 創建贊助失敗:", result.message);
+        return result;
+      }
 
       allDonates.value.push(newDonate);
       return {
@@ -1035,6 +963,88 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   };
 
   /**
+   * 新增贊助項目（給現有贊助記錄）
+   */
+  const addDonateItem = async (donateId, donateItemData) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const createISOTime = DateUtils.getCurrentISOTime();
+
+      // 查找現有的贊助記錄
+      const existingDonateIndex = allDonates.value.findIndex(
+        (d) => d.id === donateId || d.donateId === donateId
+      );
+
+      if (existingDonateIndex === -1) {
+        throw new Error(`找不到 ID 為 ${donateId} 的贊助記錄`);
+      }
+
+      const existingDonate = allDonates.value[existingDonateIndex];
+
+      const newDonateItem = {
+        donateItemsId: generateGitHash(createISOTime + existingDonate.name),
+        price: donateItemData.amount || donateItemData.price || 0,
+        months: donateItemData.selectedMonths || donateItemData.months || [],
+        createdAt: createISOTime,
+        createdUser: getCurrentUser(),
+        updatedAt: "",
+        updatedUser: "",
+      };
+
+      if (baseService.mode !== "directus") {
+        // Mock 模式：直接更新本地數據
+        existingDonate.donateItems.push(newDonateItem);
+        existingDonate.updatedAt = createISOTime;
+        existingDonate.updatedUser = getCurrentUser();
+
+        console.log(
+          `✅ Mock 模式：新增贊助項目給 ${existingDonate.name}:`,
+          newDonateItem
+        );
+
+        return {
+          success: true,
+          data: existingDonate,
+          message: "成功新增贊助項目(Mock 模式)",
+        };
+      }
+
+      // Directus 模式：調用 API
+      const result = await monthlyDonateService.addDonateItem(donateId, {
+        ...donateItemData,
+        donateItemsId: newDonateItem.donateItemsId,
+        price: newDonateItem.price,
+        months: newDonateItem.months,
+      });
+
+      if (result.success) {
+        // 更新本地數據
+        existingDonate.donateItems.push(newDonateItem);
+        existingDonate.updatedAt = createISOTime;
+        existingDonate.updatedUser = getCurrentUser();
+
+        console.log(`✅ 成功新增贊助項目給 ${existingDonate.name}`);
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 新增贊助項目失敗:", result.message);
+        return result;
+      }
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 新增贊助項目異常:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * 更新贊助項目
+   */
+  /**
    * 更新贊助項目
    */
   const updateDonateItem = async (donateId, itemId, itemData) => {
@@ -1043,7 +1053,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
     try {
       const donateIndex = allDonates.value.findIndex(
-        (d) => d.donateId === donateId
+        (d) => d.id === donateId || d.donateId === donateId
       );
       if (donateIndex === -1) {
         throw new Error(`找不到 donateId 為 ${donateId} 的贊助記錄`);
@@ -1061,6 +1071,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       const updateISOTime = DateUtils.getCurrentISOTime();
 
       if (baseService.mode !== "directus") {
+        // Mock 模式：更新本地數據
         donate.donateItems[itemIndex] = {
           ...donate.donateItems[itemIndex],
           ...itemData,
@@ -1079,36 +1090,36 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         };
       }
 
-      // TODO: 未來串接 API
-      // const result = await monthlyDonateService.updateDonateItem(donateId, itemId, itemData);
-      // if (result.success) {
-      //   donate.donateItems[itemIndex] = {
-      //     ...donate.donateItems[itemIndex],
-      //     ...result.data
-      //   };
-      //   console.log("✅ 成功更新贊助項目");
-      //   return result;
-      // } else {
-      //   error.value = result.message;
-      //   console.error("❌ 更新贊助項目失敗:", result.message);
-      //   return result;
-      // }
+      // Directus 模式：調用 API
+      const result = await monthlyDonateService.updateDonateItem(
+        donate.id, // 使用數據庫中的 ID
+        itemId,
+        {
+          ...itemData,
+          updatedAt: updateISOTime,
+          updatedUser: getCurrentUser(),
+        }
+      );
 
-      donate.donateItems[itemIndex] = {
-        ...donate.donateItems[itemIndex],
-        ...itemData,
-        updatedAt: updateISOTime,
-        updatedUser: getCurrentUser(),
-      };
+      if (result.success) {
+        // 更新本地數據
+        donate.donateItems[itemIndex] = {
+          ...donate.donateItems[itemIndex],
+          ...itemData,
+          updatedAt: updateISOTime,
+          updatedUser: getCurrentUser(),
+        };
 
-      donate.updatedAt = updateISOTime;
-      donate.updatedUser = getCurrentUser();
+        donate.updatedAt = updateISOTime;
+        donate.updatedUser = getCurrentUser();
 
-      return {
-        success: true,
-        data: donate,
-        message: "贊助項目已更新(Mock 模式)",
-      };
+        console.log("✅ 成功更新贊助項目");
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 更新贊助項目失敗:", result.message);
+        return result;
+      }
     } catch (err) {
       error.value = err.message;
       console.error("❌ 更新贊助項目異常:", err);
@@ -1121,13 +1132,16 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   /**
    * 刪除贊助項目
    */
+  /**
+   * 刪除贊助項目
+   */
   const deleteDonateItem = async (donateId, itemId) => {
     loading.value = true;
     error.value = null;
 
     try {
       const donateIndex = allDonates.value.findIndex(
-        (d) => d.donateId === donateId
+        (d) => d.id === donateId || d.donateId === donateId
       );
       if (donateIndex === -1) {
         throw new Error(`找不到 donateId 為 ${donateId} 的贊助記錄`);
@@ -1143,12 +1157,16 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       if (baseService.mode !== "directus") {
+        // Mock 模式：刪除本地數據
         donate.donateItems.splice(itemIndex, 1);
 
         // 如果沒有其他贊助項目，刪除整個贊助記錄
         if (donate.donateItems.length === 0) {
           allDonates.value.splice(donateIndex, 1);
         }
+
+        donate.updatedAt = DateUtils.getCurrentISOTime();
+        donate.updatedUser = getCurrentUser();
 
         console.log("✅ Mock 模式：贊助項目已刪除");
         return {
@@ -1157,33 +1175,30 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         };
       }
 
-      // TODO: 未來串接 API
-      // const result = await monthlyDonateService.deleteDonateItem(donateId, itemId);
-      // if (result.success) {
-      //   donate.donateItems.splice(itemIndex, 1);
-      //
-      //   if (donate.donateItems.length === 0) {
-      //     allDonates.value.splice(donateIndex, 1);
-      //   }
-      //
-      //   console.log("✅ 成功刪除贊助項目");
-      //   return result;
-      // } else {
-      //   error.value = result.message;
-      //   console.error("❌ 刪除贊助項目失敗:", result.message);
-      //   return result;
-      // }
+      // Directus 模式：調用 API
+      const result = await monthlyDonateService.deleteDonateItem(
+        donate.id, // 使用數據庫中的 ID
+        itemId
+      );
 
-      donate.donateItems.splice(itemIndex, 1);
+      if (result.success) {
+        // 更新本地數據
+        donate.donateItems.splice(itemIndex, 1);
 
-      if (donate.donateItems.length === 0) {
-        allDonates.value.splice(donateIndex, 1);
+        if (donate.donateItems.length === 0) {
+          allDonates.value.splice(donateIndex, 1);
+        }
+
+        donate.updatedAt = DateUtils.getCurrentISOTime();
+        donate.updatedUser = getCurrentUser();
+
+        console.log("✅ 成功刪除贊助項目");
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 刪除贊助項目失敗:", result.message);
+        return result;
       }
-
-      return {
-        success: true,
-        message: "贊助項目已刪除(Mock 模式)",
-      };
     } catch (err) {
       error.value = err.message;
       console.error("❌ 刪除贊助項目異常:", err);
