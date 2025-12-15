@@ -11,11 +11,19 @@ export class RegistrationService {
 
   // ========== 通用方法 ==========
   async getAuthHeaders() {
-    const token = sessionStorage.getItem("auth-token");
-    return {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    };
+    try {
+      const token = sessionStorage.getItem("auth-token");
+      if (!token) {
+        return { success: false, message: "未找到 Token" };
+      }
+
+      return {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
+    } catch (error) {
+      console.error("獲取授權標頭失敗:", error);
+    }
   }
 
   async handleDirectusResponse(response) {

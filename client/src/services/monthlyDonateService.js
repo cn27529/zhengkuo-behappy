@@ -9,18 +9,16 @@ export const monthlyDonateService = {
   async getAllMonthlyDonates(params = {}) {
     try {
       if (baseService.mode === "directus") {
-        const response = await fetch(
-          getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate),
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
-            },
-          }
-        );
+        const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+        const queryParams = new URLSearchParams({
+          sort: "-createdAt",
+          ...params,
+        }).toString();
+
+        const response = await fetch(`${url}?${queryParams}`, {
+          method: "GET",
+          headers: await this.getAuthHeaders(),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -63,7 +61,7 @@ export const monthlyDonateService = {
         ...donateData,
         donateId,
         createdAt: currentTime,
-        createdUser: this.getCurrentUser(),
+        createdUser: await this.getCurrentUser(),
         updatedAt: null,
         updatedUser: null,
       };
@@ -73,12 +71,7 @@ export const monthlyDonateService = {
           getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate),
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
-            },
+            headers: await this.getAuthHeaders(),
             body: JSON.stringify(newDonate),
           }
         );
@@ -125,7 +118,7 @@ export const monthlyDonateService = {
       const updateData = {
         ...donateData,
         updatedAt: DateUtils.getCurrentISOTime(),
-        updatedUser: this.getCurrentUser(),
+        updatedUser: await this.getCurrentUser(),
       };
 
       if (baseService.mode === "directus") {
@@ -133,12 +126,7 @@ export const monthlyDonateService = {
           getApiUrl(`${baseService.apiEndpoints.itemsMonthlyDonate}/${id}`),
           {
             method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
-            },
+            headers: await this.getAuthHeaders(),
             body: JSON.stringify(updateData),
           }
         );
@@ -187,11 +175,7 @@ export const monthlyDonateService = {
           getApiUrl(`${baseService.apiEndpoints.itemsMonthlyDonate}/${id}`),
           {
             method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
-            },
+            headers: await this.getAuthHeaders(),
           }
         );
 
@@ -229,11 +213,7 @@ export const monthlyDonateService = {
           getApiUrl(`${baseService.apiEndpoints.itemsMonthlyDonate}/${id}`),
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
-            },
+            headers: await this.getAuthHeaders(),
           }
         );
 
@@ -284,18 +264,16 @@ export const monthlyDonateService = {
   async getMonthlyDonatesByRegistrationId(registrationId) {
     try {
       if (baseService.mode === "directus") {
-        const response = await fetch(
-          getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate) +
-            `?filter[registrationId][_eq]=${registrationId}&sort=-createdAt`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
-            },
-          }
-        );
+        const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+        const queryParams = new URLSearchParams({
+          "filter[registrationId][_eq]": registrationId,
+          sort: "-createdAt",
+        }).toString();
+
+        const response = await fetch(`${url}?${queryParams}`, {
+          method: "GET",
+          headers: await this.getAuthHeaders(),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -346,18 +324,16 @@ export const monthlyDonateService = {
   async getMonthlyDonatesByDonateType(donateType) {
     try {
       if (baseService.mode === "directus") {
-        const response = await fetch(
-          getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate) +
-            `?filter[donateType][_eq]=${donateType}&sort=-createdAt`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
-            },
-          }
-        );
+        const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+        const queryParams = new URLSearchParams({
+          "filter[donateType][_eq]": donateType,
+          sort: "-createdAt",
+        }).toString();
+
+        const response = await fetch(`${url}?${queryParams}`, {
+          method: "GET",
+          headers: await this.getAuthHeaders(),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -394,20 +370,16 @@ export const monthlyDonateService = {
   async getMonthlyDonateStats() {
     try {
       if (baseService.mode === "directus") {
-        // 這裡可以根據需要實現統計邏輯
-        // 例如：按月份分組統計
-        const response = await fetch(
-          getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate) +
-            "?aggregate[count]=id&groupBy[]=createdAt",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${
-                localStorage.getItem("access_token") || ""
-              }`,
-            },
-          }
-        );
+        const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+        const queryParams = new URLSearchParams({
+          "aggregate[count]": "id",
+          "groupBy[]": "createdAt",
+        }).toString();
+
+        const response = await fetch(`${url}?${queryParams}`, {
+          method: "GET",
+          headers: await this.getAuthHeaders(),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -443,9 +415,31 @@ export const monthlyDonateService = {
   },
 
   /**
+   * 獲取授權標頭
+   */
+  async getAuthHeaders() {
+    try {
+      const token = sessionStorage.getItem("auth-token");
+      if (!token) {
+        return { success: false, message: "未找到 Token" };
+      }
+
+      return {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
+    } catch (error) {
+      console.error("獲取授權標頭失敗:", error);
+      return {
+        "Content-Type": "application/json",
+      };
+    }
+  },
+
+  /**
    * 獲取當前登錄用戶
    */
-  getCurrentUser() {
+  async getCurrentUser() {
     try {
       const userInfo = sessionStorage.getItem("auth-user");
       if (userInfo) {
