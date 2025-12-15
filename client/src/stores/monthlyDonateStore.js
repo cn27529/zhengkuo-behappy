@@ -870,14 +870,6 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         allDonates.value = mockDatas;
         return result;
       }
-
-      // 暫時使用 Mock 數據
-      allDonates.value = mockDatas;
-      return {
-        success: true,
-        data: mockDatas,
-        message: "成功加載贊助數據",
-      };
     } catch (err) {
       error.value = err.message;
       console.error("❌ 獲取贊助數據異常:", err);
@@ -946,13 +938,6 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         console.error("❌ 創建贊助失敗:", result.message);
         return result;
       }
-
-      allDonates.value.push(newDonate);
-      return {
-        success: true,
-        data: newDonate,
-        message: "贊助創建成功(Mock 模式)",
-      };
     } catch (err) {
       error.value = err.message;
       console.error("❌ 創建贊助異常:", err);
@@ -1044,9 +1029,6 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   /**
    * 更新贊助項目
    */
-  /**
-   * 更新贊助項目
-   */
   const updateDonateItem = async (donateId, itemId, itemData) => {
     loading.value = true;
     error.value = null;
@@ -1129,9 +1111,6 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     }
   };
 
-  /**
-   * 刪除贊助項目
-   */
   /**
    * 刪除贊助項目
    */
