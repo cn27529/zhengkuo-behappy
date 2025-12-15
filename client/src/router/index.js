@@ -15,6 +15,7 @@ const routes = [
   { path: "/contact", component: () => import("../views/Contact.vue") },
   { path: "/mock", component: () => import("../views/MockLogin.vue") },
   { path: "/card-design", component: () => import("../views/CardDesign.vue") },
+  { path: "/monthly-donate", component: () => import("../views/MonthlyDonate.vue") },
   {
     path: "/animated-number",
     component: () => import("../views/AnimatedNumber.vue"),
