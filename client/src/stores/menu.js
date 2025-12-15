@@ -64,9 +64,9 @@ export const useMenuStore = defineStore("menu", () => {
       path: "/card-design",
       icon: "💳",
       component: "CardDesign",
-      requiredAuth: false,
+      requiredAuth: true,
       order: 5,
-      enabled: true,
+      enabled: false,
     },
     {
       id: 99,
