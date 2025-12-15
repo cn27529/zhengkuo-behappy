@@ -1,0 +1,73 @@
+[
+  {
+    "id": 1,
+    "name": "王小明",
+    "registrationId": -1,
+    "donateId": "a8b9c0d",
+    "donateType": "",
+    "donateItems": [
+      {
+        "donateItemsId": "e1f2g3h",
+        "price": 600,
+        "months": [
+          "202512",
+          "202601",
+          "202602",
+          "202603",
+          "202604",
+          "202605"
+        ],
+        "createdAt": "2024-10-01T08:00:00.000Z",
+        "createdUser": "admin",
+        "updatedAt": "2024-11-16T10:00:00.000Z",
+        "updatedUser": "admin"
+      },
+      {
+        "donateItemsId": "q0r1s2t",
+        "price": 300,
+        "months": [          
+          "202610",
+          "202611",
+          "202612"
+        ],        
+        "createdAt": "2024-10-01T08:00:00.000Z",
+        "createdUser": "admin",
+        "updatedAt": "2024-11-16T10:00:00.000Z",
+        "updatedUser": "admin"
+      }
+    ],
+    "memo": "2025年十二月月度捐款",
+    "icon": "💰",
+    "createdAt": "2024-10-01T08:00:00.000Z",
+    "createdUser": "admin",
+    "updatedAt": "2024-11-16T10:00:00.000Z",
+    "updatedUser": "admin"
+  },{
+    "id": 2,
+    "name": "張三",
+    "registrationId": 10,   
+    "donateId": "w9x8y7z",
+    "donateType": "",
+    "donateItems": [
+      {
+        "donateItemsId": "w9x8y7z",
+        "price": 300,
+        "months": [          
+          "202601",
+          "202602",
+          "202603"         
+        ],
+        "createdAt": "2024-10-01T08:00:00.000Z",
+        "createdUser": "admin",
+        "updatedAt": "2024-11-16T10:00:00.000Z",
+        "updatedUser": "admin"
+      }
+    ],
+    "memo": "2026年月度捐款",
+    "icon": "💰",
+    "createdAt": "2024-10-01T08:00:00.000Z",
+    "createdUser": "admin",
+    "updatedAt": "2024-11-16T10:00:00.000Z",
+    "updatedUser": "admin"  
+  }
+]
