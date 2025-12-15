@@ -522,6 +522,7 @@
         <span class="dialog-footer">
           <!-- 載入 Mock 數據 -->
           <el-button
+            style="display: none"
             type="success"
             class="dev-button"
             @click="handleLoadMockData"
