@@ -12,3 +12,5 @@ Registration DB
 curl -s "http://localhost:8055/items/registrationDB" | jq '.'
 Activity DB
 curl -s "http://localhost:8055/items/activityDB" | jq '.'
+MonthlyDonate DB
+curl -s "http://localhost:8055/items/monthlyDonateDB" | jq '.'
