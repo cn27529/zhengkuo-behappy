@@ -15,10 +15,15 @@ const routes = [
   { path: "/contact", component: () => import("../views/Contact.vue") },
   { path: "/mock", component: () => import("../views/MockLogin.vue") },
   { path: "/card-design", component: () => import("../views/CardDesign.vue") },
-  { path: "/monthly-donate", component: () => import("../views/MonthlyDonate.vue") },
   {
     path: "/animated-number",
     component: () => import("../views/AnimatedNumber.vue"),
+  },
+  {
+    path: "/monthly-donate",
+    title: "每月贊助",
+    component: () => import("../views/MonthlyDonate.vue"),
+    meta: { requiresAuth: true },
   },
   {
     path: "/dashboard",
@@ -39,9 +44,7 @@ const routes = [
       console.log("🚪 清除頁面狀態");
       next();
     },
-    meta: {
-      requiresAuth: true,
-    },
+    meta: { requiresAuth: true },
   },
   {
     path: "/registration-list",

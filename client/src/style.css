@@ -341,7 +341,7 @@ canvas {
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .results-header {

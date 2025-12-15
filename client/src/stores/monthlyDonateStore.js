@@ -4,7 +4,7 @@ import { ref, computed } from "vue";
 import { generateGitHash } from "../utils/generateGitHash.js";
 import { baseService } from "../services/baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import mockDatas from "../data/mock_monthlyDonate.json";
+import mockDatas from "../data/mock_monthlyDonates.json";
 
 export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   // ========== 狀態 ==========
@@ -23,8 +23,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
   // ✅ 新增：月份顯示設定
   const monthDisplayConfig = ref({
-    pastMonths: 1, // 顯示過去的月份數
-    futureMonths: 6, // 顯示未來的月份數
+    pastMonths: 0, // 顯示過去的月份數
+    futureMonths: 12, // 顯示未來的月份數
     showAllMonths: false, // 是否顯示所有月份（不限於24個月）
     customStartDate: null, // 自定義開始日期
     customEndDate: null, // 自定義結束日期
@@ -66,7 +66,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
         months.push({
           yearMonth,
-          display: `${year}年${month}月`,
+          //display: `${year}年${month}月`,
+          display: `${year.toString().slice(-2)}年${month}`, //縮小為"25年9"字樣
           isPast,
           date: new Date(current),
         });
@@ -117,7 +118,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
         months.push({
           yearMonth,
-          display: `${year}年${month}月`,
+          //display: `${year}年${month}月`,
+          display: `${year.toString().slice(-2)}年${month}`, //縮小為"25年9"字樣
           isPast,
           date: new Date(current),
         });
@@ -138,7 +140,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       months.push({
         yearMonth,
-        display: `${year}年${month}月`,
+        //display: `${year}年${month}月`,
+        display: `${year.toString().slice(-2)}年${month}`, //縮小為"25年9"字樣
         isPast: true,
         date: date,
       });
@@ -150,7 +153,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       .padStart(2, "0")}`;
     months.push({
       yearMonth: currentYearMonth,
-      display: `${currentYear}年${currentMonth + 1}月`,
+      //display: `${currentYear}年${currentMonth + 1}月`,
+      display: `${currentYear.toString().slice(-2)}年${currentMonth + 1}`, //縮小為"25年9"字樣
       isPast: false,
       date: new Date(currentYear, currentMonth, 1),
     });
@@ -164,7 +168,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       months.push({
         yearMonth,
-        display: `${year}年${month}月`,
+        //display: `${year}年${month}月`,
+        display: `${year.toString().slice(-2)}年${month}`, //縮小為"25年9"字樣
         isPast: false,
         date: date,
       });
@@ -333,7 +338,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       months.push({
         yearMonth,
-        display: `${year}年${month}月`,
+        //display: `${year}年${month}月`,
+        display: `${year.toString().slice(-2)}年${month}`, //縮小為"25年9"字樣
         isPast: true,
         date: date,
       });
@@ -345,7 +351,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       .padStart(2, "0")}`;
     months.push({
       yearMonth: currentYearMonth,
-      display: `${currentYear}年${currentMonth + 1}月`,
+      //display: `${currentYear}年${currentMonth + 1}月`,
+      display: `${currentYear.toString().slice(-2)}年${currentMonth + 1}`, //縮小為"25年9"字樣
       isPast: false,
       date: new Date(currentYear, currentMonth, 1),
     });
@@ -359,7 +366,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       months.push({
         yearMonth,
-        display: `${year}年${month}月`,
+        //display: `${year}年${month}月`,
+        display: `${year.toString().slice(-2)}年${month}`, //縮小為"25年9"字樣
         isPast: false,
         date: date,
       });
@@ -396,7 +404,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       months.push({
         yearMonth,
-        display: `${year}年${month}月`,
+        //display: `${year}年${month}月`,
+        display: `${year.toString().slice(-2)}年${month}`, //縮小為"25年9"字樣
         isPast,
         date: new Date(current),
       });
