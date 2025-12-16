@@ -211,9 +211,9 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   /**
    * ✅ 新增：為特定贊助人生成相關的月份列表
    */
-  const generateMonthsForDonator = (donatorName) => {
+  const generateMonthsForDonator = (donateId) => {
     // 獲取贊助人的所有贊助月份
-    const donatorMonths = getDonatorMonths(donatorName);
+    const donatorMonths = getDonatorMonths(donateId);
 
     if (donatorMonths.length === 0) {
       return generateMonthList(); // 使用預設配置
@@ -462,9 +462,9 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
    * ✅ 新增：詳細檢視用的月份列表
    */
   const detailMonthColumns = computed(() => {
-    return (donatorName) => {
-      if (!donatorName) return generateMonthList();
-      return generateMonthsForDonator(donatorName);
+    return (donateId) => {
+      if (!donateId) return generateMonthList();
+      return generateMonthsForDonator(donateId);
     };
   });
 
@@ -950,28 +950,30 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   /**
    * 新增贊助項目（給現有贊助記錄）
    */
-  const addDonateItem = async (donateId, donateItemData) => {
+  const addDonateItem = async (donateId, itemData) => {
     loading.value = true;
     error.value = null;
+
+    //console.log("📦 添加新贊助項目:", {donateId, itemData});
 
     try {
       const createISOTime = DateUtils.getCurrentISOTime();
 
-      // 查找現有的贊助記錄
+      // 查找現有的贊助記錄      
       const existingDonateIndex = allDonates.value.findIndex(
         (d) => d.id === donateId || d.donateId === donateId
       );
 
       if (existingDonateIndex === -1) {
-        throw new Error(`找不到 ID 為 ${donateId} 的贊助記錄`);
+        throw new Error(`找不到 donateId 為 ${donateId} 的贊助記錄`);
       }
 
       const existingDonate = allDonates.value[existingDonateIndex];
 
       const newDonateItem = {
         donateItemsId: generateGitHash(createISOTime + existingDonate.name),
-        price: donateItemData.amount || donateItemData.price || 0,
-        months: donateItemData.selectedMonths || donateItemData.months || [],
+        price: itemData.amount || itemData.price || 0,
+        months: itemData.selectedMonths || itemData.months || [],
         createdAt: createISOTime,
         createdUser: getCurrentUser(),
         updatedAt: "",
@@ -983,6 +985,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         existingDonate.donateItems.push(newDonateItem);
         existingDonate.updatedAt = createISOTime;
         existingDonate.updatedUser = getCurrentUser();
+        existingDonate.memo = itemData.memo || existingDonate.memo;
 
         console.log(
           `✅ Mock 模式：新增贊助項目給 ${existingDonate.name}:`,
@@ -998,7 +1001,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       // Directus 模式：調用 API
       const result = await monthlyDonateService.addDonateItem(donateId, {
-        ...donateItemData,
+        ...itemData,
         donateItemsId: newDonateItem.donateItemsId,
         price: newDonateItem.price,
         months: newDonateItem.months,
@@ -1009,6 +1012,14 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         existingDonate.donateItems.push(newDonateItem);
         existingDonate.updatedAt = createISOTime;
         existingDonate.updatedUser = getCurrentUser();
+        existingDonate.memo = itemData.memo || existingDonate.memo;
+
+
+        // 更新贊助記錄備註
+        const resultMonthlyDonate = await monthlyDonateService.updateMonthlyDonate(existingDonate.id, existingDonate);
+        if (resultMonthlyDonate.success) {
+          allDonates.value[existingDonateIndex] = resultMonthlyDonate.data;
+        }
 
         console.log(`✅ 成功新增贊助項目給 ${existingDonate.name}`);
         return result;
@@ -1203,8 +1214,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   /**
    * 獲取贊助人的所有已贊助月份
    */
-  const getDonatorMonths = (donatorName) => {
-    const donates = allDonates.value.filter((d) => d.name === donatorName);
+  const getDonatorMonths = (donateId) => {
+    const donates = allDonates.value.filter((d) => d.donateId === donateId);
     const months = new Set();
 
     donates.forEach((donate) => {
@@ -1225,6 +1236,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     console.log("🚀 初始化每月贊助 Store...");
     await getAllDonates();
     console.log("✅ 每月贊助 Store 初始化完成");
+    console.log("📦 全部贊助數據:", allDonates.value);
   };
 
   /**
@@ -1271,8 +1283,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     generateMonthsForDonator, // ✅ 新增
     generateMonthsForDonation, // ✅ 新增
     calculateMonthCount,
-    generateMonthsFromAmount,
-    getDonatorMonths,
+    generateMonthsFromAmount,    
 
     // Actions
     testMonthGeneration, // ✅ 新增

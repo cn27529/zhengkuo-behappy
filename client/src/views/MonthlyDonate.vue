@@ -884,7 +884,7 @@ const availableMonthsForDonator = computed(() => {
   if (!selectedDonator.value) return monthColumns.value;
 
   const occupiedMonths = monthlyDonateStore.getDonatorMonths(
-    selectedDonator.value.name
+    selectedDonator.value.donateId
   );
   return monthColumns.value.filter(
     (month) => !occupiedMonths.includes(month.yearMonth)
@@ -1027,7 +1027,7 @@ const handleAddDonateToDonator = (donator) => {
   Object.assign(newDonateItem, {
     amount: monthlyUnitPrice.value,
     selectedMonths: [],
-    memo: "",
+    memo: selectedDonator.value.memo, // 複製贊助人的備註, 以便快速填寫
   });
   showAddDonateItemModal.value = true;
 };
@@ -1142,7 +1142,7 @@ const handleAddDonateItem = async () => {
     };
 
     const result = await monthlyDonateStore.addDonateItem(
-      selectedDonator.value.name,
+      selectedDonator.value.donateId,
       donateData
     );
 
@@ -1198,7 +1198,7 @@ const deleteDonateItem = async (donator, item) => {
         ElMessage.success("贊助項目刪除成功");
         // 重新整理詳情視窗
         selectedDonator.value = monthlyDonateStore.donateSummary.value.find(
-          (d) => d.name === donator.name
+          (d) => d.donateId === donator.donateId
         );
       }
     }
