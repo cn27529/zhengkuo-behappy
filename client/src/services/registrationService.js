@@ -10,21 +10,6 @@ export class RegistrationService {
   }
 
   // ========== 通用方法 ==========
-  async getAuthHeaders() {
-    try {
-      const token = sessionStorage.getItem("auth-token");
-      if (!token) {
-        return { success: false, message: "未找到 Token" };
-      }
-
-      return {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      };
-    } catch (error) {
-      console.error("獲取授權標頭失敗:", error);
-    }
-  }
 
   async handleDirectusResponse(response) {
     if (!response.ok) {
@@ -100,11 +85,12 @@ export class RegistrationService {
         },
       };
 
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         getApiUrl(baseService.apiEndpoints.itemsRegistration), // Directus registrationDB 端點
         {
           method: "POST",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
           body: JSON.stringify(processedData),
         }
       );
@@ -136,11 +122,12 @@ export class RegistrationService {
         updatedUser: registrationData.updatedUser || "system",
       };
 
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         `${getApiUrl(baseService.apiEndpoints.itemsRegistration)}/${id}`,
         {
           method: "PATCH",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
           body: JSON.stringify(updateData),
         }
       );
@@ -165,13 +152,14 @@ export class RegistrationService {
     }
 
     try {
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         `${getApiUrl(
           baseService.apiEndpoints.itemsRegistration
         )}/${id}?fields=*`,
         {
           method: "GET",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
         }
       );
 
@@ -215,9 +203,7 @@ export class RegistrationService {
       )}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
-      const headers = await this.getAuthHeaders();
-      console.log("🔑 請求頭:", headers);
-
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: headers,
@@ -267,9 +253,10 @@ export class RegistrationService {
       )}?limit=1`;
       console.log("測試 URL:", simpleUrl);
 
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(simpleUrl, {
         method: "GET",
-        headers: await this.getAuthHeaders(),
+        headers: headers,
       });
 
       console.log("測試響應狀態:", response.status);
@@ -296,11 +283,12 @@ export class RegistrationService {
     }
 
     try {
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         `${getApiUrl(baseService.apiEndpoints.itemsRegistration)}/${id}`,
         {
           method: "DELETE",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
         }
       );
 

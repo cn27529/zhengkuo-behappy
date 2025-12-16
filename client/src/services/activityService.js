@@ -11,19 +11,7 @@ export class ActivityService {
 
   // ========== 通用方法 ==========
   async getAuthHeaders() {
-    try {
-      const token = sessionStorage.getItem("auth-token");
-      if (!token) {
-        return { success: false, message: "未找到 Token" };
-      }
-
-      return {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      };
-    } catch (error) {
-      console.error("獲取授權標頭失敗:", error);
-    }
+    return await baseService.getAuthHeaders();
   }
 
   async handleDirectusResponse(response) {
@@ -101,7 +89,7 @@ export class ActivityService {
         getApiUrl(baseService.apiEndpoints.itemsActivity),
         {
           method: "POST",
-          headers: await this.getAuthHeaders(),
+          headers: await baseService.getAuthHeaders(),
           body: JSON.stringify(processedData),
         }
       );
@@ -143,7 +131,7 @@ export class ActivityService {
         `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`,
         {
           method: "PATCH",
-          headers: await this.getAuthHeaders(),
+          headers: await baseService.getAuthHeaders(),
           body: JSON.stringify(updateData),
         }
       );
@@ -177,7 +165,7 @@ export class ActivityService {
         `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}?fields=*`,
         {
           method: "GET",
-          headers: await this.getAuthHeaders(),
+          headers: await baseService.getAuthHeaders(),
         }
       );
 
@@ -235,7 +223,7 @@ export class ActivityService {
       )}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
-      const headers = await this.getAuthHeaders();
+      const headers = await baseService.getAuthHeaders();
       console.log("🔑 請求頭:", headers);
 
       const response = await fetch(apiUrl, {
@@ -292,7 +280,7 @@ export class ActivityService {
         `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`,
         {
           method: "DELETE",
-          headers: await this.getAuthHeaders(),
+          headers: await baseService.getAuthHeaders(),
         }
       );
 

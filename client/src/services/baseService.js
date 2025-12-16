@@ -118,6 +118,35 @@ export class BaseService {
       };
     }
   }
+
+  /**
+   * 獲取授權標頭
+   */
+  async getAuthHeaders() {
+    try {
+      const token = sessionStorage.getItem("auth-token");
+
+      //console.log("獲取授權標頭:", token);
+
+      if (!token) {
+        throw new Error("未找到 Token，不存在的 auth-token");
+        return { success: false, message: "未找到 Token，不存在的 auth-token" };
+      }
+
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
+      console.log("🔑 請求標頭:", headers);
+      return headers;
+    } catch (error) {
+      console.error("獲取授權標頭失敗 auth-token:", error);
+      throw error;
+      return {
+        "Content-Type": "application/json",
+      };
+    }
+  }
 }
 export const baseService = new BaseService();
 

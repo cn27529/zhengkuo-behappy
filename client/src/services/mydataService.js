@@ -7,21 +7,6 @@ export class MydataService {
   }
 
   // ========== 通用方法 ==========
-  async getAuthHeaders() {
-    try {
-      const token = sessionStorage.getItem("auth-token");
-      if (!token) {
-        return { success: false, message: "未找到 Token" };
-      }
-
-      return {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      };
-    } catch (error) {
-      console.error("獲取授權標頭失敗:", error);
-    }
-  }
 
   async handleDirectusResponse(response) {
     if (!response.ok) {
@@ -67,13 +52,14 @@ export class MydataService {
         queryParams.append("offset", params.offset);
       }
 
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         `${getApiUrl(
           baseService.apiEndpoints.itemsMydata
         )}?${queryParams.toString()}`,
         {
           method: "GET",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
         }
       );
 
@@ -97,13 +83,14 @@ export class MydataService {
     }
 
     try {
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         `${getApiUrl(
           baseService.apiEndpoints.itemsMydata
         )}/${id}?fields=*,contact.*`,
         {
           method: "GET",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
         }
       );
 
@@ -148,11 +135,12 @@ export class MydataService {
         state: mydataData.state || "draft",
       };
 
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         getApiUrl(baseService.apiEndpoints.itemsMydata),
         {
           method: "POST",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
           body: JSON.stringify(processedData),
         }
       );
@@ -177,11 +165,12 @@ export class MydataService {
     }
 
     try {
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`,
         {
           method: "PATCH",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
           body: JSON.stringify(mydataData),
         }
       );
@@ -206,11 +195,12 @@ export class MydataService {
     }
 
     try {
+      const headers = await baseService.getAuthHeaders();
       const response = await fetch(
         `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`,
         {
           method: "DELETE",
-          headers: await this.getAuthHeaders(),
+          headers: headers,
         }
       );
 
