@@ -198,7 +198,9 @@ export class AuthService {
     try {
       const response = await fetch(getApiUrl(baseService.apiEndpoints.login), {
         method: "POST",
-        headers: await this.getAuthHeaders(),
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           email: username, // Directus 通常使用 email
           password: password,
@@ -224,7 +226,9 @@ export class AuthService {
         // 獲取用戶資訊
         const userResponse = await fetch(`${baseService.apiBaseUrl}/users/me`, {
           method: "GET",
-          headers: await this.getAuthHeaders(),
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
         });
 
         let userData = null;
@@ -283,7 +287,9 @@ export class AuthService {
 
       const response = await fetch(getApiUrl(baseService.apiEndpoints.login), {
         method: "POST",
-        headers: await this.getAuthHeaders(),
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           email: username,
           password: password,
@@ -350,7 +356,9 @@ export class AuthService {
 
       const response = await fetch(getApiUrl("/auth/tfa"), {
         method: "POST",
-        headers: await this.getAuthHeaders(),
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           token: tempToken,
           otp: otpCode,
@@ -412,7 +420,9 @@ export class AuthService {
     // 獲取用戶資訊
     const userResponse = await fetch(`${baseService.apiBaseUrl}/users/me`, {
       method: "GET",
-      headers: await this.getAuthHeaders(),
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
     });
 
     let userData = null;
@@ -450,7 +460,10 @@ export class AuthService {
       // Directus 登出請求
       const response = await fetch(getApiUrl(baseService.apiEndpoints.logout), {
         method: "POST",
-        headers: await this.getAuthHeaders(),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           refresh_token: refreshToken,
         }),
@@ -499,7 +512,9 @@ export class AuthService {
       // 使用 /users/me 端點驗證 token
       const response = await fetch(getApiUrl(baseService.apiEndpoints.me), {
         method: "GET",
-        headers: await this.getAuthHeaders(),
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
@@ -545,7 +560,9 @@ export class AuthService {
         getApiUrl(baseService.apiEndpoints.refresh),
         {
           method: "POST",
-          headers: await this.getAuthHeaders(),
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             refresh_token: refreshToken,
           }),
@@ -594,7 +611,9 @@ export class AuthService {
     try {
       const response = await fetch(getApiUrl(baseService.apiEndpoints.login), {
         method: "POST",
-        headers: await this.getAuthHeaders(),
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ username, password }),
       });
 
@@ -642,7 +661,10 @@ export class AuthService {
 
       const response = await fetch(getApiUrl(baseService.apiEndpoints.logout), {
         method: "POST",
-        headers: await this.getAuthHeaders(),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       // 即使後端登出失敗，也認為成功（因為前端狀態已經清除）
@@ -669,7 +691,9 @@ export class AuthService {
         getApiUrl(baseService.apiEndpoints.validate),
         {
           method: "GET",
-          headers: await this.getAuthHeaders(),
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -709,7 +733,9 @@ export class AuthService {
         getApiUrl(baseService.apiEndpoints.refresh),
         {
           method: "POST",
-          headers: await this.getAuthHeaders(),
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ refreshToken }),
         }
       );
@@ -736,33 +762,6 @@ export class AuthService {
         errorCode: "REFRESH_ERROR",
       };
     }
-  }
-
-  // ========== 通用方法 ==========
-  async getAuthHeaders() {
-    try {
-      const token = sessionStorage.getItem("auth-token");
-      if (!token) {
-        return { success: false, message: "未找到 Token" };
-      }
-
-      return {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      };
-    } catch (error) {
-      console.error("獲取授權標頭失敗:", error);
-    }
-  }
-
-  async handleDirectusResponse(response) {
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Directus 錯誤: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.data;
   }
 
   // ========== 輔助方法 ==========
