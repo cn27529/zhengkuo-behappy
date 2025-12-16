@@ -1,6 +1,10 @@
 // ========== 日期時間工具函數 ==========
 
-import { de } from "element-plus/es/locale/index.mjs";
+const DEFAULT_CONFIG = {
+  timeZone: import.meta.env.VITE_APP_TIMEZONE || "Asia/Taipei",
+  locale: import.meta.env.VITE_APP_LOCALE || "zh-TW",
+  hour12: import.meta.env.VITE_APP_HOUR12 !== "false",
+};
 
 /**
  * 獲取當前時間的 ISO 格式字符串
@@ -23,21 +27,24 @@ export const formatDateYMD = (date) => {
 
 /**
  * 格式化日期為本地化格式（2024/12/08）
- * @param {string} dateString - 日期字符串
+ * 自動將儲存的 UTC 時間轉換為用戶本地時區
+ * @param {string} dateString - UTC 格式日期字符串
+ * @param {string} timeZone - 本地時區
  * @returns {string} 格式化後的日期字符串
  */
-export const formatDate = (dateString, timeZone = "Asia/Taipei") => {
+export const formatDate = (dateString) => {
   if (!dateString) return "-";
   try {
+    const config = { ...DEFAULT_CONFIG };
     const date = new Date(dateString);
-    return date.toLocaleString("zh-TW", {
+    return date.toLocaleString(config.locale, {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
       //hour: "2-digit",
       //minute: "2-digit",
-      hour12: true,
-      timeZone: timeZone,
+      hour12: config.hour12,
+      timeZone: config.timeZone,
     });
   } catch {
     return dateString;
@@ -45,54 +52,48 @@ export const formatDate = (dateString, timeZone = "Asia/Taipei") => {
 };
 
 /**
- * 格式化日期為長格式（2024年12月8日）
- * @param {string} dateString - 日期字符串
- * @returns {string} 格式化後的日期字符串
+ * 格式化日期為本地時間長格式
+ * 自動將儲存的 UTC 時間轉換為用戶本地時區
+ * @param {string} dateString - UTC 格式日期字符串
+ * @param {string} timeZone - 本地時區
+ * @returns {string} 本地時間格式化字符串
  */
-export const formatDateLong = (dateString, timeZone = "Asia/Taipei") => {
+export const formatDateLong = (dateString) => {
   if (!dateString) return "-";
   try {
+    const config = { ...DEFAULT_CONFIG };
     const date = new Date(dateString);
-    return date.toLocaleString("zh-TW", {
+    return date.toLocaleString(config.locale, {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
-      timeZone: timeZone,
+      hour12: config.hour12,
+      timeZone: config.timeZone,
     });
   } catch {
     return dateString;
   }
-
-  // if (!dateString) return "-";
-  // try {
-  //   const date = new Date(dateString);
-  //   return date.toLocaleDateString("zh-TW", {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric",
-  //   });
-  // } catch {
-  //   return dateString;
-  // }
 };
 
 /**
  * 格式化時間為 HH:mm 格式
- * @param {string} dateString - 日期字符串
+ * 自動將儲存的 UTC 時間轉換為用戶本地時區
+ * @param {string} dateString - UTC 格式日期字符串
+ * @param {string} timeZone - 本地時區
  * @returns {string} 格式化後的時間字符串
  */
-export const formatTime = (dateString, timeZone = "Asia/Taipei") => {
+export const formatTime = (dateString) => {
   if (!dateString) return "-";
   try {
+    const config = { ...DEFAULT_CONFIG };
     const date = new Date(dateString);
-    return date.toLocaleTimeString("zh-TW", {
+    return date.toLocaleTimeString(config.locale, {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
-      timeZone: timeZone,
+      hour12: config.hour12,
+      timeZone: config.timeZone,
     });
   } catch {
     return dateString;
@@ -117,21 +118,24 @@ export const formatDateTimeYMD = (date) => {
 
 /**
  * 格式化日期時間為本地化格式（2024/12/08 14:30）
- * @param {string} dateString - 日期字符串
+ * 自動將儲存的 UTC 時間轉換為用戶本地時區
+ * @param {string} dateString - UTC 格式日期字符串
+ * @param {string} timeZone - 本地時區
  * @returns {string} 格式化後的日期時間字符串
  */
-export const formatDateTime = (dateString, timeZone = "Asia/Taipei") => {
+export const formatDateTime = (dateString) => {
   if (!dateString) return "-";
   try {
+    const config = { ...DEFAULT_CONFIG };
     const date = new Date(dateString);
-    return date.toLocaleString("zh-TW", {
+    return date.toLocaleString(config.locale, {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
-      timeZone: timeZone,
+      hour12: config.hour12,
+      timeZone: config.timeZone,
     });
   } catch {
     return dateString;
