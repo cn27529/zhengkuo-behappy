@@ -211,9 +211,9 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   /**
    * ✅ 新增：為特定贊助人生成相關的月份列表
    */
-  const generateMonthsForDonator = (donateId) => {
+  const generateMonthsForDonator = (recordId) => {
     // 獲取贊助人的所有贊助月份
-    const donatorMonths = getDonatorMonths(donateId);
+    const donatorMonths = getDonatorMonths(recordId);
 
     if (donatorMonths.length === 0) {
       return generateMonthList(); // 使用預設配置
@@ -562,7 +562,11 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       const summary = donateSummary.value.find((d) => d.name === donatorName);
       if (!summary) return null;
 
-      const detailMonths = generateMonthsForDonator(donatorName);
+      // 獲取資料庫 ID
+      const recordId = getDonateRecordIdByName(donatorName);
+      if (!recordId) return null;
+
+      const detailMonths = generateMonthsForDonator(recordId);
 
       return {
         ...summary,
@@ -687,6 +691,30 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   });
 
   // ========== 輔助函數 ==========
+
+  /**
+   * 通過姓名獲取資料庫 ID
+   */
+  const getDonateRecordIdByName = (donatorName) => {
+    const donates = allDonates.value.filter((d) => d.name === donatorName);
+    return donates.length > 0 ? donates[0].id : null;
+  };
+
+  /**
+   * 通過應用層 donateId 獲取資料庫 ID
+   */
+  const getDonateRecordIdByDonateId = (appDonateId) => {
+    const donate = allDonates.value.find((d) => d.donateId === appDonateId);
+    return donate ? donate.id : null;
+  };
+
+  /**
+   * 通過資料庫 ID 獲取應用層 donateId
+   */
+  const getAppDonateIdByRecordId = (recordId) => {
+    const donate = allDonates.value.find((d) => d.id === recordId);
+    return donate ? donate.donateId : null;
+  };
 
   /**
    * ✅ 新增：獲取首次贊助月份
@@ -959,7 +987,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     try {
       const createISOTime = DateUtils.getCurrentISOTime();
 
-      // 查找現有的贊助記錄      
+      // 查找現有的贊助記錄
       const existingDonateIndex = allDonates.value.findIndex(
         (d) => d.id === donateId || d.donateId === donateId
       );
@@ -1014,9 +1042,12 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         existingDonate.updatedUser = getCurrentUser();
         existingDonate.memo = itemData.memo || existingDonate.memo;
 
-
         // 更新贊助記錄備註
-        const resultMonthlyDonate = await monthlyDonateService.updateMonthlyDonate(existingDonate.id, existingDonate);
+        const resultMonthlyDonate =
+          await monthlyDonateService.updateMonthlyDonate(
+            existingDonate.id,
+            existingDonate
+          );
         if (resultMonthlyDonate.success) {
           allDonates.value[existingDonateIndex] = resultMonthlyDonate.data;
         }
@@ -1214,15 +1245,14 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   /**
    * 獲取贊助人的所有已贊助月份
    */
-  const getDonatorMonths = (donateId) => {
-    const donates = allDonates.value.filter((d) => d.donateId === donateId);
-    const months = new Set();
+  const getDonatorMonths = (recordId) => {
+    const donates = allDonates.value.filter((d) => d.id === recordId);
+    if (!donate) return [];
 
-    donates.forEach((donate) => {
-      donate.donateItems.forEach((item) => {
-        item.months.forEach((month) => {
-          months.add(month);
-        });
+    const months = new Set();
+    donate.donateItems.forEach((item) => {
+      item.months.forEach((month) => {
+        months.add(month);
       });
     });
 
@@ -1274,6 +1304,11 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     monthlyStats,
 
     // 工具函數
+    // ✅ 新增：ID 轉換輔助函數
+    getDonateRecordIdByName,
+    getDonateRecordIdByDonateId,
+    getAppDonateIdByRecordId,
+
     generateMonthList, // ✅ 新增
     generate24MonthList, // ✅ 新增
     generateStandardMonthRange, // ✅ 新增
@@ -1283,7 +1318,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     generateMonthsForDonator, // ✅ 新增
     generateMonthsForDonation, // ✅ 新增
     calculateMonthCount,
-    generateMonthsFromAmount,    
+    generateMonthsFromAmount,
 
     // Actions
     testMonthGeneration, // ✅ 新增
