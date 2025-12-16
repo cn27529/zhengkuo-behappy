@@ -56,9 +56,7 @@
             <Warning />
           </el-icon>
         </div>
-        <div class="warning-text">
-          <h3>為了較佳的使用體驗，請選擇桌上型裝置</h3>
-        </div>
+        <h3>為了較佳的使用體驗，請選擇桌上型裝置</h3>
       </div>
 
       <span class="dialog-footer">
@@ -75,6 +73,7 @@ import { ref, reactive, onMounted } from "vue";
 import { useAuthStore } from "../stores/authStore.js";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { Warning } from "@element-plus/icons-vue"; // 添加這一行
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -185,6 +184,7 @@ onMounted(() => {
   margin: 0;
   color: #606266;
   line-height: 1.5;
+  text-align: center;
 }
 
 .dialog-footer {
