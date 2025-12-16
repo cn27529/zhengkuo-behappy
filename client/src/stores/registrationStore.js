@@ -794,6 +794,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       registrationForm.value.state = "submitted";
 
       if (baseService.mode !== "directus") {
+        console.warn("⚠️ 當前模式不為 Directus，報名提交成功！");
         return {
           success: true,
           message:
@@ -1050,8 +1051,6 @@ export const useRegistrationStore = defineStore("registration", () => {
         setupFormSync();
         return true;
       }
-
-      console.log("📡 從服務器載入表單");
 
       // 检查连接
       const healthCheck = await baseService.checkConnection();

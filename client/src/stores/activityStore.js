@@ -323,7 +323,7 @@ export const useActivityStore = defineStore("activity", () => {
 
     try {
       if (baseService.mode !== "directus") {
-        console.log("📦 使用 Mock 活動數據");
+        console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
         const processedActivities = mockDatas.map((activity) => ({
           ...activity,
           type: activity.item_type || "其他",
@@ -447,7 +447,7 @@ export const useActivityStore = defineStore("activity", () => {
       if (baseService.mode !== "directus") {
         activity.participants = newParticipants;
         activity.updatedAt = DateUtils.getCurrentISOTime();
-        console.log("✅ Mock 模式：參與人次已更新");
+        console.warn("⚠️ 當前模式不為 Directus，參與人次已更新");
         return {
           success: true,
           data: activity,
@@ -499,7 +499,7 @@ export const useActivityStore = defineStore("activity", () => {
           item_type: activityData.type,
           updatedAt: DateUtils.getCurrentISOTime(),
         };
-        console.log("✅ Mock 模式：活動已更新");
+        console.warn("⚠️ 當前模式不為 Directus，活動已更新");
         return {
           success: true,
           data: allActivities.value[index],
@@ -548,7 +548,7 @@ export const useActivityStore = defineStore("activity", () => {
 
       if (baseService.mode !== "directus") {
         allActivities.value.splice(index, 1);
-        console.log("✅ Mock 模式：活動已刪除");
+        console.warn("⚠️ 當前模式不為 Directus，活動已刪除");
         return {
           success: true,
           message: "活動已刪除(Mock 模式)",
@@ -591,7 +591,7 @@ export const useActivityStore = defineStore("activity", () => {
       if (baseService.mode !== "directus") {
         activity.state = "completed";
         activity.updatedAt = DateUtils.getCurrentISOTime();
-        console.log("✅ Mock 模式：活動已標記為完成");
+        console.warn("⚠️ 當前模式不為 Directus，活動已標記為完成");
         return {
           success: true,
           data: activity,
@@ -629,7 +629,7 @@ export const useActivityStore = defineStore("activity", () => {
 
     try {
       if (baseService.mode !== "directus") {
-        console.log("📊 使用本地計算的月度統計");
+        console.warn("⚠️ 當前模式不為 Directus，使用本地計算的月度統計");
         monthlyStats.value = calculateMonthlyStatsFromActivities();
         return {
           success: true,
@@ -716,6 +716,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       if (baseService.mode !== "directus") {
+        console.warn("⚠️ 當前模式不為 Directus，使用本地獲取活動");
         return {
           success: false,
           message: "找不到該活動(Mock 模式)",
@@ -759,6 +760,7 @@ export const useActivityStore = defineStore("activity", () => {
         const filtered = allActivities.value.filter(
           (a) => a.type === item_type || a.item_type === item_type
         );
+        console.warn("⚠️ 當前模式不為 Directus，使用本地獲取活動");
         return {
           success: true,
           data: filtered,
@@ -800,6 +802,7 @@ export const useActivityStore = defineStore("activity", () => {
     try {
       if (baseService.mode !== "directus") {
         const filtered = allActivities.value.filter((a) => a.state === state);
+        console.warn("⚠️ 當前模式不為 Directus，使用本地獲取活動");
         return {
           success: true,
           data: filtered,
