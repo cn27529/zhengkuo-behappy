@@ -881,14 +881,34 @@ const settingsRules = {
 
 // 計算屬性
 const availableMonthsForDonator = computed(() => {
-  if (!selectedDonator.value) return monthColumns.value;
+  if (!selectedDonator.value) {
+    console.log("⚠️ selectedDonator.value 為空");
+    return monthColumns.value;
+  }
 
-  const occupiedMonths = monthlyDonateStore.getDonatorMonths(
-    selectedDonator.value.donateId
-  );
-  return monthColumns.value.filter(
-    (month) => !occupiedMonths.includes(month.yearMonth)
-  );
+  console.log("🔍 計算 availableMonthsForDonator:");
+  console.log("- 選中的贊助人:", selectedDonator.value.name);
+  console.log("- 資料庫 ID:", selectedDonator.value.id);
+  console.log("- donateId:", selectedDonator.value.donateId);
+
+  try {
+    const recordId = selectedDonator.value.id;
+    console.log("- 傳遞給 getDonatorMonths 的 ID:", recordId);
+
+    const occupiedMonths = monthlyDonateStore.getDonatorMonths(recordId);
+    console.log("- 已佔用的月份:", occupiedMonths);
+    console.log("- 總月份列:", monthColumns.value.length);
+
+    const result = monthColumns.value.filter(
+      (month) => !occupiedMonths.includes(month.yearMonth)
+    );
+
+    console.log("- 可用月份:", result.length);
+    return result;
+  } catch (error) {
+    console.error("❌ 獲取可用月份時出錯:", error);
+    return monthColumns.value;
+  }
 });
 
 // 方法
