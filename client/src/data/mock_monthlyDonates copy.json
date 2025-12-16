@@ -1,0 +1,93 @@
+[
+  {
+    "id": 1,
+    "name": "王小明",
+    "registrationId": -1,
+    "donateId": "a8b9c0d",
+    "donateType": "",
+    "donateItems": [
+      {
+        "donateItemsId": "e1f2g3h",
+        "price": 400,
+        "months": [
+          "202512",
+          "202601",
+          "202602",
+          "202603"
+        ],
+        "createdAt": "2025-10-01T08:00:00.000Z",
+        "createdUser": "admin",
+        "updatedAt": "",
+        "updatedUser": ""
+      },
+      {
+        "donateItemsId": "q0r1s2t",
+        "price": 600,
+        "months": [
+          "202607",
+          "202608",
+          "202609",
+          "202610",
+          "202611",
+          "202612"
+        ],
+        "createdAt": "2026-06-01T08:00:00.000Z",
+        "createdUser": "admin",
+        "updatedAt": "",
+        "updatedUser": ""
+      }
+    ],
+    "memo": "2025年十二月贊助",
+    "icon": "🈷️",
+    "createdAt": "2024-10-01T08:00:00.000Z",
+    "createdUser": "admin",
+    "updatedAt": "2024-11-16T10:00:00.000Z",
+    "updatedUser": "admin"
+  },
+  {
+    "id": 2,
+    "name": "張三",
+    "registrationId": 10,
+    "donateId": "w9x8y7z",
+    "donateType": "",
+    "donateItems": [
+      {
+        "donateItemsId": "w9x8y7z",
+        "price": 300,
+        "months": [
+          "202601",
+          "202602",
+          "202603"
+        ],
+        "createdAt": "2026-01-01T08:00:00.000Z",
+        "createdUser": "admin",
+        "updatedAt": "",
+        "updatedUser": ""
+      },
+      {
+        "donateItemsId": "e3r4t5y",
+        "price": 800,
+        "months": [
+          "202605",
+          "202606",
+          "202607",
+          "202608",
+          "202609",
+          "202610",
+          "202611",
+          "202612"
+        ],
+        "createdAt": "2026-05-01T08:00:00.000Z",
+        "createdUser": "admin",
+        "updatedAt": "2026-11-16T10:00:00.000Z",
+        "updatedUser": "admin"
+      }
+    ],
+    "memo": "2026年贊助",
+    "icon": "🈷️",
+    "createdAt": "2024-10-01T08:00:00.000Z",
+    "createdUser": "admin",
+    "updatedAt": "2024-11-16T10:00:00.000Z",
+    "updatedUser": "admin"
+  }
+]
