@@ -26,7 +26,7 @@ export const formatDateYMD = (date) => {
  * @param {string} dateString - 日期字符串
  * @returns {string} 格式化後的日期字符串
  */
-export const formatDate = (dateString) => {
+export const formatDate = (dateString, timeZone = "Asia/Taipei") => {
   if (!dateString) return "-";
   try {
     const date = new Date(dateString);
@@ -36,6 +36,8 @@ export const formatDate = (dateString) => {
       day: "2-digit",
       //hour: "2-digit",
       //minute: "2-digit",
+      hour12: true,
+      timeZone: timeZone,
     });
   } catch {
     return dateString;
@@ -47,7 +49,7 @@ export const formatDate = (dateString) => {
  * @param {string} dateString - 日期字符串
  * @returns {string} 格式化後的日期字符串
  */
-export const formatDateLong = (dateString) => {
+export const formatDateLong = (dateString, timeZone = "Asia/Taipei") => {
   if (!dateString) return "-";
   try {
     const date = new Date(dateString);
@@ -57,6 +59,8 @@ export const formatDateLong = (dateString) => {
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
+      hour12: true,
+      timeZone: timeZone,
     });
   } catch {
     return dateString;
@@ -80,13 +84,15 @@ export const formatDateLong = (dateString) => {
  * @param {string} dateString - 日期字符串
  * @returns {string} 格式化後的時間字符串
  */
-export const formatTime = (dateString) => {
+export const formatTime = (dateString, timeZone = "Asia/Taipei") => {
   if (!dateString) return "-";
   try {
     const date = new Date(dateString);
     return date.toLocaleTimeString("zh-TW", {
       hour: "2-digit",
       minute: "2-digit",
+      hour12: true,
+      timeZone: timeZone,
     });
   } catch {
     return dateString;
@@ -114,7 +120,7 @@ export const formatDateTimeYMD = (date) => {
  * @param {string} dateString - 日期字符串
  * @returns {string} 格式化後的日期時間字符串
  */
-export const formatDateTime = (dateString) => {
+export const formatDateTime = (dateString, timeZone = "Asia/Taipei") => {
   if (!dateString) return "-";
   try {
     const date = new Date(dateString);
@@ -124,6 +130,8 @@ export const formatDateTime = (dateString) => {
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
+      hour12: true,
+      timeZone: timeZone,
     });
   } catch {
     return dateString;
