@@ -702,26 +702,6 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   };
 
   /**
-   * 通過 donateId 獲取贊助人的所有已贊助月份
-   */
-  const getDonatorMonthsByDonateId = (donateId) => {
-    const donates = allDonates.value.filter((d) => d.donateId === donateId);
-
-    if (donates.length === 0) return [];
-
-    const months = new Set();
-    donates.forEach((donate) => {
-      donate.donateItems?.forEach((item) => {
-        item.months?.forEach((month) => {
-          months.add(month);
-        });
-      });
-    });
-
-    return Array.from(months);
-  };
-
-  /**
    * 通過應用層 donateId 獲取資料庫 ID
    */
   // const getDonateRecordIdByDonateId = (appDonateId) => {
@@ -1261,21 +1241,76 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
   /**
    * 獲取贊助人的所有已贊助月份
-   * @param {string} recordId 資料庫 ID
+   * @param {string|number} recordId 資料庫 ID
    */
-  const getDonatorMonths = (recordId) => {
-    // 用recordId獲取贊助記錄，只會有一筆
-    const donate = allDonates.value.filter((d) => d.id === recordId);
-    if (!donate) return [];
-
-    const months = new Set();
-    donate.donateItems.forEach((item) => {
-      item.months.forEach((month) => {
-        months.add(month);
+  const getOccupiedMonths = (recordId) => {
+    // 快速失敗檢查
+    if (!allDonates.value?.length || !recordId) {
+      console.warn("⚠️ getDonatorMonths: 參數無效", {
+        hasData: !!allDonates.value,
+        recordId,
       });
-    });
+      return [];
+    }
 
-    return Array.from(months);
+    // 使用 find 代替 filter（recordId 對應唯一記錄，找到即停止）
+    const donate = allDonates.value.find((d) => d.id === recordId);
+
+    if (!donate) {
+      console.warn(`⚠️ 找不到 recordId=${recordId} 的贊助記錄`);
+      return [];
+    }
+
+    // 使用 flatMap 扁平化提取所有月份，並用 Set 去重
+    const months = [
+      ...new Set(
+        donate.donateItems?.flatMap((item) => item.months || []) || []
+      ),
+    ];
+
+    console.log(`✅ recordId=${recordId} 已占用月份:`, months);
+    return months;
+  };
+
+  /**
+   * 通過 donateId 獲取贊助人的所有已贊助月份
+   * @param {string} donateId 應用層 donateId
+   * @returns {string[]} 去重後的月份數組
+   */
+  // const getDonatorMonthsByDonateId = (donateId) => {
+  //   if (!allDonates.value?.length || !donateId) return [];
+
+  //   // 可能有多筆相同 donateId 的記錄
+  //   const months = [
+  //     ...new Set(
+  //       allDonates.value
+  //         .filter((d) => d.donateId === donateId)
+  //         .flatMap(
+  //           (d) => d.donateItems?.flatMap((item) => item.months || []) || []
+  //         )
+  //     ),
+  //   ];
+
+  //   return months;
+  // };
+
+  /**
+   * 高性能版本：適合數據量大的場景
+   * 使用 reduce 一次遍歷完成所有操作
+   */
+  const getDonatorMonthsOptimized = (recordId) => {
+    if (!allDonates.value?.length || !recordId) return [];
+
+    const donate = allDonates.value.find((d) => d.id === recordId);
+    if (!donate?.donateItems) return [];
+
+    // 使用 reduce 配合 Set，避免重複的 flatMap 操作
+    return Array.from(
+      donate.donateItems.reduce((monthSet, item) => {
+        item.months?.forEach((month) => monthSet.add(month));
+        return monthSet;
+      }, new Set())
+    );
   };
 
   /**
@@ -1283,9 +1318,31 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
    */
   const initialize = async () => {
     console.log("🚀 初始化每月贊助 Store...");
-    await getAllDonates();
-    console.log("✅ 每月贊助 Store 初始化完成");
-    console.log("📦 全部贊助數據:", allDonates.value);
+
+    try {
+      const result = await getAllDonates();
+
+      console.log("📊 初始化結果:", {
+        success: result.success,
+        allDonatesLength: allDonates.value?.length,
+        allDonatesIsArray: Array.isArray(allDonates.value),
+        allDonatesValue: allDonates.value,
+        donateSummaryLength: donateSummary.value?.length,
+      });
+
+      if (!allDonates.value || !Array.isArray(allDonates.value)) {
+        console.error("❌ allDonates.value 不是有效的數組");
+        throw new Error("數據初始化失敗");
+      }
+
+      console.log("✅ 每月贊助 Store 初始化完成");
+      console.log("📦 全部贊助數據:", allDonates.value);
+
+      return result;
+    } catch (err) {
+      console.error("❌ Store 初始化失敗:", err);
+      throw err;
+    }
   };
 
   /**
@@ -1324,7 +1381,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
     // 工具函數
     getDonateRecordIdByName,
-    getDonatorMonthsByDonateId,
+    //getDonatorMonthsByDonateId,
     //getDonateRecordIdByDonateId,
     //getAppDonateIdByRecordId,
 
@@ -1347,7 +1404,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     updateDonateItem,
     deleteDonateItem,
     calculateAvailableMonths,
-    getDonatorMonths,
+    getOccupiedMonths,
     initialize,
     clearError,
     setSearchQuery,

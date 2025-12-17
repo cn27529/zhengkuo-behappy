@@ -881,33 +881,51 @@ const settingsRules = {
 
 // 計算屬性
 const availableMonthsForDonator = computed(() => {
+  // 防禦性檢查
   if (!selectedDonator.value) {
     console.log("⚠️ selectedDonator.value 為空");
-    return monthColumns.value;
+    return monthColumns.value || [];
+  }
+
+  if (!monthColumns.value || monthColumns.value.length === 0) {
+    console.warn("⚠️ monthColumns.value 為空");
+    return [];
   }
 
   console.log("🔍 計算 availableMonthsForDonator:");
   console.log("- 選中的贊助人:", selectedDonator.value.name);
   console.log("- 資料庫 ID:", selectedDonator.value.id);
   console.log("- donateId:", selectedDonator.value.donateId);
+  console.log("- allDonates 狀態:", {
+    exists: !!allDonates.value,
+    isArray: Array.isArray(allDonates.value),
+    length: allDonates.value?.length,
+  });
 
   try {
     const recordId = selectedDonator.value.id;
     console.log("- 傳遞給 getDonatorMonths 的 ID:", recordId);
 
-    const occupiedMonths = monthlyDonateStore.getDonatorMonths(recordId);
-    console.log("- 已佔用的月份:", occupiedMonths);
+    // 調用 store 方法獲取已占用的月份
+    const occupiedMonths = monthlyDonateStore.getOccupiedMonths(recordId);
+    console.log("- 已占用的月份:", occupiedMonths);
     console.log("- 總月份列:", monthColumns.value.length);
 
+    // 過濾出可用的月份
     const result = monthColumns.value.filter(
       (month) => !occupiedMonths.includes(month.yearMonth)
     );
 
     console.log("- 可用月份:", result.length);
+    console.log("✅ availableMonthsForDonator 計算完成");
+
     return result;
   } catch (error) {
     console.error("❌ 獲取可用月份時出錯:", error);
-    return monthColumns.value;
+    console.error("錯誤堆棧:", error.stack);
+
+    // 出錯時返回所有月份,避免界面崩潰
+    return monthColumns.value || [];
   }
 });
 
@@ -917,11 +935,32 @@ const initialize = async () => {
   error.value = null;
 
   try {
+    console.log("🚀 開始初始化贊助數據...");
+
+    // 初始化 store
     await monthlyDonateStore.initialize();
-    ElMessage.success("贊助數據加載成功");
+
+    // 驗證數據加載
+    console.log("📊 驗證數據狀態:", {
+      allDonatesExists: !!allDonates.value,
+      allDonatesIsArray: Array.isArray(allDonates.value),
+      allDonatesLength: allDonates.value?.length,
+      donateSummaryLength: donateSummary.value?.length,
+      monthColumnsLength: monthColumns.value?.length,
+    });
+
+    if (!allDonates.value || !Array.isArray(allDonates.value)) {
+      throw new Error("贊助數據加載失敗:allDonates 不是有效的數組");
+    }
+
+    ElMessage.success(
+      `贊助數據加載成功 (共 ${allDonates.value.length} 筆記錄)`
+    );
+    console.log("✅ allDonates 初始化完成");
   } catch (err) {
     error.value = err.message || "加載數據失敗";
-    ElMessage.error("加載贊助數據失敗");
+    console.error("❌ 初始化失敗:", err);
+    ElMessage.error(`加載贊助數據失敗: ${err.message}`);
   } finally {
     loading.value = false;
   }
