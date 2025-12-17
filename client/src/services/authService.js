@@ -149,7 +149,6 @@ export class AuthService {
     // 模擬 2FA 驗證（在實際環境中應該驗證正確的 OTP）
     if (otpCode === "123456" || otpCode === "000000") {
       // 模擬驗證成功
-      const userData = await import("../data/auth_user.json");
       const mockUser = userData.default[0];
 
       return {
