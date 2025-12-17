@@ -273,7 +273,7 @@
                         @click="deleteActivity(row)"
                         type="danger"
                       >
-                        <el-icon><Delete /></el-icon>
+                        刪
                       </el-button>
                     </el-tooltip>
                   </div>
@@ -421,7 +421,7 @@
                         @click="deleteActivity(row)"
                         type="danger"
                       >
-                        <el-icon><Delete /></el-icon>
+                        刪
                       </el-button>
                     </el-tooltip>
                   </div>

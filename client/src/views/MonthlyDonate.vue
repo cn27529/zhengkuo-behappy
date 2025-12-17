@@ -311,7 +311,7 @@
     <el-dialog
       align-center
       v-model="showAddDonatorModal"
-      title="新增贊助人"
+      :title="`新增贊助人 - ${newDonator.name}`"
       width="700px"
       :before-close="closeModal"
     >
@@ -329,7 +329,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="登記編號">
+        <el-form-item label="登記編號" style="display: none">
           <el-input-number
             v-model="newDonator.registrationId"
             :min="-1"
@@ -359,21 +359,23 @@
 
             <div class="month-selection-actions">
               <el-button @click="selectAllMonthsForNewDonator" size="small">
-                全選
+                全選可用月份
               </el-button>
               <el-button @click="clearAllMonthsForNewDonator" size="small">
-                清空
+                清空選擇
               </el-button>
+              <el-tag
+                v-if="newDonator.selectedMonths.length > 0"
+                type="info"
+                size="small"
+                style="margin-left: 10px"
+              >
+                {{ newDonator.selectedMonths.length }} 個月×
+                {{ monthlyUnitPrice }} 元
+              </el-tag>
             </div>
 
-            <div class="selection-info">
-              <p>
-                已選擇月份：<strong>{{
-                  newDonator.selectedMonths.length
-                }}</strong>
-                個
-              </p>
-            </div>
+            <div class="selection-info"></div>
           </div>
         </el-form-item>
 
@@ -383,14 +385,6 @@
             {{ newDonator.amount.toLocaleString() }} 元
           </div>
           <div class="amount-breakdown"></div>
-          <el-alert
-            v-if="newDonator.selectedMonths.length > 0"
-            :title="`${newDonateItem.selectedMonths.length} 個月 × ${monthlyUnitPrice} 元 }`"
-            type="info"
-            :closable="false"
-            show-icon
-            style="margin-top: 10px"
-          />
         </el-form-item>
 
         <el-form-item label="圖標" style="display: none">
@@ -411,6 +405,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button
+            v-if="isDev"
             type="success"
             class="dev-button"
             @click="handleLoadMockData"
@@ -483,18 +478,18 @@
               <el-button @click="clearAllMonthsForItem" size="small">
                 清空選擇
               </el-button>
+              <el-tag
+                v-if="newDonateItem.selectedMonths.length > 0"
+                type="info"
+                size="small"
+                style="margin-left: 10px"
+              >
+                {{ newDonateItem.selectedMonths.length }} 個月×
+                {{ monthlyUnitPrice }} 元
+              </el-tag>
             </div>
 
-            <div class="selection-info">
-              <p>
-                已選擇：<strong>{{
-                  newDonateItem.selectedMonths.length
-                }}</strong>
-              </p>
-              <p v-if="selectedDonator">
-                己贊助月份：<strong>{{ occupiedMonthsCount }}</strong>
-              </p>
-            </div>
+            <div class="selection-info"></div>
           </div>
         </el-form-item>
 
@@ -504,14 +499,6 @@
             {{ newDonateItem.amount.toLocaleString() }} 元
           </div>
           <div class="amount-breakdown"></div>
-          <el-alert
-            v-if="newDonateItem.selectedMonths.length > 0"
-            :title="`${newDonateItem.selectedMonths.length} 個月 × ${monthlyUnitPrice} 元 }`"
-            type="info"
-            :closable="false"
-            show-icon
-            style="margin-top: 10px"
-          />
         </el-form-item>
 
         <el-form-item label="備註">
@@ -574,9 +561,11 @@
         <div class="detail-content">
           <h4>📋 贊助項目列表</h4>
           <el-table :data="selectedDonator.donateItems" style="width: 100%">
-            <el-table-column prop="donateItemsId" label="項目編號" width="90">
+            <el-table-column prop="donateItemsId" label="圖標" width="90">
               <template #default="{ row }">
-                <span class="font-mono">{{ row.donateItemsId }}</span>
+                <el-tooltip :content="row.donateItemsId" placement="top">
+                  <span class="font-mono">💰</span>
+                </el-tooltip>
               </template>
             </el-table-column>
             <el-table-column
@@ -603,13 +592,7 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="months" label="月數" min-width="50">
-              <template #default="{ row }">
-                <div class="months-list">
-                  {{ row.months.length }}
-                </div>
-              </template>
-            </el-table-column>
+
             <el-table-column prop="createdAt" label="建立時間" width="150">
               <template #default="{ row }">
                 {{ formatDate(row.createdAt) }}
@@ -618,11 +601,12 @@
             <el-table-column label="操作" width="120" align="center">
               <template #default="{ row }">
                 <el-button
+                  circle
                   type="danger"
                   size="small"
                   @click="deleteDonateItem(selectedDonator, row)"
                 >
-                  刪除
+                  刪
                 </el-button>
               </template>
             </el-table-column>
