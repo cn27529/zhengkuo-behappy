@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:analyze": "rm -rf dist && vite build --mode analyze",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -20,8 +21,12 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
+    "rollup-plugin-analyzer": "^4.0.0",
+    "rollup-plugin-visualizer": "^6.0.5",
     "unplugin-auto-import": "^20.3.0",
     "unplugin-vue-components": "^30.0.0",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vite-bundle-analyzer": "^1.3.2",
+    "vite-plugin-compression": "^0.5.1"
   }
 }
