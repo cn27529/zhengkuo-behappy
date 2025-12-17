@@ -2,9 +2,10 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authService } from "../services/authService.js";
+import userData from "../data/auth_user.json";
 
 export const useAuthStore = defineStore("auth", () => {
-  const user = ref(null);
+  const userInfo = ref(null);
   const isAuthenticated = ref(false);
   const isLoading = ref(false);
 
@@ -51,8 +52,7 @@ export const useAuthStore = defineStore("auth", () => {
       console.log("登入結果:", JSON.stringify(result));
 
       if (result.success) {
-        const userInfo = result.data.user;
-        user.value = userInfo;
+        userInfo.value = result.data.user;
         isAuthenticated.value = true;
 
         // 儲存用戶信息和 Token
@@ -111,8 +111,7 @@ export const useAuthStore = defineStore("auth", () => {
 
       // 如果不需要 2FA，直接成功
       if (result.success) {
-        const userInfo = result.data.user;
-        user.value = userInfo;
+        userInfo.value = result.data.user;
         isAuthenticated.value = true;
 
         // 儲存用戶信息和 Token
@@ -161,8 +160,7 @@ export const useAuthStore = defineStore("auth", () => {
       console.log("2FA 驗證結果:", JSON.stringify(result));
 
       if (result.success) {
-        const userInfo = result.data.user;
-        user.value = userInfo;
+        userInfo.value = result.data.user;
         isAuthenticated.value = true;
 
         // 儲存用戶信息和 Token
@@ -240,7 +238,7 @@ export const useAuthStore = defineStore("auth", () => {
       console.error("登出時發生錯誤:", error);
     } finally {
       // 無論如何都要清除前端狀態
-      user.value = null;
+      userInfo.value = null;
       isAuthenticated.value = false;
       isLoading.value = false;
 
@@ -270,12 +268,12 @@ export const useAuthStore = defineStore("auth", () => {
         const validationResult = await authService.validateToken();
 
         if (validationResult.success) {
-          user.value = JSON.parse(savedUser);
+          userInfo.value = JSON.parse(savedUser);
           isAuthenticated.value = true;
 
           console.log(
             "auth store 從本地存儲恢復用戶會話:",
-            user.value.displayName
+            userInfo.value.displayName
           );
 
           // 重新啟動閒置檢測
@@ -297,7 +295,6 @@ export const useAuthStore = defineStore("auth", () => {
   const checkUserExists = async (username) => {
     if (authService.getCurrentMode() === "mock") {
       // 在 mock 模式下，我們可以直接檢查本地數據
-      const userData = await import("../data/auth_user.json");
       return userData.default.some((user) => user.username === username);
     }
     // 在後端模式下，可能需要呼叫 API 檢查用戶是否存在
@@ -306,14 +303,14 @@ export const useAuthStore = defineStore("auth", () => {
 
   // 檢查用戶權限
   const hasPermission = (permission) => {
-    if (!user.value || !user.value.permissions) return false;
-    return user.value.permissions.includes(permission);
+    if (!userInfo.value || !userInfo.value.permissions) return false;
+    return userInfo.value.permissions.includes(permission);
   };
 
   // 檢查用戶角色
   const hasRole = (role) => {
-    if (!user.value) return false;
-    return user.value.role === role;
+    if (!userInfo.value) return false;
+    return userInfo.value.role === role;
   };
 
   // 獲取所有用戶（僅管理員權限）
@@ -323,7 +320,6 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     if (authService.getCurrentMode() === "mock") {
-      const userData = await import("../data/auth_user.json");
       return userData.default;
     } else {
       // 後端模式下需要呼叫 API
@@ -390,7 +386,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   return {
-    user,
+    user: userInfo,
     isAuthenticated,
     isLoading,
     authMode,
