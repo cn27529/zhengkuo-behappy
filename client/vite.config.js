@@ -10,5 +10,12 @@ export default defineConfig({
   },
   build: {
     sourcemap: true, // 确保生成 sourcemap
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "element-plus": ["element-plus"], // 單獨打包 Element Plus
+        },
+      },
+    },
   },
 });
