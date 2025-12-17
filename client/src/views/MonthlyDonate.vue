@@ -2,7 +2,7 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>每月贊助管理</h2>
+      <h2>每月贊助</h2>
       <p>管理每月贊助記錄，每月基本單位：{{ monthlyUnitPrice }}元</p>
     </div>
 
@@ -33,7 +33,7 @@
     </div>
 
     <!-- 統計卡片 -->
-    <div class="stats-cards" style="display: none">
+    <div class="stats-cards" style="display: ">
       <el-card class="stat-card">
         <template #header>
           <div class="stat-header">
@@ -188,11 +188,11 @@
           >
             <el-table-column label="圖標" width="60" align="center">
               <template #default="{ row }">
-                <div class="donate-icon">
-                  <el-tooltip :content="row.donateId" placement="top">
+                <el-tooltip :content="row.donateId" placement="top">
+                  <div class="donate-icon">
                     {{ row.icon }}
-                  </el-tooltip>
-                </div>
+                  </div>
+                </el-tooltip>
               </template>
             </el-table-column>
 
@@ -1360,7 +1360,7 @@ onMounted(() => {
 }
 
 .donate-icon {
-  font-size: 1.5rem;
+  font-size: 1rem;
   text-align: center;
 }
 

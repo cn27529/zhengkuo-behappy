@@ -188,7 +188,7 @@
               <div style="display: flex; gap: 8px; align-items: center">
                 <button
                   type="button"
-                  class="btn btn-outline btn-sm"
+                  class="btn btn-outline btn-sm capsule-btn"
                   @click="addBlessingPerson"
                 >
                   ＋增加消災人員
@@ -199,7 +199,7 @@
                     registrationForm.contact.name.trim()
                   "
                   type="button"
-                  class="btn btn-outline btn-sm"
+                  class="btn btn-outline btn-sm capsule-btn"
                   @click="addContactAsBlessing"
                 >
                   同聯絡人
@@ -220,18 +220,20 @@
             >
               <div class="person-header">
                 <h4 style="display: none">人員 {{ person.id }}</h4>
-                <button
-                  type="button"
-                  class="btn btn-danger btn-sm"
-                  @click="removeBlessingPerson(person.id)"
-                  :disabled="registrationForm.blessing.persons.length === 1"
-                >
-                  刪除
-                </button>
                 <label class="checkbox-label">
                   <input type="checkbox" v-model="person.isHouseholdHead" />
                   <span>設為戶長</span>
                 </label>
+                <el-tooltip content="刪除消災人員" placement="top">
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm capsule-btn"
+                    @click="removeBlessingPerson(person.id)"
+                    :disabled="registrationForm.blessing.persons.length === 1"
+                  >
+                    刪除
+                  </button>
+                </el-tooltip>
               </div>
 
               <div class="person-form">
@@ -316,7 +318,7 @@
                   registrationForm.blessing.address.trim()
                 "
                 type="button"
-                class="btn btn-outline btn-sm copy-address-btn"
+                class="btn btn-outline btn-sm capsule-btn"
                 @click="copyBlessingAddress"
               >
                 同消災地址
@@ -335,16 +337,21 @@
               class="ancestor-item"
             >
               <div class="person-header">
-                <h4 style="display: none">祖先 {{ ancestor.id }}</h4>
-                <button
-                  style="display: none"
-                  type="button"
-                  class="btn btn-danger btn-sm"
-                  @click="removeAncestor(ancestor.id)"
-                  :disabled="registrationForm.salvation.ancestors.length === 1"
-                >
-                  刪除
-                </button>
+                <h4 style="display: none">祖先{{ ancestor.id }}</h4>
+                <el-icon>&nbsp;</el-icon>
+                <el-tooltip content="刪除祖先" placement="top">
+                  <button
+                    style="display: none"
+                    type="button"
+                    class="btn btn-danger btn-sm capsule-btn"
+                    @click="removeAncestor(ancestor.id)"
+                    :disabled="
+                      registrationForm.salvation.ancestors.length === 1
+                    "
+                  >
+                    刪除
+                  </button>
+                </el-tooltip>
               </div>
 
               <div class="person-form">
@@ -387,7 +394,7 @@
               <div style="display: flex; gap: 8px; align-items: center">
                 <button
                   type="button"
-                  class="btn btn-outline btn-sm"
+                  class="btn btn-outline btn-sm capsule-btn"
                   @click="addSurvivor"
                 >
                   ＋增加陽上人
@@ -398,7 +405,7 @@
                     registrationForm.contact.name.trim()
                   "
                   type="button"
-                  class="btn btn-outline btn-sm"
+                  class="btn btn-outline btn-sm capsule-btn"
                   @click="addContactAsSurvivor"
                 >
                   同聯絡人
@@ -427,7 +434,7 @@
                 v-for="person in registrationForm.blessing.persons"
                 :key="person.id"
                 type="button"
-                class="btn btn-outline btn-sm"
+                class="btn btn-outline btn-sm capsule-btn"
                 @click="importFromBlessing(person)"
                 :disabled="
                   availableSurvivors &&
@@ -447,14 +454,20 @@
             >
               <div class="person-header">
                 <h4 style="display: none">陽上人 {{ survivor.id }}</h4>
-                <button
-                  type="button"
-                  class="btn btn-danger btn-sm"
-                  @click="removeSurvivor(survivor.id)"
-                  :disabled="registrationForm.salvation.survivors.length === 1"
-                >
-                  刪除
-                </button>
+
+                <el-icon>&nbsp;</el-icon>
+                <el-tooltip content="刪除陽上人" placement="top">
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm capsule-btn"
+                    @click="removeSurvivor(survivor.id)"
+                    :disabled="
+                      registrationForm.salvation.survivors.length === 1
+                    "
+                  >
+                    刪除
+                  </button>
+                </el-tooltip>
               </div>
 
               <div class="person-form">
@@ -500,25 +513,25 @@
       <!-- 修正後的提交按鈕區塊 -->
       <div class="form-actions">
         <!-- 编辑模式 -->
-        <button
+        <el-button
           v-if="myPageState.isEdit"
-          type="button"
-          class="btn btn-primary"
+          type="primary"
           @click="handleUpdateForm"
           :disabled="submitting"
+          size="large"
         >
           {{ submitting ? "保存中..." : "保存修改" }}
-        </button>
+        </el-button>
 
-        <button
+        <el-button
           v-if="myPageState.isCreate"
-          type="button"
-          class="btn btn-primary"
+          type="primary"
           @click="handleSubmitForm"
           :disabled="submitting"
+          size="large"
         >
           {{ submitting ? "提交中..." : "提交報名" }}
-        </button>
+        </el-button>
 
         <button
           v-if="myPageState.isCreate"
@@ -537,14 +550,14 @@
           🖨️ 列印表單
         </button>
 
-        <button
+        <el-button
           v-if="myPageState.isCreate"
-          type="button"
-          class="btn btn-secondary"
+          type="info"
           @click="handleResetForm"
+          size="large"
         >
           清空表單重新填寫
-        </button>
+        </el-button>
       </div>
     </div>
   </div>
@@ -1266,7 +1279,7 @@ select:focus {
 }
 
 .btn-danger {
-  background: #dc3545;
+  background: #d65a65;
   color: white;
 }
 

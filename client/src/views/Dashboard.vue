@@ -5,7 +5,7 @@
       <h2>儀表板</h2>
       <p style="display: none">查看登記情況和統計數據</p>
       <div style="" class="total-participants">
-        總參與人次&nbsp;
+        法會總參與人次&nbsp;
         <AnimatedNumber
           :value="totalParticipants"
           :duration="2500"
@@ -42,8 +42,30 @@
 
     <!-- 活動統計卡片 -->
     <el-row :gutter="24" class="stats-grid">
+      <!-- 即將到來的活動卡片最近兩筆 -->
       <el-col
-        v-for="activity in activities"
+        v-for="activity in upcomingCardActivities"
+        :key="activity.id"
+        :xs="24"
+        :sm="12"
+        :md="8"
+        :lg="6"
+        :xl="6"
+      >
+        <el-card shadow="hover" class="stat-card">
+          <div class="stat-icon">{{ activity.icon }}</div>
+          <div class="stat-info">
+            <h3>{{ activity.name }}</h3>
+            <div class="stat-number">{{ activity.participants }}</div>
+            <div class="stat-label">報名人次</div>
+            <div class="activity-date">{{ formatDate(activity.date) }}</div>
+          </div>
+        </el-card>
+      </el-col>
+
+      <!-- 己完成的活動卡片最近兩筆 -->
+      <el-col
+        v-for="activity in completedCardActivities"
         :key="activity.id"
         :xs="24"
         :sm="12"
@@ -83,6 +105,12 @@ const activities = computed(() => activityStore.activities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
 const upcomingActivities = computed(() => activityStore.upcomingActivities);
 const completedActivities = computed(() => activityStore.completedActivities);
+const upcomingCardActivities = computed(
+  () => activityStore.upcomingCardActivities
+);
+const completedCardActivities = computed(
+  () => activityStore.completedCardActivities
+);
 
 const formatDate = (dateString) => {
   return DateUtils.formatDate(dateString);

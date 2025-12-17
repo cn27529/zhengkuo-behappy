@@ -71,23 +71,22 @@
         :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
         v-loading="isLoading"
       >
-        <el-table-column label="表單資訊" min-width="80">
+        <el-table-column label="圖標" min-width="50" align="center">
           <template #default="{ row }">
             <div>
-              <div class="form-name"></div>
-              <el-tag
-                v-if="row.formSource"
-                size="small"
-                type="info"
-                class="form-source-tag"
-              >
-                {{ row.formSource }}
-              </el-tag>
+              <el-tooltip :content="row.formId" placement="top">
+                <div class="form-name">👤</div>
+              </el-tooltip>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="contact.name" label="聯絡人" min-width="100">
+        <el-table-column
+          prop="contact.name"
+          label="聯絡人"
+          min-width="100"
+          align="center"
+        >
           <template #default="{ row }">
             <strong>{{ row.contact?.name || "-" }}</strong>
           </template>

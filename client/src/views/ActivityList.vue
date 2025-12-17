@@ -189,9 +189,11 @@
                 align="center"
               >
                 <template #default="{ row }">
-                  <div class="results-icon">
-                    {{ row.icon }}
-                  </div>
+                  <el-tooltip :content="row.activityId" placement="top">
+                    <div class="results-icon">
+                      {{ row.icon }}
+                    </div>
+                  </el-tooltip>
                 </template>
               </el-table-column>
 
@@ -352,9 +354,11 @@
                 align="center"
               >
                 <template #default="{ row }">
-                  <div class="results-icon">
-                    {{ row.icon }}
-                  </div>
+                  <el-tooltip :content="row.activityId" placement="top">
+                    <div class="results-icon">
+                      {{ row.icon }}
+                    </div>
+                  </el-tooltip>
                 </template>
               </el-table-column>
 
