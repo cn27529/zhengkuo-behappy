@@ -115,7 +115,6 @@
             </el-button>
 
             <el-button
-              style="display: none"
               type="success"
               @click="showAddDonatorModal = true"
               :disabled="loading"
@@ -401,19 +400,17 @@
             <div class="selection-info">
               <p>
                 已選擇：<strong>{{ newDonator.selectedMonths.length }}</strong>
-                個月
               </p>
               <p>
                 可選擇：<strong>{{
                   calculateMonthCount(newDonator.amount)
                 }}</strong>
-                個月
               </p>
             </div>
           </div>
         </el-form-item>
 
-        <el-form-item label="圖標">
+        <el-form-item label="圖標" style="display: none">
           <IconSelector v-model="newDonator.icon" />
         </el-form-item>
 
@@ -463,42 +460,35 @@
         :rules="donateItemRules"
         label-width="120px"
       >
-        <el-form-item label="贊助金額" prop="amount">
-          <el-input-number
-            v-model="newDonateItem.amount"
-            :min="monthlyUnitPrice"
-            :step="monthlyUnitPrice"
-            placeholder="請輸入贊助金額"
-            style="width: 200px"
-          />
-          <span class="form-hint"
-            >（必須是 {{ monthlyUnitPrice }} 的倍數）</span
-          >
-
-          <div class="amount-info" v-if="newDonateItem.amount > 0">
-            <p>
-              可贊助月份數：<strong>{{
-                calculateMonthCount(newDonateItem.amount)
-              }}</strong>
-              個月
-            </p>
-          </div>
-        </el-form-item>
-
-        <el-form-item label="選擇月份" prop="selectedMonths">
+        <el-form-item label="選擇月份" prop="selectedMonths" required>
           <div class="month-selection">
             <div class="month-list">
               <div
-                v-for="month in availableMonthsForDonator"
+                v-for="month in monthColumns"
                 :key="month.yearMonth"
                 class="month-checkbox"
+                :class="{ 'disabled-month': isMonthOccupied(month.yearMonth) }"
               >
                 <el-checkbox
                   :label="month.display"
                   :value="month.yearMonth"
                   v-model="newDonateItem.selectedMonths"
-                  @change="handleMonthSelectForItem"
-                />
+                  :disabled="isMonthOccupied(month.yearMonth)"
+                  @change="handleMonthSelectionChange"
+                >
+                  <span
+                    :class="{
+                      'occupied-month': isMonthOccupied(month.yearMonth),
+                    }"
+                  >
+                    {{ month.display }}
+                    <!-- <span
+                      v-if="isMonthOccupied(month.yearMonth)"
+                      class="occupied-badge"
+                      >己贊助</span
+                    > -->
+                  </span>
+                </el-checkbox>
               </div>
             </div>
 
@@ -507,15 +497,7 @@
                 全選可用月份
               </el-button>
               <el-button @click="clearAllMonthsForItem" size="small">
-                清空
-              </el-button>
-              <el-button
-                @click="autoSelectAvailableMonths"
-                type="primary"
-                size="small"
-                :disabled="newDonateItem.amount < monthlyUnitPrice"
-              >
-                自動選擇
+                清空選擇
               </el-button>
             </div>
 
@@ -524,22 +506,28 @@
                 已選擇：<strong>{{
                   newDonateItem.selectedMonths.length
                 }}</strong>
-                個月
               </p>
-              <p>
-                可選擇：<strong>{{
-                  calculateMonthCount(newDonateItem.amount)
-                }}</strong>
-                個月
-              </p>
-              <p>
-                可用月份：<strong>{{
-                  availableMonthsForDonator.length
-                }}</strong>
-                個
+              <p v-if="selectedDonator">
+                己贊助月份：<strong>{{ occupiedMonthsCount }}</strong>
               </p>
             </div>
           </div>
+        </el-form-item>
+
+        <el-form-item label="贊助金額" prop="amount">
+          <div class="amount-display"></div>
+          <div class="amount-value">
+            {{ newDonateItem.amount.toLocaleString() }} 元
+          </div>
+          <div class="amount-breakdown"></div>
+          <el-alert
+            v-if="newDonateItem.selectedMonths.length > 0"
+            :title="`${newDonateItem.selectedMonths.length} 個月 × ${monthlyUnitPrice} 元 }`"
+            type="info"
+            :closable="false"
+            show-icon
+            style="margin-top: 10px"
+          />
         </el-form-item>
 
         <el-form-item label="備註">
@@ -560,6 +548,7 @@
             type="primary"
             @click="handleAddDonateItem"
             :loading="submitting"
+            :disabled="newDonateItem.selectedMonths.length === 0"
           >
             新增贊助項目
           </el-button>
@@ -785,9 +774,10 @@ const newDonator = reactive({
   memo: "",
 });
 
+// 修改表單數據 - 簡化結構
 const newDonateItem = reactive({
-  amount: monthlyUnitPrice.value,
   selectedMonths: [],
+  amount: 0,
   memo: "",
 });
 
@@ -795,6 +785,31 @@ const selectedDonator = ref(null);
 const settings = reactive({
   monthlyUnitPrice: monthlyUnitPrice.value,
 });
+
+// 計算屬性：獲取被佔用的月份
+const occupiedMonths = computed(() => {
+  if (!selectedDonator.value || !selectedDonator.value.id) {
+    return [];
+  }
+  return monthlyDonateStore.getOccupiedMonths(selectedDonator.value.id);
+});
+
+// 計算屬性：被佔用的月份數量
+const occupiedMonthsCount = computed(() => {
+  return occupiedMonths.value.length;
+});
+
+// 方法：檢查月份是否已被佔用
+const isMonthOccupied = (yearMonth) => {
+  return occupiedMonths.value.includes(yearMonth);
+};
+
+// 方法：月份選擇變化時的處理
+const handleMonthSelectionChange = () => {
+  // 自動計算金額
+  newDonateItem.amount =
+    newDonateItem.selectedMonths.length * monthlyUnitPrice.value;
+};
 
 // 表單引用
 const addDonatorFormRef = ref(null);
@@ -832,26 +847,13 @@ const donatorRules = {
   ],
 };
 
+// 修改表單驗證規則
 const donateItemRules = {
-  amount: [
-    { required: true, message: "請輸入贊助金額", trigger: "blur" },
-    {
-      validator: (rule, value, callback) => {
-        if (value % monthlyUnitPrice.value !== 0) {
-          callback(new Error(`金額必須是 ${monthlyUnitPrice.value} 的倍數`));
-        } else {
-          callback();
-        }
-      },
-      trigger: "blur",
-    },
-  ],
   selectedMonths: [
     {
       validator: (rule, value, callback) => {
-        const monthCount = calculateMonthCount(newDonateItem.amount);
-        if (value.length !== monthCount) {
-          callback(new Error(`請選擇 ${monthCount} 個月份`));
+        if (value.length === 0) {
+          callback(new Error("請至少選擇一個月份"));
         } else {
           callback();
         }
@@ -1057,15 +1059,21 @@ const autoSelectMonths = () => {
     .map((month) => month.yearMonth);
 };
 
+// 方法：選擇所有可用月份
 const selectAllAvailableMonths = () => {
-  const maxMonths = calculateMonthCount(newDonateItem.amount);
-  newDonateItem.selectedMonths = availableMonthsForDonator.value
-    .slice(0, maxMonths)
+  // 過濾出未被佔用的月份
+  newDonateItem.selectedMonths = monthColumns.value
+    .filter((month) => !isMonthOccupied(month.yearMonth))
     .map((month) => month.yearMonth);
+
+  // 觸發金額計算
+  handleMonthSelectionChange();
 };
 
+// 方法：清空選擇
 const clearAllMonthsForItem = () => {
   newDonateItem.selectedMonths = [];
+  handleMonthSelectionChange();
 };
 
 const autoSelectAvailableMonths = () => {
@@ -1080,13 +1088,14 @@ const handleViewDonatorDetail = (donator) => {
   showDonatorDetailModal.value = true;
 };
 
+// 修改：打開新增贊助項目對話框時初始化
 const handleAddDonateToDonator = (donator) => {
   selectedDonator.value = donator;
   // 重置表單
   Object.assign(newDonateItem, {
-    amount: monthlyUnitPrice.value,
     selectedMonths: [],
-    memo: selectedDonator.value.memo, // 複製贊助人的備註, 以便快速填寫
+    amount: 0,
+    memo: selectedDonator.value.memo || "",
   });
   showAddDonateItemModal.value = true;
 };
@@ -1096,6 +1105,7 @@ const handleEditDonator = (donator) => {
   ElMessage.info("編輯功能開發中");
 };
 
+// 修改：關閉對話框時重置
 const closeModal = () => {
   showAddDonatorModal.value = false;
   showAddDonateItemModal.value = false;
@@ -1103,18 +1113,9 @@ const closeModal = () => {
   showSettingsModal.value = false;
 
   // 重置表單
-  Object.assign(newDonator, {
-    name: "",
-    registrationId: -1,
-    amount: monthlyUnitPrice.value,
-    selectedMonths: [],
-    icon: "💰",
-    memo: "",
-  });
-
   Object.assign(newDonateItem, {
-    amount: monthlyUnitPrice.value,
     selectedMonths: [],
+    amount: 0,
     memo: "",
   });
 
@@ -1477,16 +1478,6 @@ onMounted(() => {
   background: #fafafa;
 }
 
-.month-list {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 0.5rem;
-}
-
 .month-checkbox {
   display: flex;
   align-items: center;
@@ -1505,9 +1496,9 @@ onMounted(() => {
 
 .selection-info {
   display: flex;
-  gap: 1rem;
+  /* gap: 1rem;
   font-size: 0.9rem;
-  color: #666;
+  color: #666; */
 }
 
 .selection-info p {
@@ -1620,6 +1611,82 @@ onMounted(() => {
   font-size: 0.9rem;
 }
 
+/* 新增樣式 */
+.occupied-month {
+  color: #999;
+  /* text-decoration: line-through; */
+}
+
+.occupied-badge {
+  background-color: #f56c6c;
+  color: white;
+  font-size: 0.7rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 5px;
+}
+
+.month-checkbox.disabled-month :deep(.el-checkbox__label) {
+  cursor: not-allowed;
+}
+
+.amount-display {
+  padding: 1px;
+  background: #f5f7fa;
+  border-radius: 4px;
+  border: 1px solid #e4e7ed;
+}
+
+.amount-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #409eff;
+}
+
+.amount-breakdown {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.month-list {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  margin-bottom: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.5px;
+  background: #fafafa;
+  border-radius: 4px;
+  border: 0px solid #e4e7ed;
+}
+
+.month-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.selection-info {
+  display: flex;
+  /* gap: 20px;
+  margin-top: 10px;
+  padding: 10px;
+  background: #f0f9ff;
+  border-radius: 4px;
+  border: 1px solid #91caff; */
+}
+
+.selection-info p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.selection-info strong {
+  color: #409eff;
+  /* font-size: 1rem; */
+}
+
 /* 響應式設計 */
 @media (max-width: 1200px) {
   .month-list {
@@ -1672,6 +1739,14 @@ onMounted(() => {
 
   .month-list {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  :deep(.el-dialog) {
+    width: 95% !important;
+  }
+
+  :deep(.el-form-item__label) {
+    width: 100px !important;
   }
 
   .month-grid {
