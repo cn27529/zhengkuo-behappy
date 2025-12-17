@@ -56,7 +56,7 @@ export const useAuthStore = defineStore("auth", () => {
         isAuthenticated.value = true;
 
         // 儲存用戶信息和 Token
-        sessionStorage.setItem("auth-user", JSON.stringify(userInfo));
+        sessionStorage.setItem("auth-user", JSON.stringify(result.data.user));
         if (result.data.token) {
           sessionStorage.setItem("auth-token", result.data.token);
         }
@@ -115,7 +115,7 @@ export const useAuthStore = defineStore("auth", () => {
         isAuthenticated.value = true;
 
         // 儲存用戶信息和 Token
-        sessionStorage.setItem("auth-user", JSON.stringify(userInfo));
+        sessionStorage.setItem("auth-user", JSON.stringify(result.data.user));
         if (result.data.token) {
           sessionStorage.setItem("auth-token", result.data.token);
         }
@@ -164,7 +164,7 @@ export const useAuthStore = defineStore("auth", () => {
         isAuthenticated.value = true;
 
         // 儲存用戶信息和 Token
-        sessionStorage.setItem("auth-user", JSON.stringify(userInfo));
+        sessionStorage.setItem("auth-user", JSON.stringify(result.data.user));
         if (result.data.token) {
           sessionStorage.setItem("auth-token", result.data.token);
         }
