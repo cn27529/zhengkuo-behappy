@@ -2,13 +2,17 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { authService } from "./services/authService.js";
-
 import App from "./App.vue";
-import ElementPlus from "element-plus";
-import "element-plus/dist/index.css";
-// 導入中文語言包
-import zhTW from "element-plus/dist/locale/zh-tw.mjs";
 import "./style.css";
+
+// 只導入 Element Plus 的樣式
+import "element-plus/theme-chalk/index.css";
+// 只導入必要的 Element Plus 組件
+import {
+  ElConfigProvider, // 配置提供者
+  // 其他組件根據實際使用情況按需添加
+} from "element-plus";
+import zhTW from "element-plus/dist/locale/zh-tw.mjs";
 
 // 导入路由配置
 import router from "./router";
@@ -17,7 +21,6 @@ import appConfig from "./config/appConfig.js";
 import { useMenuStore } from "./stores/menu.js";
 import { useRegistrationStore } from "./stores/registrationStore.js";
 import { usePageStateStore } from "./stores/pageStateStore.js";
-import { my } from "element-plus/es/locale/index.mjs";
 
 // 创建Pinia实例
 const pinia = createPinia();
@@ -28,7 +31,6 @@ if (import.meta.env.VITE_AUTH_MODE === "mock") {
   console.warn(
     "⚠️ 當前使用前端模擬認證，密碼為明碼儲存！正式環境請切換到後端模式並移除密碼硬編碼。"
   );
-  //console.log("🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01");
 }
 
 if (import.meta.env.VITE_DEV === "true") {
@@ -65,9 +67,12 @@ const app = createApp(App);
 app.use(router);
 app.use(pinia);
 
-// 使用Element Plus组件库
-app.use(ElementPlus, {
-  locale: zhTW, // 使用中文語言包
+// 只使用必要的 Element Plus 組件
+app.use(ElConfigProvider, {
+  locale: zhTW,
+  // 可以添加其他全局配置
+  size: "default",
+  zIndex: 2000,
 });
 
 // 挂载應用
