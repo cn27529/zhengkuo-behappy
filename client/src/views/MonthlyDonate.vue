@@ -338,76 +338,59 @@
           <span class="form-hint">（-1表示未登記）</span>
         </el-form-item>
 
-        <el-form-item label="贊助金額" prop="amount">
-          <el-input-number
-            v-model="newDonator.amount"
-            :min="monthlyUnitPrice"
-            :step="monthlyUnitPrice"
-            placeholder="請輸入贊助金額"
-            style="width: 200px"
-          />
-          <span class="form-hint"
-            >（必須是 {{ monthlyUnitPrice }} 的倍數）</span
-          >
-
-          <div class="amount-info" v-if="newDonator.amount > 0">
-            <p>
-              可贊助月份數：<strong>{{
-                calculateMonthCount(newDonator.amount)
-              }}</strong>
-              個月
-            </p>
-            <p>
-              每月金額：<strong>{{ monthlyUnitPrice }}</strong> 元
-            </p>
-          </div>
-        </el-form-item>
-
-        <el-form-item label="選擇月份" prop="selectedMonths">
+        <el-form-item label="選擇月份" prop="selectedMonths" required>
           <div class="month-selection">
             <div class="month-list">
               <div
                 v-for="month in monthColumns"
                 :key="month.yearMonth"
                 class="month-checkbox"
-                :class="{ 'disabled-month': isMonthDisabled(month.yearMonth) }"
               >
                 <el-checkbox
                   :label="month.display"
                   :value="month.yearMonth"
                   v-model="newDonator.selectedMonths"
-                  :disabled="isMonthDisabled(month.yearMonth)"
-                  @change="handleMonthSelect"
-                />
+                  @change="handleMonthSelectForNewDonator"
+                >
+                  {{ month.display }}
+                </el-checkbox>
               </div>
             </div>
 
             <div class="month-selection-actions">
-              <el-button @click="selectAllMonths" size="small">
+              <el-button @click="selectAllMonthsForNewDonator" size="small">
                 全選
               </el-button>
-              <el-button @click="clearAllMonths" size="small"> 清空 </el-button>
-              <el-button
-                @click="autoSelectMonths"
-                type="primary"
-                size="small"
-                :disabled="newDonator.amount < monthlyUnitPrice"
-              >
-                自動選擇
+              <el-button @click="clearAllMonthsForNewDonator" size="small">
+                清空
               </el-button>
             </div>
 
             <div class="selection-info">
               <p>
-                已選擇：<strong>{{ newDonator.selectedMonths.length }}</strong>
-              </p>
-              <p>
-                可選擇：<strong>{{
-                  calculateMonthCount(newDonator.amount)
+                已選擇月份：<strong>{{
+                  newDonator.selectedMonths.length
                 }}</strong>
+                個
               </p>
             </div>
           </div>
+        </el-form-item>
+
+        <el-form-item label="贊助金額" prop="amount">
+          <div class="amount-display"></div>
+          <div class="amount-value">
+            {{ newDonator.amount.toLocaleString() }} 元
+          </div>
+          <div class="amount-breakdown"></div>
+          <el-alert
+            v-if="newDonator.selectedMonths.length > 0"
+            :title="`${newDonateItem.selectedMonths.length} 個月 × ${monthlyUnitPrice} 元 }`"
+            type="info"
+            :closable="false"
+            show-icon
+            style="margin-top: 10px"
+          />
         </el-form-item>
 
         <el-form-item label="圖標" style="display: none">
@@ -439,6 +422,7 @@
             type="primary"
             @click="handleAddDonator"
             :loading="submitting"
+            :disabled="newDonator.selectedMonths.length === 0"
           >
             新增贊助人
           </el-button>
@@ -804,6 +788,26 @@ const isMonthOccupied = (yearMonth) => {
   return occupiedMonths.value.includes(yearMonth);
 };
 
+// 方法：月份選擇變化時的處理（新增贊助人）
+const handleMonthSelectForNewDonator = () => {
+  // 自動計算金額
+  newDonator.amount = newDonator.selectedMonths.length * monthlyUnitPrice.value;
+};
+
+// 方法：為新增贊助人選擇所有月份
+const selectAllMonthsForNewDonator = () => {
+  newDonator.selectedMonths = monthColumns.value.map(
+    (month) => month.yearMonth
+  );
+  handleMonthSelectForNewDonator();
+};
+
+// 方法：為新增贊助人清空選擇
+const clearAllMonthsForNewDonator = () => {
+  newDonator.selectedMonths = [];
+  handleMonthSelectForNewDonator();
+};
+
 // 方法：月份選擇變化時的處理
 const handleMonthSelectionChange = () => {
   // 自動計算金額
@@ -816,33 +820,33 @@ const addDonatorFormRef = ref(null);
 const addDonateItemFormRef = ref(null);
 const settingsFormRef = ref(null);
 
-// 表單驗證規則
+// 表單驗證規則 - 修改為更簡潔的驗證
 const donatorRules = {
   name: [{ required: true, message: "請輸入贊助人姓名", trigger: "blur" }],
-  amount: [
-    { required: true, message: "請輸入贊助金額", trigger: "blur" },
-    {
-      validator: (rule, value, callback) => {
-        if (value % monthlyUnitPrice.value !== 0) {
-          callback(new Error(`金額必須是 ${monthlyUnitPrice.value} 的倍數`));
-        } else {
-          callback();
-        }
-      },
-      trigger: "blur",
-    },
-  ],
   selectedMonths: [
     {
       validator: (rule, value, callback) => {
-        const monthCount = calculateMonthCount(newDonator.amount);
-        if (value.length !== monthCount) {
-          callback(new Error(`請選擇 ${monthCount} 個月份`));
+        if (value.length === 0) {
+          callback(new Error("請至少選擇一個月份"));
         } else {
           callback();
         }
       },
       trigger: "change",
+    },
+  ],
+  amount: [
+    {
+      validator: (rule, value, callback) => {
+        if (value === 0 || value % monthlyUnitPrice.value !== 0) {
+          callback(
+            new Error(`金額必須是 ${monthlyUnitPrice.value} 的倍數且大於 0`)
+          );
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
     },
   ],
 };
@@ -882,6 +886,7 @@ const settingsRules = {
 };
 
 // 計算屬性
+// 計算屬性 - 移除不再需要的方法
 const availableMonthsForDonator = computed(() => {
   // 防禦性檢查
   if (!selectedDonator.value) {
@@ -894,16 +899,6 @@ const availableMonthsForDonator = computed(() => {
     return [];
   }
 
-  console.log("🔍 計算 availableMonthsForDonator:");
-  console.log("- 選中的贊助人:", selectedDonator.value.name);
-  console.log("- 資料庫 ID:", selectedDonator.value.id);
-  console.log("- donateId:", selectedDonator.value.donateId);
-  console.log("- allDonates 狀態:", {
-    exists: !!allDonates.value,
-    isArray: Array.isArray(allDonates.value),
-    length: allDonates.value?.length,
-  });
-
   try {
     const recordId = selectedDonator.value.id;
     console.log("- 傳遞給 getDonatorMonths 的 ID:", recordId);
@@ -911,7 +906,6 @@ const availableMonthsForDonator = computed(() => {
     // 調用 store 方法獲取已占用的月份
     const occupiedMonths = monthlyDonateStore.getOccupiedMonths(recordId);
     console.log("- 已占用的月份:", occupiedMonths);
-    console.log("- 總月份列:", monthColumns.value.length);
 
     // 過濾出可用的月份
     const result = monthColumns.value.filter(
@@ -919,14 +913,9 @@ const availableMonthsForDonator = computed(() => {
     );
 
     console.log("- 可用月份:", result.length);
-    console.log("✅ availableMonthsForDonator 計算完成");
-
     return result;
   } catch (error) {
     console.error("❌ 獲取可用月份時出錯:", error);
-    console.error("錯誤堆棧:", error.stack);
-
-    // 出錯時返回所有月份,避免界面崩潰
     return monthColumns.value || [];
   }
 });
@@ -1019,68 +1008,20 @@ const handleCurrentChange = (newPage) => {
   currentPage.value = newPage;
 };
 
-const handleMonthSelect = () => {
-  // 確保選擇的月份數量不超過可贊助的月份數
-  const maxMonths = calculateMonthCount(newDonator.amount);
-  if (newDonator.selectedMonths.length > maxMonths) {
-    newDonator.selectedMonths = newDonator.selectedMonths.slice(0, maxMonths);
-    ElMessage.warning(`最多只能選擇 ${maxMonths} 個月份`);
-  }
-};
-
-const handleMonthSelectForItem = () => {
-  const maxMonths = calculateMonthCount(newDonateItem.amount);
-  if (newDonateItem.selectedMonths.length > maxMonths) {
-    newDonateItem.selectedMonths = newDonateItem.selectedMonths.slice(
-      0,
-      maxMonths
-    );
-    ElMessage.warning(`最多只能選擇 ${maxMonths} 個月份`);
-  }
-};
-
-const selectAllMonths = () => {
-  const maxMonths = calculateMonthCount(newDonator.amount);
-  newDonator.selectedMonths = monthColumns.value
-    .slice(0, maxMonths)
-    .map((month) => month.yearMonth);
-};
-
-const clearAllMonths = () => {
-  newDonator.selectedMonths = [];
-};
-
-const autoSelectMonths = () => {
-  const maxMonths = calculateMonthCount(newDonator.amount);
-  // 選擇最早的可用月份
-  newDonator.selectedMonths = monthColumns.value
-    .filter((month) => !isMonthDisabled(month.yearMonth))
-    .slice(0, maxMonths)
-    .map((month) => month.yearMonth);
-};
-
-// 方法：選擇所有可用月份
+// 方法：選擇所有可用月份（新增贊助項目）
 const selectAllAvailableMonths = () => {
   // 過濾出未被佔用的月份
   newDonateItem.selectedMonths = monthColumns.value
     .filter((month) => !isMonthOccupied(month.yearMonth))
     .map((month) => month.yearMonth);
-
   // 觸發金額計算
   handleMonthSelectionChange();
 };
 
-// 方法：清空選擇
+// 方法：清空選擇（新增贊助項目）
 const clearAllMonthsForItem = () => {
   newDonateItem.selectedMonths = [];
   handleMonthSelectionChange();
-};
-
-const autoSelectAvailableMonths = () => {
-  const maxMonths = calculateMonthCount(newDonateItem.amount);
-  newDonateItem.selectedMonths = availableMonthsForDonator.value
-    .slice(0, maxMonths)
-    .map((month) => month.yearMonth);
 };
 
 const handleViewDonatorDetail = (donator) => {
@@ -1112,7 +1053,17 @@ const closeModal = () => {
   showDonatorDetailModal.value = false;
   showSettingsModal.value = false;
 
-  // 重置表單
+  // 重置表單（新增贊助人）
+  Object.assign(newDonator, {
+    name: "",
+    registrationId: -1,
+    selectedMonths: [],
+    amount: 0,
+    icon: "💰",
+    memo: "",
+  });
+
+  // 重置表單（新增贊助項目）
   Object.assign(newDonateItem, {
     selectedMonths: [],
     amount: 0,
@@ -1305,6 +1256,8 @@ const handleLoadMockData = () => {
     icon: "🙏",
     memo: "測試贊助數據",
   });
+  // 觸發金額計算
+  handleMonthSelectForNewDonator();
   ElMessage.success("Mock 數據已載入到表單");
 };
 
