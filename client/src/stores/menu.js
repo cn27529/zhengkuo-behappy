@@ -66,7 +66,7 @@ export const useMenuStore = defineStore("menu", () => {
       component: "CardDesign",
       requiredAuth: true,
       order: 6,
-      enabled: true,
+      enabled: false,
     },
     {
       id: 7,
@@ -76,7 +76,7 @@ export const useMenuStore = defineStore("menu", () => {
       component: "MonthlyDonate",
       requiredAuth: true,
       order: 7,
-      enabled: true,
+      enabled: false,
     },
     {
       id: 99,
@@ -86,7 +86,7 @@ export const useMenuStore = defineStore("menu", () => {
       component: "Receipts",
       requiredAuth: true,
       order: 99,
-      enabled: true, // 暂时禁用，等后续开发
+      enabled: false,
     },
     {
       id: 99,
@@ -96,7 +96,7 @@ export const useMenuStore = defineStore("menu", () => {
       component: "ReceiptsQuery",
       requiredAuth: true,
       order: 99,
-      enabled: true,
+      enabled: false,
     },
     {
       id: 99,
@@ -106,18 +106,17 @@ export const useMenuStore = defineStore("menu", () => {
       component: "DataImport",
       requiredAuth: false,
       order: 99,
-      enabled: true,
+      enabled: false,
     },
-
     // {
-    //   id: 7,
+    //   id: 99,
     //   name: "Mydata",
     //   path: "/mydata",
     //   icon: "📥",
     //   component: "MydataList",
     //   requiredAuth: true,
-    //   order: 0,
-    //   enabled: true,
+    //   order: 99,
+    //   enabled: false,
     // },
   ]);
 
