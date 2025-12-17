@@ -17,7 +17,9 @@
         :class="{ active: modelValue === icon.emoji }"
         @click="selectIcon(icon.emoji)"
       >
-        <span class="icon">{{ icon.emoji }}</span>
+        <el-tooltip :content="icon.label" placement="top">
+          <span class="icon">{{ icon.emoji }}</span>
+        </el-tooltip>
         <!-- <span class="icon-label">{{ icon.label }}</span> -->
       </div>
     </div>
@@ -46,12 +48,14 @@ const availableIcons = [
   { emoji: "🍚", label: "供品" },
   { emoji: "🌸", label: "花朵" },
   { emoji: "🧘", label: "禪修" },
-  { emoji: "🏮", label: "燈籠" },
+  //{ emoji: "🏮", label: "燈籠" },
   { emoji: "🧧", label: "紅包" },
   { emoji: "🧨", label: "新年" },
-  { emoji: "🥮", label: "月餅" },
-  { emoji: "🐉", label: "龍舟" },
+  { emoji: "🥮", label: "中秋" },
+  //{ emoji: "🎑", label: "中秋" },
+  { emoji: "🐲", label: "端午" },
   { emoji: "🎊", label: "節慶" },
+  { emoji: "🌎", label: "地球" },
 ];
 
 // const availableIcons = [

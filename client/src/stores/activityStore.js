@@ -88,6 +88,33 @@ export const useActivityStore = defineStore("activity", () => {
     });
   });
 
+  const upcomingCardActivities = computed(() => {
+    // 取得即將到來的活動，日期排序最近的兩筆
+    return activities1Year.value
+      .filter((activity) => {
+        return activity.state === "upcoming";
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+      })
+      .slice(0, 2);
+  });
+  const completedCardActivities = computed(() => {
+    // 取得已完成的活動，日期排序最近的兩筆
+    return activities1Year.value
+      .filter((activity) => {
+        return activity.state === "completed";
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+      })
+      .slice(0, 2);
+  });
+
   /**
    * ✅ 新增：過濾後的即將到來活動
    */
@@ -879,6 +906,8 @@ export const useActivityStore = defineStore("activity", () => {
     totalParticipants,
     upcomingActivities,
     completedActivities,
+    upcomingCardActivities,
+    completedCardActivities,
     // ✅ 新增：過濾與分頁計算屬性
     upcomingFiltered,
     completedFiltered,
