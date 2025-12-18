@@ -3,36 +3,64 @@
   <div class="main-content">
     <div class="page-header">
       <h2>每月贊助</h2>
-      <p>
-        管理每月贊助記錄，每月基本單位
-        <el-tag type="info" size="large">{{ monthlyUnitPrice }}</el-tag> 元
-      </p>
     </div>
 
-    <!-- 贊助設定 -->
-    <div class="settings-section" style="margin-bottom: 1.5rem; display: none">
-      <el-card>
-        <template #header>
-          <div class="settings-header">
-            <span>💰 贊助設定</span>
+    <!-- 查詢區 -->
+    <div class="search-section">
+      <div class="search-form">
+        <div class="form-group">
+          <div class="search-input-group">
+            <el-input
+              v-model="searchQuery"
+              placeholder="搜尋贊助人姓名"
+              @keyup.enter="handleSearch"
+              :disabled="loading"
+              clearable
+              size="large"
+            >
+              <template #prepend>
+                <el-icon><Search /></el-icon>
+              </template>
+            </el-input>
+
             <el-button
               type="primary"
-              size="small"
-              @click="showSettingsModal = true"
+              @click="handleSearch"
+              :loading="loading"
+              size="large"
             >
-              設定
+              {{ loading ? "查詢中..." : "查詢" }}
+            </el-button>
+
+            <el-button @click="handleClear" :disabled="loading" size="large">
+              清空
+            </el-button>
+
+            <el-button
+              type="success"
+              @click="showAddDonatorModal = true"
+              :disabled="loading"
+              size="large"
+              :icon="Plus"
+            >
+              新增贊助人
             </el-button>
           </div>
-        </template>
-        <div class="settings-content">
-          <p>
-            每月基本單位金額：<strong>{{ monthlyUnitPrice }}元</strong>
-          </p>
-          <p class="settings-hint">
-            💡 提示：贊助金額必須是 {{ monthlyUnitPrice }} 元的倍數
-          </p>
+          <p class="search-hint">💡 提示：可搜尋贊助人姓名或備註。</p>
         </div>
-      </el-card>
+      </div>
+    </div>
+
+    <!-- 調試信息 -->
+    <div v-if="isDev" class="debug-panel">
+      <h4>🔧 調試信息</h4>
+      <hr />
+      <div>總贊助記錄數: {{ allDonates.length }}</div>
+      <div>合併後贊助人數: {{ donateSummary.length }}</div>
+      <div>過濾後人數: {{ filteredDonates.length }}</div>
+      <div>當前頁碼: {{ currentPage }}</div>
+      <div>每頁數量: {{ pageSize }}</div>
+      <div>每月單位金額: {{ monthlyUnitPrice }}</div>
     </div>
 
     <!-- 統計卡片 -->
@@ -85,66 +113,9 @@
         </div>
       </el-card>
     </div>
+    
 
-    <!-- 查詢區 -->
-    <div class="search-section">
-      <div class="search-form">
-        <div class="form-group">
-          <div class="search-input-group">
-            <el-input
-              v-model="searchQuery"
-              placeholder="搜尋贊助人姓名"
-              @keyup.enter="handleSearch"
-              :disabled="loading"
-              clearable
-              size="large"
-            >
-              <template #prepend>
-                <el-icon><Search /></el-icon>
-              </template>
-            </el-input>
-
-            <el-button
-              type="primary"
-              @click="handleSearch"
-              :loading="loading"
-              size="large"
-            >
-              {{ loading ? "查詢中..." : "查詢" }}
-            </el-button>
-
-            <el-button @click="handleClear" :disabled="loading" size="large">
-              清空
-            </el-button>
-
-            <el-button
-              type="success"
-              @click="showAddDonatorModal = true"
-              :disabled="loading"
-              size="large"
-              :icon="Plus"
-            >
-              新增贊助人
-            </el-button>
-          </div>
-          <p class="search-hint">💡 提示：可搜尋贊助人姓名或備註</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 調試信息 -->
-    <div v-if="isDev" class="debug-panel">
-      <h4>🔧 調試信息</h4>
-      <hr />
-      <div>總贊助記錄數: {{ allDonates.length }}</div>
-      <div>合併後贊助人數: {{ donateSummary.length }}</div>
-      <div>過濾後人數: {{ filteredDonates.length }}</div>
-      <div>當前頁碼: {{ currentPage }}</div>
-      <div>每頁數量: {{ pageSize }}</div>
-      <div>每月單位金額: {{ monthlyUnitPrice }}</div>
-    </div>
-
-    <!-- 贊助人列表 -->
+    <!-- 查詢列表 -->
     <div class="results-section">
       <div v-if="loading" class="loading-state">
         <el-result icon="info" title="載入中">
@@ -307,6 +278,7 @@
             background
           />
         </div>
+
       </div>
     </div>
 
@@ -327,8 +299,7 @@
         <el-form-item label="贊助人姓名" prop="name">
           <el-input
             v-model="newDonator.name"
-            placeholder="請輸入贊助人姓名"
-            style="width: 300px"
+            placeholder="請輸入贊助人姓名"          
           />
         </el-form-item>
 
@@ -400,7 +371,7 @@
             type="textarea"
             :rows="3"
             placeholder="請輸入備註"
-            style="width: 400px"
+            style="width: 500px"
           />
         </el-form-item>
       </el-form>
@@ -440,7 +411,7 @@
         ref="addDonateItemFormRef"
         :model="newDonateItem"
         :rules="donateItemRules"
-        label-width="120px"
+        label-width="100px"
       >
         <el-form-item label="選擇月份" prop="selectedMonths" required>
           <div class="month-selection">
@@ -476,7 +447,7 @@
             </div>
 
             <!-- 將新增贊助項目 monthColumns 改為 donationMonthColumns -->
-            
+
             <div class="month-selection-actions">
               <el-button @click="selectAllAvailableMonths" size="small">
                 全選可用月份
@@ -522,7 +493,7 @@
             type="textarea"
             :rows="3"
             placeholder="請輸入備註"
-            style="width: 400px"
+            style="width: 500px"
           />
         </el-form-item>
       </el-form>
@@ -575,7 +546,8 @@
 
         <div class="detail-content">
           <h4>📋 贊助項目列表</h4>
-          <el-table :data="selectedDonator.donateItems" style="width: 100%">
+          <el-table :data="selectedDonator.donateItems" style="width: 100%"
+          max-height="400px">
             <el-table-column prop="donateItemsId" label="圖標" width="90">
               <template #default="{ row }">
                 <el-tooltip :content="row.donateItemsId" placement="top">
@@ -626,87 +598,11 @@
               </template>
             </el-table-column>
           </el-table>
-
-          <h4 style="margin-top: 20px; display: none">📊 月份分佈</h4>
-          <div class="month-distribution" style="display: none">
-            <div class="month-grid">
-              <div
-                v-for="month in monthColumns"
-                :key="month.yearMonth"
-                class="month-cell-detail"
-                :class="{
-                  'has-donate':
-                    selectedDonator.months[month.yearMonth]?.length > 0,
-                }"
-              >
-                <div class="month-label">{{ month.display.substring(5) }}</div>
-                <div class="month-status">
-                  <template
-                    v-if="selectedDonator.months[month.yearMonth]?.length > 0"
-                  >
-                    <el-tooltip
-                      :content="
-                        getMonthTooltip(selectedDonator.months[month.yearMonth])
-                      "
-                      placement="top"
-                    >
-                      <span class="donate-indicator">💰</span>
-                    </el-tooltip>
-                  </template>
-                  <template v-else>
-                    <span class="no-donate">-</span>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
       </div>
     </el-dialog>
 
-    <!-- 設定 Dialog -->
-    <el-dialog
-      align-center
-      v-model="showSettingsModal"
-      title="贊助設定"
-      width="500px"
-      :before-close="closeModal"
-    >
-      <el-form
-        ref="settingsFormRef"
-        :model="settings"
-        :rules="settingsRules"
-        label-width="150px"
-      >
-        <el-form-item label="每月基本單位金額" prop="monthlyUnitPrice">
-          <el-input-number
-            v-model="settings.monthlyUnitPrice"
-            :min="100"
-            :step="100"
-            placeholder="請輸入每月基本單位金額"
-            style="width: 200px"
-          />
-          <span class="form-hint">元</span>
-        </el-form-item>
-
-        <el-alert
-          title="注意"
-          type="warning"
-          description="修改每月基本單位金額不會影響已存在的贊助記錄，只會影響後續新增的贊助記錄。"
-          show-icon
-          style="margin-top: 20px"
-        />
-      </el-form>
-
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeModal">取消</el-button>
-          <el-button type="primary" @click="handleSaveSettings">
-            儲存設定
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -728,7 +624,6 @@ const error = ref(null);
 const showAddDonatorModal = ref(false);
 const showAddDonateItemModal = ref(false);
 const showDonatorDetailModal = ref(false);
-const showSettingsModal = ref(false);
 const submitting = ref(false);
 const isDev = ref(false);
 
@@ -848,7 +743,6 @@ const handleMonthSelectionChange = () => {
 // 表單引用
 const addDonatorFormRef = ref(null);
 const addDonateItemFormRef = ref(null);
-const settingsFormRef = ref(null);
 
 // 表單驗證規則 - 修改為更簡潔的驗證
 const donatorRules = {
@@ -1081,7 +975,6 @@ const closeModal = () => {
   showAddDonatorModal.value = false;
   showAddDonateItemModal.value = false;
   showDonatorDetailModal.value = false;
-  showSettingsModal.value = false;
 
   // 重置表單（新增贊助人）
   Object.assign(newDonator, {
@@ -1104,6 +997,7 @@ const closeModal = () => {
   submitting.value = false;
 };
 
+// 新增贊助人
 const handleAddDonator = async () => {
   submitting.value = true;
 
@@ -1247,32 +1141,6 @@ const deleteDonateItem = async (donator, item) => {
     if (err !== "cancel") {
       ElMessage.error(err.message || "刪除贊助項目失敗");
     }
-  }
-};
-
-const handleSaveSettings = async () => {
-  try {
-    // 表單驗證
-    if (!settingsFormRef.value) {
-      ElMessage.error("表單未正確初始化");
-      return;
-    }
-
-    const isValid = await settingsFormRef.value.validate().catch((error) => {
-      console.error("表單驗證失敗:", error);
-      return false;
-    });
-
-    if (!isValid) {
-      ElMessage.warning("請填寫正確的設定值");
-      return;
-    }
-
-    await monthlyDonateStore.setMonthlyUnitPrice(settings.monthlyUnitPrice);
-    ElMessage.success("設定已儲存");
-    closeModal();
-  } catch (err) {
-    ElMessage.error(err.message || "儲存設定失敗");
   }
 };
 
@@ -1542,9 +1410,6 @@ onMounted(() => {
   gap: 0.25rem;
 }
 
-.month-distribution {
-  margin-top: 1rem;
-}
 
 .month-grid {
   display: grid;
@@ -1635,12 +1500,13 @@ onMounted(() => {
 
 .month-list {
   display: grid;
+  grid-template-rows: repeat(1, 40px);
   grid-template-columns: repeat(6, 1fr);
   gap: 5px;
   margin-bottom: 1rem;
   max-height: 300px;
   overflow-y: auto;
-  padding: 0.5px;
+  padding: 1px;
   background: #fafafa;
   border-radius: 4px;
   border: 0px solid #e4e7ed;
@@ -1671,16 +1537,53 @@ onMounted(() => {
   /* font-size: 1rem; */
 }
 
-/* 響應式設計 */
-@media (max-width: 1200px) {
-  .month-list {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .month-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
+/* 對話框樣式優化 */
+:deep(.el-dialog) {
+  border-radius: 8px;
 }
+
+:deep(.el-dialog__header) {
+  /* padding: 1.5rem 1.5rem 1rem;*/
+  border-bottom: 1px solid #eee;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 1.25rem;
+  color: #eee;
+}
+
+:deep(.el-dialog__body) {
+  padding: 0.75rem;
+}
+
+:deep(.el-dialog__footer) {
+  /* padding: 1rem 1.5rem 1.5rem;*/
+  border-top: 1px solid #eee;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  /* width: 100%; */
+}
+
+/* Tab 樣式優化 */
+:deep(.el-tabs__nav-wrap) {
+  padding: 0 1.5rem;
+  background: #f8f9fa;
+}
+
+:deep(.el-tabs__header) {
+  margin: 0;
+}
+
+:deep(.el-tabs__content) {
+  padding: 1.5rem;
+}
+
+/* 響應式設計 */
+
 
 @media (max-width: 768px) {
   .search-input-group {
@@ -1725,14 +1628,6 @@ onMounted(() => {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  :deep(.el-dialog) {
-    width: 95% !important;
-  }
-
-  :deep(.el-form-item__label) {
-    width: 100px !important;
-  }
-
   .month-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1751,45 +1646,5 @@ onMounted(() => {
   }
 }
 
-/* 對話框樣式優化 */
-:deep(.el-dialog) {
-  border-radius: 8px;
-}
 
-:deep(.el-dialog__header) {
-  border-bottom: 1px solid #eee;
-}
-
-:deep(.el-dialog__title) {
-  font-size: 1.25rem;
-  color: #eee;
-}
-
-:deep(.el-dialog__body) {
-  padding: 1rem;
-}
-
-:deep(.el-dialog__footer) {
-  border-top: 1px solid #eee;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-/* Tab 樣式優化 */
-:deep(.el-tabs__nav-wrap) {
-  padding: 0 1.5rem;
-  background: #f8f9fa;
-}
-
-:deep(.el-tabs__header) {
-  margin: 0;
-}
-
-:deep(.el-tabs__content) {
-  padding: 1.5rem;
-}
 </style>
