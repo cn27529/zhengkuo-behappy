@@ -1,7 +1,7 @@
 // src/stores/monthlyDonateStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { generateGitHash } from "../utils/generateGitHash.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { baseService } from "../services/baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_monthlyDonates.json";
@@ -918,16 +918,21 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
     try {
       const createISOTime = DateUtils.getCurrentISOTime();
+      const newDonateId = await generateGitHashBrowser(createISOTime);
+
+      console.log("newDonateId: ", newDonateId);
 
       const newDonate = {
         id: Math.max(...allDonates.value.map((d) => d.id), 0) + 1,
         name: donateData.name,
         registrationId: donateData.registrationId || -1,
-        donateId: generateGitHash(createISOTime),
+        donateId: newDonateId,
         donateType: donateData.donateType || "",
         donateItems: [
           {
-            donateItemsId: generateGitHash(createISOTime + donateData.name),
+            donateItemsId: await generateGitHashBrowser(
+              createISOTime + donateData.name
+            ),
             price: donateData.amount,
             months: donateData.selectedMonths || [],
             createdAt: createISOTime,
@@ -1000,8 +1005,12 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       const exDonate = allDonates.value[exDonateIndex];
 
+      const newDonateItemsId = await generateGitHashBrowser(
+        createISOTime + exDonate.name
+      );
+
       const newDonateItem = {
-        donateItemsId: generateGitHash(createISOTime + exDonate.name),
+        donateItemsId: newDonateItemsId,
         price: itemData.amount || itemData.price || 0,
         months: itemData.selectedMonths || itemData.months || [],
         createdAt: createISOTime,
@@ -1032,13 +1041,6 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // Directus 模式：調用 API
-      // const result = await monthlyDonateService.addDonateItem(exDonate.id, {
-      //   ...itemData,
-      //   donateItemsId: newDonateItem.donateItemsId,
-      //   price: newDonateItem.price,
-      //   months: newDonateItem.months,
-      // });
-
       // 更新本地數據
       exDonate.donateItems.push(newDonateItem);
       exDonate.updatedAt = createISOTime;
@@ -1046,15 +1048,17 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       exDonate.memo = itemData.memo || exDonate.memo;
 
       // 更新贊助記錄備註
-      const resultMonthlyDonate =
-        await monthlyDonateService.updateMonthlyDonate(exDonate.id, exDonate);
-      if (resultMonthlyDonate.success) {
-        allDonates.value[exDonateIndex] = resultMonthlyDonate.data;
+      const result = await monthlyDonateService.updateMonthlyDonate(
+        exDonate.id,
+        exDonate
+      );
+      if (result.success) {
+        //更新store資料
+        allDonates.value[exDonateIndex] = result.data;
       }
 
-      console.log(
-        `✅ 成功新增贊助項目，目前贊助項目數量：${exDonate.newDonateItem.length}，${exDonate.id}`
-      );
+      //console.log(`✅ 成功新增贊助項目：${exDonate.donateItems.length}`);
+      console.log(`✅ 成功新增贊助項目：${result.data}`);
       return result;
     } catch (err) {
       error.value = err.message;

@@ -1,6 +1,6 @@
 // src/services/activitiesService.js
 import { baseService, getApiUrl } from "./baseService.js";
-import { generateGitHash } from "../utils/generateGitHash.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
 export class ActivityService {
@@ -22,12 +22,6 @@ export class ActivityService {
 
     const result = await response.json();
     return result.data;
-  }
-
-  // ========== 生成活動 ID ==========
-  generateActivityId() {
-    const createISOTime = DateUtils.getCurrentISOTime();
-    return generateGitHash(createISOTime);
   }
 
   // ========== CRUD 操作 ==========
@@ -68,9 +62,10 @@ export class ActivityService {
       }
       console.log("✅ Directus 服務健康檢查通過");
 
+      const activityId = await generateGitHashBrowser(createISOTime);
       // 準備提交數據
       const processedData = {
-        activityId: this.generateActivityId(),
+        activityId: activityId,
         name: activityData.name || "",
         item_type: activityData.item_type || "ceremony",
         participants: activityData.participants || 0,

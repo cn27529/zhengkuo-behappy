@@ -3,7 +3,7 @@
 // 🔄 重構重點：實現 registrationForm 和 formArray[currentFormIndex] 的雙向實時同步
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
-import { generateGitHash } from "../utils/generateGitHash.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
 import { baseService } from "../services/baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
@@ -788,8 +788,9 @@ export const useRegistrationStore = defineStore("registration", () => {
 
     try {
       const createISOTime = DateUtils.getCurrentISOTime();
+      const newFormId = await generateGitHashBrowser(createISOTime);
       registrationForm.value.createdUser = getCurrentUser();
-      registrationForm.value.formId = generateGitHash(createISOTime);
+      registrationForm.value.formId = newFormId;
       registrationForm.value.createdAt = createISOTime;
       registrationForm.value.state = "submitted";
 

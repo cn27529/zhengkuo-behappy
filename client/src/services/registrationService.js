@@ -1,6 +1,6 @@
 // src/services/registrationService.js
 import { baseService, getApiUrl } from "../services/baseService.js";
-import { generateGitHash } from "../utils/generateGitHash.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
 export class RegistrationService {
@@ -19,12 +19,6 @@ export class RegistrationService {
 
     const result = await response.json();
     return result.data;
-  }
-
-  // ========== 生成表單 ID ==========
-  generateFormId() {
-    const createISOTime = DateUtils.getCurrentISOTime();
-    return generateGitHash(createISOTime);
   }
 
   // ========== CRUD 操作 ==========
@@ -59,6 +53,7 @@ export class RegistrationService {
       }
       console.log("✅ Directus 服務健康檢查通過");
 
+      const formId = await generateGitHashBrowser(createISOTime);
       // 準備提交數據
       const processedData = {
         state: registrationData.state || "creating",
@@ -67,7 +62,7 @@ export class RegistrationService {
         updatedAt: "",
         updatedUser: registrationData.updatedUser || "system",
         formName: registrationData.formName || "消災超度報名表OnService",
-        formId: registrationData.formId || this.generateFormId(),
+        formId: registrationData.formId || formId,
         formSource: registrationData.formSource || "",
         contact: registrationData.contact || {
           name: "",

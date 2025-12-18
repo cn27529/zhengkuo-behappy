@@ -68,9 +68,9 @@
           <div class="form-group">
             <label>直接使用工具函数</label>
             <pre><code>
-import { generateGitHash } from "../utils/generateGitHash.js"
+import { generateGitHashBrowser } from "../utils/generateGitHash.js"
 
-const hash = generateGitHash()
+const hash = generateGitHashBrowser()
 console.log(hash) // 例如: "{{ currentHash || '4a1c5d6' }}"
             </code></pre>
           </div>
@@ -83,9 +83,9 @@ console.log(hash) // 例如: "{{ currentHash || '4a1c5d6' }}"
           <div class="form-group">
             <label>批量生成</label>
             <pre><code>
-import { generateMultipleHashes } from "../utils/generateGitHash.js"
+import { generateMultipleHashesBrowser } from "../utils/generateGitHash.js"
 
-const hashes = generateMultipleHashes(5)
+const hashes = generateMultipleHashesBrowser(5)
 console.log(hashes) // {{ multipleHashes.length ? `[${multipleHashes.map((hash) => `"${hash}"`).join(', ')}]` : '["4a1c5d6", "8e9f2a1", ...]' }}
             </code></pre>
           </div>
@@ -98,20 +98,20 @@ console.log(hashes) // {{ multipleHashes.length ? `[${multipleHashes.map((hash) 
 <script setup>
 import { ref } from "vue";
 import {
-  generateGitHash,
-  generateMultipleHashes,
+  generateGitHashBrowser,
+  generateMultipleHashesBrowser,
 } from "../utils/generateGitHash.js";
 
 const currentHash = ref("");
 const multipleHashes = ref([]);
 
-const handleGenerateHash = () => {
-  currentHash.value = generateGitHash();
+const handleGenerateHash  = async () => {
+  currentHash.value = await generateGitHashBrowser();
   console.log("生成的哈希:", currentHash.value);
 };
 
-const handleGenerateMultiple = () => {
-  multipleHashes.value = generateMultipleHashes(5);
+const handleGenerateMultiple = async () => {
+  multipleHashes.value = await generateMultipleHashesBrowser(5);
   console.log("生成的多個哈希:", multipleHashes.value);
 };
 

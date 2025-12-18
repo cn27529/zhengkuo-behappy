@@ -1,7 +1,7 @@
 // src/stores/activityStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { generateGitHash } from "../utils/generateGitHash.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { activityService } from "../services/activityService.js";
 import { baseService } from "../services/baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
@@ -413,9 +413,10 @@ export const useActivityStore = defineStore("activity", () => {
 
     try {
       const createISOTime = DateUtils.getCurrentISOTime();
+      const activityId = await generateGitHashBrowser(createISOTime);
       const activity = {
         id: Math.max(...allActivities.value.map((a) => a.id), 0) + 1,
-        activityId: generateGitHash(createISOTime),
+        activityId: activityId,
         ...newActivity,
         item_type: newActivity.item_type,
         participants: newActivity.participants || 0,

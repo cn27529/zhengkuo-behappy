@@ -64,13 +64,13 @@ export class MonthlyDonateService {
    */
   async createMonthlyDonate(donateData) {
     try {
-      const currentTime = DateUtils.getCurrentISOTime();
-      const donateId = DateUtils.getCurrentISOTime(); // 使用時間作為 donateId
+      const createISOTime = DateUtils.getCurrentISOTime();
+      const donateId = await generateGitHashBrowser(createISOTime);
 
       const newDonate = {
         ...donateData,
         donateId,
-        createdAt: currentTime,
+        createdAt: createISOTime,
         createdUser: await this.getCurrentUser(),
         updatedAt: null,
         updatedUser: null,
