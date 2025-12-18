@@ -937,7 +937,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
           },
         ],
         memo: donateData.memo || "",
-        icon: donateData.icon || "💰",
+        //icon: donateData.icon || "💰",
         createdAt: createISOTime,
         createdUser: getCurrentUser(),
         updatedAt: "",

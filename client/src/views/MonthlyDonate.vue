@@ -3,8 +3,10 @@
   <div class="main-content">
     <div class="page-header">
       <h2>每月贊助</h2>
-      <p>管理每月贊助記錄，每月基本單位 <el-tag type="info"
-                size="large">{{ monthlyUnitPrice }}</el-tag> 元</p>
+      <p>
+        管理每月贊助記錄，每月基本單位
+        <el-tag type="info" size="large">{{ monthlyUnitPrice }}</el-tag> 元
+      </p>
     </div>
 
     <!-- 贊助設定 -->
@@ -473,6 +475,8 @@
               </div>
             </div>
 
+            <!-- 將新增贊助項目 monthColumns 改為 donationMonthColumns -->
+            
             <div class="month-selection-actions">
               <el-button @click="selectAllAvailableMonths" size="small">
                 全選可用月份
@@ -489,6 +493,15 @@
                 {{ newDonateItem.selectedMonths.length }} 個月×
                 {{ monthlyUnitPrice }} 元
               </el-tag>
+            </div>
+            <div class="month-selection-actions">
+              <el-button
+                @click="toggleExtendedMode"
+                :type="isExtendedMode ? 'success' : 'primary'"
+                size="small"
+              >
+                {{ isExtendedMode ? "取消擴展" : "擴展月份" }}
+              </el-button>
             </div>
 
             <div class="selection-info"></div>
@@ -540,7 +553,6 @@
       <div v-if="selectedDonator" class="donator-detail">
         <div class="detail-header">
           <div class="donator-info">
-            
             <span class="donator-icon"></span>
             <h3></h3>
             <el-tag v-if="selectedDonator.registrationId > 0">
@@ -757,10 +769,36 @@ const settings = reactive({
   monthlyUnitPrice: monthlyUnitPrice.value,
 });
 
+// 擴展月份功能 - 清空版本
+const isExtendedMode = ref(false);
+const extendedFutureMonths = ref(24); // 擴展2年
+
 // 將新增贊助項目 monthColumns 改為 donationMonthColumns，生成24個月份的欄位
-const donationMonthColumns = computed(() => {  
-  return monthlyDonateStore.generateStandardMonthRange(0, 24);
+const donationMonthColumns = computed(() => {
+  return monthlyDonateStore.generateStandardMonthRange(
+    0,
+    isExtendedMode.value ? extendedFutureMonths.value : 12
+  );
 });
+
+// 切換擴展月份（每次切換都清空選擇）
+const toggleExtendedMode = () => {
+  // 先清空所有選擇
+  newDonateItem.selectedMonths = [];
+  newDonateItem.amount = 0;
+
+  // 切換模式
+  isExtendedMode.value = !isExtendedMode.value;
+
+  // 提示用戶
+  if (isExtendedMode.value) {
+    ElMessage.success(
+      `已擴展顯示未來${extendedFutureMonths.value}個月，請重新選擇月份`
+    );
+  } else {
+    ElMessage.info("已恢復標準月份範圍，請重新選擇月份");
+  }
+};
 
 // 計算屬性：獲取被佔用的月份
 const occupiedMonths = computed(() => {
@@ -1001,9 +1039,9 @@ const handleCurrentChange = (newPage) => {
 };
 
 // 方法：選擇所有可用月份（新增贊助項目）
-const selectAllAvailableMonths = () => {  
+const selectAllAvailableMonths = () => {
   //將新增贊助項目 monthColumns 改為 donationMonthColumns
-  newDonateItem.selectedMonths = donationMonthColumns.value 
+  newDonateItem.selectedMonths = donationMonthColumns.value
     .filter((month) => !isMonthOccupied(month.yearMonth))
     .map((month) => month.yearMonth);
   // 觸發金額計算
@@ -1093,7 +1131,7 @@ const handleAddDonator = async () => {
       registrationId: newDonator.registrationId,
       amount: newDonator.amount,
       selectedMonths: newDonator.selectedMonths,
-      icon: newDonator.icon,
+      //icon: newDonator.icon,
       memo: newDonator.memo,
     };
 
