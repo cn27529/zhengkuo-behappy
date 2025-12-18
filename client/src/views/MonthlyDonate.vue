@@ -3,7 +3,8 @@
   <div class="main-content">
     <div class="page-header">
       <h2>每月贊助</h2>
-      <p>管理每月贊助記錄，每月基本單位：{{ monthlyUnitPrice }}元</p>
+      <p>管理每月贊助記錄，每月基本單位 <el-tag type="info"
+                size="large">{{ monthlyUnitPrice }}</el-tag> 元</p>
     </div>
 
     <!-- 贊助設定 -->
@@ -33,7 +34,7 @@
     </div>
 
     <!-- 統計卡片 -->
-    <div class="stats-cards" style="display: ">
+    <div class="stats-cards" style="display: none">
       <el-card class="stat-card">
         <template #header>
           <div class="stat-header">
@@ -311,7 +312,7 @@
     <el-dialog
       align-center
       v-model="showAddDonatorModal"
-      :title="`新增贊助人 - ${newDonator.name}`"
+      :title="`新增贊助人 - 👤${newDonator.name}`"
       width="700px"
       :before-close="closeModal"
     >
@@ -429,7 +430,7 @@
     <el-dialog
       align-center
       v-model="showAddDonateItemModal"
-      :title="`新增贊助項目 - ${selectedDonator?.name}`"
+      :title="`新增贊助項目 - 👤${selectedDonator?.name}`"
       width="700px"
       :before-close="closeModal"
     >
@@ -442,8 +443,9 @@
         <el-form-item label="選擇月份" prop="selectedMonths" required>
           <div class="month-selection">
             <div class="month-list">
+              <!-- 將新增贊助項目 monthColumns 改為 donationMonthColumns -->
               <div
-                v-for="month in monthColumns"
+                v-for="month in donationMonthColumns"
                 :key="month.yearMonth"
                 class="month-checkbox"
                 :class="{ 'disabled-month': isMonthOccupied(month.yearMonth) }"
@@ -531,15 +533,16 @@
     <el-dialog
       align-center
       v-model="showDonatorDetailModal"
-      :title="`贊助人詳情 - ${selectedDonator?.name}`"
+      :title="`贊助人詳情 - 👤${selectedDonator?.name}`"
       width="800px"
       :before-close="closeModal"
     >
       <div v-if="selectedDonator" class="donator-detail">
         <div class="detail-header">
           <div class="donator-info">
-            <span class="donator-icon">{{ selectedDonator.icon }}</span>
-            <h3>{{ selectedDonator.name }}</h3>
+            
+            <span class="donator-icon"></span>
+            <h3></h3>
             <el-tag v-if="selectedDonator.registrationId > 0">
               編號: {{ selectedDonator.registrationId }}
             </el-tag>
@@ -752,6 +755,11 @@ const newDonateItem = reactive({
 const selectedDonator = ref(null);
 const settings = reactive({
   monthlyUnitPrice: monthlyUnitPrice.value,
+});
+
+// 將新增贊助項目 monthColumns 改為 donationMonthColumns，生成24個月份的欄位
+const donationMonthColumns = computed(() => {  
+  return monthlyDonateStore.generateStandardMonthRange(0, 24);
 });
 
 // 計算屬性：獲取被佔用的月份
@@ -993,9 +1001,9 @@ const handleCurrentChange = (newPage) => {
 };
 
 // 方法：選擇所有可用月份（新增贊助項目）
-const selectAllAvailableMonths = () => {
-  // 過濾出未被佔用的月份
-  newDonateItem.selectedMonths = monthColumns.value
+const selectAllAvailableMonths = () => {  
+  //將新增贊助項目 monthColumns 改為 donationMonthColumns
+  newDonateItem.selectedMonths = donationMonthColumns.value 
     .filter((month) => !isMonthOccupied(month.yearMonth))
     .map((month) => month.yearMonth);
   // 觸發金額計算
@@ -1310,7 +1318,8 @@ onMounted(() => {
 }
 
 .stat-icon {
-  font-size: 1.5rem;
+  font-size: 1rem;
+  text-align: center;
 }
 
 .stat-content h3 {
@@ -1481,7 +1490,7 @@ onMounted(() => {
 }
 
 .donator-icon {
-  font-size: 2rem;
+  font-size: 1rem;
 }
 
 .donator-stats {

@@ -75,8 +75,9 @@
           <template #default="{ row }">
             <div>
               <el-tooltip :content="row.formId" placement="top">
-                <div class="form-name">👤</div>
+                <span class="form-icon">👤</span>
               </el-tooltip>
+              <div class="form-name"></div>
             </div>
           </template>
         </el-table-column>
@@ -133,7 +134,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="150" fixed="right" align="center">
+        <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
             <el-tooltip content="編輯表單" placement="top">
               <el-button circle @click="handleEdit(row)" type="primary">
@@ -458,6 +459,12 @@ onMounted(() => {
   flex: 1;
   /* min-width: 300px; */
 }
+
+.form-icon {
+  font-size: 1rem;
+  text-align: center;
+}
+
 /* 表單標籤 */
 .form-name {
   font-weight: 600;

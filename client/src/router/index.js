@@ -20,7 +20,7 @@ const routes = [
     component: () => import("../views/AnimatedNumber.vue"),
   },
   {
-    path: "/monthly-donate",
+    path: "/donate-list",
     title: "每月贊助",
     component: () => import("../views/MonthlyDonate.vue"),
     meta: { requiresAuth: true },
