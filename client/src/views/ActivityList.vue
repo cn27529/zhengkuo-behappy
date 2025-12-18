@@ -121,7 +121,7 @@
       </el-card>
     </div>
 
-    <!-- 活動列表 -->
+    <!-- 查詢列表 -->
     <div class="results-section">
       <!-- Tab 切換 -->
       <el-tabs v-model="selectedTab" @tab-change="handleTabChange">
@@ -172,7 +172,7 @@
               </el-button>
             </div>
 
-            <!-- Element Plus 表格 -->
+            <!-- 查詢列表 -->
             <el-table
               :data="upcomingPaginated"
               style="width: 100%"
@@ -294,6 +294,7 @@
                 background
               />
             </div>
+
           </div>
         </el-tab-pane>
 
@@ -1315,6 +1316,52 @@ onMounted(() => {
   font-size: 0.9rem;
 }
 
+/* Tab 樣式優化 */
+:deep(.el-tabs__nav-wrap) {
+  padding: 0 1.5rem;
+  background: #f8f9fa;
+}
+
+:deep(.el-tabs__header) {
+  margin: 0;
+}
+
+:deep(.el-tabs__content) {
+  padding: 1.5rem 0rem 0rem 0rem;
+}
+
+/* 對話框樣式優化 */
+:deep(.el-dialog) {
+  border-radius: 8px;
+}
+
+:deep(.el-dialog__header) {
+  /* padding: 1.5rem 1.5rem 1rem;*/
+  border-bottom: 1px solid #eee;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 1.25rem;
+  color: #eee;
+}
+
+:deep(.el-dialog__body) {
+  padding: 0.75rem;
+}
+
+:deep(.el-dialog__footer) {
+  /* padding: 1rem 1.5rem 1.5rem;*/
+  border-top: 1px solid #eee;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  /* width: 100%; */
+}
+
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .search-input-group .el-input,
@@ -1375,48 +1422,5 @@ onMounted(() => {
   }
 }
 
-/* Tab 樣式優化 */
-:deep(.el-tabs__nav-wrap) {
-  padding: 0 1.5rem;
-  background: #f8f9fa;
-}
 
-:deep(.el-tabs__header) {
-  margin: 0;
-}
-
-:deep(.el-tabs__content) {
-  padding: 1.5rem 0rem 0rem 0rem;
-}
-
-/* 對話框樣式優化 */
-:deep(.el-dialog) {
-  border-radius: 8px;
-}
-
-:deep(.el-dialog__header) {
-  /* padding: 1.5rem 1.5rem 1rem;*/
-  border-bottom: 1px solid #eee;
-}
-
-:deep(.el-dialog__title) {
-  font-size: 1.25rem;
-  color: #eee;
-}
-
-:deep(.el-dialog__body) {
-  padding: 0.75rem;
-}
-
-:deep(.el-dialog__footer) {
-  /* padding: 1rem 1.5rem 1.5rem;*/
-  border-top: 1px solid #eee;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  /* width: 100%; */
-}
 </style>
