@@ -61,7 +61,7 @@
         <h3>查詢結果 (共 {{ totalItems }} 筆)</h3>
       </div>
 
-      <!-- Element Plus 表格 -->
+      <!-- 查詢列表 -->
       <el-table
         :data="paginatedResults"
         style="width: 100%"

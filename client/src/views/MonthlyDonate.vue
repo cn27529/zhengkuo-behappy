@@ -113,7 +113,6 @@
         </div>
       </el-card>
     </div>
-    
 
     <!-- 查詢列表 -->
     <div class="results-section">
@@ -278,7 +277,6 @@
             background
           />
         </div>
-
       </div>
     </div>
 
@@ -297,10 +295,7 @@
         label-width="120px"
       >
         <el-form-item label="贊助人姓名" prop="name">
-          <el-input
-            v-model="newDonator.name"
-            placeholder="請輸入贊助人姓名"          
-          />
+          <el-input v-model="newDonator.name" placeholder="請輸入贊助人姓名" />
         </el-form-item>
 
         <el-form-item label="登記編號" style="display: none">
@@ -546,8 +541,11 @@
 
         <div class="detail-content">
           <h4>📋 贊助項目列表</h4>
-          <el-table :data="selectedDonator.donateItems" style="width: 100%"
-          max-height="400px">
+          <el-table
+            :data="selectedDonator.donateItems"
+            style="width: 100%"
+            max-height="400px"
+          >
             <el-table-column prop="donateItemsId" label="圖標" width="90">
               <template #default="{ row }">
                 <el-tooltip :content="row.donateItemsId" placement="top">
@@ -598,11 +596,9 @@
               </template>
             </el-table-column>
           </el-table>
-          
         </div>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -615,6 +611,7 @@ import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import IconSelector from "../components/IconSelector.vue";
 import { storeToRefs } from "pinia";
+import { baseService } from "../services/baseService.js";
 
 const monthlyDonateStore = useMonthlyDonateStore();
 
@@ -1076,6 +1073,7 @@ const handleAddDonateItem = async () => {
       memo: newDonateItem.memo,
     };
 
+    // 新增贊助項目
     const result = await monthlyDonateStore.addDonateItem(
       selectedDonator.value.donateId,
       donateData
@@ -1130,25 +1128,32 @@ const deleteDonateItem = async (donator, item) => {
           }
         }
 
-        ElMessage.success("贊助項目刪除成功");
-        // 重新整理詳情視窗
-        //selectedDonator.value = monthlyDonateStore.donateSummary.value.find(
-          //(d) => d.donateId === donator.donateId
-        //);
-
-        // 重新整理詳情視窗 - 從 computed 屬性中找到更新後的贊助人
-        const updatedDonator = donateSummary.value.find(
-          (d) => d.donateId === donator.donateId
+        // 刪除贊助項目
+        const result = await monthlyDonateStore.deleteDonateItem(
+          donate.donateId,
+          item.donateItemsId
         );
-        
-        if (updatedDonator) {
-          selectedDonator.value = updatedDonator;
-        } else {
-          // 如果找不到(可能是最後一個項目被刪除),關閉詳情視窗
-          showDonatorDetailModal.value = false;
-          selectedDonator.value = null;
-        }
 
+        if (result.success) {
+          ElMessage.success("贊助項目刪除成功");
+
+          // 重新整理詳情視窗 - 從 computed 屬性中找到更新後的贊助人
+          const updatedDonator = donateSummary.value.find(
+            (d) => d.donateId === donator.donateId
+          );
+
+          if (updatedDonator) {
+            selectedDonator.value = updatedDonator;
+          } else {
+            // 如果找不到(可能是最後一個項目被刪除),關閉詳情視窗
+            closeModal();
+            selectedDonator.value = null;
+          }
+
+          
+        } else {
+          throw new Error(result.message);
+        }
       }
     }
   } catch (err) {
@@ -1424,7 +1429,6 @@ onMounted(() => {
   gap: 0.25rem;
 }
 
-
 .month-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -1598,7 +1602,6 @@ onMounted(() => {
 
 /* 響應式設計 */
 
-
 @media (max-width: 768px) {
   .search-input-group {
     flex-direction: column;
@@ -1659,6 +1662,4 @@ onMounted(() => {
     display: none;
   }
 }
-
-
 </style>

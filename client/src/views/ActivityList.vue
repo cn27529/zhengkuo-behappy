@@ -162,7 +162,7 @@
 
           <div v-else>
             <div class="results-header">
-              <h3>即將到來的活動 (共 {{ upcomingFiltered.length }} 個)</h3>
+              <h3>查詢結果 (共 {{ upcomingFiltered.length }} 筆)</h3>
               <el-button
                 type="primary"
                 @click="showAddModal = true"
@@ -335,10 +335,9 @@
 
           <div v-else>
             <div class="results-header">
-              <h3>已完成的活動 (共 {{ completedFiltered.length }} 個)</h3>
+              <h3>查詢結果 (共 {{ completedFiltered.length }} 筆)</h3>
             </div>
-
-            <!-- Element Plus 表格 -->
+            <!-- 查詢列表 -->
             <el-table
               :data="completedPaginated"
               style="width: 100%"
