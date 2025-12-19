@@ -10,10 +10,8 @@ import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
-//import { usePageStateStore } from "./pageStateStore.js";
 
 export const useRegistrationStore = defineStore("registration", () => {
-  //const pageStateStore = usePageStateStore();
   const configStore = useConfigStore();
 
   // ✅ 使用 computed 保持響應式
