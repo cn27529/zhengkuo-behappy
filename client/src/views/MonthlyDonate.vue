@@ -1132,9 +1132,23 @@ const deleteDonateItem = async (donator, item) => {
 
         ElMessage.success("贊助項目刪除成功");
         // 重新整理詳情視窗
-        selectedDonator.value = monthlyDonateStore.donateSummary.value.find(
+        //selectedDonator.value = monthlyDonateStore.donateSummary.value.find(
+          //(d) => d.donateId === donator.donateId
+        //);
+
+        // 重新整理詳情視窗 - 從 computed 屬性中找到更新後的贊助人
+        const updatedDonator = donateSummary.value.find(
           (d) => d.donateId === donator.donateId
         );
+        
+        if (updatedDonator) {
+          selectedDonator.value = updatedDonator;
+        } else {
+          // 如果找不到(可能是最後一個項目被刪除),關閉詳情視窗
+          showDonatorDetailModal.value = false;
+          selectedDonator.value = null;
+        }
+
       }
     }
   } catch (err) {
