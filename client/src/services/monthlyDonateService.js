@@ -44,11 +44,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data || [],
+          data: result.data || [],
           message: "成功獲取百元贊助記錄",
         };
       }
@@ -107,11 +107,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data,
+          data: result.data,
           message: "百元贊助記錄創建成功",
         };
       }
@@ -164,11 +164,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data,
+          data: result.data,
           message: "百元贊助記錄更新成功",
         };
       }
@@ -293,11 +293,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const responseData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: responseData.data,
+          data: result.data,
           message: "贊助項目添加成功",
         };
       }
@@ -388,11 +388,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data,
+          data: result.data,
           message: "贊助項目更新成功",
         };
       }
@@ -465,11 +465,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data,
+          data: result.data,
           message: "贊助項目刪除成功",
         };
       }
@@ -523,11 +523,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data,
+          data: result.data,
           message: "成功獲取百元贊助記錄",
         };
       }
@@ -582,11 +582,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data || [],
+          data: result.data || [],
           message: "成功獲取該報名記錄的百元贊助記錄",
         };
       }
@@ -644,11 +644,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data || [],
+          data: result.data || [],
           message: "成功獲取該報名記錄的百元贊助記錄",
         };
       }
@@ -692,11 +692,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const resData = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: resData.data || [],
+          data: result.data || [],
           message: "成功獲取該類型的百元贊助記錄",
         };
       }
