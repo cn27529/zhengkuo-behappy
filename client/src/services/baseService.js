@@ -40,9 +40,9 @@ export class BaseService {
       console.log("伺服器資訊回應狀態:", JSON.stringify(response));
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("伺服器資訊:", data);
-        return data;
+        const result = await response.json();
+        console.log("伺服器資訊:", result);
+        return result;
       } else {
         console.warn("無法取得伺服器資訊");
         return null;

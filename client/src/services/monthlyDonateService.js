@@ -1,6 +1,9 @@
 // src/services/monthlyDonateService.js
 import { baseService, getApiUrl } from "./baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import generateGitHash, {
+  generateGitHashBrowser,
+} from "../utils/generateGitHash.js";
 
 export class MonthlyDonateService {
   // ========== 建構函式 ==========
@@ -41,11 +44,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data || [],
+          data: resData.data || [],
           message: "成功獲取百元贊助記錄",
         };
       }
@@ -104,11 +107,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data,
+          data: resData.data,
           message: "百元贊助記錄創建成功",
         };
       }
@@ -161,11 +164,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data,
+          data: resData.data,
           message: "百元贊助記錄更新成功",
         };
       }
@@ -385,11 +388,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data,
+          data: resData.data,
           message: "贊助項目更新成功",
         };
       }
@@ -406,7 +409,7 @@ export class MonthlyDonateService {
   /**
    * 刪除指定 donateItem
    */
-  async deleteDonateItem(donateId, itemsId) {
+  async deleteDonateItem(recordId, itemsId) {
     try {
       if (baseService.mode !== "directus") {
         // Mock 模式
@@ -417,7 +420,7 @@ export class MonthlyDonateService {
         };
       } else {
         // 先獲取現有的贊助記錄
-        const donateResponse = await this.getMonthlyDonateById(donateId);
+        const donateResponse = await this.getMonthlyDonateById(recordId);
 
         if (!donateResponse.success) {
           return donateResponse;
@@ -449,7 +452,7 @@ export class MonthlyDonateService {
         const headers = await baseService.getAuthHeaders();
         const response = await fetch(
           getApiUrl(
-            `${baseService.apiEndpoints.itemsRegistration}/${donateId}`
+            `${baseService.apiEndpoints.itemsRegistration}/${recordId}`
           ),
           {
             method: "PATCH",
@@ -462,11 +465,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data,
+          data: resData.data,
           message: "贊助項目刪除成功",
         };
       }
@@ -482,7 +485,7 @@ export class MonthlyDonateService {
   /**
    * 根據 ID 獲取單筆百元贊助記錄
    */
-  async getMonthlyDonateById(id) {
+  async getMonthlyDonateById(recordId) {
     try {
       if (baseService.mode !== "directus") {
         // Mock 模式
@@ -490,24 +493,26 @@ export class MonthlyDonateService {
         return {
           success: true,
           data: {
-            id,
+            id: recordId,
             name: "王小明",
             registrationId: -1,
-            donateId: "a8b9c0d",
+            donateId: generateGitHash("mock data"),
             donateType: "",
             donateItems: [],
-            memo: "2025年十二月贊助",
-            createdAt: "2024-10-01T08:00:00.000Z",
-            createdUser: "admin",
-            updatedAt: "",
-            updatedUser: "",
+            memo: "mock data",
+            createdAt: "1911-11-11T08:00:00.000Z",
+            createdUser: "mock user",
+            updatedAt: "1911-11-11T08:00:00.000Z",
+            updatedUser: "mock user",
           },
           message: "Mock 模式：返回百元贊助記錄",
         };
       } else {
         const headers = await baseService.getAuthHeaders();
         const response = await fetch(
-          getApiUrl(`${baseService.apiEndpoints.itemsMonthlyDonate}/${id}`),
+          getApiUrl(
+            `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
+          ),
           {
             method: "GET",
             headers: headers,
@@ -518,11 +523,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data,
+          data: resData.data,
           message: "成功獲取百元贊助記錄",
         };
       }
@@ -577,11 +582,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data || [],
+          data: resData.data || [],
           message: "成功獲取該報名記錄的百元贊助記錄",
         };
       }
@@ -639,11 +644,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data || [],
+          data: resData.data || [],
           message: "成功獲取該報名記錄的百元贊助記錄",
         };
       }
@@ -687,11 +692,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const resData = await response.json();
 
         return {
           success: true,
-          data: data.data || [],
+          data: resData.data || [],
           message: "成功獲取該類型的百元贊助記錄",
         };
       }
@@ -739,11 +744,11 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const result = await response.json();
 
         return {
           success: true,
-          data: data.data || [],
+          data: result.data || [],
           message: "成功獲取百元贊助統計",
         };
       }

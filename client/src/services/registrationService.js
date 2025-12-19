@@ -257,9 +257,9 @@ export class RegistrationService {
       console.log("測試響應狀態:", response.status);
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("✅ 簡單查詢成功:", data);
-        return { success: true, data: data };
+        const result = await response.json();
+        console.log("✅ 簡單查詢成功:", result);
+        return { success: true, data: result.data };
       } else {
         const errorText = await response.text();
         console.error("❌ 簡單查詢失敗:", errorText);
