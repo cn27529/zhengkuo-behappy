@@ -12,6 +12,11 @@ export class AuthService {
     );
   }
 
+  // ========== 通用方法 ==========
+  async handleDirectusResponse(response) {
+    return await baseService.handleDirectusResponse(response);
+  }
+
   async login(username, password) {
     console.log(`登入請求 - 模式: ${baseService.mode}, 用戶: ${username}`);
 

@@ -11,6 +11,12 @@ export class MonthlyDonateService {
     console.log(`MonthlyDonateService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
+  // ========== 通用方法 ==========
+
+  async handleDirectusResponse(response) {
+    return await baseService.handleDirectusResponse(response);
+  }
+
   /**
    * 獲取所有百元贊助記錄
    */
@@ -40,15 +46,11 @@ export class MonthlyDonateService {
           headers: headers,
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data || [],
+          ...result,
+          data: result ? result.data : [],
           message: "成功獲取百元贊助記錄",
         };
       }
@@ -74,9 +76,8 @@ export class MonthlyDonateService {
         ...donateData,
         donateId,
         createdAt: createISOTime,
-        createdUser: await this.getCurrentUser(),
-        updatedAt: null,
-        updatedUser: null,
+        updatedAt: "",
+        updatedUser: "",
       };
 
       if (baseService.mode !== "directus") {
@@ -103,15 +104,11 @@ export class MonthlyDonateService {
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data,
+          ...result,
+          data: result ? result.data : null,
           message: "百元贊助記錄創建成功",
         };
       }
@@ -132,8 +129,6 @@ export class MonthlyDonateService {
     try {
       const updateData = {
         ...donateData,
-        updatedAt: DateUtils.getCurrentISOTime(),
-        updatedUser: await this.getCurrentUser(),
       };
 
       if (baseService.mode !== "directus") {
@@ -164,11 +159,10 @@ export class MonthlyDonateService {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data,
+          ...result,
           message: "百元贊助記錄更新成功",
         };
       }
@@ -236,8 +230,8 @@ export class MonthlyDonateService {
           donateItemsId: DateUtils.getCurrentISOTime(),
           createdAt: DateUtils.getCurrentISOTime(),
           createdUser: "admin",
-          updatedAt: null,
-          updatedUser: null,
+          updatedAt: "",
+          updatedUser: "",
         };
 
         console.warn("⚠️ 當前模式不為 Directus，贊助項目添加成功");
@@ -257,11 +251,7 @@ export class MonthlyDonateService {
         const currentDonate = donateResponse.data;
         const newDonateItem = {
           ...itemData,
-          donateItemsId: DateUtils.getCurrentISOTime(), // 使用時間作為 donateItemsId
-          createdAt: DateUtils.getCurrentISOTime(),
-          createdUser: await this.getCurrentUser(),
-          updatedAt: null,
-          updatedUser: null,
+          donateItemsId: generateGitHash(),
         };
 
         // 添加新項目到 donateItems 數組
@@ -273,8 +263,6 @@ export class MonthlyDonateService {
         // 更新整個贊助記錄
         const updateData = {
           donateItems: updatedDonateItems,
-          updatedAt: DateUtils.getCurrentISOTime(),
-          updatedUser: await this.getCurrentUser(),
         };
 
         const headers = await baseService.getAuthHeaders();
@@ -289,15 +277,10 @@ export class MonthlyDonateService {
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data,
+          ...result,
           message: "贊助項目添加成功",
         };
       }
@@ -314,15 +297,13 @@ export class MonthlyDonateService {
   /**
    * 更新指定 donateItem
    */
-  async updateDonateItem(donateId, donateItemsId, itemData) {
+  async updateDonateItem(recordId, donateItemsId, itemData) {
     try {
       if (baseService.mode !== "directus") {
         // Mock 模式
         const updatedItem = {
           donateItemsId,
           ...itemData,
-          updatedAt: DateUtils.getCurrentISOTime(),
-          updatedUser: "admin",
         };
 
         console.warn("⚠️ 當前模式不為 Directus，贊助項目更新成功");
@@ -333,7 +314,7 @@ export class MonthlyDonateService {
         };
       } else {
         // 先獲取現有的贊助記錄
-        const donateResponse = await this.getMonthlyDonateById(donateId);
+        const donateResponse = await this.getMonthlyDonateById(recordId);
 
         if (!donateResponse.success) {
           return donateResponse;
@@ -359,8 +340,6 @@ export class MonthlyDonateService {
         const updatedItem = {
           ...donateItems[itemIndex],
           ...itemData,
-          updatedAt: DateUtils.getCurrentISOTime(),
-          updatedUser: await this.getCurrentUser(),
         };
 
         donateItems[itemIndex] = updatedItem;
@@ -368,14 +347,12 @@ export class MonthlyDonateService {
         // 更新整個贊助記錄
         const updateData = {
           donateItems: donateItems,
-          updatedAt: DateUtils.getCurrentISOTime(),
-          updatedUser: await this.getCurrentUser(),
         };
 
         const headers = await baseService.getAuthHeaders();
         const response = await fetch(
           getApiUrl(
-            `${baseService.apiEndpoints.itemsRegistration}/${donateId}`
+            `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
           ),
           {
             method: "PATCH",
@@ -384,15 +361,10 @@ export class MonthlyDonateService {
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data,
+          ...result,
           message: "贊助項目更新成功",
         };
       }
@@ -445,14 +417,12 @@ export class MonthlyDonateService {
         // 更新整個贊助記錄
         const updateData = {
           donateItems: donateItems,
-          updatedAt: DateUtils.getCurrentISOTime(),
-          updatedUser: await this.getCurrentUser(),
         };
 
         const headers = await baseService.getAuthHeaders();
         const response = await fetch(
           getApiUrl(
-            `${baseService.apiEndpoints.itemsRegistration}/${recordId}`
+            `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
           ),
           {
             method: "PATCH",
@@ -461,15 +431,10 @@ export class MonthlyDonateService {
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data,
+          ...result,
           message: "贊助項目刪除成功",
         };
       }
@@ -482,6 +447,25 @@ export class MonthlyDonateService {
     }
   }
 
+  /*
+   * 生成 Mock 資料
+   */
+  generateMockData() {
+    return {
+      id: -1,
+      name: "王小明",
+      registrationId: -1,
+      donateId: generateGitHash("mock data"),
+      donateType: "",
+      donateItems: [],
+      memo: "mock data",
+      createdAt: "1911-11-11T08:00:00.000Z",
+      createdUser: "mock user",
+      updatedAt: "1911-11-11T08:00:00.000Z",
+      updatedUser: "mock user",
+    };
+  }
+
   /**
    * 根據 ID 獲取單筆百元贊助記錄
    */
@@ -492,19 +476,7 @@ export class MonthlyDonateService {
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄");
         return {
           success: true,
-          data: {
-            id: recordId,
-            name: "王小明",
-            registrationId: -1,
-            donateId: generateGitHash("mock data"),
-            donateType: "",
-            donateItems: [],
-            memo: "mock data",
-            createdAt: "1911-11-11T08:00:00.000Z",
-            createdUser: "mock user",
-            updatedAt: "1911-11-11T08:00:00.000Z",
-            updatedUser: "mock user",
-          },
+          data: this.generateMockData(),
           message: "Mock 模式：返回百元贊助記錄",
         };
       } else {
@@ -519,15 +491,10 @@ export class MonthlyDonateService {
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data,
+          ...result,
           message: "成功獲取百元贊助記錄",
         };
       }
@@ -541,28 +508,14 @@ export class MonthlyDonateService {
     }
   }
 
-  async getMonthlyDonatesByDonateId(donateId) {
+  async getMonthlyDonateByDonateId(donateId) {
     try {
       if (baseService.mode !== "directus") {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄列表");
         return {
           success: true,
-          data: [
-            {
-              id: 1,
-              name: "王小明",
-              registrationId: -1,
-              donateId: donateId,
-              donateType: "",
-              donateItems: [],
-              memo: "mock mock",
-              createdAt: "2024-10-01T08:00:00.000Z",
-              createdUser: "admin",
-              updatedAt: "",
-              updatedUser: "",
-            },
-          ],
+          data: [this.generateMockData()],
           message: "Mock 模式：返回百元贊助記錄列表",
         };
       } else {
@@ -578,15 +531,10 @@ export class MonthlyDonateService {
           headers: headers,
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data || [],
+          ...result,
           message: "成功獲取該報名記錄的百元贊助記錄",
         };
       }
@@ -603,28 +551,14 @@ export class MonthlyDonateService {
   /**
    * 根據 registrationId 獲取百元贊助記錄
    */
-  async getMonthlyDonatesByRegistrationId(registrationId) {
+  async getMonthlyDonateByRegistrationId(registrationId) {
     try {
       if (baseService.mode !== "directus") {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄列表");
         return {
           success: true,
-          data: [
-            {
-              id: 1,
-              name: "王小明",
-              registrationId,
-              donateId: "a8b9c0d",
-              donateType: "",
-              donateItems: [],
-              memo: "2025年十二月贊助",
-              createdAt: "2024-10-01T08:00:00.000Z",
-              createdUser: "admin",
-              updatedAt: "",
-              updatedUser: "",
-            },
-          ],
+          data: this.generateMockData(),
           message: "Mock 模式：返回百元贊助記錄列表",
         };
       } else {
@@ -640,15 +574,10 @@ export class MonthlyDonateService {
           headers: headers,
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data || [],
+          ...result,
           message: "成功獲取該報名記錄的百元贊助記錄",
         };
       }
@@ -688,15 +617,11 @@ export class MonthlyDonateService {
           headers: headers,
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data || [],
+          ...result,
+          data: result ? result.data : [],
           message: "成功獲取該類型的百元贊助記錄",
         };
       }
@@ -740,15 +665,11 @@ export class MonthlyDonateService {
           headers: headers,
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
+        const result = await this.handleDirectusResponse(response);
 
         return {
-          success: true,
-          data: result.data || [],
+          ...result,
+          data: result ? result.data : [],
           message: "成功獲取百元贊助統計",
         };
       }

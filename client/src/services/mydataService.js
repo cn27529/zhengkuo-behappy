@@ -9,13 +9,7 @@ export class MydataService {
   // ========== 通用方法 ==========
 
   async handleDirectusResponse(response) {
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Directus 錯誤: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.data;
+    return await baseService.handleDirectusResponse(response);
   }
 
   // ========== CRUD 操作 ==========
@@ -63,11 +57,10 @@ export class MydataService {
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功獲取 Mydata 數據",
       };
     } catch (error) {
@@ -94,11 +87,10 @@ export class MydataService {
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功獲取 Mydata 項目",
       };
     } catch (error) {
@@ -145,11 +137,10 @@ export class MydataService {
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功創建 Mydata 項目",
       };
     } catch (error) {
@@ -175,11 +166,10 @@ export class MydataService {
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功更新 Mydata 項目",
       };
     } catch (error) {

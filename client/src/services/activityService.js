@@ -14,14 +14,9 @@ export class ActivityService {
     return await baseService.getAuthHeaders();
   }
 
+  // ========== 通用方法 ==========
   async handleDirectusResponse(response) {
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Directus 錯誤: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.data;
+    return await baseService.handleDirectusResponse(response);
   }
 
   // ========== CRUD 操作 ==========
@@ -89,11 +84,10 @@ export class ActivityService {
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功創建活動",
         activityId: processedData.activityId,
       };
@@ -131,11 +125,10 @@ export class ActivityService {
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功更新活動",
       };
     } catch (error) {
@@ -164,11 +157,10 @@ export class ActivityService {
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功獲取活動",
       };
     } catch (error) {
@@ -219,38 +211,15 @@ export class ActivityService {
       console.log("📡 查詢 URL:", apiUrl);
 
       const headers = await baseService.getAuthHeaders();
-      console.log("🔑 請求頭:", headers);
-
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: headers,
       });
 
-      console.log("📊 響應狀態:", response.status, response.statusText);
-
-      // 詳細的 HTTP 狀態碼處理
-      if (response.status === 403) {
-        const errorText = await response.text();
-        console.error("❌ 403 權限拒絕詳細信息:", errorText);
-        throw new Error(`權限拒絕 (403): ${errorText}`);
-      }
-
-      if (response.status === 401) {
-        throw new Error("未經授權 (401): 請檢查認證令牌");
-      }
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("❌ 響應錯誤數據:", errorData);
-        throw new Error(errorData.message || `HTTP ${response.status} 錯誤`);
-      }
-
-      const data = await this.handleDirectusResponse(response);
-      console.log("✅ 查詢成功，數據數量:", data?.length || 0);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功獲取所有活動",
       };
     } catch (error) {
@@ -279,15 +248,10 @@ export class ActivityService {
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || `Directus 錯誤: ${response.status}`
-        );
-      }
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
+        ...result,
         message: "成功刪除活動",
       };
     } catch (error) {

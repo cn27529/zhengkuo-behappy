@@ -12,13 +12,7 @@ export class RegistrationService {
   // ========== 通用方法 ==========
 
   async handleDirectusResponse(response) {
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Directus 錯誤: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.data;
+    return await baseService.handleDirectusResponse(response);
   }
 
   // ========== CRUD 操作 ==========
@@ -90,14 +84,14 @@ export class RegistrationService {
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功創建報名表",
         formId: processedData.formId,
       };
+
     } catch (error) {
       console.error("創建報名表失敗:", error);
       return this.handleDirectusError(error);
@@ -223,12 +217,10 @@ export class RegistrationService {
         throw new Error(errorData.message || `HTTP ${response.status} 錯誤`);
       }
 
-      const data = await this.handleDirectusResponse(response);
-      console.log("✅ 查詢成功，數據數量:", data?.length || 0);
+      const result = await this.handleDirectusResponse(response);
 
       return {
-        success: true,
-        data: data,
+        ...result,
         message: "成功獲取所有報名表",
       };
     } catch (error) {
@@ -254,17 +246,13 @@ export class RegistrationService {
         headers: headers,
       });
 
-      console.log("測試響應狀態:", response.status);
+      const result = await this.handleDirectusResponse(response);
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log("✅ 簡單查詢成功:", result);
-        return { success: true, data: result.data };
-      } else {
-        const errorText = await response.text();
-        console.error("❌ 簡單查詢失敗:", errorText);
-        return { success: false, error: errorText };
-      }
+      return {
+        ...result,
+        message: "簡單查詢成功",
+      };
+
     } catch (error) {
       console.error("❌ 測試查詢異常:", error);
       return { success: false, error: error.message };
