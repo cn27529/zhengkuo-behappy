@@ -35,16 +35,6 @@
             <el-button @click="handleClear" :disabled="loading" size="large">
               清空
             </el-button>
-
-            <el-button
-              type="success"
-              @click="showAddDonatorModal = true"
-              :disabled="loading"
-              size="large"
-              :icon="Plus"
-            >
-              新增贊助人
-            </el-button>
           </div>
           <p class="search-hint">💡 提示：可搜尋贊助人姓名或備註。</p>
         </div>
@@ -146,6 +136,14 @@
       <div v-else>
         <div class="results-header">
           <h3>贊助人列表 (共 {{ filteredDonates.length }} 人)</h3>
+          <el-button
+            type="primary"
+            @click="showAddDonatorModal = true"
+            :disabled="loading"
+            size="large"
+          >
+            新增贊助人
+          </el-button>
         </div>
 
         <!-- 贊助人列表 -->
@@ -228,7 +226,7 @@
             <el-table-column label="操作" fixed="right" align="center">
               <template #default="{ row }">
                 <div class="action-buttons">
-                  <el-tooltip content="查看詳細" placement="top">
+                  <el-tooltip content="查看贊助項目詳情" placement="top">
                     <el-button
                       circle
                       @click="handleViewDonatorDetail(row)"
@@ -238,7 +236,7 @@
                     </el-button>
                   </el-tooltip>
 
-                  <el-tooltip content="新增贊助" placement="top">
+                  <el-tooltip content="新增贊助項目" placement="top">
                     <el-button
                       circle
                       @click="handleAddDonateToDonator(row)"
@@ -248,7 +246,7 @@
                     </el-button>
                   </el-tooltip>
 
-                  <el-tooltip content="編輯" placement="top">
+                  <el-tooltip content="編輯贊助人" placement="top">
                     <el-button
                       style="display: none"
                       circle
@@ -382,14 +380,16 @@
             🎲 載入 Mock 數據
           </el-button>
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
-          <el-button
-            type="primary"
-            @click="handleAddDonator"
-            :loading="submitting"
-            :disabled="newDonator.selectedMonths.length === 0"
-          >
-            新增贊助人
-          </el-button>
+          <el-tooltip content="新增贊助人" placement="top">
+            <el-button
+              type="primary"
+              @click="handleAddDonator"
+              :loading="submitting"
+              :disabled="newDonator.selectedMonths.length === 0"
+            >
+              新增贊助人
+            </el-button>
+          </el-tooltip>
         </span>
       </template>
     </el-dialog>
@@ -585,6 +585,8 @@
             </el-table-column>
             <el-table-column label="操作" width="120" align="center">
               <template #default="{ row }">
+                <el-tooltip content="刪除贊助項目" placement="top">
+                </el-tooltip>
                 <el-button
                   circle
                   type="danger"
@@ -674,7 +676,26 @@ const donationMonthColumns = computed(() => {
 });
 
 // 切換擴展月份（每次切換都清空選擇）
-const toggleExtendedMode = () => {
+const toggleExtendedMode = async() => {
+  
+  // 如果有已選擇的月份，提示用戶
+  if (newDonateItem.selectedMonths.length > 0) {
+    try {
+      await ElMessageBox.confirm(
+        '切換模式將會清空所有已選擇的月份，確定要繼續嗎？',
+        '確認操作',
+        {
+          confirmButtonText: '確定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      );
+    } catch (cancel) {
+      // 用戶取消操作
+      return;
+    }
+  }
+
   // 先清空所有選擇
   newDonateItem.selectedMonths = [];
   newDonateItem.amount = 0;
@@ -1104,58 +1125,61 @@ const deleteDonateItem = async (donator, item) => {
       }
     );
 
-    // 在 mock 模式下，直接從本地數據刪除
+    // 找到要刪除的贊助項目
     const donate = allDonates.value.find(
       (d) =>
-        d.name === donator.name &&
+        //d.name === donator.name &&
         d.donateItems.some((i) => i.donateItemsId === item.donateItemsId)
     );
 
-    if (donate) {
-      const itemIndex = donate.donateItems.findIndex(
-        (i) => i.donateItemsId === item.donateItemsId
+    const result = await monthlyDonateStore.deleteDonateItem(
+      donate.donateId,
+      item.donateItemsId
+    );
+
+    if (result.success) {
+      ElMessage.success("贊助項目刪除成功");
+
+      // 重新整理詳情視窗 - 從 computed 屬性中找到更新後的贊助人
+      const updatedDonator = donateSummary.value.find(
+        (d) => d.donateId === donator.donateId
       );
-      if (itemIndex !== -1) {
-        donate.donateItems.splice(itemIndex, 1);
 
-        // 如果沒有其他贊助項目，刪除整個贊助記錄
-        if (donate.donateItems.length === 0) {
-          const donateIndex = allDonates.value.findIndex(
-            (d) => d.donateId === donate.donateId
-          );
-          if (donateIndex !== -1) {
-            allDonates.value.splice(donateIndex, 1);
-          }
-        }
-
-        // 刪除贊助項目
-        const result = await monthlyDonateStore.deleteDonateItem(
-          donate.donateId,
-          item.donateItemsId
-        );
-
-        if (result.success) {
-          ElMessage.success("贊助項目刪除成功");
-
-          // 重新整理詳情視窗 - 從 computed 屬性中找到更新後的贊助人
-          const updatedDonator = donateSummary.value.find(
-            (d) => d.donateId === donator.donateId
-          );
-
-          if (updatedDonator) {
-            selectedDonator.value = updatedDonator;
-          } else {
-            // 如果找不到(可能是最後一個項目被刪除),關閉詳情視窗
-            closeModal();
-            selectedDonator.value = null;
-          }
-
-          
-        } else {
-          throw new Error(result.message);
-        }
+      if (updatedDonator) {
+        selectedDonator.value = updatedDonator;
+      } else {
+        // 如果找不到(可能是最後一個項目被刪除),關閉詳情視窗
+        closeModal();
+        selectedDonator.value = null;
       }
+    } else {
+      throw new Error(result.message);
     }
+
+    
+
+    // if (donate) {
+    //   const itemIndex = donate.donateItems.findIndex(
+    //     (i) => i.donateItemsId === item.donateItemsId
+    //   );
+    //   if (itemIndex !== -1) {
+    //     donate.donateItems.splice(itemIndex, 1);
+
+    //     // 如果沒有其他贊助項目，刪除整個贊助記錄
+    //     if (donate.donateItems.length === 0) {
+    //       const donateIndex = allDonates.value.findIndex(
+    //         (d) => d.donateId === donate.donateId
+    //       );
+    //       if (donateIndex !== -1) {
+    //         allDonates.value.splice(donateIndex, 1);
+    //       }
+    //     }
+
+    //   }
+    // }
+
+    
+    
   } catch (err) {
     if (err !== "cancel") {
       ElMessage.error(err.message || "刪除贊助項目失敗");
