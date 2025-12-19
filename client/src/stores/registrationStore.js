@@ -768,13 +768,17 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 獲取用戶信息
   const getCurrentUser = () => {
-    const userInfo = sessionStorage.getItem("auth-user");
-    console.log("獲取到的用戶信息:", userInfo);
-    if (userInfo) {
-      const user = JSON.parse(userInfo);
-      return user.id || user.username || user.displayName || "unknown";
+    try {
+      const userInfo = sessionStorage.getItem("auth-user");
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+        return user.id || user.username || user.displayName || "unknown";
+      }
+      return "anonymous";
+    } catch (error) {
+      console.error("獲取用戶信息失敗:", error);
+      return "anonymous";
     }
-    return "anonymous";
   };
 
   const submitRegistration = async () => {
