@@ -678,7 +678,7 @@ const donationMonthColumns = computed(() => {
 // 切換擴展月份（每次切換都清空選擇）
 const toggleExtendedMode = async() => {
   
-  // 如果有已選擇的月份，提示用戶
+  // 切換模式時，有已選擇的月份，提示用戶
   if (newDonateItem.selectedMonths.length > 0) {
     try {
       await ElMessageBox.confirm(
