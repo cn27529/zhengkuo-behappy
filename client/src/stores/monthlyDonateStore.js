@@ -1156,6 +1156,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
   /**
    * 刪除贊助項目
+   * @param {number} donateId 贊助記錄的 ID
+   * @param {number} itemId 贊助項目的 ID
    */
   const deleteDonateItem = async (donateId, itemId) => {
     loading.value = true;
@@ -1183,9 +1185,9 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         exDonate.donateItems.splice(itemIndex, 1);
 
         // 如果沒有其他贊助項目，刪除整個贊助記錄
-        if (exDonate.donateItems.length === 0) {
-          allDonates.value.splice(exDonateIndex, 1);
-        }
+        // if (exDonate.donateItems.length === 0) {
+        //   allDonates.value.splice(exDonateIndex, 1);
+        // }
 
         exDonate.updatedAt = DateUtils.getCurrentISOTime();
         exDonate.updatedUser = getCurrentUser();
@@ -1207,9 +1209,10 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         // 更新本地數據
         exDonate.donateItems.splice(itemIndex, 1);
 
-        if (exDonate.donateItems.length === 0) {
-          allDonates.value.splice(exDonateIndex, 1);
-        }
+        // 如果沒有其他贊助項目，刪除整個贊助記錄
+        // if (exDonate.donateItems.length === 0) {
+        //   allDonates.value.splice(exDonateIndex, 1);
+        // }
 
         exDonate.updatedAt = DateUtils.getCurrentISOTime();
         exDonate.updatedUser = getCurrentUser();
