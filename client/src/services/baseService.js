@@ -362,6 +362,7 @@ export class BaseService {
     }
   }
 }
+
 export const baseService = new BaseService();
 
 // 獲取完整的 API URL

@@ -6,6 +6,7 @@ import { ref, computed, watch } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { registrationService } from "../services/registrationService.js";
 import { baseService } from "../services/baseService.js";
+import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
@@ -768,17 +769,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 獲取用戶信息
   const getCurrentUser = () => {
-    try {
-      const userInfo = sessionStorage.getItem("auth-user");
-      if (userInfo) {
-        const user = JSON.parse(userInfo);
-        return user.id || user.username || user.displayName || "unknown";
-      }
-      return "anonymous";
-    } catch (error) {
-      console.error("獲取用戶信息失敗:", error);
-      return "anonymous";
-    }
+    return authService.getCurrentUser();
   };
 
   const submitRegistration = async () => {

@@ -829,6 +829,20 @@ export class AuthService {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
     }
   }
+
+  getCurrentUser = () => {
+    try {
+      const userInfo = sessionStorage.getItem("auth-user");
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+        return user.id || user.username || user.displayName || "unknown";
+      }
+      return "anonymous";
+    } catch (error) {
+      console.error("獲取用戶信息失敗:", error);
+      return "anonymous";
+    }
+  };
 }
 
 export const authService = new AuthService();

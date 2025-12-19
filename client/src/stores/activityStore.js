@@ -4,6 +4,7 @@ import { ref, computed } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { activityService } from "../services/activityService.js";
 import { baseService } from "../services/baseService.js";
+import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_activities.json";
 
@@ -396,17 +397,7 @@ export const useActivityStore = defineStore("activity", () => {
 
   // 獲取用戶信息
   const getCurrentUser = () => {
-    try {
-      const userInfo = sessionStorage.getItem("auth-user");
-      if (userInfo) {
-        const user = JSON.parse(userInfo);
-        return user.id || user.username || user.displayName || "unknown";
-      }
-      return "anonymous";
-    } catch (error) {
-      console.error("獲取用戶信息失敗:", error);
-      return "anonymous";
-    }
+    return authService.getCurrentUser();
   };
 
   /**

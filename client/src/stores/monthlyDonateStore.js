@@ -6,6 +6,7 @@ import { baseService } from "../services/baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_monthlyDonates.json";
 import { monthlyDonateService } from "../services/monthlyDonateService.js";
+import { authService } from "../services/authService.js";
 
 export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   // ========== 狀態 ==========
@@ -861,17 +862,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
   // 獲取用戶信息
   const getCurrentUser = () => {
-    try {
-      const userInfo = sessionStorage.getItem("auth-user");
-      if (userInfo) {
-        const user = JSON.parse(userInfo);
-        return user.id || user.username || user.displayName || "unknown";
-      }
-      return "anonymous";
-    } catch (error) {
-      console.error("獲取用戶信息失敗:", error);
-      return "anonymous";
-    }
+    return authService.getCurrentUser();
   };
 
   /**
