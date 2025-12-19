@@ -562,8 +562,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
+<script>
+import { ref, onMounted, computed, nextTick, onUnmounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 import { authService } from "../services/authService";
@@ -571,391 +571,483 @@ import { useRegistrationStore } from "../stores/registrationStore.js";
 import { useConfigStore } from "../stores/configStore.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
 
-// 路由和 store
-const router = useRouter();
-const route = useRoute();
-const pageStateStore = usePageStateStore();
-const configStore = useConfigStore();
-const registrationStore = useRegistrationStore();
+export default {
+  name: "Registration",
+  setup() {
+    const pageStateStore = usePageStateStore();
+    const configStore = useConfigStore();
+    const registrationStore = useRegistrationStore();
+    const submitting = ref(false);
+    const isDev = computed(() => authService.getCurrentDev());
+    const router = useRouter();
+    const route = useRoute();
 
-// 響應式變數
-const submitting = ref(false);
+    // 新增：模式判断
+    const myPageState = computed(() => {
+      const state = pageStateStore.loadPageState("registration");
+      console.log("🔧 myPageState 調試信息:", { state });
 
-// 計算屬性
-const isDev = computed(() => authService.getCurrentDev());
-const myPageState = computed(() => {
-  const state = pageStateStore.loadPageState("registration");
-  console.log("🔧 myPageState 調試信息:", { state });
-  return state;
-});
+      // if (state.isEdit) {
+      //   const propsData = {
+      //     id: state.id,
+      //     formId: state.formId,
+      //     action: state.action,
+      //   };
+      //   //return;
+      //   new Promise((resolve) => {
+      //     registrationStore.loadFormData(propsData).then(() => {
+      //       resolve();
+      //     });
+      //   });
+      //   //await registrationStore.loadFormData(propsData);
+      // }
+      // if (state.isCreate) {
+      //   // 啟動自動同步機制
+      //   registrationStore.resetRegistrationForm(true);
+      //   console.log("[v0] 表單同步已啟動 - 創建模式");
+      // }
 
-const currentFormIndex = computed(() => registrationStore.currentFormIndex);
-const formArray = computed(() => registrationStore.formArray);
-const currentFormSummary = computed(() => registrationStore.currentFormSummary);
-const formSummaries = computed(() => registrationStore.getFormSummaries);
-
-// 表單相關計算屬性
-const registrationForm = computed(() => registrationStore.registrationForm);
-const formConfig = computed(() => configStore.formConfig);
-const validationDetails = computed(() => registrationStore.validationDetails);
-const availableBlessingPersons = computed(() => registrationStore.availableBlessingPersons);
-const currentHouseholdHeadsCount = computed(() => registrationStore.currentHouseholdHeadsCount);
-const householdHeadWarning = computed(() => registrationStore.householdHeadWarning);
-const currentAncestorsCount = computed(() => registrationStore.currentAncestorsCount);
-const ancestorsWarning = computed(() => registrationStore.ancestorsWarning);
-const currentSurvivorsCount = computed(() => registrationStore.currentSurvivorsCount);
-const survivorsWarning = computed(() => registrationStore.survivorsWarning);
-const availableSurvivors = computed(() => registrationStore.availableSurvivors);
-const relationshipOptions = computed(() => configStore.relationshipOptions);
-const zodiacOptions = computed(() => configStore.zodiacOptions);
-
-// 方法定義
-// 載入 Mock 數據
-const handleLoadMockData = async () => {
-  try {
-    const state = myPageState.value;
-    const propsData = {
-      id: state.id,
-      formId: state.formId,
-      action: state.action,
-    };
-    const success = await registrationStore.loadMockData(propsData);
-
-    if (success) {
-      ElMessage.success("Mock 數據載入成功");
-    } else {
-      ElMessage.error("載入 Mock 數據失敗");
-    }
-  } catch (error) {
-    console.error("載入 Mock 數據錯誤:", error);
-    ElMessage.error("載入 Mock 數據時發生錯誤");
-  }
-};
-
-// 表單切換處理
-const handleSwitchForm = async (index) => {
-  console.log("🔧 切換表單調試信息:");
-  console.log("🔄 觸發表單切換至索引:", index);
-
-  if (index === currentFormIndex.value) {
-    console.log("已經是當前表單，不處理");
-    return;
-  }
-
-  const resultIndex = registrationStore.switchForm(index);
-  if (resultIndex >= 0) {
-    await nextTick(); // 等待 DOM 更新
-    ElMessage.success(`已切換到第 ${index + 1} 張表單`);
-  } else {
-    ElMessage.error("切換表單失敗");
-  }
-};
-
-// 刪除表單處理
-const handleDeleteForm = (index) => {
-  console.log("🗑️ 刪除表單調試信息:");
-  console.log("傳入的索引:", index);
-  console.log("當前表單陣列:", formArray.value);
-  console.log("當前表單索引:", currentFormIndex.value);
-
-  if (registrationStore.formArray.length <= 1) {
-    ElMessage.warning("至少需要保留一張表單");
-    return;
-  }
-
-  if (
-    registrationStore.formArray.length >= 2 &&
-    index === currentFormIndex.value
-  ) {
-    ElMessage.warning("編輯中的檔案己經鎖定，請先切換其它表單再做刪除！");
-    return;
-  }
-
-  const formToDelete = registrationStore.formArray[index];
-
-  ElMessageBox.confirm(
-    `確定要刪除「第${index + 1}張表單」嗎？此操作無法復原！`,
-    "確認刪除",
-    {
-      confirmButtonText: "確定刪除",
-      cancelButtonText: "取消",
-      type: "warning",
-    }
-  )
-    .then(() => {
-      console.log("執行刪除，索引:", index);
-      registrationStore.deleteForm(index);
-      ElMessage.success("表單已刪除");
-
-      // 添加刪除後的調試
-      setTimeout(() => {
-        console.log("刪除後的表單陣列:", formArray.value);
-        console.log("刪除後的當前索引:", currentFormIndex.value);
-      }, 100);
-    })
-    .catch(() => {
-      ElMessage.info("已取消刪除操作");
+      return state;
     });
-};
 
-// 狀態文字轉換（Emoji版）
-const getStatusText = (state) => {
-  const statusMap = {
-    creating: "🛠️", // 建立中
-    editing: "✍🏽", // 編輯中
-    saved: "💾", // 已儲存
-    submitted: "✔︎", // 已提交
-  };
-  return statusMap[state] || "❓";
-};
+    onUnmounted(() => {
+      console.log("🗑️ Registration 組件已卸載");
+    });
 
-// 新增表單處理
-const handleAddNewForm = () => {
-  const details = validationDetails.value;
-  if (details && !details.valid) {
-    ElMessage.error(details.messages[0] || "表單驗證失敗，無法新增表單");
-    return;
-  }
+    onMounted(async () => {
+      console.log("🚀 Registration 組件已掛載");
+      await registrationStore.loadConfig();
 
-  const newFormIndex = registrationStore.addNewForm();
-  if (newFormIndex !== -1) {
-    ElMessage.success(`已新增第 ${newFormIndex + 1} 張表單`);
-  } else {
-    ElMessage.error("新增表單失敗");
-  }
-};
+      const state = myPageState.value;
+      const propsData = {
+        id: state.id,
+        formId: state.formId,
+        action: state.action,
+      };
 
-// 複製表單處理
-const handleDuplicateForm = (index) => {
-  registrationStore.duplicateForm(index);
-  ElMessage.success("表單已複製");
-};
-
-// 返回處理
-const handleBack = () => {
-  pageStateStore.clearPageState("registration");
-  router.back();
-};
-
-// 保存修改表單
-const handleUpdateForm = async () => {
-  console.log("🔧 保存修改調試信息:");
-  console.log("當前表單陣列:", formArray.value);
-  console.log("當前表單索引:", currentFormIndex.value);
-
-  const details = validationDetails.value;
-  if (details && !details.valid) {
-    ElMessage.error(details.messages[0] || "表單驗證失敗");
-    return;
-  }
-
-  submitting.value = true;
-  try {
-    const result = await registrationStore.updateFormData();
-    if (result.success) {
-      ElMessage.success(result.message);
-      setTimeout(() => {
-        router.back();
-      }, 1500);
-    } else {
-      ElMessage.error(result.message);
-    }
-  } catch (error) {
-    ElMessage.error("保存修改失敗: " + error.message);
-  } finally {
-    submitting.value = false;
-  }
-};
-
-// 提交表單處理
-const handleSubmitForm = async () => {
-  const details = validationDetails.value;
-  if (details && !details.valid) {
-    ElMessage.error(details.messages[0] || "表單驗證失敗");
-    return;
-  }
-
-  submitting.value = true;
-
-  try {
-    const result = await registrationStore.submitRegistration();
-    console.log("🔧 提交結果調試信息:", JSON.stringify(result));
-
-    if (result.success) {
-      ElMessage.success(result.message);
-    } else {
-      ElMessage.error(result.message);
-    }
-  } catch (error) {
-    ElMessage.error("提交失敗: " + error.message);
-  } finally {
-    submitting.value = false;
-  }
-};
-
-// wrapper: 將聯絡人加入消災人員（呼叫 store）
-const addContactAsBlessing = () => {
-  const response = registrationStore.addContactToBlessing();
-  if (response && response.status) {
-    if (response.status === "ok") {
-      ElMessage.success(response.message);
-    } else if (
-      response.status === "invalid" ||
-      response.status === "warning" ||
-      response.status === "duplicate" ||
-      response.status === "max"
-    ) {
-      ElMessage.warning(response.message);
-    }
-  }
-  return response;
-};
-
-// wrapper: 將聯絡人加入陽上人（呼叫 store）
-const addContactAsSurvivor = () => {
-  const response = registrationStore.addContactToSurvivors();
-  if (response && response.status) {
-    if (response.status === "ok") {
-      ElMessage.success(response.message);
-    } else if (
-      response.status === "invalid" ||
-      response.status === "warning" ||
-      response.status === "duplicate" ||
-      response.status === "max"
-    ) {
-      ElMessage.warning(response.message);
-    }
-  }
-  return response;
-};
-
-// wrapper: 從消災人員載入陽上人（呼叫 store）
-const importFromBlessing = (person) => {
-  const response = registrationStore.importSurvivorFromBlessing(person);
-  if (response && response.status) {
-    if (response.status === "ok") {
-      ElMessage.success(response.message);
-    } else if (
-      response.status === "invalid" ||
-      response.status === "warning" ||
-      response.status === "duplicate" ||
-      response.status === "max"
-    ) {
-      ElMessage.warning(response.message);
-    }
-  }
-  return response;
-};
-
-// 重置表單處理
-const handleResetForm = () => {
-  ElMessageBox.confirm(
-    "確定要清空所有表單資料嗎？此操作無法復原！",
-    "確認清空",
-    {
-      confirmButtonText: "確定清空",
-      cancelButtonText: "取消",
-      type: "warning",
-    }
-  )
-    .then(async () => {
-      console.log("🔄 使用者觸發重置表單");
-      console.log("當前表單:", registrationForm.value);
-
-      const emptyFormId = myPageState.value.isCreate;
-      const success = registrationStore.resetRegistrationForm(emptyFormId);
-
-      if (success) {
-        await nextTick();
-        ElMessage.success("表單已重置");
-
-        setTimeout(() => {
-          document.querySelectorAll("input").forEach((input) => {
-            input.dispatchEvent(new Event("input", { bubbles: true }));
-          });
-        }, 100);
-      } else {
-        ElMessage.error("重置表單失敗");
+      if (state.isEdit) {
+        await registrationStore.loadFormData(propsData);
       }
-    })
-    .catch(() => {
-      ElMessage.info("已取消清空操作");
+      if (state.isCreate) {
+        // 啟動自動同步機制
+        registrationStore.initializeFormArray();
+        console.log("[v0] 表單同步已啟動 - 創建模式");
+      }
     });
+
+    // 載入測試 Mock 數據，進行快速測試
+    const handleLoadMockData = async () => {
+      try {
+        const state = myPageState.value;
+        const propsData = {
+          id: state.id,
+          formId: state.formId,
+          action: state.action,
+        };
+        const success = await registrationStore.loadMockData(propsData);
+
+        if (success) {
+          ElMessage.success("Mock 數據載入成功");
+        } else {
+          ElMessage.error("載入 Mock 數據失敗");
+        }
+      } catch (error) {
+        console.error("載入 Mock 數據錯誤:", error);
+        ElMessage.error("載入 Mock 數據時發生錯誤");
+      }
+    };
+
+    // 🎯 關鍵：添加計算屬性來獲取正確的 currentFormIndex
+    const currentFormIndex = computed(() => registrationStore.currentFormIndex);
+    const formArray = computed(() => registrationStore.formArray);
+    const currentFormSummary = computed(
+      () => registrationStore.currentFormSummary
+    );
+    const formSummaries = computed(() => registrationStore.getFormSummaries);
+
+    // 新增：表單切換處理
+    const handleSwitchForm = async (index) => {
+      console.log("🔧 切換表單調試信息:");
+      console.log("🔄 觸發表單切換至索引:", index);
+
+      if (index === currentFormIndex.value) {
+        console.log("已經是當前表單，不處理");
+        return;
+      }
+
+      const resultIndex = registrationStore.switchForm(index);
+      if (resultIndex >= 0) {
+        await nextTick(); // 等待 DOM 更新
+        ElMessage.success(`已切換到第 ${index + 1} 張表單`);
+      } else {
+        ElMessage.error("切換表單失敗");
+      }
+    };
+
+    // 新增：刪除表單處理
+    const handleDeleteForm = (index) => {
+      console.log("🗑️ 刪除表單調試信息:");
+      console.log("傳入的索引:", index);
+      console.log("當前表單陣列:", formArray.value);
+      console.log("當前表單索引:", currentFormIndex.value);
+
+      if (registrationStore.formArray.length <= 1) {
+        ElMessage.warning("至少需要保留一張表單");
+        return;
+      }
+
+      if (
+        registrationStore.formArray.length >= 2 &&
+        index === currentFormIndex.value
+      ) {
+        ElMessage.warning("編輯中的檔案己經鎖定，請先切換其它表單再做刪除！");
+        return;
+      }
+
+      const formToDelete = registrationStore.formArray[index];
+
+      ElMessageBox.confirm(
+        `確定要刪除「第${index + 1}張表單」嗎？此操作無法復原！`,
+        "確認刪除",
+        {
+          confirmButtonText: "確定刪除",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          console.log("執行刪除，索引:", index);
+          registrationStore.deleteForm(index);
+          ElMessage.success("表單已刪除");
+
+          // 添加刪除後的調試
+          setTimeout(() => {
+            console.log("刪除後的表單陣列:", formArray.value);
+            console.log("刪除後的當前索引:", currentFormIndex.value);
+          }, 100);
+        })
+        .catch(() => {
+          ElMessage.info("已取消刪除操作");
+        });
+    };
+
+    // 新增：狀態文字轉換
+    // const getStatusText = (state) => {
+    //   const statusMap = {
+    //     creating: "建立中",
+    //     editing: "編輯中",
+    //     saved: "已儲存",
+    //     submitted: "已提交",
+    //   };
+    //   return statusMap[state] || state;
+    // };
+
+    // 狀態圖標（Emoji版）轉換
+    const getStatusText = (state) => {
+      const statusMap = {
+        creating: "🛠️", // 建立中
+        editing: "✍🏽", // 編輯中
+        saved: "💾", // 已儲存
+        submitted: "✔︎", // 已提交
+      };
+      return statusMap[state] || "❓";
+    };
+
+    // 新增：複製表單處理
+    const handleDuplicateForm = (index) => {
+      registrationStore.duplicateForm(index);
+      ElMessage.success("表單已複製");
+    };
+
+    // 新增表單處理
+    const handleAddNewForm = () => {
+      const details = registrationStore.validationDetails;
+      if (details && !details.valid) {
+        ElMessage.error(details.messages[0] || "表單驗證失敗，無法新增表單");
+        return;
+      }
+
+      const newFormIndex = registrationStore.addNewForm();
+      if (newFormIndex !== -1) {
+        ElMessage.success(`已新增第 ${newFormIndex + 1} 張表單`);
+      } else {
+        ElMessage.error("新增表單失敗");
+      }
+    };
+
+    const handleBack = () => {
+      pageStateStore.clearPageState("registration");
+
+      // 返回上一頁或指定頁面
+      router.back();
+      // 或者使用 router.push('/registration') 導航到特定頁面
+    };
+
+    // 保存修改表單
+    const handleUpdateForm = async () => {
+      console.log("🔧 保存修改調試信息:");
+      console.log("當前表單陣列:", formArray.value);
+      console.log("當前表單索引:", currentFormIndex.value);
+
+      const details = registrationStore.validationDetails;
+      if (details && !details.valid) {
+        ElMessage.error(details.messages[0] || "表單驗證失敗");
+        return;
+      }
+
+      submitting.value = true;
+      try {
+        const result = await registrationStore.updateFormData();
+        if (result.success) {
+          ElMessage.success(result.message);
+          // 更新成功后返回列表
+          setTimeout(() => {
+            goBack();
+          }, 1500);
+        } else {
+          ElMessage.error(result.message);
+        }
+      } catch (error) {
+        ElMessage.error("保存修改失敗: " + error.message);
+      } finally {
+        submitting.value = false;
+      }
+    };
+
+    // 提交表單處理
+    const handleSubmitForm = async () => {
+      // 先檢查 validationDetails
+      const details = registrationStore.validationDetails;
+      if (details && !details.valid) {
+        // 顯示第一則錯誤為訊息，並同時在畫面上列出所有錯誤
+        ElMessage.error(details.messages[0] || "表單驗證失敗");
+        return;
+      }
+
+      submitting.value = true;
+
+      try {
+        const result = await registrationStore.submitRegistration();
+
+        console.log("🔧 提交結果調試信息:", JSON.stringify(result));
+
+        if (result.success) {
+          ElMessage.success(result.message);
+        } else {
+          ElMessage.error(result.message);
+        }
+
+        console.log(result);
+      } catch (error) {
+        ElMessage.error("提交失敗: " + error.message);
+      } finally {
+        submitting.value = false;
+      }
+    };
+
+    // wrapper: 將聯絡人加入消災人員（呼叫 store）
+    const addContactAsBlessing = () => {
+      const response = registrationStore.addContactToBlessing();
+      if (response && response.status) {
+        if (response.status === "ok") {
+          ElMessage.success(response.message);
+        } else if (
+          response.status === "invalid" ||
+          response.status === "warning" ||
+          response.status === "duplicate" ||
+          response.status === "max"
+        ) {
+          ElMessage.warning(response.message);
+        }
+      }
+      return response;
+    };
+
+    // wrapper: 將聯絡人加入陽上人（呼叫 store）
+    const addContactAsSurvivor = () => {
+      const response = registrationStore.addContactToSurvivors();
+      if (response && response.status) {
+        if (response.status === "ok") {
+          ElMessage.success(response.message);
+        } else if (
+          response.status === "invalid" ||
+          response.status === "warning" ||
+          response.status === "duplicate" ||
+          response.status === "max"
+        ) {
+          ElMessage.warning(response.message);
+        }
+      }
+      return response;
+    };
+
+    // wrapper: 從消災人員載入陽上人（呼叫 store）
+    const importFromBlessing = (person) => {
+      const response = registrationStore.importSurvivorFromBlessing(person);
+      if (response && response.status) {
+        if (response.status === "ok") {
+          ElMessage.success(response.message);
+        } else if (
+          response.status === "invalid" ||
+          response.status === "warning" ||
+          response.status === "duplicate" ||
+          response.status === "max"
+        ) {
+          ElMessage.warning(response.message);
+        }
+      }
+      return response;
+    };
+
+    // 重置表單處理
+    const handleResetForm = () => {
+      ElMessageBox.confirm(
+        "確定要清空所有表單資料嗎？此操作無法復原！",
+        "確認清空",
+        {
+          confirmButtonText: "確定清空",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(async () => {
+          console.log("🔄 使用者觸發重置表單");
+          console.log("當前表單:", registrationStore.registrationForm);
+
+          let fId = registrationStore.registrationForm.formId;
+          let emptyFormId = false;
+          // 如果是創建模式且
+          if (myPageState.value.isCreate) emptyFormId = true;
+          const success = registrationStore.resetRegistrationForm(emptyFormId);
+
+          if (success) {
+            // 使用 nextTick 確保 DOM 更新
+            await nextTick();
+            ElMessage.success("表單已重置");
+
+            // 額外確保：觸發輸入框更新
+            setTimeout(() => {
+              document.querySelectorAll("input").forEach((input) => {
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+              });
+            }, 100);
+          } else {
+            ElMessage.error("重置表單失敗");
+          }
+        })
+        .catch(() => {
+          ElMessage.info("已取消清空操作");
+        });
+    };
+
+    const handlePrintPage = () => {
+      const details = registrationStore.validationDetails;
+      if (details && !details.valid) {
+        // 顯示第一則錯誤為訊息，並同時在畫面上列出所有錯誤
+        ElMessage.error(details.messages[0] || "表單驗證失敗");
+        return;
+      }
+
+      try {
+        const printData = JSON.stringify(registrationStore.registrationForm);
+        const formId = registrationStore.registrationForm.formId;
+
+        if (formId === null || formId === undefined || formId === "") {
+          ElMessage.error("表單尚未提交，無法列印");
+          return;
+        }
+
+        console.log("準備列印數據:", { formId, printData });
+        ElMessage.info(`準備列印表單: ${formId}`);
+
+        // 生成唯一列印 ID
+        //const printId = `print_form_${formId}`;
+        const printId = `print_form_${formId}_${Math.floor(
+          Math.random() * 1000
+        )}`;
+        console.log("列印表單 ID:", printId);
+
+        // 儲存到 sessionStorage
+        sessionStorage.setItem(printId, printData);
+        console.log("儲存列印數據:", {
+          printId,
+          data: JSON.parse(printData),
+        });
+
+        // 開啟列印頁面
+        const printUrl = `${window.location.origin}/print-registration?print_id=${printId}&print_data=${printData}`;
+        console.log("列印頁面URL:", printUrl);
+        //window.open( printUrl, "_blank",  "noopener,noreferrer"); // 安全性最佳實踐
+
+        // 使用 router.push 導航到列印頁面
+        router.push({
+          path: "/print-registration",
+          query: {
+            print_id: printId,
+            print_data: printData,
+          },
+        });
+      } catch (error) {
+        console.error("導航到列印頁面失敗:", error);
+        ElMessage.error("導航到列印頁面失敗");
+      }
+    };
+
+    // 修改後：
+    return {
+      // 本地變數、方法、計算屬性
+      handleSubmitForm,
+      addContactAsBlessing,
+      addContactAsSurvivor,
+      importFromBlessing,
+      handleResetForm,
+      handlePrintPage,
+      handleAddNewForm,
+      handleSwitchForm,
+      handleDeleteForm,
+      handleDuplicateForm,
+      handleBack,
+      handleUpdateForm,
+      getStatusText,
+      handleLoadMockData, // 載入測試 Mock 數據，進行快速測試
+
+      // 計算屬性
+      submitting,
+      currentFormIndex,
+      formArray,
+      currentFormSummary,
+      formSummaries,
+      isDev,
+      myPageState,
+
+      // store 中只暴露需要的屬性和方法，不要使用展開運算符
+      registrationForm: registrationStore.registrationForm,
+      formConfig: configStore.formConfig,
+      validationDetails: registrationStore.validationDetails,
+      // store 中方法
+      addBlessingPerson: registrationStore.addBlessingPerson,
+      removeBlessingPerson: registrationStore.removeBlessingPerson,
+      addAncestor: registrationStore.addAncestor,
+      removeAncestor: registrationStore.removeAncestor,
+      addSurvivor: registrationStore.addSurvivor,
+      removeSurvivor: registrationStore.removeSurvivor,
+      copyBlessingAddress: registrationStore.copyBlessingAddress,
+
+      // store 中其他計算屬性...
+      availableBlessingPersons: registrationStore.availableBlessingPersons,
+      currentHouseholdHeadsCount: registrationStore.currentHouseholdHeadsCount,
+      householdHeadWarning: registrationStore.householdHeadWarning,
+      currentAncestorsCount: registrationStore.currentAncestorsCount,
+      ancestorsWarning: registrationStore.ancestorsWarning,
+      currentSurvivorsCount: registrationStore.currentSurvivorsCount,
+      survivorsWarning: registrationStore.survivorsWarning,
+      availableSurvivors: registrationStore.availableSurvivors,
+      relationshipOptions: configStore.relationshipOptions,
+      zodiacOptions: configStore.zodiacOptions,
+    };
+  },
 };
-
-// 列印頁面處理
-const handlePrintPage = () => {
-  const details = validationDetails.value;
-  if (details && !details.valid) {
-    ElMessage.error(details.messages[0] || "表單驗證失敗");
-    return;
-  }
-
-  try {
-    const printData = JSON.stringify(registrationForm.value);
-    const formId = registrationForm.value.formId;
-
-    if (formId === null || formId === undefined || formId === "") {
-      ElMessage.error("表單尚未提交，無法列印");
-      return;
-    }
-
-    console.log("準備列印數據:", { formId, printData });
-    ElMessage.info(`準備列印表單: ${formId}`);
-
-    const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
-    console.log("列印表單 ID:", printId);
-
-    sessionStorage.setItem(printId, printData);
-
-    router.push({
-      path: "/print-registration",
-      query: {
-        print_id: printId,
-        print_data: printData,
-      },
-    });
-  } catch (error) {
-    console.error("導航到列印頁面失敗:", error);
-    ElMessage.error("導航到列印頁面失敗");
-  }
-};
-
-// store 方法（直接暴露給模板使用）
-const addBlessingPerson = registrationStore.addBlessingPerson;
-const removeBlessingPerson = registrationStore.removeBlessingPerson;
-const addAncestor = registrationStore.addAncestor;
-const removeAncestor = registrationStore.removeAncestor;
-const addSurvivor = registrationStore.addSurvivor;
-const removeSurvivor = registrationStore.removeSurvivor;
-const copyBlessingAddress = registrationStore.copyBlessingAddress;
-
-// 生命週期鉤子
-onUnmounted(() => {
-  console.log("🗑️ Registration 組件已卸載");
-});
-
-onMounted(async () => {
-  console.log("🚀 Registration 組件已掛載");
-  await registrationStore.loadConfig();
-
-  const state = myPageState.value;
-  const propsData = {
-    id: state.id,
-    formId: state.formId,
-    action: state.action,
-  };
-
-  if (state.isEdit) {
-    await registrationStore.loadFormData(propsData);
-  }
-  if (state.isCreate) {
-    registrationStore.initializeFormArray();
-    console.log("[v0] 表單同步已啟動 - 創建模式");
-  }
-});
 </script>
-
 
 <style scoped>
 .print-controls {
