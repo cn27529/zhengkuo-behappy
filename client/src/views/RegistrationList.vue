@@ -147,7 +147,7 @@
               >
             </el-tooltip>
             <el-tooltip content="卡片設計" placement="top">
-              <el-button circle @click="handleCardDesign(row)" type="info">
+              <el-button circle @click="handleCardDesign(row)" type="info" style="display: none;">
                 💳
               </el-button>
             </el-tooltip>
