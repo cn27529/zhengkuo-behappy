@@ -76,7 +76,7 @@ export const useMenuStore = defineStore("menu", () => {
       component: "MonthlyDonate",
       requiredAuth: true,
       order: 7,
-      enabled: false,
+      enabled: true,
     },
     {
       id: 99,

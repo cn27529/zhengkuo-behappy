@@ -502,7 +502,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
           name: donate.name,
           registrationId: donate.registrationId,
           donateId: donate.donateId,
-          icon: donate.icon || "💰",
+          icon: donate.icon || "🈷️",
           memo: donate.memo || "",
           months: monthList.reduce((acc, month) => {
             acc[month] = [];

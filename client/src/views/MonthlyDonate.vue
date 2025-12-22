@@ -647,7 +647,7 @@ const newDonator = reactive({
   registrationId: -1,
   amount: monthlyUnitPrice.value,
   selectedMonths: [],
-  icon: "💰",
+  icon: "🈷️",
   memo: "",
 });
 
@@ -676,18 +676,17 @@ const donationMonthColumns = computed(() => {
 });
 
 // 切換擴展月份（每次切換都清空選擇）
-const toggleExtendedMode = async() => {
-  
+const toggleExtendedMode = async () => {
   // 切換模式時，有已選擇的月份，提示用戶
   if (newDonateItem.selectedMonths.length > 0) {
     try {
       await ElMessageBox.confirm(
-        '切換模式將會清空所有已選擇的月份，確定要繼續嗎？',
-        '確認操作',
+        "切換模式將會清空所有已選擇的月份，確定要繼續嗎？",
+        "確認操作",
         {
-          confirmButtonText: '確定',
-          cancelButtonText: '取消',
-          type: 'warning',
+          confirmButtonText: "確定",
+          cancelButtonText: "取消",
+          type: "warning",
         }
       );
     } catch (cancel) {
@@ -1000,7 +999,7 @@ const closeModal = () => {
     registrationId: -1,
     selectedMonths: [],
     amount: 0,
-    icon: "💰",
+    icon: "🈷️",
     memo: "",
   });
 
@@ -1126,10 +1125,9 @@ const deleteDonateItem = async (donator, item) => {
     );
 
     // 找到要刪除的贊助項目
-    const donate = allDonates.value.find(
-      (d) =>
-        //d.name === donator.name &&
-        d.donateItems.some((i) => i.donateItemsId === item.donateItemsId)
+    const donate = allDonates.value.find((d) =>
+      //d.name === donator.name &&
+      d.donateItems.some((i) => i.donateItemsId === item.donateItemsId)
     );
 
     const result = await monthlyDonateStore.deleteDonateItem(
@@ -1156,8 +1154,6 @@ const deleteDonateItem = async (donator, item) => {
       throw new Error(result.message);
     }
 
-    
-
     // if (donate) {
     //   const itemIndex = donate.donateItems.findIndex(
     //     (i) => i.donateItemsId === item.donateItemsId
@@ -1177,9 +1173,6 @@ const deleteDonateItem = async (donator, item) => {
 
     //   }
     // }
-
-    
-    
   } catch (err) {
     if (err !== "cancel") {
       ElMessage.error(err.message || "刪除贊助項目失敗");
