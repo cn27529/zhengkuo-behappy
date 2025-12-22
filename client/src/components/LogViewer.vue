@@ -1,11 +1,361 @@
-<!-- src/components/LogViewer.vue 增強版 -->
+<template>
+  <div class="main-content">
+    <div class="page-header">
+      <h2>日誌查看器</h2>
+      <p style="display: none">查看和管理系統 API 請求日誌</p>
+    </div>
+
+    <!-- 查詢區 -->
+    <div class="search-section">
+      <div class="search-form">
+        <div class="form-group">
+          <label style="display: none" for="searchQuery">查詢條件</label>
+          <div class="search-input-group">
+            <el-input
+              v-model="filter.search"
+              placeholder="搜尋日誌內容..."
+              @keyup.enter="searchLogs"
+              :disabled="loading"
+              clearable
+              size="large"
+            />
+
+            <el-input
+              v-model="filter.endpoint"
+              placeholder="端點路徑"
+              :disabled="loading"
+              clearable
+              size="large"
+              style="max-width: 200px"
+            />
+
+            <el-select
+              v-model="filter.method"
+              placeholder="請求方法"
+              :disabled="loading"
+              clearable
+              size="large"
+              style="max-width: 150px"
+            >
+              <el-option label="GET" value="GET" />
+              <el-option label="POST" value="POST" />
+              <el-option label="PUT" value="PUT" />
+              <el-option label="PATCH" value="PATCH" />
+              <el-option label="DELETE" value="DELETE" />
+            </el-select>
+
+            <el-input
+              v-model="filter.status"
+              placeholder="狀態碼"
+              :disabled="loading"
+              clearable
+              size="large"
+              style="max-width: 120px"
+            />
+
+            <el-button
+              type="primary"
+              @click="searchLogs"
+              :loading="loading"
+              size="large"
+            >
+              {{ loading ? "查詢中..." : "查詢" }}
+            </el-button>
+
+            <el-button @click="resetFilters" :disabled="loading" size="large">
+              清空
+            </el-button>
+          </div>
+
+          <div class="date-filter-row">
+            <label>日期範圍:</label>
+            <el-date-picker
+              v-model="filter.dateFrom"
+              type="date"
+              placeholder="開始日期"
+              size="large"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              :disabled="loading"
+            />
+            <span>至</span>
+            <el-date-picker
+              v-model="filter.dateTo"
+              type="date"
+              placeholder="結束日期"
+              size="large"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              :disabled="loading"
+            />
+          </div>
+
+          <p class="search-hint">💡 提示: 搜尋關鍵字,系統會自動匹配相關欄位</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 統計卡片 -->
+    <div class="stats-cards">
+      <el-card class="stat-card">
+        <template #header>
+          <div class="stat-header">
+            <span class="stat-icon">📊</span>
+            <span class="stat-title">總日誌數</span>
+          </div>
+        </template>
+        <div class="stat-content">
+          <h3>{{ pagination.total }}</h3>
+        </div>
+      </el-card>
+
+      <el-card class="stat-card">
+        <template #header>
+          <div class="stat-header">
+            <span class="stat-icon">✅</span>
+            <span class="stat-title">成功請求</span>
+          </div>
+        </template>
+        <div class="stat-content">
+          <h3>{{ successCount }}</h3>
+        </div>
+      </el-card>
+
+      <el-card class="stat-card">
+        <template #header>
+          <div class="stat-header">
+            <span class="stat-icon">❌</span>
+            <span class="stat-title">失敗請求</span>
+          </div>
+        </template>
+        <div class="stat-content">
+          <h3>{{ errorCount }}</h3>
+        </div>
+      </el-card>
+
+      <el-card class="stat-card">
+        <template #header>
+          <div class="stat-header">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-title">平均耗時</span>
+          </div>
+        </template>
+        <div class="stat-content">
+          <h3>{{ averageDuration }}ms</h3>
+        </div>
+      </el-card>
+    </div>
+
+    <!-- 查詢列表 -->
+    <div class="results-section">
+      <!-- 載入狀態 -->
+      <div v-if="loading" class="loading-state">
+        <el-result icon="info" title="載入中">
+          <template #extra>
+            <el-button type="primary" :loading="true">載入中</el-button>
+          </template>
+        </el-result>
+      </div>
+
+      <!-- 空狀態 -->
+      <div v-else-if="logs.length === 0" class="no-results">
+        <el-empty description="沒有找到日誌記錄">
+          <el-button type="primary" @click="refreshLogs">重新載入</el-button>
+        </el-empty>
+      </div>
+
+      <!-- 日誌列表 -->
+      <div v-else>
+        <div class="results-header">
+          <h3>查詢結果 (共 {{ pagination.total }} 筆)</h3>
+          <div class="header-actions">
+            <el-button @click="refreshLogs" :icon="Refresh" size="large">
+              刷新
+            </el-button>
+            <el-button
+              @click="clearOldLogs"
+              type="warning"
+              :icon="Delete"
+              size="large"
+            >
+              清理舊日誌
+            </el-button>
+          </div>
+        </div>
+
+        <!-- 日誌表格 -->
+        <el-table
+          :data="logs"
+          style="width: 100%"
+          :default-sort="{ prop: 'timestamp', order: 'descending' }"
+          stripe
+          border
+          :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
+          :row-class-name="getRowClassName"
+        >
+          <el-table-column label="時間" min-width="160" prop="timestamp">
+            <template #default="{ row }">
+              <div class="date-info">
+                <div>{{ formatTime(row.timestamp) }}</div>
+                <div class="time">{{ formatDate(row.timestamp) }}</div>
+              </div>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="方法" min-width="80" align="center">
+            <template #default="{ row }">
+              <el-tag :type="getMethodTagType(row.method)" size="small">
+                {{ row.method }}
+              </el-tag>
+            </template>
+          </el-table-column>
+
+          <el-table-column prop="endpoint" label="端點" min-width="200">
+            <template #default="{ row }">
+              <div class="activity-title">
+                <strong class="font-mono">{{ row.endpoint }}</strong>
+                <div class="activity-desc" v-if="row.context?.service">
+                  {{ row.context.service }} / {{ row.context.operation }}
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="狀態" min-width="80" align="center">
+            <template #default="{ row }">
+              <el-tag :type="getStatusTagType(row.status)" size="small">
+                {{ row.status }}
+              </el-tag>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="耗時" min-width="80" align="center">
+            <template #default="{ row }">
+              <span :class="getDurationClass(row.duration)">
+                {{ row.duration }}ms
+              </span>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            label="操作"
+            width="180"
+            fixed="right"
+            align="center"
+          >
+            <template #default="{ row }">
+              <div class="action-buttons">
+                <el-tooltip content="查看詳情" placement="top">
+                  <el-button circle @click="showLogDetail(row)" type="primary">
+                    👁️
+                  </el-button>
+                </el-tooltip>
+
+                <el-tooltip content="複製ID" placement="top">
+                  <el-button circle @click="copyLogId(row.id)" type="info">
+                    📋
+                  </el-button>
+                </el-tooltip>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- 分頁控件 -->
+        <div class="pagination">
+          <el-pagination
+            v-model:current-page="pagination.currentPage"
+            v-model:page-size="pagination.pageSize"
+            :total="pagination.total"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            background
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- 日誌詳情 Dialog -->
+    <el-dialog
+      v-model="showDetailModal"
+      title="日誌詳情"
+      width="700px"
+      align-center
+    >
+      <el-descriptions v-if="selectedLog" :column="1" border>
+        <el-descriptions-item label="時間">
+          {{ formatFullTime(selectedLog.timestamp) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="端點">
+          <span class="font-mono">{{ selectedLog.endpoint }}</span>
+        </el-descriptions-item>
+        <el-descriptions-item label="方法">
+          <el-tag :type="getMethodTagType(selectedLog.method)">
+            {{ selectedLog.method }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="狀態碼">
+          <el-tag :type="getStatusTagType(selectedLog.status)">
+            {{ selectedLog.status }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="耗時">
+          <span :class="getDurationClass(selectedLog.duration)">
+            {{ selectedLog.duration }}ms
+          </span>
+        </el-descriptions-item>
+        <el-descriptions-item label="服務" v-if="selectedLog.context?.service">
+          {{ selectedLog.context.service }}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="操作"
+          v-if="selectedLog.context?.operation"
+        >
+          {{ selectedLog.context.operation }}
+        </el-descriptions-item>
+        <el-descriptions-item label="錯誤信息" v-if="selectedLog.errorText">
+          <el-alert
+            :title="selectedLog.errorText"
+            type="error"
+            :closable="false"
+          />
+        </el-descriptions-item>
+        <el-descriptions-item label="請求數據" v-if="selectedLog.requestBody">
+          <el-input
+            v-model="requestBodyText"
+            type="textarea"
+            :rows="6"
+            readonly
+          />
+        </el-descriptions-item>
+      </el-descriptions>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showDetailModal = false">關閉</el-button>
+          <el-button type="primary" @click="copyLogId(selectedLog.id)">
+            複製 ID
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { Refresh, Delete } from "@element-plus/icons-vue";
 import { indexedDBLogger } from "../utils/indexedDB.js";
 
 // 響應式數據
 const logs = ref([]);
 const loading = ref(false);
+const showDetailModal = ref(false);
+const selectedLog = ref(null);
+
 const filter = ref({
   endpoint: "",
   status: "",
@@ -20,6 +370,27 @@ const pagination = ref({
   currentPage: 1,
   pageSize: 20,
   total: 0,
+});
+
+// 計算屬性
+const successCount = computed(() => {
+  return logs.value.filter((log) => log.status >= 200 && log.status < 300)
+    .length;
+});
+
+const errorCount = computed(() => {
+  return logs.value.filter((log) => log.status >= 400).length;
+});
+
+const averageDuration = computed(() => {
+  if (logs.value.length === 0) return 0;
+  const total = logs.value.reduce((sum, log) => sum + log.duration, 0);
+  return Math.round(total / logs.value.length);
+});
+
+const requestBodyText = computed(() => {
+  if (!selectedLog.value?.requestBody) return "";
+  return JSON.stringify(selectedLog.value.requestBody, null, 2);
 });
 
 // 初始化
@@ -37,14 +408,7 @@ watch(
   { deep: true }
 );
 
-async function clearOldLogs() {
-  if (confirm("確定要清理30天前的舊日誌嗎？")) {
-    await indexedDBLogger.cleanupOldLogs(30);
-    await loadLogs();
-  }
-}
-
-// 加載日誌
+// 方法
 async function loadLogs() {
   loading.value = true;
   try {
@@ -58,17 +422,17 @@ async function loadLogs() {
     logs.value = allLogs.slice(start, end);
   } catch (error) {
     console.error("加載日誌失敗:", error);
+    ElMessage.error("加載日誌失敗");
   } finally {
     loading.value = false;
   }
 }
 
-// 搜尋
 async function searchLogs() {
   await loadLogs();
+  ElMessage.info(`找到 ${pagination.value.total} 條日誌`);
 }
 
-// 重置過濾器
 function resetFilters() {
   filter.value = {
     endpoint: "",
@@ -78,555 +442,348 @@ function resetFilters() {
     method: "",
     search: "",
   };
+  ElMessage.success("搜尋條件已清空");
 }
 
-// 查看日誌詳情
+function refreshLogs() {
+  loadLogs();
+  ElMessage.success("已刷新日誌列表");
+}
+
+async function clearOldLogs() {
+  try {
+    await ElMessageBox.confirm(
+      "確定要清理30天前的舊日誌嗎？此操作無法復原。",
+      "確認清理",
+      {
+        confirmButtonText: "確定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }
+    );
+
+    await indexedDBLogger.cleanupOldLogs(30);
+    await loadLogs();
+    ElMessage.success("舊日誌清理成功");
+  } catch (err) {
+    if (err !== "cancel") {
+      ElMessage.error("清理日誌失敗");
+    }
+  }
+}
+
 function showLogDetail(log) {
-  const detail = {
-    時間: new Date(log.timestamp).toLocaleString(),
-    端點: log.endpoint,
-    方法: log.method,
-    狀態碼: log.status,
-    耗時: `${log.duration}ms`,
-    服務: log.context?.service || "N/A",
-    操作: log.context?.operation || "N/A",
-  };
-
-  if (log.errorText) {
-    detail["錯誤信息"] = log.errorText;
-  }
-
-  if (log.requestBody) {
-    detail["請求數據"] = JSON.stringify(log.requestBody, null, 2);
-  }
-
-  alert(
-    Object.entries(detail)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join("\n")
-  );
+  selectedLog.value = log;
+  showDetailModal.value = true;
 }
 
-// 複製日誌 ID
 async function copyLogId(id) {
   try {
     await navigator.clipboard.writeText(id);
-    alert("已複製日誌 ID");
+    ElMessage.success("已複製日誌 ID");
   } catch (error) {
     console.error("複製失敗:", error);
+    ElMessage.error("複製失敗");
   }
 }
 
-// 分頁處理
-function changePage(page) {
-  if (
-    page < 1 ||
-    page > Math.ceil(pagination.value.total / pagination.value.pageSize)
-  ) {
-    return;
-  }
-  pagination.value.currentPage = page;
+function handleSizeChange(newSize) {
+  pagination.value.pageSize = newSize;
+  pagination.value.currentPage = 1;
   loadLogs();
 }
 
-// 刷新日誌
-function refreshLogs() {
+function handleCurrentChange(newPage) {
+  pagination.value.currentPage = newPage;
   loadLogs();
 }
 
-// 獲取狀態顏色
-function getStatusColor(status) {
-  if (status >= 200 && status < 300) return "#2ecc71";
-  if (status >= 300 && status < 400) return "#f39c12";
-  if (status >= 400 && status < 500) return "#e74c3c";
-  if (status >= 500) return "#c0392b";
-  return "#7f8c8d";
+// 格式化函數
+function formatTime(timestamp) {
+  return new Date(timestamp).toLocaleTimeString("zh-TW", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 }
 
-// 獲取方法顏色
-function getMethodColor(method) {
-  const colors = {
-    GET: "#3498db",
-    POST: "#2ecc71",
-    PUT: "#f39c12",
-    PATCH: "#f1c40f",
-    DELETE: "#e74c3c",
-    OPTIONS: "#95a5a6",
-    HEAD: "#9b59b6",
+function formatDate(timestamp) {
+  return new Date(timestamp).toLocaleDateString("zh-TW");
+}
+
+function formatFullTime(timestamp) {
+  return new Date(timestamp).toLocaleString("zh-TW");
+}
+
+// 樣式函數
+function getRowClassName({ row }) {
+  return row.status >= 400 ? "error-row" : "";
+}
+
+function getMethodTagType(method) {
+  const typeMap = {
+    GET: "primary",
+    POST: "success",
+    PUT: "warning",
+    PATCH: "warning",
+    DELETE: "danger",
   };
-  return colors[method?.toUpperCase()] || "#7f8c8d";
+  return typeMap[method?.toUpperCase()] || "";
+}
+
+function getStatusTagType(status) {
+  if (status >= 200 && status < 300) return "success";
+  if (status >= 300 && status < 400) return "warning";
+  if (status >= 400 && status < 500) return "danger";
+  if (status >= 500) return "danger";
+  return "";
+}
+
+function getDurationClass(duration) {
+  if (duration < 500) return "duration-fast";
+  if (duration < 1000) return "duration-medium";
+  return "duration-slow";
 }
 </script>
 
-<template>
-  <div class="log-viewer-enhanced">
-    <!-- 過濾器 -->
-    <div class="filter-section">
-      <div class="filter-grid">
-        <input
-          v-model="filter.endpoint"
-          placeholder="端點"
-          class="filter-input"
-        />
-        <input
-          v-model="filter.status"
-          placeholder="狀態碼"
-          class="filter-input"
-        />
-        <input
-          v-model="filter.method"
-          placeholder="方法"
-          class="filter-input"
-        />
-        <input
-          v-model="filter.search"
-          placeholder="搜尋..."
-          class="filter-input"
-        />
-      </div>
-      <div class="date-filter">
-        <label>從:</label>
-        <input v-model="filter.dateFrom" type="date" class="date-input" />
-        <label>到:</label>
-        <input v-model="filter.dateTo" type="date" class="date-input" />
-      </div>
-      <div class="filter-actions">
-        <button @click="searchLogs" class="btn-search">🔍 搜尋</button>
-        <button @click="resetFilters" class="btn-reset">🔄 重置</button>
-        <button @click="refreshLogs" class="btn-refresh">↻ 刷新</button>
-        <button @click="clearOldLogs" class="btn-reset">清理舊日誌</button>
-      </div>
-    </div>
-
-    <!-- 加載狀態 -->
-    <div v-if="loading" class="loading">
-      <div class="spinner"></div>
-      加載中...
-    </div>
-
-    <!-- 日誌表格 -->
-    <div v-else class="log-table-container">
-      <table class="log-table">
-        <thead>
-          <tr>
-            <th>時間</th>
-            <th>方法</th>
-            <th>端點</th>
-            <th>狀態</th>
-            <th>耗時</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="log in logs"
-            :key="log.id"
-            :class="{ 'error-row': log.status >= 400 }"
-          >
-            <td class="time-cell">
-              {{ new Date(log.timestamp).toLocaleTimeString() }}
-              <div class="date-sub">
-                {{ new Date(log.timestamp).toLocaleDateString() }}
-              </div>
-            </td>
-            <td>
-              <span
-                class="method-badge"
-                :style="{ backgroundColor: getMethodColor(log.method) }"
-              >
-                {{ log.method }}
-              </span>
-            </td>
-            <td class="endpoint-cell">
-              <div class="endpoint-main">{{ log.endpoint }}</div>
-              <div v-if="log.context?.service" class="context-info">
-                {{ log.context.service }} / {{ log.context.operation }}
-              </div>
-            </td>
-            <td>
-              <span
-                class="status-badge"
-                :style="{ backgroundColor: getStatusColor(log.status) }"
-              >
-                {{ log.status }}
-              </span>
-            </td>
-            <td>
-              <span
-                :class="{
-                  'duration-fast': log.duration < 500,
-                  'duration-medium': log.duration >= 500 && log.duration < 1000,
-                  'duration-slow': log.duration >= 1000,
-                }"
-              >
-                {{ log.duration }}ms
-              </span>
-            </td>
-            <td class="action-cell">
-              <button
-                @click="showLogDetail(log)"
-                class="btn-detail"
-                title="查看詳情"
-              >
-                👁️
-              </button>
-              <button
-                @click="copyLogId(log.id)"
-                class="btn-copy"
-                title="複製ID"
-              >
-                📋
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- 空狀態 -->
-      <div v-if="logs.length === 0" class="empty-state">
-        📭 沒有找到日誌記錄
-      </div>
-    </div>
-
-    <!-- 分頁 -->
-    <div v-if="logs.length > 0" class="pagination">
-      <button
-        @click="changePage(pagination.currentPage - 1)"
-        :disabled="pagination.currentPage === 1"
-        class="page-btn"
-      >
-        ← 上一頁
-      </button>
-
-      <span class="page-info">
-        第 {{ pagination.currentPage }} 頁 / 共
-        {{ Math.ceil(pagination.total / pagination.pageSize) }} 頁 (共
-        {{ pagination.total }} 條記錄)
-      </span>
-
-      <button
-        @click="changePage(pagination.currentPage + 1)"
-        :disabled="
-          pagination.currentPage * pagination.pageSize >= pagination.total
-        "
-        class="page-btn"
-      >
-        下一頁 →
-      </button>
-    </div>
-  </div>
-</template>
-
 <style scoped>
-.log-viewer-enhanced {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.filter-section {
-  padding: 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.filter-input {
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
-
-.filter-input:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-.date-filter {
+.search-input-group {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.date-filter label {
-  color: #666;
-  font-size: 14px;
+.search-input-group .el-input {
+  flex: 1;
+  min-width: 200px;
 }
 
-.date-input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.filter-actions {
+.date-filter-row {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
 }
 
-.btn-search,
-.btn-reset,
-.btn-refresh {
-  padding: 10px 20px;
+.date-filter-row label {
+  color: #666;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.search-hint {
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+/* 統計卡片 */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  text-align: center;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.btn-search {
-  background: #3498db;
-  color: white;
+.stat-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--dark-color);
 }
 
-.btn-search:hover {
-  background: #2980b9;
+.stat-icon {
+  font-size: 1.5rem;
 }
 
-.btn-reset {
-  background: #95a5a6;
-  color: white;
+.stat-content h3 {
+  font-size: 2rem;
+  margin: 0;
+  color: var(--primary-color);
 }
 
-.btn-reset:hover {
-  background: #7f8c8d;
+/* 結果區域 */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
 }
 
-.btn-refresh {
-  background: #2ecc71;
-  color: white;
+.results-header h3 {
+  margin: 0;
+  color: #333;
 }
 
-.btn-refresh:hover {
-  background: #27ae60;
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
-.loading {
+/* 活動標題 */
+.activity-title {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px;
+  gap: 0.25rem;
+}
+
+.activity-desc {
+  font-size: 0.75rem;
   color: #666;
 }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 15px;
+/* 日期時間信息 */
+.date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.time {
+  font-size: 0.75rem;
+  color: #666;
 }
 
-.log-table-container {
-  overflow-x: auto;
+/* 操作按鈕 */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
-.log-table {
-  width: 100%;
-  border-collapse: collapse;
+/* 分頁 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0;
 }
 
-.log-table th {
-  background: #2c3e50;
-  color: white;
-  padding: 15px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+/* 狀態提示 */
+.loading-state,
+.no-results {
+  padding: 3rem 1rem;
+  text-align: center;
 }
 
-.log-table td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-}
-
-.log-table tbody tr:hover {
-  background: #f8f9fa;
-}
-
-.error-row {
+/* 錯誤行樣式 */
+:deep(.error-row) {
   background: #fff5f5 !important;
 }
 
-.error-row:hover {
+:deep(.error-row:hover) {
   background: #ffeaea !important;
 }
 
-.time-cell {
-  min-width: 120px;
-}
-
-.date-sub {
-  font-size: 12px;
-  color: #7f8c8d;
-  margin-top: 2px;
-}
-
-.method-badge,
-.status-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 20px;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  text-align: center;
-  min-width: 60px;
-}
-
-.endpoint-cell {
-  max-width: 300px;
-  word-break: break-all;
-}
-
-.endpoint-main {
-  font-family: "Courier New", monospace;
-  font-size: 13px;
-}
-
-.context-info {
-  font-size: 12px;
-  color: #7f8c8d;
-  margin-top: 2px;
-}
-
+/* 耗時樣式 */
 .duration-fast {
-  color: #2ecc71;
+  color: #67c23a;
   font-weight: bold;
 }
 
 .duration-medium {
-  color: #f39c12;
+  color: #e6a23c;
   font-weight: bold;
 }
 
 .duration-slow {
-  color: #e74c3c;
+  color: #f56c6c;
   font-weight: bold;
 }
 
-.action-cell {
+/* 字體樣式 */
+.font-mono {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9rem;
+}
+
+/* 對話框樣式優化 */
+:deep(.el-dialog) {
+  border-radius: 8px;
+}
+
+:deep(.el-dialog__header) {
+  border-bottom: 1px solid #eee;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 1.25rem;
+}
+
+:deep(.el-dialog__body) {
+  padding: 1.5rem;
+}
+
+:deep(.el-dialog__footer) {
+  border-top: 1px solid #eee;
+}
+
+.dialog-footer {
   display: flex;
-  gap: 8px;
-  min-width: 100px;
-}
-
-.btn-detail,
-.btn-copy {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background: #f8f9fa;
-  transition: all 0.2s;
-}
-
-.btn-detail:hover {
-  background: #3498db;
-  color: white;
-}
-
-.btn-copy:hover {
-  background: #2ecc71;
-  color: white;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px;
-  color: #95a5a6;
-  font-size: 16px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  gap: 20px;
-  background: #f8f9fa;
-  border-top: 1px solid #e0e0e0;
-}
-
-.page-btn {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: #3498db;
-  color: white;
-  border-color: #3498db;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-info {
-  color: #666;
-  font-size: 14px;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .filter-grid {
+  .search-input-group .el-input,
+  .search-input-group .el-select {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .stats-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .results-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions .el-button {
+    flex: 1;
+  }
+
+  :deep(.el-table) {
+    font-size: 0.875rem;
+  }
+
+  :deep(.el-table__cell) {
+    padding: 8px 4px;
+  }
+
+  .action-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-cards {
     grid-template-columns: 1fr;
   }
 
-  .log-table {
-    font-size: 12px;
+  :deep(.el-table) {
+    font-size: 0.75rem;
   }
 
-  .log-table th,
-  .log-table td {
-    padding: 8px;
-  }
-
-  .method-badge,
-  .status-badge {
-    min-width: 50px;
-    font-size: 11px;
-    padding: 3px 6px;
-  }
-
-  .pagination {
-    flex-direction: column;
-    gap: 10px;
+  :deep(.el-pagination__sizes),
+  :deep(.el-pagination__jump) {
+    display: none;
   }
 }
 </style>
