@@ -30,17 +30,16 @@ export class MonthlyDonateService {
           ...params,
         }).toString();
 
-        const url = `${getApiUrl(
-          baseService.apiEndpoints.itemsMonthlyDonate
-        )}?${queryParams}`;
-
+        const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+        const apiUrl = `${url}?${queryParams}`;
         const myHeaders = await baseService.getAuthJsonHeaders();
-        const response = await fetch(url, {
+        const response = await fetch(apiUrl, {
           method: "GET",
           headers: myHeaders,
         });
 
-        const result = await baseService.handleDirectusResponse(response,
+        const result = await baseService.handleDirectusResponse(
+          response,
           "成功獲取百元贊助記錄"
         );
         return result;
@@ -86,15 +85,19 @@ export class MonthlyDonateService {
         };
       } else {
         const myHeaders = await baseService.getAuthJsonHeaders();
-        const apiUrl = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+        const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+        const apiUrl = `${url}`;
         const response = await fetch(apiUrl, {
           method: "POST",
           headers: myHeaders,
           body: JSON.stringify(newDonate),
         });
 
-        const result = await baseService.handleDirectusResponse(response, "成功創建百元贊助記錄");
-return result;
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功創建百元贊助記錄"
+        );
+        return result;
       }
     } catch (error) {
       console.error("❌ 創建百元贊助記錄失敗:", error);
@@ -130,21 +133,25 @@ return result;
         };
       } else {
         const myHeaders = await baseService.getAuthJsonHeaders();
-        const apiUrl = getApiUrl(`${baseService.apiEndpoints.itemsMonthlyDonate}/${id}`);
-        const response = await fetch(apiUrl,
-          {
-            method: "PATCH",
-            headers: myHeaders,
-            body: JSON.stringify(updateData),
-          }
-        );
+        const url = `${getApiUrl(
+          baseService.apiEndpoints.itemsMonthlyDonate
+        )}/${id}`;
+        const apiUrl = `${url}`;
+        const response = await fetch(apiUrl, {
+          method: "PATCH",
+          headers: myHeaders,
+          body: JSON.stringify(updateData),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const result = await baseService.handleDirectusResponse(response, "成功更新百元贊助記錄");
-return result;
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功更新百元贊助記錄"
+        );
+        return result;
       }
     } catch (error) {
       console.error("❌ 更新百元贊助記錄失敗:", error);
@@ -170,14 +177,12 @@ return result;
         };
       } else {
         const myHeaders = await baseService.getAuthJsonHeaders();
-        const apiUrl = `${baseService.apiEndpoints.itemsMonthlyDonate}/${id}`);
-        const response = await fetch(
-          getApiUrl(apiUrl,
-          {
-            method: "DELETE",
-            headers: myHeaders,
-          }
-        );
+        const url = `${baseService.apiEndpoints.itemsMonthlyDonate}/${id}`;
+        const apiUrl = `${url}`;
+        const response = await fetch(apiUrl, {
+          method: "DELETE",
+          headers: myHeaders,
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -247,19 +252,21 @@ return result;
         };
 
         const myHeaders = await baseService.getAuthJsonHeaders();
-        const response = await fetch(
-          getApiUrl(
-            `${baseService.apiEndpoints.itemsMonthlyDonate}/${donateId}`
-          ),
-          {
-            method: "PATCH",
-            headers: myHeaders,
-            body: JSON.stringify(updateData),
-          }
+        const url = getApiUrl(
+          `${baseService.apiEndpoints.itemsMonthlyDonate}/${donateId}`
         );
+        const apiUrl = `${url}`;
+        const response = await fetch(apiUrl, {
+          method: "PATCH",
+          headers: myHeaders,
+          body: JSON.stringify(updateData),
+        });
 
-        const result = await baseService.handleDirectusResponse(response, "成功添加贊助項目");
-return result;
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功添加贊助項目"
+        );
+        return result;
       }
     } catch (error) {
       console.error("❌ 添加贊助項目失敗:", error);
@@ -327,19 +334,21 @@ return result;
         };
 
         const myHeaders = await baseService.getAuthJsonHeaders();
-        const response = await fetch(
-          getApiUrl(
-            `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
-          ),
-          {
-            method: "PATCH",
-            headers: myHeaders,
-            body: JSON.stringify(updateData),
-          }
+        const utl = getApiUrl(
+          `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
         );
+        const apiUrl = `${utl}`;
+        const response = await fetch(apiUrl, {
+          method: "PATCH",
+          headers: myHeaders,
+          body: JSON.stringify(updateData),
+        });
 
-        const result = await baseService.handleDirectusResponse(response, "成功更新贊助項目");
-return result;
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功更新贊助項目"
+        );
+        return result;
       }
     } catch (error) {
       console.error("❌ 更新贊助項目失敗:", error);
@@ -393,19 +402,21 @@ return result;
         };
 
         const myHeaders = await baseService.getAuthJsonHeaders();
-        const response = await fetch(
-          getApiUrl(
-            `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
-          ),
-          {
-            method: "PATCH",
-            headers: myHeaders,
-            body: JSON.stringify(updateData),
-          }
+        const url = getApiUrl(
+          `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
         );
+        const apiUrl = `${url}`;
+        const response = await fetch(apiUrl, {
+          method: "PATCH",
+          headers: myHeaders,
+          body: JSON.stringify(updateData),
+        });
 
-        const result = await baseService.handleDirectusResponse(response, "成功刪除贊助項目");
-return result;
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功刪除贊助項目"
+        );
+        return result;
       }
     } catch (error) {
       console.error("❌ 刪除贊助項目失敗:", error);
@@ -450,18 +461,20 @@ return result;
         };
       } else {
         const myHeaders = await baseService.getAuthJsonHeaders();
-        const response = await fetch(
-          getApiUrl(
-            `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
-          ),
-          {
-            method: "GET",
-            headers: myHeaders,
-          }
-        );
+        const url = `${getApiUrl(
+          baseService.apiEndpoints.itemsMonthlyDonate
+        )}/${recordId}`;
+        const apiUrl = `${url}`;
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: myHeaders,
+        });
 
-        const result = await baseService.handleDirectusResponse(response, "成功獲取百元贊助記錄");
-return result;
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功獲取百元贊助記錄"
+        );
+        return result;
       }
     } catch (error) {
       console.error("❌ 獲取百元贊助記錄失敗:", error);
@@ -497,7 +510,10 @@ return result;
           headers: myHeaders,
         });
 
-        const result = await baseService.handleDirectusResponse(response, "成功獲取百元贊助記錄列表");
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功獲取百元贊助記錄列表"
+        );
         return result;
       }
     } catch (error) {
@@ -536,7 +552,10 @@ return result;
           headers: myHeaders,
         });
 
-        const result = await baseService.handleDirectusResponse(response, "成功獲取百元贊助記錄列表");
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功獲取百元贊助記錄列表"
+        );
         return result;
       }
     } catch (error) {
@@ -575,8 +594,11 @@ return result;
           headers: myHeaders,
         });
 
-        const result = await baseService.handleDirectusResponse(response, "成功獲取百元贊助記錄列表");
-  return result;
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功獲取百元贊助記錄列表"
+        );
+        return result;
       }
     } catch (error) {
       console.error("❌ 獲取百元贊助記錄失敗:", error);
@@ -618,7 +640,10 @@ return result;
           headers: myHeaders,
         });
 
-        const result = await baseService.handleDirectusResponse(response, "成功獲取百元贊助統計");
+        const result = await baseService.handleDirectusResponse(
+          response,
+          "成功獲取百元贊助統計"
+        );
         return result;
       }
     } catch (error) {

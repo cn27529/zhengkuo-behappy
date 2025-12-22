@@ -66,7 +66,8 @@ export class ActivityService {
       };
 
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = getApiUrl(baseService.apiEndpoints.itemsActivity);
+      const url = getApiUrl(baseService.apiEndpoints.itemsActivity);
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: myHeaders,
@@ -105,9 +106,8 @@ export class ActivityService {
       };
 
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = `${getApiUrl(
-        baseService.apiEndpoints.itemsActivity
-      )}/${id}`;
+      const url = `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`;
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "PATCH",
         headers: myHeaders,
@@ -138,9 +138,10 @@ export class ActivityService {
 
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = `${getApiUrl(
+      const url = `${getApiUrl(
         baseService.apiEndpoints.itemsActivity
       )}/${id}?fields=*`;
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
@@ -193,9 +194,8 @@ export class ActivityService {
         queryParams.append("offset", params.offset);
       }
 
-      const apiUrl = `${getApiUrl(
-        baseService.apiEndpoints.itemsActivity
-      )}?${queryParams.toString()}`;
+      const url = getApiUrl(baseService.apiEndpoints.itemsActivity);
+      const apiUrl = `${url}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
       const myHeaders = await baseService.getAuthJsonHeaders();
@@ -228,9 +228,8 @@ export class ActivityService {
 
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = `${getApiUrl(
-        baseService.apiEndpoints.itemsActivity
-      )}/${id}`;
+      const url = `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`;
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: myHeaders,

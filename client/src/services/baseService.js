@@ -214,7 +214,9 @@ export class BaseService {
 
   async serverInfo() {
     try {
-      const response = await fetch(getApiUrl(this.apiEndpoints.serverInfo), {
+      const url = getApiUrl(this.apiEndpoints.serverInfo);
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
         method: "GET",
         timeout: 5000,
       });
@@ -238,7 +240,9 @@ export class BaseService {
   // 檢查伺服器是否在線，返回布林值
   async serverPing() {
     try {
-      const response = await fetch(getApiUrl(this.apiEndpoints.serverPing), {
+      const url = getApiUrl(this.apiEndpoints.serverPing);
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
         method: "GET",
         timeout: 5000,
       });
@@ -270,7 +274,9 @@ export class BaseService {
     }
 
     try {
-      const response = await fetch(getApiUrl(this.apiEndpoints.serverInfo), {
+      const url = getApiUrl(this.apiEndpoints.serverInfo);
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
         method: "GET",
         timeout: 5000,
       });
@@ -301,6 +307,24 @@ export class BaseService {
     }
   }
 
+  async getAccessTokenJsonHeaders() {
+    try {
+      const token = sessionStorage.getItem("auth-token");
+      if (!token) throw new Error("未找到 Token，不存在的 auth-token");
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      console.log("🔑 AuthJsonHeaders 請求標頭:", headers);
+      return headers;
+    } catch (error) {
+      console.error("獲取授權標頭失敗 auth-token:", error);
+      throw error;
+    }
+  }
+
   /**
    * 獲取授權標頭
    */
@@ -314,7 +338,7 @@ export class BaseService {
         Authorization: `Bearer ${token}`,
       };
 
-      console.log("🔑 請求標頭:", headers);
+      console.log("🔑 AuthJsonHeaders 請求標頭:", headers);
       return headers;
     } catch (error) {
       console.error("獲取授權標頭失敗 auth-token:", error);
@@ -334,7 +358,7 @@ export class BaseService {
         Authorization: `Bearer ${token}`,
       };
 
-      console.log("🔑 請求標頭:", headers);
+      console.log("🔑 TokenHeaders 請求標頭:", headers);
       return headers;
     } catch (error) {
       console.error("獲取授權標頭失敗 auth-token:", error);
@@ -355,7 +379,7 @@ export class BaseService {
         "Content-Type": "application/json",
       };
 
-      console.log("🔑 請求標頭:", headers);
+      console.log("🔑 JsonHeaders 請求標頭:", headers);
       return headers;
     } catch (error) {
       console.error("獲取授權標頭失敗 auth-token:", error);

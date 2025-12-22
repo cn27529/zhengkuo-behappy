@@ -41,15 +41,12 @@ export class MydataService {
       }
 
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const response = await fetch(
-        `${getApiUrl(
-          baseService.apiEndpoints.itemsMydata
-        )}?${queryParams.toString()}`,
-        {
-          method: "GET",
-          headers: myHeaders,
-        }
-      );
+      const url = getApiUrl(baseService.apiEndpoints.itemsMydata);
+      const apiUrl = `${url}?${queryParams.toString()}`;
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: myHeaders,
+      });
 
       const result = await baseService.handleDirectusResponse(
         response,
@@ -70,15 +67,14 @@ export class MydataService {
 
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const response = await fetch(
-        `${getApiUrl(
-          baseService.apiEndpoints.itemsMydata
-        )}/${id}?fields=*,contact.*`,
-        {
-          method: "GET",
-          headers: myHeaders,
-        }
-      );
+      const url = `${getApiUrl(
+        baseService.apiEndpoints.itemsMydata
+      )}/${id}?fields=*,contact.*`;
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: myHeaders,
+      });
 
       const result = await baseService.handleDirectusResponse(
         response,
@@ -120,8 +116,9 @@ export class MydataService {
       };
 
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = baseService.apiEndpoints.itemsMydata;
-      const response = await fetch(getApiUrl(apiUrl), {
+      const url = getApiUrl(baseService.apiEndpoints.itemsMydata);
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: myHeaders,
         body: JSON.stringify(processedData),
@@ -146,7 +143,8 @@ export class MydataService {
 
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`;
+      const url = `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`;
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "PATCH",
         headers: myHeaders,
@@ -172,7 +170,8 @@ export class MydataService {
 
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`;
+      const url = `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`;
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: myHeaders,

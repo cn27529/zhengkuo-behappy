@@ -69,7 +69,8 @@ export class RegistrationService {
       };
 
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = getApiUrl(baseService.apiEndpoints.itemsRegistration);
+      const url = getApiUrl(baseService.apiEndpoints.itemsRegistration);
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: myHeaders,
@@ -101,9 +102,10 @@ export class RegistrationService {
       };
 
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = `${getApiUrl(
+      const url = `${getApiUrl(
         baseService.apiEndpoints.itemsRegistration
       )}/${id}`;
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "PATCH",
         headers: myHeaders,
@@ -129,15 +131,14 @@ export class RegistrationService {
 
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const response = await fetch(
-        `${getApiUrl(
-          baseService.apiEndpoints.itemsRegistration
-        )}/${id}?fields=*`,
-        {
-          method: "GET",
-          headers: myHeaders,
-        }
-      );
+      const url = `${getApiUrl(
+        baseService.apiEndpoints.itemsRegistration
+      )}/${id}?fields=*`;
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: myHeaders,
+      });
 
       const result = await baseService.handleDirectusResponse(
         response,
@@ -172,11 +173,9 @@ export class RegistrationService {
         queryParams.append("sort", params.sort);
       }
 
-      const apiUrl = `${getApiUrl(
-        baseService.apiEndpoints.itemsRegistration
-      )}?${queryParams.toString()}`;
+      const url = getApiUrl(baseService.apiEndpoints.itemsRegistration);
+      const apiUrl = `${url}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
-
       const myHeaders = await baseService.getAuthJsonHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",
@@ -219,13 +218,13 @@ export class RegistrationService {
       console.log("🧪 開始簡單查詢測試...");
 
       // 測試 1: 最簡單的查詢
-      const simpleUrl = `${getApiUrl(
+      const url = `${getApiUrl(
         baseService.apiEndpoints.itemsRegistration
       )}?limit=1`;
-      console.log("測試 URL:", simpleUrl);
-
+      const apiUrl = `${url}`;
+      console.log("📡 測試 URL:", apiUrl);
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const response = await fetch(simpleUrl, {
+      const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
       });
@@ -249,9 +248,10 @@ export class RegistrationService {
 
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
-      const apiUrl = `${getApiUrl(
+      const url = `${getApiUrl(
         baseService.apiEndpoints.itemsRegistration
       )}/${id}`;
+      const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: myHeaders,
