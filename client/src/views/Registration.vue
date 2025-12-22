@@ -598,12 +598,22 @@ const formSummaries = computed(() => registrationStore.getFormSummaries);
 const registrationForm = computed(() => registrationStore.registrationForm);
 const formConfig = computed(() => configStore.formConfig);
 const validationDetails = computed(() => registrationStore.validationDetails);
-const availableBlessingPersons = computed(() => registrationStore.availableBlessingPersons);
-const currentHouseholdHeadsCount = computed(() => registrationStore.currentHouseholdHeadsCount);
-const householdHeadWarning = computed(() => registrationStore.householdHeadWarning);
-const currentAncestorsCount = computed(() => registrationStore.currentAncestorsCount);
+const availableBlessingPersons = computed(
+  () => registrationStore.availableBlessingPersons
+);
+const currentHouseholdHeadsCount = computed(
+  () => registrationStore.currentHouseholdHeadsCount
+);
+const householdHeadWarning = computed(
+  () => registrationStore.householdHeadWarning
+);
+const currentAncestorsCount = computed(
+  () => registrationStore.currentAncestorsCount
+);
 const ancestorsWarning = computed(() => registrationStore.ancestorsWarning);
-const currentSurvivorsCount = computed(() => registrationStore.currentSurvivorsCount);
+const currentSurvivorsCount = computed(
+  () => registrationStore.currentSurvivorsCount
+);
 const survivorsWarning = computed(() => registrationStore.survivorsWarning);
 const availableSurvivors = computed(() => registrationStore.availableSurvivors);
 const relationshipOptions = computed(() => configStore.relationshipOptions);
@@ -955,7 +965,6 @@ onMounted(async () => {
   }
 });
 </script>
-
 
 <style scoped>
 .print-controls {
