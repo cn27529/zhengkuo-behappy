@@ -9,16 +9,6 @@ export class ActivityService {
     console.log(`ActivityService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
-  // ========== 通用方法 ==========
-  async getAuthHeaders() {
-    return await baseService.getAuthHeaders();
-  }
-
-  // ========== 通用方法 ==========
-  async handleDirectusResponse(response) {
-    return await baseService.handleDirectusResponse(response);
-  }
-
   // ========== CRUD 操作 ==========
 
   /**
@@ -75,22 +65,20 @@ export class ActivityService {
         updatedUser: "",
       };
 
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.itemsActivity),
-        {
-          method: "POST",
-          headers: await baseService.getAuthHeaders(),
-          body: JSON.stringify(processedData),
-        }
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = getApiUrl(baseService.apiEndpoints.itemsActivity);
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(processedData),
+      });
+
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功創建活動"
       );
-
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功創建活動",
-        activityId: processedData.activityId,
-      };
+      // 現在 result 結構統一，更容易處理
+      return result;
     } catch (error) {
       console.error("創建活動失敗:", error);
       return this.handleDirectusError(error);
@@ -116,21 +104,21 @@ export class ActivityService {
         updatedUser: activityData.updatedUser || "system",
       };
 
-      const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`,
-        {
-          method: "PATCH",
-          headers: await baseService.getAuthHeaders(),
-          body: JSON.stringify(updateData),
-        }
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = `${getApiUrl(
+        baseService.apiEndpoints.itemsActivity
+      )}/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(updateData),
+      });
+
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功更新活動"
       );
-
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功更新活動",
-      };
+      return result;
     } catch (error) {
       console.error(`更新活動 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);
@@ -149,20 +137,20 @@ export class ActivityService {
     }
 
     try {
-      const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}?fields=*`,
-        {
-          method: "GET",
-          headers: await baseService.getAuthHeaders(),
-        }
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = `${getApiUrl(
+        baseService.apiEndpoints.itemsActivity
+      )}/${id}?fields=*`;
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: myHeaders,
+      });
+
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功獲取活動"
       );
-
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功獲取活動",
-      };
+      return result;
     } catch (error) {
       console.error(`獲取活動 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);
@@ -210,18 +198,17 @@ export class ActivityService {
       )}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
-      const headers = await baseService.getAuthHeaders();
+      const myHeaders = await baseService.getAuthJsonHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",
-        headers: headers,
+        headers: myHeaders,
       });
 
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功獲取所有活動",
-      };
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功獲取所有活動"
+      );
+      return result;
     } catch (error) {
       console.error("❌ 獲取活動列表失敗:", error);
       return this.handleDirectusError(error);
@@ -240,20 +227,20 @@ export class ActivityService {
     }
 
     try {
-      const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`,
-        {
-          method: "DELETE",
-          headers: await baseService.getAuthHeaders(),
-        }
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = `${getApiUrl(
+        baseService.apiEndpoints.itemsActivity
+      )}/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: myHeaders,
+      });
+
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功刪除活動"
       );
-
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功刪除活動",
-      };
+      return result;
     } catch (error) {
       console.error(`刪除活動 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);

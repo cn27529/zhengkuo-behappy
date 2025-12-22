@@ -33,182 +33,132 @@ export class BaseService {
   // ========== 通用方法 ==========
 
   /**
-   * 處理 Directus API 回應，加強版
+   * 處理 Directus API 回應，加強版，改進版本的 handleDirectusResponse
    * @param {*} response
    * @param {*} returnMessage
    * @returns
    */
   async handleDirectusResponse(response, returnMessage = null) {
     try {
+      // ========== 錯誤處理 ==========
       if (!response.ok) {
         const errorText = await response.text();
         console.error(
-          `HTTP Directus 錯誤:${response.status}: ${response.statusText}`,
+          `HTTP Directus 錯誤 ${response.status}: ${response.statusText}`,
           errorText
         );
 
-        // 根據不同的狀態碼返回更詳細的錯誤信息
-        switch (response.status) {
-          case 400:
-            throw new Error(
-              `請求錯誤 (400): ${
-                this.extractErrorMessage(errorText) || "無效的請求格式或參數"
-              }`
-            );
+        const errorMessage = this.extractErrorMessage(errorText);
 
-          case 401:
-            throw new Error(
-              `未經授權 (401): ${
-                this.extractErrorMessage(errorText) || "請檢查認證令牌"
-              }`
-            );
+        // 使用映射表簡化錯誤處理
+        const errorMessages = {
+          400: `請求錯誤 (400): ${errorMessage || "無效的請求格式或參數"}`,
+          401: `未經授權 (401): ${errorMessage || "請檢查認證令牌"}`,
+          403: `權限拒絕 (403): ${errorMessage || "您沒有權限訪問此資源"}`,
+          404: `資源不存在 (404): ${errorMessage || "請求的端點或資源不存在"}`,
+          405: `方法不允許 (405): ${errorMessage || "不支援的 HTTP 方法"}`,
+          408: `請求超時 (408): ${errorMessage || "請求處理時間過長"}`,
+          409: `資源衝突 (409): ${errorMessage || "資源狀態衝突，請檢查數據"}`,
+          413: `請求體過大 (413): ${errorMessage || "上傳的資料超過大小限制"}`,
+          422: `數據驗證失敗 (422): ${errorMessage || "請求數據無法處理"}`,
+          429: `請求過於頻繁 (429): ${errorMessage || "請稍後再試"}`,
+          500: `伺服器內部錯誤 (500): ${errorMessage || "伺服器發生錯誤"}`,
+          502: `閘道錯誤 (502): ${errorMessage || "後端服務無回應"}`,
+          503: `服務不可用 (503): ${errorMessage || "服務暫時不可用"}`,
+          504: `閘道超時 (504): ${errorMessage || "請求超時"}`,
+        };
 
-          case 403:
-            throw new Error(
-              `權限拒絕 (403): ${
-                this.extractErrorMessage(errorText) || "您沒有權限訪問此資源"
-              }`
-            );
+        const errorMsg =
+          errorMessages[response.status] ||
+          `HTTP 錯誤 ${response.status}: ${response.statusText || "未知錯誤"}`;
 
-          case 404:
-            throw new Error(
-              `資源不存在 (404): ${
-                this.extractErrorMessage(errorText) || "請求的端點或資源不存在"
-              }`
-            );
-
-          case 405:
-            throw new Error(
-              `方法不允許 (405): ${
-                this.extractErrorMessage(errorText) || "不支援的 HTTP 方法"
-              }`
-            );
-
-          case 408:
-            throw new Error(
-              `請求超時 (408): ${
-                this.extractErrorMessage(errorText) || "請求處理時間過長"
-              }`
-            );
-
-          case 409:
-            throw new Error(
-              `資源衝突 (409): ${
-                this.extractErrorMessage(errorText) ||
-                "資源狀態衝突，請檢查數據"
-              }`
-            );
-
-          case 422:
-            throw new Error(
-              `數據驗證失敗 (422): ${
-                this.extractErrorMessage(errorText) || "請求數據無法處理"
-              }`
-            );
-
-          case 429:
-            throw new Error(
-              `請求過於頻繁 (429): ${
-                this.extractErrorMessage(errorText) || "請稍後再試"
-              }`
-            );
-
-          case 500:
-            throw new Error(
-              `伺服器內部錯誤 (500): ${
-                this.extractErrorMessage(errorText) || "伺服器發生錯誤"
-              }`
-            );
-
-          case 502:
-            throw new Error(
-              `閘道錯誤 (502): ${
-                this.extractErrorMessage(errorText) || "後端服務無回應"
-              }`
-            );
-
-          case 503:
-            throw new Error(
-              `服務不可用 (503): ${
-                this.extractErrorMessage(errorText) || "服務暫時不可用"
-              }`
-            );
-
-          case 504:
-            throw new Error(
-              `閘道超時 (504): ${
-                this.extractErrorMessage(errorText) || "請求超時"
-              }`
-            );
-
-          default:
-            throw new Error(
-              `HTTP 錯誤 ${response.status}: ${
-                response.statusText || "未知錯誤"
-              }`
-            );
-        }
+        throw new Error(errorMsg);
       }
 
-      // 修正：檢查回應是否有內容
-      let result = null;
-      let isArray = false;
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        try {
-          result = await response.json();
-          isArray = Array.isArray(result.data);
-        } catch (error) {
-          console.error("解析 JSON 回應失敗:", error);
-          throw new Error("伺服器返回了無效的 JSON 格式");
-        }
-      } else if (response.status === 204) {
-        // 204 No Content 是正常的
+      // ========== 成功響應處理 ==========
+
+      // 處理 204 No Content
+      if (response.status === 204) {
         return {
           success: true,
           data: null,
-          message: null,
+          message: returnMessage || "操作成功",
+          meta: null,
+          errors: null,
         };
       }
 
-      // 修正：根據 Directus API 的回應模式調整
+      // 檢查 Content-Type
+      const contentType = response.headers.get("content-type");
+
+      // 非 JSON 響應處理
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("回應不是 JSON 格式:", contentType);
+        return {
+          success: true,
+          data: null,
+          message: returnMessage || "操作成功（非 JSON 響應）",
+          meta: null,
+          errors: null,
+        };
+      }
+
+      // 解析 JSON
+      let result;
+      try {
+        result = await response.json();
+      } catch (error) {
+        console.error("解析 JSON 回應失敗:", error);
+        throw new Error("伺服器返回了無效的 JSON 格式");
+      }
+
+      // 返回標準化結果
       return {
         success: true,
-        data: result ? result.data : isArray ? [] : null,
-        message: result ? result.message : returnMessage ? returnMessage : null,
-        meta: result ? result.meta : null, // 如果有分頁信息
-        errors: result ? result.errors : null, // 如果有錯誤信息（非 HTTP 錯誤）
+        data: result?.data ?? null, // 使用 nullish coalescing 更清晰
+        message: result?.message ?? returnMessage ?? null,
+        meta: result?.meta ?? null,
+        errors: result?.errors ?? null,
       };
     } catch (error) {
-      console.error("Directus 回應異常:", error);
+      console.error("Directus 回應處理異常:", error);
       throw error;
     }
   }
 
-  // 新增輔助方法：從錯誤回應中提取錯誤信息
+  // 改進的錯誤信息提取方法
   extractErrorMessage(errorText) {
+    if (!errorText) {
+      return "無詳細錯誤信息";
+    }
+
     try {
-      // 嘗試解析為 JSON
       const errorJson = JSON.parse(errorText);
 
-      // Directus 錯誤格式通常是 { errors: [...] }
-      if (
-        errorJson.errors &&
-        Array.isArray(errorJson.errors) &&
-        errorJson.errors.length > 0
-      ) {
-        return errorJson.errors.map((err) => err.message).join(", ");
+      // Directus 錯誤格式: { errors: [...] }
+      if (Array.isArray(errorJson.errors) && errorJson.errors.length > 0) {
+        return errorJson.errors
+          .map((err) => err.message || err.toString())
+          .join("; "); // 使用分號更清晰
       }
 
-      // 或者直接有 message 字段
+      // 直接的 message 字段
       if (errorJson.message) {
         return errorJson.message;
       }
 
-      return errorText.substring(0, 200); // 限制長度
+      // 其他可能的錯誤字段
+      if (errorJson.error) {
+        return typeof errorJson.error === "string"
+          ? errorJson.error
+          : JSON.stringify(errorJson.error);
+      }
+
+      // 返回整個 JSON（限制長度）
+      return JSON.stringify(errorJson).substring(0, 200);
     } catch {
-      // 如果不是 JSON，返回原始文本的前200個字符
-      return errorText ? errorText.substring(0, 200) : "無詳細錯誤信息";
+      // 不是 JSON，返回原始文本
+      return errorText.substring(0, 200);
     }
   }
 

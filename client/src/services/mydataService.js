@@ -6,12 +6,6 @@ export class MydataService {
     console.log(`MydataService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
-  // ========== 通用方法 ==========
-
-  async handleDirectusResponse(response) {
-    return await baseService.handleDirectusResponse(response);
-  }
-
   // ========== CRUD 操作 ==========
   async getAllMydata(params = {}) {
     if (baseService.mode !== "directus") {
@@ -46,23 +40,22 @@ export class MydataService {
         queryParams.append("offset", params.offset);
       }
 
-      const headers = await baseService.getAuthHeaders();
+      const myHeaders = await baseService.getAuthJsonHeaders();
       const response = await fetch(
         `${getApiUrl(
           baseService.apiEndpoints.itemsMydata
         )}?${queryParams.toString()}`,
         {
           method: "GET",
-          headers: headers,
+          headers: myHeaders,
         }
       );
 
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功獲取 Mydata 數據",
-      };
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功獲取 Mydata 數據"
+      );
+      return result;
     } catch (error) {
       console.error("獲取 Mydata 數據失敗:", error);
       return this.handleDirectusError(error);
@@ -76,23 +69,22 @@ export class MydataService {
     }
 
     try {
-      const headers = await baseService.getAuthHeaders();
+      const myHeaders = await baseService.getAuthJsonHeaders();
       const response = await fetch(
         `${getApiUrl(
           baseService.apiEndpoints.itemsMydata
         )}/${id}?fields=*,contact.*`,
         {
           method: "GET",
-          headers: headers,
+          headers: myHeaders,
         }
       );
 
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功獲取 Mydata 項目",
-      };
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功獲取 Mydata 項目"
+      );
+      return result;
     } catch (error) {
       console.error(`獲取 Mydata 項目 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);
@@ -127,22 +119,19 @@ export class MydataService {
         state: mydataData.state || "draft",
       };
 
-      const headers = await baseService.getAuthHeaders();
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.itemsMydata),
-        {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(processedData),
-        }
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = baseService.apiEndpoints.itemsMydata;
+      const response = await fetch(getApiUrl(apiUrl), {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(processedData),
+      });
+
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功創建 Mydata 項目"
       );
-
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功創建 Mydata 項目",
-      };
+      return result;
     } catch (error) {
       console.error("創建 Mydata 項目失敗:", error);
       return this.handleDirectusError(error);
@@ -156,22 +145,19 @@ export class MydataService {
     }
 
     try {
-      const headers = await baseService.getAuthHeaders();
-      const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`,
-        {
-          method: "PATCH",
-          headers: headers,
-          body: JSON.stringify(mydataData),
-        }
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(mydataData),
+      });
+
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功更新 Mydata 項目"
       );
-
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功更新 Mydata 項目",
-      };
+      return result;
     } catch (error) {
       console.error(`更新 Mydata 項目 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);
@@ -185,14 +171,12 @@ export class MydataService {
     }
 
     try {
-      const headers = await baseService.getAuthHeaders();
-      const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`,
-        {
-          method: "DELETE",
-          headers: headers,
-        }
-      );
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = `${getApiUrl(baseService.apiEndpoints.itemsMydata)}/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: myHeaders,
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

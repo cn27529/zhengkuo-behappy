@@ -9,12 +9,6 @@ export class RegistrationService {
     console.log(`RegistrationService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
-  // ========== 通用方法 ==========
-
-  async handleDirectusResponse(response) {
-    return await baseService.handleDirectusResponse(response);
-  }
-
   // ========== CRUD 操作 ==========
   async createRegistration(registrationData) {
     const createISOTime = DateUtils.getCurrentISOTime();
@@ -74,24 +68,19 @@ export class RegistrationService {
         },
       };
 
-      const headers = await baseService.getAuthHeaders();
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.itemsRegistration), // Directus registrationDB 端點
-        {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(processedData),
-        }
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = getApiUrl(baseService.apiEndpoints.itemsRegistration);
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(processedData),
+      });
+
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功創建報名表"
       );
-
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功創建報名表",
-        formId: processedData.formId,
-      };
-
+      return result;
     } catch (error) {
       console.error("創建報名表失敗:", error);
       return this.handleDirectusError(error);
@@ -111,23 +100,21 @@ export class RegistrationService {
         updatedUser: registrationData.updatedUser || "system",
       };
 
-      const headers = await baseService.getAuthHeaders();
-      const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsRegistration)}/${id}`,
-        {
-          method: "PATCH",
-          headers: headers,
-          body: JSON.stringify(updateData),
-        }
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = `${getApiUrl(
+        baseService.apiEndpoints.itemsRegistration
+      )}/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(updateData),
+      });
+
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功更新報名表"
       );
-
-      const data = await this.handleDirectusResponse(response);
-
-      return {
-        success: true,
-        data: data,
-        message: "成功更新報名表",
-      };
+      return result;
     } catch (error) {
       console.error(`更新報名表 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);
@@ -141,24 +128,22 @@ export class RegistrationService {
     }
 
     try {
-      const headers = await baseService.getAuthHeaders();
+      const myHeaders = await baseService.getAuthJsonHeaders();
       const response = await fetch(
         `${getApiUrl(
           baseService.apiEndpoints.itemsRegistration
         )}/${id}?fields=*`,
         {
           method: "GET",
-          headers: headers,
+          headers: myHeaders,
         }
       );
 
-      const data = await this.handleDirectusResponse(response);
-
-      return {
-        success: true,
-        data: data,
-        message: "成功獲取報名表",
-      };
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功獲取報名表"
+      );
+      return result;
     } catch (error) {
       console.error(`獲取報名表 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);
@@ -192,10 +177,10 @@ export class RegistrationService {
       )}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
-      const headers = await baseService.getAuthHeaders();
+      const myHeaders = await baseService.getAuthJsonHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",
-        headers: headers,
+        headers: myHeaders,
       });
 
       console.log("📊 響應狀態:", response.status, response.statusText);
@@ -217,12 +202,11 @@ export class RegistrationService {
         throw new Error(errorData.message || `HTTP ${response.status} 錯誤`);
       }
 
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "成功獲取所有報名表",
-      };
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功獲取報名表列表"
+      );
+      return result;
     } catch (error) {
       console.error("❌ 獲取報名表列表失敗:", error);
       return this.handleDirectusError(error);
@@ -240,19 +224,17 @@ export class RegistrationService {
       )}?limit=1`;
       console.log("測試 URL:", simpleUrl);
 
-      const headers = await baseService.getAuthHeaders();
+      const myHeaders = await baseService.getAuthJsonHeaders();
       const response = await fetch(simpleUrl, {
         method: "GET",
-        headers: headers,
+        headers: myHeaders,
       });
 
-      const result = await this.handleDirectusResponse(response);
-
-      return {
-        ...result,
-        message: "簡單查詢成功",
-      };
-
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "簡單查詢成功"
+      );
+      return result;
     } catch (error) {
       console.error("❌ 測試查詢異常:", error);
       return { success: false, error: error.message };
@@ -266,14 +248,14 @@ export class RegistrationService {
     }
 
     try {
-      const headers = await baseService.getAuthHeaders();
-      const response = await fetch(
-        `${getApiUrl(baseService.apiEndpoints.itemsRegistration)}/${id}`,
-        {
-          method: "DELETE",
-          headers: headers,
-        }
-      );
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const apiUrl = `${getApiUrl(
+        baseService.apiEndpoints.itemsRegistration
+      )}/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: myHeaders,
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
