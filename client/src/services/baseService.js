@@ -1,4 +1,7 @@
 // src/services/baseService.js
+import { DateUtils } from "../utils/dateUtils.js";
+import { indexedDBLogger } from "../utils/indexedDB.js";
+
 export class BaseService {
   constructor() {
     // 可切換模式: 'mock' 或 'backend'
@@ -28,7 +31,155 @@ export class BaseService {
 
     // 模擬 API 延遲（毫秒）
     this.mockDelay = 500;
+
+    // 新增日誌配置
+    this.logConfig = {
+      enabled: import.meta.env.VITE_LOG_RESPONSE === "true" || false,
+      level: import.meta.env.VITE_LOG_LEVEL || "info", // 'debug', 'info', 'warn', 'error'
+      maxLength: 1000, // 記錄的最大長度
+    };
   }
+
+  /**
+   * indexedDB 保存日誌條目
+   */
+  async saveLogEntry(logEntry) {
+    if (!this.logConfig.enabled) {
+      return;
+    }
+
+    try {
+      // 過濾敏感信息
+      //const sanitizedLog = this.sanitizeLogEntry(logEntry);
+      const sanitizedLog = { ...logEntry };
+
+      // 保存到 IndexedDB
+      await indexedDBLogger.addLog(sanitizedLog);
+
+      // 如果配置了遠程日誌服務，也發送一份
+      if (import.meta.env.VITE_REMOTE_LOG_URL) {
+        await this.sendToRemoteLog(sanitizedLog);
+      }
+
+      // 開發模式下在控制台顯示
+      if (import.meta.env.VITE_DEV) {
+        this.displayLogInConsole(sanitizedLog);
+      }
+    } catch (error) {
+      console.warn("日誌保存失敗:", error);
+    }
+  }
+
+  /**
+   * indexedDB 過濾敏感信息
+   */
+  sanitizeLogEntry(logEntry) {
+    const sanitized = { ...logEntry };
+
+    // 移除可能的敏感信息
+    const sensitiveKeys = [
+      "password",
+      "token",
+      "authorization",
+      "cookie",
+      "secret",
+    ];
+
+    if (sanitized.requestBody) {
+      sensitiveKeys.forEach((key) => {
+        if (sanitized.requestBody[key]) {
+          sanitized.requestBody[key] = "[FILTERED]";
+        }
+      });
+    }
+
+    if (sanitized.requestHeaders) {
+      sensitiveKeys.forEach((key) => {
+        if (sanitized.requestHeaders[key]) {
+          sanitized.requestHeaders[key] = "[FILTERED]";
+        }
+      });
+    }
+
+    return sanitized;
+  }
+
+  /**
+   * indexedDB 發送到遠程日誌服務
+   */
+  async sendToRemoteLog(logEntry) {
+    try {
+      // 使用 sendBeacon API（離頁面時也能發送）
+      const blob = new Blob([JSON.stringify(logEntry)], {
+        type: "application/json",
+      });
+
+      const success = navigator.sendBeacon?.(
+        import.meta.env.VITE_REMOTE_LOG_URL,
+        blob
+      );
+
+      if (!success) {
+        // fallback 使用 fetch
+        await fetch(import.meta.env.VITE_REMOTE_LOG_URL, {
+          method: "POST",
+          body: JSON.stringify(logEntry),
+          headers: { "Content-Type": "application/json" },
+          keepalive: true,
+        });
+      }
+    } catch (error) {
+      // 靜默失敗，不影響主流程
+      console.warn("遠程日誌發送失敗:", error);
+    }
+  }
+
+  /**
+   * indexedDB 控制台顯示（開發用）
+   */
+  displayLogInConsole(logEntry) {
+    const style = logEntry.error
+      ? "background: #ffebee; color: #c62828; padding: 2px 4px; border-radius: 3px;"
+      : "background: #e8f5e9; color: #2e7d32; padding: 2px 4px; border-radius: 3px;";
+
+    console.groupCollapsed(
+      `%c${logEntry.endpoint} - ${logEntry.status}`,
+      style
+    );
+    console.log("上下文:", logEntry.context);
+    console.log("耗時:", logEntry.duration, "ms");
+
+    if (logEntry.errorText) {
+      console.log("錯誤:", logEntry.errorText);
+    }
+
+    console.groupEnd();
+  }
+
+  initLogEntry = (context) => {
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      endpoint: response.url || "unknown",
+      method: context.method || "GET",
+      status: response.status,
+      statusText: response.statusText,
+      context: {
+        service: context.service || "unknown",
+        operation: context.operation || "unknown",
+        startTime: context.startTime || Date.now(),
+        ...context,
+      },
+      duration: context.duration || 0,
+      success: false,
+      jsonParseError: false,
+      parseError: "",
+      error: false,
+      errorText: "",
+      errorMessage: "",
+      noContent: false,
+    };
+    return logEntry;
+  };
 
   // ========== 通用方法 ==========
 
@@ -38,15 +189,46 @@ export class BaseService {
    * @param {*} returnMessage
    * @returns
    */
-  async handleDirectusResponse(response, returnMessage = null) {
+  async handleDirectusResponse(response, returnMessage = null, context = {}) {
     try {
+      // 創建日誌對象
+      let logEntry = {
+        timestamp: DateUtils.getCurrentISOTime(),
+        endpoint: response.url || "unknown",
+        method: context.method || "GET",
+        status: response.status,
+        statusText: response.statusText,
+        context: {
+          service: context.service || "unknown",
+          operation: context.operation || "unknown",
+          startTime: context.startTime || Date.now(),
+          ...context,
+        },
+        duration: context.duration || 0,
+        success: false,
+        jsonParseError: false,
+        parseError: "",
+        error: false,
+        errorText: "",
+        errorMessage: "",
+        noContent: false,
+      };
+
       // ========== 錯誤處理 ==========
       if (!response.ok) {
         const errorText = await response.text();
+
         console.error(
           `HTTP Directus 錯誤 ${response.status}: ${response.statusText}`,
           errorText
         );
+
+        // 記錄錯誤日誌
+        logEntry.error = true;
+        logEntry.errorText = errorText.substring(0, this.logConfig.maxLength);
+        logEntry.errorMessage = this.extractErrorMessage(errorText);
+        // 保存日誌
+        await this.saveLogEntry(logEntry);
 
         const errorMessage = this.extractErrorMessage(errorText);
 
@@ -79,6 +261,9 @@ export class BaseService {
 
       // 處理 204 No Content
       if (response.status === 204) {
+        logEntry.noContent = true;
+        await this.saveLogEntry(logEntry);
+
         return {
           success: true,
           data: null,
@@ -94,6 +279,11 @@ export class BaseService {
       // 非 JSON 響應處理
       if (!contentType || !contentType.includes("application/json")) {
         console.warn("回應不是 JSON 格式:", contentType);
+
+        logEntry.nonJson = true;
+        logEntry.contentType = contentType;
+        await this.saveLogEntry(logEntry);
+
         return {
           success: true,
           data: null,
@@ -109,8 +299,17 @@ export class BaseService {
         result = await response.json();
       } catch (error) {
         console.error("解析 JSON 回應失敗:", error);
+
+        logEntry.jsonParseError = true;
+        logEntry.parseError = error.message;
+        await this.saveLogEntry(logEntry);
+
         throw new Error("伺服器返回了無效的 JSON 格式");
       }
+
+      // 記錄成功的日誌
+      logEntry.success = true;
+      await this.saveLogEntry(logEntry);
 
       // 返回標準化結果
       return {

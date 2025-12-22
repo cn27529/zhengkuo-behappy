@@ -34,6 +34,13 @@ export class ActivityService {
       };
     }
 
+    const startTime = new Date(DateUtils.formatDateTimeYMD(Date.now()));
+    const context = {
+      service: "ActivityService",
+      operation: "createActivity",
+      startTime,
+    };
+
     try {
       // 先檢查連線
       const healthCheck = await baseService.checkConnection();
@@ -74,9 +81,12 @@ export class ActivityService {
         body: JSON.stringify(processedData),
       });
 
+      const duration =
+        new Date(DateUtils.formatDateTimeYMD(Date.now())) - startTime;
       const result = await baseService.handleDirectusResponse(
         response,
-        "成功創建活動"
+        "成功創建活動",
+        { ...context, duration }
       );
       // 現在 result 結構統一，更容易處理
       return result;

@@ -1,4 +1,6 @@
 // src/utils/indexedDB.js
+import { DateUtils } from "./dateUtils.js";
+
 export class IndexedDBLogger {
   constructor(dbName = "DirectusLogsDB", version = 1) {
     this.dbName = dbName;
@@ -175,7 +177,9 @@ export class IndexedDBLogger {
         const store = transaction.objectStore(this.storeName);
         const index = store.index("timestamp");
 
-        const cutoffDate = new Date();
+        const cutoffDate =
+          DateUtils.formatDateTimeYMD(DateUtils.getCurrentISOTime()) ||
+          new Date();
         cutoffDate.setDate(cutoffDate.getDate() - maxAgeDays);
 
         const range = IDBKeyRange.upperBound(cutoffDate.toISOString());

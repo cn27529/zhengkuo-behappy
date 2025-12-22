@@ -79,6 +79,16 @@ export const useMenuStore = defineStore("menu", () => {
       enabled: true,
     },
     {
+      id: 8,
+      name: "系統日誌",
+      path: "/logs",
+      icon: "📋",
+      component: "LogViewPage",
+      requiredAuth: true,
+      order: 8,
+      enabled: true,
+    },
+    {
       id: 99,
       name: "收据管理",
       path: "/receipts",
