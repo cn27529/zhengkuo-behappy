@@ -34,14 +34,16 @@ export class ActivityService {
       };
     }
 
-    const startTime = new Date(DateUtils.formatDateTimeYMD(Date.now()));
-    const context = {
-      service: "ActivityService",
-      operation: "createActivity",
-      startTime,
-    };
-
     try {
+      const startTime = new Date(DateUtils.formatDateTimeYMD(Date.now()));
+      const context = {
+        service: "ActivityService",
+        operation: "createActivity",
+        startTime,
+        method: "POST",
+      };
+
+      console.log("🚀 Directus 服務健康檢查中...");
       // 先檢查連線
       const healthCheck = await baseService.checkConnection();
       if (!healthCheck.online) {

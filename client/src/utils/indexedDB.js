@@ -142,24 +142,61 @@ export class IndexedDBLogger {
         const transaction = db.transaction([this.storeName], "readonly");
         const store = transaction.objectStore(this.storeName);
 
-        // 根據條件選擇索引
-        let index;
-        if (filter.endpoint) {
-          index = store.index("endpoint");
-          const request = index.getAll(filter.endpoint);
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => reject(request.error);
-        } else if (filter.status) {
-          index = store.index("status");
-          const request = index.getAll(filter.status);
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => reject(request.error);
-        } else {
-          // 無條件獲取全部
-          const request = store.getAll();
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => reject(request.error);
-        }
+        const request = store.getAll();
+        request.onsuccess = () => {
+          let results = request.result;
+
+          // 過濾結果
+          if (filter.search) {
+            const searchTerm = filter.search.toLowerCase();
+            results = results.filter(
+              (log) =>
+                log.endpoint?.toLowerCase().includes(searchTerm) ||
+                log.context?.service?.toLowerCase().includes(searchTerm) ||
+                log.context?.operation?.toLowerCase().includes(searchTerm) ||
+                log.errorText?.toLowerCase().includes(searchTerm) ||
+                JSON.stringify(log.requestBody || "")
+                  .toLowerCase()
+                  .includes(searchTerm)
+            );
+          }
+
+          if (filter.endpoint) {
+            results = results.filter((log) =>
+              log.endpoint
+                ?.toLowerCase()
+                .includes(filter.endpoint.toLowerCase())
+            );
+          }
+
+          if (filter.method) {
+            results = results.filter((log) => log.method === filter.method);
+          }
+
+          if (filter.status) {
+            results = results.filter(
+              (log) => String(log.status) === String(filter.status)
+            );
+          }
+
+          if (filter.dateFrom || filter.dateTo) {
+            results = results.filter((log) => {
+              const logDate = new Date(log.timestamp)
+                .toISOString()
+                .split("T")[0];
+
+              if (filter.dateFrom && logDate < filter.dateFrom) return false;
+              if (filter.dateTo && logDate > filter.dateTo) return false;
+              return true;
+            });
+          }
+
+          // 按時間倒序排序（最新在前）
+          results.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+          resolve(results);
+        };
+        request.onerror = () => reject(request.error);
       });
     } catch (error) {
       console.error("查詢日誌失敗:", error);
@@ -177,9 +214,7 @@ export class IndexedDBLogger {
         const store = transaction.objectStore(this.storeName);
         const index = store.index("timestamp");
 
-        const cutoffDate =
-          DateUtils.formatDateTimeYMD(DateUtils.getCurrentISOTime()) ||
-          new Date();
+        const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - maxAgeDays);
 
         const range = IDBKeyRange.upperBound(cutoffDate.toISOString());
@@ -201,12 +236,81 @@ export class IndexedDBLogger {
         };
 
         request.onerror = (event) => {
+          console.error("清理日誌失敗:", event.target.error);
           reject(event.target.error);
         };
       });
     } catch (error) {
       console.error("清理日誌失敗:", error);
       return 0;
+    }
+  }
+
+  // 清理全部日誌
+  async clearAllLogs() {
+    try {
+      const db = await this.openDatabase();
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([this.storeName], "readwrite");
+        const store = transaction.objectStore(this.storeName);
+
+        const request = store.clear();
+
+        request.onsuccess = () => {
+          console.log("已清理全部日誌");
+          resolve(true);
+        };
+
+        request.onerror = (event) => {
+          console.error("清理全部日誌失敗:", event.target.error);
+          reject(event.target.error);
+        };
+
+        // 也清理備用的 localStorage 數據
+        this.clearLocalStorageBackup();
+      });
+    } catch (error) {
+      console.error("清理全部日誌失敗:", error);
+      return false;
+    }
+  }
+
+  // 統計日誌數量
+  async countLogs() {
+    try {
+      const db = await this.openDatabase();
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([this.storeName], "readonly");
+        const store = transaction.objectStore(this.storeName);
+
+        const request = store.count();
+
+        request.onsuccess = () => {
+          resolve(request.result);
+        };
+
+        request.onerror = (event) => {
+          reject(event.target.error);
+        };
+      });
+    } catch (error) {
+      console.error("統計日誌數量失敗:", error);
+      return 0;
+    }
+  }
+
+  // 清理備用 localStorage 數據
+  clearLocalStorageBackup() {
+    try {
+      const logsKey = "directus_logs_fallback";
+      localStorage.removeItem(logsKey);
+      console.log("已清理 localStorage 備份數據");
+      return true;
+    } catch (error) {
+      console.error("清理 localStorage 備份失敗:", error);
+      return false;
     }
   }
 
@@ -227,6 +331,48 @@ export class IndexedDBLogger {
     } catch (error) {
       console.error("備用儲存也失敗:", error);
       return false;
+    }
+  }
+
+  // 獲取數據庫大小（估算）
+  async getDatabaseSize() {
+    try {
+      const db = await this.openDatabase();
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([this.storeName], "readonly");
+        const store = transaction.objectStore(this.storeName);
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+          const data = request.result;
+          const jsonString = JSON.stringify(data);
+          const sizeInBytes = new Blob([jsonString]).size;
+
+          // 格式化大小
+          let sizeText;
+          if (sizeInBytes < 1024) {
+            sizeText = `${sizeInBytes} B`;
+          } else if (sizeInBytes < 1024 * 1024) {
+            sizeText = `${(sizeInBytes / 1024).toFixed(2)} KB`;
+          } else {
+            sizeText = `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
+          }
+
+          resolve({
+            bytes: sizeInBytes,
+            formatted: sizeText,
+            count: data.length,
+          });
+        };
+
+        request.onerror = (event) => {
+          reject(event.target.error);
+        };
+      });
+    } catch (error) {
+      console.error("獲取數據庫大小失敗:", error);
+      return { bytes: 0, formatted: "0 B", count: 0 };
     }
   }
 }

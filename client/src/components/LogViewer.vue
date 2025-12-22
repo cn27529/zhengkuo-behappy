@@ -96,7 +96,7 @@
     </div>
 
     <!-- 統計卡片 -->
-    <div class="stats-cards">
+    <div class="stats-cards" style="display: none">
       <el-card class="stat-card">
         <template #header>
           <div class="stat-header">
@@ -179,6 +179,14 @@
               size="large"
             >
               清理舊日誌
+            </el-button>
+            <el-button
+              @click="clearAllLogs"
+              type="danger"
+              :icon="DeleteFilled"
+              size="large"
+            >
+              清理全部
             </el-button>
           </div>
         </div>
@@ -368,7 +376,7 @@ const filter = ref({
 // 分頁
 const pagination = ref({
   currentPage: 1,
-  pageSize: 20,
+  pageSize: 10,
   total: 0,
 });
 
@@ -465,6 +473,51 @@ async function clearOldLogs() {
     await indexedDBLogger.cleanupOldLogs(30);
     await loadLogs();
     ElMessage.success("舊日誌清理成功");
+  } catch (err) {
+    if (err !== "cancel") {
+      ElMessage.error("清理日誌失敗");
+    }
+  }
+}
+
+// 添加清理全部日誌的函數
+async function clearAllLogs() {
+  try {
+    // 先獲取當前日誌數量
+    const count = await indexedDBLogger.countLogs();
+    if (count === 0) {
+      ElMessage.info("目前沒有日誌數據");
+      return;
+    }
+
+    // 確認對話框
+    await ElMessageBox.confirm(
+      `確定要清理全部 ${count} 條日誌記錄嗎？此操作無法復原！`,
+      "確認清理全部日誌",
+      {
+        confirmButtonText: "確定清理",
+        cancelButtonText: "取消",
+        type: "error",
+        confirmButtonClass: "el-button--danger",
+        beforeClose: async (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            try {
+              await indexedDBLogger.clearAllLogs();
+              await loadLogs();
+              ElMessage.success("已成功清理全部日誌");
+            } catch (err) {
+              ElMessage.error("清理日誌失敗");
+            } finally {
+              instance.confirmButtonLoading = false;
+              done();
+            }
+          } else {
+            done();
+          }
+        },
+      }
+    );
   } catch (err) {
     if (err !== "cancel") {
       ElMessage.error("清理日誌失敗");

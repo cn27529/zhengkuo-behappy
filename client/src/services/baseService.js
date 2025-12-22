@@ -214,6 +214,9 @@ export class BaseService {
         noContent: false,
       };
 
+      // 設置日誌內容
+      console.log("logEntry", logEntry);
+
       // ========== 錯誤處理 ==========
       if (!response.ok) {
         const errorText = await response.text();
