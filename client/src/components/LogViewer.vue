@@ -195,7 +195,7 @@
         :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
         :row-class-name="getRowClassName"
       >
-        <el-table-column label="時間" min-width="160" prop="timestamp">
+        <el-table-column label="時間" min-width="70" prop="timestamp">
           <template #default="{ row }">
             <div class="date-info">
               <div>{{ formatTime(row.timestamp) }}</div>

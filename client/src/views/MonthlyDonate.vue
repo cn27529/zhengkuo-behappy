@@ -169,7 +169,7 @@
 
             <el-table-column prop="name" label="贊助人" width="90">
               <template #default="{ row }">
-                <div class="donator-name">
+                <div class="donator-name" @click="handleViewDonatorDetail(row)">
                   <strong>{{ row.name }}</strong>
                   <div class="donator-id" v-if="row.registrationId > 0">
                     編號: {{ row.registrationId }}
@@ -223,11 +223,17 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="操作" fixed="right" align="center">
+            <el-table-column
+              label="操作"
+              fixed="right"
+              align="center"
+              width="150"
+            >
               <template #default="{ row }">
                 <div class="action-buttons">
                   <el-tooltip content="查看贊助項目詳情" placement="top">
                     <el-button
+                      style="display: none"
                       circle
                       @click="handleViewDonatorDetail(row)"
                       type="info"
@@ -256,6 +262,33 @@
                       <el-icon><Edit /></el-icon>
                     </el-button>
                   </el-tooltip>
+
+                  <el-tooltip content="刪除贊助人" placement="top">
+                    <el-button
+                      circle
+                      @click="handleDeleteDonator(row)"
+                      type="danger"
+                      :loading="loading"
+                      :disabled="loading"
+                    >
+                      刪
+                    </el-button>
+                  </el-tooltip>
+
+                  <!-- 如果需要更嚴格的二次確認，可以使用這個版本 -->
+                  <!-- 
+<el-tooltip content="刪除贊助人（需二次確認）" placement="top">
+  <el-button
+    circle
+    @click="confirmDeleteDonator(row)"
+    type="danger"
+    :loading="loading"
+    :disabled="loading"
+  >
+    刪
+  </el-button>
+</el-tooltip>
+-->
                 </div>
               </template>
             </el-table-column>
@@ -982,9 +1015,122 @@ const handleAddDonateToDonator = (donator) => {
   showAddDonateItemModal.value = true;
 };
 
+// MonthlyDonate.vue <script setup> 中添加
+
+/**
+ * 刪除贊助人
+ * @param {Object} donator - 贊助人對象
+ */
+const handleDeleteDonator = async (donator) => {
+  try {
+    // 計算統計信息
+    const itemsCount = donator.donateItems?.length || 0;
+    const totalAmount = donator.totalAmount || 0;
+    const totalMonths = donator.totalMonths || 0;
+
+    // 確認對話框 - 顯示詳細信息
+    await ElMessageBox.confirm(
+      `確定要刪除贊助人「${donator.name}」嗎？\n\n` +
+        `📊 統計信息：\n` +
+        `• 贊助項目：${itemsCount} 個\n` +
+        `• 總金額：${totalAmount.toLocaleString()} 元\n` +
+        `• 總月份：${totalMonths} 個月\n\n` +
+        `⚠️ 此操作將刪除該贊助人的所有贊助記錄，且無法恢復！`,
+      "確認刪除贊助人",
+      {
+        confirmButtonText: "確定刪除",
+        cancelButtonText: "取消",
+        type: "error",
+        dangerouslyUseHTMLString: false,
+        distinguishCancelAndClose: true,
+        confirmButtonClass: "el-button--danger",
+      }
+    );
+
+    // 顯示加載狀態
+    loading.value = true;
+
+    // 調用 store 方法刪除
+    const result = await monthlyDonateStore.deleteDonator(donator.donateId);
+
+    if (result.success) {
+      ElMessage.success({
+        message: `贊助人「${donator.name}」已成功刪除`,
+        duration: 3000,
+      });
+
+      // 如果當前正在查看該贊助人的詳情，關閉詳情窗口
+      if (
+        showDonatorDetailModal.value &&
+        selectedDonator.value?.donateId === donator.donateId
+      ) {
+        closeModal();
+      }
+
+      // 如果刪除後當前頁沒有數據，回到上一頁
+      if (paginatedDonates.value.length === 0 && currentPage.value > 1) {
+        currentPage.value--;
+      }
+    } else {
+      throw new Error(result.message || "刪除失敗");
+    }
+  } catch (err) {
+    // 用戶取消操作
+    if (err === "cancel" || err === "close") {
+      ElMessage.info("已取消刪除操作");
+      return;
+    }
+
+    // 其他錯誤
+    console.error("❌ 刪除贊助人失敗:", err);
+    ElMessage.error({
+      message: err.message || "刪除贊助人失敗",
+      duration: 5000,
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
+// 刪除前的二次確認（可選的額外安全措施）
+const confirmDeleteDonator = async (donator) => {
+  // 如果贊助項目很多，要求輸入名稱確認
+  if (donator.donateItems?.length > 5) {
+    try {
+      const { value: inputName } = await ElMessageBox.prompt(
+        `贊助人「${donator.name}」有 ${donator.donateItems.length} 個贊助項目。\n` +
+          `為了安全起見，請輸入贊助人姓名以確認刪除：`,
+        "二次確認",
+        {
+          confirmButtonText: "確定刪除",
+          cancelButtonText: "取消",
+          inputPattern: /.+/,
+          inputErrorMessage: "請輸入贊助人姓名",
+          inputPlaceholder: donator.name,
+        }
+      );
+
+      if (inputName !== donator.name) {
+        ElMessage.warning("輸入的姓名不正確，已取消刪除");
+        return;
+      }
+
+      // 繼續執行刪除
+      await handleDeleteDonator(donator);
+    } catch (err) {
+      if (err !== "cancel" && err !== "close") {
+        console.error("二次確認失敗:", err);
+      }
+    }
+  } else {
+    // 直接刪除
+    await handleDeleteDonator(donator);
+  }
+};
+
 const handleEditDonator = (donator) => {
-  // TODO: 實現編輯功能
-  ElMessage.info("編輯功能開發中");
+  // TODO: 實現編輯贊助人
+  ElMessage.info("編輯贊助人開發中");
 };
 
 // 修改：關閉對話框時重置
@@ -1046,7 +1192,7 @@ const handleAddDonator = async () => {
       memo: newDonator.memo,
     };
 
-    const result = await monthlyDonateStore.submitDonate(donateData);
+    const result = await monthlyDonateStore.submitDonator(donateData);
 
     if (result.success) {
       ElMessage.success("贊助人新增成功");

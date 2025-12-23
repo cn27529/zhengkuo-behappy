@@ -7,7 +7,7 @@
     </div>
 
     <!-- 統計卡片 -->
-    <div class="stats-cards" style="display: none">
+    <div class="stats-cards">
       <div class="stat-card">
         <div class="stat-value">{{ totalLogs }}</div>
         <div class="stat-label">總日誌數</div>
