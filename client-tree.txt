@@ -21,6 +21,7 @@
 │   │   ├── DevTools.vue
 │   │   ├── EnvTest.vue
 │   │   ├── IconSelector.vue
+│   │   ├── LogViewer.vue
 │   │   ├── Login2FAForm.vue
 │   │   ├── LoginForm.vue
 │   │   └── SupabaseLoginForm.vue
@@ -72,6 +73,7 @@
 │   │   ├── dateUtils.js
 │   │   ├── generateGitHash.js
 │   │   ├── generateGitHashAsync.js
+│   │   ├── indexedDB.js
 │   │   └── mockDataHelper.js
 │   └── views
 │       ├── ActivityList.vue
@@ -83,6 +85,7 @@
 │       ├── Empty.vue
 │       ├── Env.vue
 │       ├── HashCode.vue
+│       ├── LogViewPage.vue
 │       ├── Login.vue
 │       ├── Logout.vue
 │       ├── MockLogin.vue
@@ -91,6 +94,7 @@
 │       ├── MydataList.vue
 │       ├── NewTab.vue
 │       ├── Placeholder.vue
+│       ├── Registration copy.vue
 │       ├── Registration.vue
 │       ├── RegistrationEdit.vue
 │       ├── RegistrationList.vue
@@ -100,4 +104,4 @@
 │       └── TestPage.vue
 └── vite.config.js
 
-11 directories, 90 files
+11 directories, 94 files
