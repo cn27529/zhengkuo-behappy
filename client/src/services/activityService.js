@@ -9,6 +9,50 @@ export class ActivityService {
     console.log(`ActivityService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
+  // ========== 使用示例：不同的調用方式 ==========
+  // 範例 1: 帶完整 context（會記錄日誌）
+  async exampleWithContext() {
+    const startTime = Date.now();
+    const response = await fetch(url, { method: "GET" });
+
+    const result = await baseService.handleDirectusResponse(
+      response,
+      "操作成功",
+      {
+        service: "ExampleService",
+        operation: "getData",
+        method: "GET",
+        startTime: startTime,
+        duration: Date.now() - startTime,
+      }
+    );
+  }
+
+  // 範例 2: 不帶 context（不會記錄日誌）
+  async exampleWithoutContext() {
+    const response = await fetch(url, { method: "GET" });
+
+    const result = await baseService.handleDirectusResponse(
+      response,
+      "操作成功"
+      // 沒有 context 參數
+    );
+  }
+
+  // 範例 3: 帶部分 context（不會記錄日誌，因為缺少必要信息）
+  async exampleWithPartialContext() {
+    const response = await fetch(url, { method: "GET" });
+
+    const result = await baseService.handleDirectusResponse(
+      response,
+      "操作成功",
+      {
+        method: "GET",
+        // 缺少 service 和 operation
+      }
+    );
+  }
+
   // ========== CRUD 操作 ==========
 
   /**
@@ -34,30 +78,7 @@ export class ActivityService {
       };
     }
 
-    try {
-      const startTime = new Date(DateUtils.formatDateTimeYMD(Date.now()));
-      const context = {
-        service: "ActivityService",
-        operation: "createActivity",
-        startTime,
-        method: "POST",
-      };
-
-      console.log("🚀 Directus 服務健康檢查中...");
-      // 先檢查連線
-      const healthCheck = await baseService.checkConnection();
-      if (!healthCheck.online) {
-        return {
-          success: false,
-          online: false,
-          message: healthCheck.message,
-          data: null,
-        };
-      }
-      console.log("✅ Directus 服務健康檢查通過");
-
-      const activityId = await generateGitHashBrowser(createISOTime);
-      // 準備提交數據
+    // 準備提交數據
       const processedData = {
         activityId: activityId,
         name: activityData.name || "",
@@ -74,26 +95,59 @@ export class ActivityService {
         updatedUser: "",
       };
 
+    // ✅ 在 try 外面定義，確保 catch 也能訪問
+    const startTime = Date.now();
+    const logContext = {
+      service: "ActivityService",
+      operation: "createActivity",
+      method: "POST",
+      startTime: startTime,
+      endpoint: baseService.apiEndpoints.itemsActivity,
+      requestBody: processedData,  // ✅ 記錄請求 body
+    };
+
+    try {
+      console.log("🚀 Directus 服務健康檢查中...");
+
+      // 先檢查連線
+      const healthCheck = await baseService.checkConnection();
+      if (!healthCheck.online) {
+        return {
+          success: false,
+          online: false,
+          message: healthCheck.message,
+          data: null,
+        };
+      }
+      console.log("✅ Directus 服務健康檢查通過");
+
+      const activityId = await generateGitHashBrowser(createISOTime);
+
+      
+
       const myHeaders = await baseService.getAuthJsonHeaders();
       const url = getApiUrl(baseService.apiEndpoints.itemsActivity);
-      const apiUrl = `${url}`;
-      const response = await fetch(apiUrl, {
+
+      const response = await fetch(url, {
         method: "POST",
         headers: myHeaders,
         body: JSON.stringify(processedData),
       });
 
-      const duration =
-        new Date(DateUtils.formatDateTimeYMD(Date.now())) - startTime;
+      // 計算實際耗時
+      const duration = Date.now() - startTime;
+
       const result = await baseService.handleDirectusResponse(
         response,
         "成功創建活動",
-        { ...context, duration }
+        { ...logContext, duration }
       );
-      // 現在 result 結構統一，更容易處理
+
       return result;
     } catch (error) {
       console.error("創建活動失敗:", error);
+      // ✅ 現在可以訪問 logContext 了
+      console.log("錯誤上下文:", logContext);
       return this.handleDirectusError(error);
     }
   }
@@ -110,26 +164,43 @@ export class ActivityService {
       return { success: false, message: "請切換到 directus 模式" };
     }
 
-    try {
-      const updateData = {
+    const updateData = {
         ...activityData,
         updatedAt: DateUtils.getCurrentISOTime(),
         updatedUser: activityData.updatedUser || "system",
       };
 
+    // ✅ 同樣在 try 外面定義
+    const startTime = Date.now();
+    const logContext = {
+      service: "ActivityService",
+      operation: "updateActivity",
+      method: "PATCH",
+      startTime: startTime,
+      endpoint: `${baseService.apiEndpoints.itemsActivity}/${id}`,
+      requestBody: updateData,  // ✅ 記錄請求 body
+    };
+
+    try {
+      
+
       const myHeaders = await baseService.getAuthJsonHeaders();
       const url = `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`;
-      const apiUrl = `${url}`;
-      const response = await fetch(apiUrl, {
+      
+      const response = await fetch(url, {
         method: "PATCH",
         headers: myHeaders,
         body: JSON.stringify(updateData),
       });
 
+      const duration = Date.now() - startTime;
+      
       const result = await baseService.handleDirectusResponse(
         response,
-        "成功更新活動"
+        "成功更新活動",
+        { ...logContext, duration }
       );
+      
       return result;
     } catch (error) {
       console.error(`更新活動 (ID: ${id}) 失敗:`, error);
@@ -148,26 +219,44 @@ export class ActivityService {
       return { success: false, message: "請切換到 directus 模式" };
     }
 
+    
+
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
       const url = `${getApiUrl(
         baseService.apiEndpoints.itemsActivity
       )}/${id}?fields=*`;
-      const apiUrl = `${url}`;
-      const response = await fetch(apiUrl, {
+      
+      const response = await fetch(url, {
         method: "GET",
         headers: myHeaders,
       });
 
+      
+      
       const result = await baseService.handleDirectusResponse(
         response,
-        "成功獲取活動"
+        "成功獲取活動",      
       );
+      
       return result;
     } catch (error) {
       console.error(`獲取活動 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);
     }
+  }
+
+  /**
+   * 根據活動 ID 獲取活動（使用自定義 activityId 欄位）
+   * @param {string} activityId - 活動的自定義 ID
+   * @returns {Promise<Object>} 活動資料
+   */
+  async getActivitiesByActivityId(activityId) {
+    return this.getAllActivities({
+      filter: {
+        activityId: { _eq: activityId },
+      },
+    });
   }
 
   /**
@@ -238,25 +327,40 @@ export class ActivityService {
       return { success: false, message: "請切換到 directus 模式" };
     }
 
+    const startTime = Date.now();
+    const logContext = {
+      service: "ActivityService",
+      operation: "deleteActivity",
+      method: "DELETE",
+      startTime: startTime,
+      endpoint: `${baseService.apiEndpoints.itemsActivity}/${id}`,
+      requestBody:  null,  // 刪除操作沒有 body
+    };
+
     try {
       const myHeaders = await baseService.getAuthJsonHeaders();
       const url = `${getApiUrl(baseService.apiEndpoints.itemsActivity)}/${id}`;
-      const apiUrl = `${url}`;
-      const response = await fetch(apiUrl, {
+      
+      const response = await fetch(url, {
         method: "DELETE",
         headers: myHeaders,
       });
 
+      const duration = Date.now() - startTime;
+      
       const result = await baseService.handleDirectusResponse(
         response,
-        "成功刪除活動"
+        "成功刪除活動",
+        { ...logContext, duration }
       );
+      
       return result;
     } catch (error) {
       console.error(`刪除活動 (ID: ${id}) 失敗:`, error);
       return this.handleDirectusError(error);
     }
   }
+
 
   // ========== 查詢方法 ==========
 

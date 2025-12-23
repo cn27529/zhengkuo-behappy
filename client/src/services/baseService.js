@@ -37,15 +37,32 @@ export class BaseService {
       enabled: import.meta.env.VITE_LOG_RESPONSE === "true" || false,
       level: import.meta.env.VITE_LOG_LEVEL || "info", // 'debug', 'info', 'warn', 'error'
       maxLength: 1000, // 記錄的最大長度
+      // ✅ 新增：只記錄有 context 的請求
+      onlyWithContext: true,
     };
   }
 
   /**
    * indexedDB 保存日誌條目
+   * 改進版：條件式保存日誌
    */
   async saveLogEntry(logEntry) {
+    // 如果日誌功能未啟用，直接返回
     if (!this.logConfig.enabled) {
       return;
+    }
+
+    // ✅ 新增：如果設置了 onlyWithContext，檢查 context
+    if (this.logConfig.onlyWithContext) {
+      const hasValidContext =
+        logEntry.context &&
+        logEntry.context.service !== "unknown" &&
+        logEntry.context.operation !== "unknown";
+
+      if (!hasValidContext) {
+        console.log("⏭️ 跳過日誌記錄：缺少有效的 context");
+        return;
+      }
     }
 
     try {
@@ -69,6 +86,8 @@ export class BaseService {
       console.warn("日誌保存失敗:", error);
     }
   }
+
+  
 
   /**
    * indexedDB 過濾敏感信息
@@ -156,19 +175,20 @@ export class BaseService {
     console.groupEnd();
   }
 
-  initLogEntry = (context) => {
+  generateLogEntry(response, context = {}) {
     const logEntry = {
-      timestamp: new Date().toISOString(),
-      endpoint: response.url || "unknown",
+      timestamp: DateUtils.getCurrentISOTime(),
+      endpoint: response?.url || context.endpoint || "unknown",
       method: context.method || "GET",
-      status: response.status,
-      statusText: response.statusText,
-      context: {
+      status: response?.status || 0,
+      statusText: response?.statusText || "",
+      context: {  
         service: context.service || "unknown",
         operation: context.operation || "unknown",
         startTime: context.startTime || Date.now(),
         ...context,
       },
+      //body: response?.body || null,
       duration: context.duration || 0,
       success: false,
       jsonParseError: false,
@@ -179,7 +199,7 @@ export class BaseService {
       noContent: false,
     };
     return logEntry;
-  };
+  }
 
   // ========== 通用方法 ==========
 
@@ -192,30 +212,11 @@ export class BaseService {
   async handleDirectusResponse(response, returnMessage = null, context = {}) {
     try {
       // 創建日誌對象
-      let logEntry = {
-        timestamp: DateUtils.getCurrentISOTime(),
-        endpoint: response.url || "unknown",
-        method: context.method || "GET",
-        status: response.status,
-        statusText: response.statusText,
-        context: {
-          service: context.service || "unknown",
-          operation: context.operation || "unknown",
-          startTime: context.startTime || Date.now(),
-          ...context,
-        },
-        duration: context.duration || 0,
-        success: false,
-        jsonParseError: false,
-        parseError: "",
-        error: false,
-        errorText: "",
-        errorMessage: "",
-        noContent: false,
-      };
+      // ✅ 正確創建日誌對象 - 傳入 response 和 context
+      let logEntry = this.generateLogEntry(response, context);
 
-      // 設置日誌內容
-      console.log("logEntry", logEntry);
+      // console.log("📡 Response:", response);
+      // console.log("📝 Log Entry:", logEntry);
 
       // ========== 錯誤處理 ==========
       if (!response.ok) {
@@ -285,6 +286,7 @@ export class BaseService {
 
         logEntry.nonJson = true;
         logEntry.contentType = contentType;
+        logEntry.success = true;
         await this.saveLogEntry(logEntry);
 
         return {

@@ -6,15 +6,32 @@ export class IndexedDBLogger {
     this.dbName = dbName;
     this.version = version;
     this.storeName = "responseLogs";
+    this._dbConnection = null;
+    this._logQueue = [];
+
+    // // 每小時自動清理一次
+    // setInterval(() => {
+    //   this.cleanupOldLogs(30);
+    // }, 3600000);
+
   }
+
+
+
+  async getConnection() {
+    if (!this._dbConnection) {
+      this._dbConnection = await this.openDatabase();
+    }
+    return this._dbConnection;
+  }  
 
   // 開啟或創建數據庫
   async openDatabase() {
     return new Promise((resolve, reject) => {
       // 檢查瀏覽器支援
       if (!window.indexedDB) {
-        console.warn("此瀏覽器不支援 IndexedDB");
-        reject(new Error("IndexedDB not supported"));
+        console.warn("IndexedDB 此瀏覽器不支援");
+        reject(new Error("IndexedDB 此瀏覽器不支援"));
         return;
       }
 
@@ -23,13 +40,20 @@ export class IndexedDBLogger {
 
       // 處理錯誤
       request.onerror = (event) => {
-        console.error("IndexedDB 開啟失敗:", event.target.error);
-        reject(event.target.error);
+        console.error("IndexedDB 資料庫開啟失敗:", event.target.error);
+        // 提供更具體的錯誤信息
+        if (error.name === "QuotaExceededError") {
+          reject(new Error("儲存空間不足，請清理舊日誌"));
+        } else if (error.name === "VersionError") {
+          reject(new Error("資料庫版本衝突"));
+        } else {
+          reject(error);
+        }
       };
 
       // 數據庫升級/創建時
       request.onupgradeneeded = (event) => {
-        console.log("IndexedDB 升級/創建中...");
+        console.log("IndexedDB 資料庫升級/創建中...");
         const db = event.target.result;
 
         // 創建對象存儲（如果不存在）
@@ -52,7 +76,7 @@ export class IndexedDBLogger {
       // 成功開啟
       request.onsuccess = (event) => {
         const db = event.target.result;
-        console.log("IndexedDB 開啟成功");
+        console.log("IndexedDB 資料庫開啟成功");
         resolve(db);
       };
     });
@@ -60,7 +84,8 @@ export class IndexedDBLogger {
 
   // 添加日誌條目
   async addLog(logEntry) {
-    try {
+    try {   
+
       const db = await this.openDatabase();
 
       return new Promise((resolve, reject) => {
@@ -69,7 +94,9 @@ export class IndexedDBLogger {
 
         const request = store.add({
           ...logEntry,
-          id: Date.now() + Math.random().toString(36).substr(2, 9),
+          //id: Date.now() + Math.random().toString(36).substr(2, 9),
+          id: crypto.randomUUID(), // 標準且保證唯一
+          //id: `${Date.now()}-${crypto.getRandomValues(new Uint32Array(1))[0]}`, // 或使用更安全的方式
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
           url: window.location.href,
@@ -89,6 +116,28 @@ export class IndexedDBLogger {
       console.warn("保存到 IndexedDB 失敗，使用備用方案:", error);
       return this.saveToLocalStorage(logEntry); // 降級方案
     }
+  }
+
+  async addLogs(logEntries) {
+    // 批次新增
+    const db = await this.getConnection();
+    const tx = db.transaction([this.storeName], 'readwrite');
+    
+    for (const entry of logEntries) {
+      tx.objectStore(this.storeName).add(entry);
+    }
+    
+    await tx.complete;
+  }
+
+  async flushLogs() {
+    if (this._logQueue.length === 0) return;
+    
+    const logs = [...this._logQueue];
+    this._logQueue = [];
+    
+    // 批次寫入
+    await this.addLogsBatch(logs);
   }
 
   // 查詢日誌
