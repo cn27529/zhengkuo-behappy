@@ -15,35 +15,35 @@ export class MonthlyDonateService {
    * 獲取所有百元贊助記錄
    */
   async getAllMonthlyDonates(params = {}) {
+    if (baseService.mode !== "directus") {
+      console.warn("⚠️ 當前模式不為 Directus，返回空百元贊助記錄列表");
+      // Mock 模式
+      return {
+        success: true,
+        data: [],
+        message: "Mock 模式：返回空百元贊助記錄列表",
+      };
+    }
+
     try {
-      if (baseService.mode !== "directus") {
-        console.warn("⚠️ 當前模式不為 Directus，返回空百元贊助記錄列表");
-        // Mock 模式
-        return {
-          success: true,
-          data: [],
-          message: "Mock 模式：返回空百元贊助記錄列表",
-        };
-      } else {
-        const queryParams = new URLSearchParams({
-          sort: "-createdAt",
-          ...params,
-        }).toString();
+      const queryParams = new URLSearchParams({
+        sort: "-createdAt",
+        ...params,
+      }).toString();
 
-        const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
-        const apiUrl = `${url}?${queryParams}`;
-        const myHeaders = await baseService.getAuthJsonHeaders();
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: myHeaders,
-        });
+      const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+      const apiUrl = `${url}?${queryParams}`;
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: myHeaders,
+      });
 
-        const result = await baseService.handleDirectusResponse(
-          response,
-          "成功獲取百元贊助記錄"
-        );
-        return result;
-      }
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功獲取百元贊助記錄"
+      );
+      return result;
     } catch (error) {
       console.error("❌ 獲取百元贊助記錄失敗:", error);
       return {
@@ -58,31 +58,27 @@ export class MonthlyDonateService {
    * 創建新的百元贊助人
    */
   async createMonthlyDonate(donateData) {
-    try {
-      const createISOTime = DateUtils.getCurrentISOTime();
-      const donateId = await generateGitHashBrowser(createISOTime);
+    const createISOTime = DateUtils.getCurrentISOTime();
+    const donateId = await generateGitHashBrowser(createISOTime);
+    const recordId = crypto.randomUUID(); // 標準且保證唯一
+    const processedData = {
+      id: recordId,
+      ...donateData,
+      donateId,
+      createdAt: createISOTime,
+    };
 
-      const processedData = {
-        ...donateData,
-        donateId,
-        createdAt: createISOTime,
+    if (baseService.mode !== "directus") {
+      // Mock 模式
+      console.warn("⚠️ 當前模式不為 Directus，百元贊助人創建成功");
+      return {
+        success: true,
+        data: processedData,
+        message: "Mock 模式：百元贊助人創建成功",
       };
+    }
 
-      if (baseService.mode !== "directus") {
-        // Mock 模式
-        const mockDonate = {
-          id: crypto.randomUUID(), // 標準且保證唯一
-          ...processedData,
-        };
-
-        console.warn("⚠️ 當前模式不為 Directus，百元贊助人創建成功");
-        return {
-          success: true,
-          data: mockDonate,
-          message: "Mock 模式：百元贊助人創建成功",
-        };
-      }
-
+    try {
       const startTime = Date.now();
       const logContext = {
         service: "MonthlyDonateService",
@@ -119,23 +115,23 @@ export class MonthlyDonateService {
   /**
    * 更新百元贊助人
    */
-  async updateMonthlyDonate(id, donateData) {
+  async updateMonthlyDonate(recordId, donateData) {
     const updateData = {
       ...donateData,
       updatedAt: DateUtils.getCurrentISOTime(),
+      id: recordId,
     };
 
     if (baseService.mode !== "directus") {
       // Mock 模式
-      const mockDonate = {
-        id,
+      const mockData = {
         ...updateData,
       };
 
       console.warn("⚠️ 當前模式不為 Directus，百元贊助人更新成功");
       return {
         success: true,
-        data: mockDonate,
+        data: mockData,
         message: "Mock 模式：百元贊助人更新成功",
       };
     }
@@ -149,14 +145,14 @@ export class MonthlyDonateService {
         startTime: startTime,
         endpoint: `${getApiUrl(
           baseService.apiEndpoints.itemsMonthlyDonate
-        )}/${id}`,
+        )}/${recordId}`,
         requestBody: updateData, // ✅ 記錄請求 body
       };
 
       const myHeaders = await baseService.getAuthJsonHeaders();
       const url = `${getApiUrl(
         baseService.apiEndpoints.itemsMonthlyDonate
-      )}/${id}`;
+      )}/${recordId}`;
       const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "PATCH",
@@ -212,7 +208,7 @@ export class MonthlyDonateService {
       endpoint: `${getApiUrl(
         baseService.apiEndpoints.itemsMonthlyDonate
       )}/${recordId}`,
-      requestBody: currentDelete, // 刪除的資料
+      requestBody: currentDelete, // Log 刪除的資料
     };
 
     try {
@@ -480,7 +476,7 @@ export class MonthlyDonateService {
         endpoint: getApiUrl(
           `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
         ),
-        requestBody: currentDelete,
+        requestBody: currentDelete, // Log 刪除的資料
       };
 
       const myHeaders = await baseService.getAuthJsonHeaders();
