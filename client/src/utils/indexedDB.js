@@ -22,6 +22,55 @@ export class IndexedDBLogger {
     return this._dbConnection;
   }
 
+  // 深度清理物件，移除不可序列化的資料
+  deepClean(obj, seen = new WeakSet()) {
+    // 處理 null 和 undefined
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+
+    // 處理基本類型
+    if (typeof obj !== "object") {
+      // 移除函數和 Symbol
+      if (typeof obj === "function" || typeof obj === "symbol") {
+        return undefined;
+      }
+      return obj;
+    }
+
+    // 檢測循環引用
+    if (seen.has(obj)) {
+      return "[Circular Reference]";
+    }
+    seen.add(obj);
+
+    // 處理日期
+    if (obj instanceof Date) {
+      return obj.toISOString();
+    }
+
+    // 處理陣列
+    if (Array.isArray(obj)) {
+      return obj
+        .map((item) => this.deepClean(item, seen))
+        .filter((item) => item !== undefined);
+    }
+
+    // 處理一般物件
+    const cleaned = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = this.deepClean(obj[key], seen);
+        // 只保留可序列化的值
+        if (value !== undefined) {
+          cleaned[key] = value;
+        }
+      }
+    }
+
+    return cleaned;
+  }
+
   // 開啟或創建數據庫
   async openDatabase() {
     return new Promise((resolve, reject) => {
@@ -38,6 +87,7 @@ export class IndexedDBLogger {
       // 處理錯誤
       request.onerror = (event) => {
         console.error("IndexedDB 資料庫開啟失敗:", event.target.error);
+        const error = event.target.error;
         // 提供更具體的錯誤信息
         if (error.name === "QuotaExceededError") {
           reject(new Error("儲存空間不足，請清理舊日誌"));
@@ -84,19 +134,22 @@ export class IndexedDBLogger {
     try {
       const db = await this.openDatabase();
 
+      // 深度清理日誌資料
+      const cleanedEntry = this.deepClean(logEntry);
+
       return new Promise((resolve, reject) => {
         const transaction = db.transaction([this.storeName], "readwrite");
         const store = transaction.objectStore(this.storeName);
 
-        const request = store.add({
-          ...logEntry,
-          //id: Date.now() + Math.random().toString(36).substr(2, 9),
+        const logData = {
+          ...cleanedEntry,
           id: crypto.randomUUID(), // 標準且保證唯一
-          //id: `${Date.now()}-${crypto.getRandomValues(new Uint32Array(1))[0]}`, // 或使用更安全的方式
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
           url: window.location.href,
-        });
+        };
+
+        const request = store.add(logData);
 
         request.onsuccess = () => {
           console.log("日誌已保存到 IndexedDB");
@@ -120,7 +173,8 @@ export class IndexedDBLogger {
     const tx = db.transaction([this.storeName], "readwrite");
 
     for (const entry of logEntries) {
-      tx.objectStore(this.storeName).add(entry);
+      const cleanedEntry = this.deepClean(entry);
+      tx.objectStore(this.storeName).add(cleanedEntry);
     }
 
     await tx.complete;
@@ -365,8 +419,11 @@ export class IndexedDBLogger {
       const logsKey = "directus_logs_fallback";
       let logs = JSON.parse(localStorage.getItem(logsKey) || "[]");
 
+      // 清理資料
+      const cleanedEntry = this.deepClean(logEntry);
+
       // 限制數量
-      logs.unshift(logEntry);
+      logs.unshift(cleanedEntry);
       if (logs.length > 100) {
         logs = logs.slice(0, 100);
       }
