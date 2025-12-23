@@ -1,355 +1,343 @@
 <template>
-  <div class="main-content">
-    <div class="page-header">
-      <h2>日誌查看器</h2>
-      <p style="display: none">查看和管理系統 API 請求日誌</p>
-    </div>
-
-    <!-- 查詢區 -->
-    <div class="search-section">
-      <div class="search-form">
-        <div class="form-group">
-          <label style="display: none" for="searchQuery">查詢條件</label>
-          <div class="search-input-group">
-            <el-input
-              v-model="filter.search"
-              placeholder="搜尋日誌內容..."
-              @keyup.enter="searchLogs"
-              :disabled="loading"
-              clearable
-              size="large"
-            />
-
-            <el-input
-              v-model="filter.endpoint"
-              placeholder="端點路徑"
-              :disabled="loading"
-              clearable
-              size="large"
-              style="max-width: 200px"
-            />
-
-            <el-select
-              v-model="filter.method"
-              placeholder="請求方法"
-              :disabled="loading"
-              clearable
-              size="large"
-              style="max-width: 150px"
-            >
-              <el-option label="GET" value="GET" />
-              <el-option label="POST" value="POST" />
-              <el-option label="PUT" value="PUT" />
-              <el-option label="PATCH" value="PATCH" />
-              <el-option label="DELETE" value="DELETE" />
-            </el-select>
-
-            <el-input
-              v-model="filter.status"
-              placeholder="狀態碼"
-              :disabled="loading"
-              clearable
-              size="large"
-              style="max-width: 120px"
-            />
-
-            <el-button
-              type="primary"
-              @click="searchLogs"
-              :loading="loading"
-              size="large"
-            >
-              {{ loading ? "查詢中..." : "查詢" }}
-            </el-button>
-
-            <el-button @click="resetFilters" :disabled="loading" size="large">
-              清空
-            </el-button>
-          </div>
-
-          <div class="date-filter-row">
-            <label>日期範圍:</label>
-            <el-date-picker
-              v-model="filter.dateFrom"
-              type="date"
-              placeholder="開始日期"
-              size="large"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
-              :disabled="loading"
-            />
-            <span>至</span>
-            <el-date-picker
-              v-model="filter.dateTo"
-              type="date"
-              placeholder="結束日期"
-              size="large"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
-              :disabled="loading"
-            />
-          </div>
-
-          <p class="search-hint">💡 提示: 搜尋關鍵字,系統會自動匹配相關欄位</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 統計卡片 -->
-    <div class="stats-cards" style="display: none">
-      <el-card class="stat-card">
-        <template #header>
-          <div class="stat-header">
-            <span class="stat-icon">📊</span>
-            <span class="stat-title">總日誌數</span>
-          </div>
-        </template>
-        <div class="stat-content">
-          <h3>{{ pagination.total }}</h3>
-        </div>
-      </el-card>
-
-      <el-card class="stat-card">
-        <template #header>
-          <div class="stat-header">
-            <span class="stat-icon">✅</span>
-            <span class="stat-title">成功請求</span>
-          </div>
-        </template>
-        <div class="stat-content">
-          <h3>{{ successCount }}</h3>
-        </div>
-      </el-card>
-
-      <el-card class="stat-card">
-        <template #header>
-          <div class="stat-header">
-            <span class="stat-icon">❌</span>
-            <span class="stat-title">失敗請求</span>
-          </div>
-        </template>
-        <div class="stat-content">
-          <h3>{{ errorCount }}</h3>
-        </div>
-      </el-card>
-
-      <el-card class="stat-card">
-        <template #header>
-          <div class="stat-header">
-            <span class="stat-icon">⚡</span>
-            <span class="stat-title">平均耗時</span>
-          </div>
-        </template>
-        <div class="stat-content">
-          <h3>{{ averageDuration }}ms</h3>
-        </div>
-      </el-card>
-    </div>
-
-    <!-- 查詢列表 -->
-    <div class="results-section">
-      <!-- 載入狀態 -->
-      <div v-if="loading" class="loading-state">
-        <el-result icon="info" title="載入中">
-          <template #extra>
-            <el-button type="primary" :loading="true">載入中</el-button>
-          </template>
-        </el-result>
-      </div>
-
-      <!-- 空狀態 -->
-      <div v-else-if="logs.length === 0" class="no-results">
-        <el-empty description="沒有找到日誌記錄">
-          <el-button type="primary" @click="refreshLogs">重新載入</el-button>
-        </el-empty>
-      </div>
-
-      <!-- 日誌列表 -->
-      <div v-else>
-        <div class="results-header">
-          <h3>查詢結果 (共 {{ pagination.total }} 筆)</h3>
-          <div class="header-actions">
-            <el-button @click="refreshLogs" :icon="Refresh" size="large">
-              刷新
-            </el-button>
-            <el-button
-              @click="clearOldLogs"
-              type="warning"
-              :icon="Delete"
-              size="large"
-            >
-              清理舊日誌
-            </el-button>
-            <el-button
-              @click="clearAllLogs"
-              type="danger"
-              :icon="DeleteFilled"
-              size="large"
-            >
-              清理全部
-            </el-button>
-          </div>
-        </div>
-
-        <!-- 日誌表格 -->
-        <el-table
-          :data="logs"
-          style="width: 100%"
-          :default-sort="{ prop: 'timestamp', order: 'descending' }"
-          stripe
-          border
-          :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
-          :row-class-name="getRowClassName"
-        >
-          <el-table-column label="時間" min-width="160" prop="timestamp">
-            <template #default="{ row }">
-              <div class="date-info">
-                <div>{{ formatTime(row.timestamp) }}</div>
-                <div class="time">{{ formatDate(row.timestamp) }}</div>
-              </div>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="方法" min-width="80" align="center">
-            <template #default="{ row }">
-              <el-tag :type="getMethodTagType(row.method)" size="small">
-                {{ row.method }}
-              </el-tag>
-            </template>
-          </el-table-column>
-
-          <el-table-column prop="endpoint" label="端點" min-width="200">
-            <template #default="{ row }">
-              <div class="activity-title">
-                <strong class="font-mono">{{ row.endpoint }}</strong>
-                <div class="activity-desc" v-if="row.context?.service">
-                  {{ row.context.service }} / {{ row.context.operation }}
-                </div>
-              </div>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="狀態" min-width="80" align="center">
-            <template #default="{ row }">
-              <el-tag :type="getStatusTagType(row.status)" size="small">
-                {{ row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="耗時" min-width="80" align="center">
-            <template #default="{ row }">
-              <span :class="getDurationClass(row.duration)">
-                {{ row.duration }}ms
-              </span>
-            </template>
-          </el-table-column>
-
-          <el-table-column
-            label="操作"
-            width="180"
-            fixed="right"
-            align="center"
-          >
-            <template #default="{ row }">
-              <div class="action-buttons">
-                <el-tooltip content="查看詳情" placement="top">
-                  <el-button circle @click="showLogDetail(row)" type="primary">
-                    👁️
-                  </el-button>
-                </el-tooltip>
-
-                <el-tooltip content="複製ID" placement="top">
-                  <el-button circle @click="copyLogId(row.id)" type="info">
-                    📋
-                  </el-button>
-                </el-tooltip>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
-
-        <!-- 分頁控件 -->
-        <div class="pagination">
-          <el-pagination
-            v-model:current-page="pagination.currentPage"
-            v-model:page-size="pagination.pageSize"
-            :total="pagination.total"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            background
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- 日誌詳情 Dialog -->
-    <el-dialog
-      v-model="showDetailModal"
-      title="日誌詳情"
-      width="700px"
-      align-center
-    >
-      <el-descriptions v-if="selectedLog" :column="1" border>
-        <el-descriptions-item label="時間">
-          {{ formatFullTime(selectedLog.timestamp) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="端點">
-          <span class="font-mono">{{ selectedLog.endpoint }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="方法">
-          <el-tag :type="getMethodTagType(selectedLog.method)">
-            {{ selectedLog.method }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="狀態碼">
-          <el-tag :type="getStatusTagType(selectedLog.status)">
-            {{ selectedLog.status }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="耗時">
-          <span :class="getDurationClass(selectedLog.duration)">
-            {{ selectedLog.duration }}ms
-          </span>
-        </el-descriptions-item>
-        <el-descriptions-item label="服務" v-if="selectedLog.context?.service">
-          {{ selectedLog.context.service }}
-        </el-descriptions-item>
-        <el-descriptions-item
-          label="操作"
-          v-if="selectedLog.context?.operation"
-        >
-          {{ selectedLog.context.operation }}
-        </el-descriptions-item>
-        <el-descriptions-item label="錯誤信息" v-if="selectedLog.errorText">
-          <el-alert
-            :title="selectedLog.errorText"
-            type="error"
-            :closable="false"
-          />
-        </el-descriptions-item>
-        <el-descriptions-item label="請求數據" v-if="selectedLog.requestBody">
+  <!-- 查詢區 -->
+  <div class="search-section">
+    <div class="search-form">
+      <div class="form-group">
+        <label style="display: none" for="searchQuery">查詢條件</label>
+        <div class="search-input-group">
           <el-input
-            v-model="requestBodyText"
-            type="textarea"
-            :rows="6"
-            readonly
+            v-model="filter.search"
+            placeholder="搜尋日誌內容..."
+            @keyup.enter="searchLogs"
+            :disabled="loading"
+            clearable
+            size="large"
           />
-        </el-descriptions-item>
-      </el-descriptions>
 
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="showDetailModal = false">關閉</el-button>
-          <el-button type="primary" @click="copyLogId(selectedLog.id)">
-            複製 ID
+          <el-input
+            v-model="filter.endpoint"
+            placeholder="端點路徑"
+            :disabled="loading"
+            clearable
+            size="large"
+            style="max-width: 200px"
+          />
+
+          <el-select
+            v-model="filter.method"
+            placeholder="請求方法"
+            :disabled="loading"
+            clearable
+            size="large"
+            style="max-width: 150px"
+          >
+            <el-option label="GET" value="GET" />
+            <el-option label="POST" value="POST" />
+            <el-option label="PUT" value="PUT" />
+            <el-option label="PATCH" value="PATCH" />
+            <el-option label="DELETE" value="DELETE" />
+          </el-select>
+
+          <el-input
+            v-model="filter.status"
+            placeholder="狀態碼"
+            :disabled="loading"
+            clearable
+            size="large"
+            style="max-width: 120px"
+          />
+
+          <el-button
+            type="primary"
+            @click="searchLogs"
+            :loading="loading"
+            size="large"
+          >
+            {{ loading ? "查詢中..." : "查詢" }}
           </el-button>
-        </span>
-      </template>
-    </el-dialog>
+
+          <el-button @click="resetFilters" :disabled="loading" size="large">
+            清空
+          </el-button>
+        </div>
+
+        <div class="date-filter-row">
+          <label>日期範圍:</label>
+          <el-date-picker
+            v-model="filter.dateFrom"
+            type="date"
+            placeholder="開始日期"
+            size="large"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            :disabled="loading"
+          />
+          <span>至</span>
+          <el-date-picker
+            v-model="filter.dateTo"
+            type="date"
+            placeholder="結束日期"
+            size="large"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            :disabled="loading"
+          />
+        </div>
+
+        <p class="search-hint">💡 提示: 搜尋關鍵字,系統會自動匹配相關欄位</p>
+      </div>
+    </div>
   </div>
+
+  <!-- 統計卡片 -->
+  <div class="stats-cards" style="display: none">
+    <el-card class="stat-card">
+      <template #header>
+        <div class="stat-header">
+          <span class="stat-icon">📊</span>
+          <span class="stat-title">總日誌數</span>
+        </div>
+      </template>
+      <div class="stat-content">
+        <h3>{{ pagination.total }}</h3>
+      </div>
+    </el-card>
+
+    <el-card class="stat-card">
+      <template #header>
+        <div class="stat-header">
+          <span class="stat-icon">✅</span>
+          <span class="stat-title">成功請求</span>
+        </div>
+      </template>
+      <div class="stat-content">
+        <h3>{{ successCount }}</h3>
+      </div>
+    </el-card>
+
+    <el-card class="stat-card">
+      <template #header>
+        <div class="stat-header">
+          <span class="stat-icon">❌</span>
+          <span class="stat-title">失敗請求</span>
+        </div>
+      </template>
+      <div class="stat-content">
+        <h3>{{ errorCount }}</h3>
+      </div>
+    </el-card>
+
+    <el-card class="stat-card">
+      <template #header>
+        <div class="stat-header">
+          <span class="stat-icon">⚡</span>
+          <span class="stat-title">平均耗時</span>
+        </div>
+      </template>
+      <div class="stat-content">
+        <h3>{{ averageDuration }}ms</h3>
+      </div>
+    </el-card>
+  </div>
+
+  <!-- 查詢列表 -->
+  <div class="results-section">
+    <!-- 載入狀態 -->
+    <div v-if="loading" class="loading-state">
+      <el-result icon="info" title="載入中">
+        <template #extra>
+          <el-button type="primary" :loading="true">載入中</el-button>
+        </template>
+      </el-result>
+    </div>
+
+    <!-- 空狀態 -->
+    <div v-else-if="logs.length === 0" class="no-results">
+      <el-empty description="沒有找到日誌記錄">
+        <el-button type="primary" @click="refreshLogs">重新載入</el-button>
+      </el-empty>
+    </div>
+
+    <!-- 日誌列表 -->
+    <div v-else>
+      <div class="results-header">
+        <h3>查詢結果 (共 {{ pagination.total }} 筆)</h3>
+        <div class="header-actions">
+          <el-button @click="refreshLogs" :icon="Refresh" size="large">
+            刷新
+          </el-button>
+          <el-button
+            @click="clearOldLogs"
+            type="warning"
+            :icon="Delete"
+            size="large"
+          >
+            清理舊日誌
+          </el-button>
+          <el-button
+            @click="clearAllLogs"
+            type="danger"
+            :icon="DeleteFilled"
+            size="large"
+          >
+            清理全部
+          </el-button>
+        </div>
+      </div>
+
+      <!-- 日誌表格 -->
+      <el-table
+        :data="logs"
+        style="width: 100%"
+        :default-sort="{ prop: 'timestamp', order: 'descending' }"
+        stripe
+        border
+        :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
+        :row-class-name="getRowClassName"
+      >
+        <el-table-column label="時間" min-width="160" prop="timestamp">
+          <template #default="{ row }">
+            <div class="date-info">
+              <div>{{ formatTime(row.timestamp) }}</div>
+              <div class="time">{{ formatDate(row.timestamp) }}</div>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="方法" min-width="80" align="center">
+          <template #default="{ row }">
+            <el-tag :type="getMethodTagType(row.method)" size="small">
+              {{ row.method }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="endpoint" label="端點" min-width="200">
+          <template #default="{ row }">
+            <div class="activity-title">
+              <strong class="font-mono">{{ row.endpoint }}</strong>
+              <div class="activity-desc" v-if="row.context?.service">
+                {{ row.context.service }} / {{ row.context.operation }}
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="狀態" min-width="80" align="center">
+          <template #default="{ row }">
+            <el-tag :type="getStatusTagType(row.status)" size="small">
+              {{ row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="耗時" min-width="80" align="center">
+          <template #default="{ row }">
+            <span :class="getDurationClass(row.duration)">
+              {{ row.duration }}ms
+            </span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="操作" width="180" fixed="right" align="center">
+          <template #default="{ row }">
+            <div class="action-buttons">
+              <el-tooltip content="查看詳情" placement="top">
+                <el-button circle @click="showLogDetail(row)" type="primary">
+                  👁️
+                </el-button>
+              </el-tooltip>
+
+              <el-tooltip content="複製ID" placement="top">
+                <el-button circle @click="copyLogId(row.id)" type="info">
+                  📋
+                </el-button>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分頁控件 -->
+      <div class="pagination">
+        <el-pagination
+          v-model:current-page="pagination.currentPage"
+          v-model:page-size="pagination.pageSize"
+          :total="pagination.total"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          background
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- 日誌詳情 Dialog -->
+  <el-dialog
+    v-model="showDetailModal"
+    title="日誌詳情"
+    width="700px"
+    align-center
+  >
+    <el-descriptions v-if="selectedLog" :column="1" border>
+      <el-descriptions-item label="時間">
+        {{ formatFullTime(selectedLog.timestamp) }}
+      </el-descriptions-item>
+      <el-descriptions-item label="端點">
+        <span class="font-mono">{{ selectedLog.endpoint }}</span>
+      </el-descriptions-item>
+      <el-descriptions-item label="方法">
+        <el-tag :type="getMethodTagType(selectedLog.method)">
+          {{ selectedLog.method }}
+        </el-tag>
+      </el-descriptions-item>
+      <el-descriptions-item label="狀態碼">
+        <el-tag :type="getStatusTagType(selectedLog.status)">
+          {{ selectedLog.status }}
+        </el-tag>
+      </el-descriptions-item>
+      <el-descriptions-item label="耗時">
+        <span :class="getDurationClass(selectedLog.duration)">
+          {{ selectedLog.duration }}ms
+        </span>
+      </el-descriptions-item>
+      <el-descriptions-item label="服務" v-if="selectedLog.context?.service">
+        {{ selectedLog.context.service }}
+      </el-descriptions-item>
+      <el-descriptions-item label="操作" v-if="selectedLog.context?.operation">
+        {{ selectedLog.context.operation }}
+      </el-descriptions-item>
+      <el-descriptions-item label="錯誤信息" v-if="selectedLog.errorText">
+        <el-alert
+          :title="selectedLog.errorText"
+          type="error"
+          :closable="false"
+        />
+      </el-descriptions-item>
+      <el-descriptions-item
+        label="請求數據"
+        v-if="selectedLog.context.requestBody"
+      >
+        <el-input
+          v-model="requestBodyText"
+          type="textarea"
+          :rows="6"
+          readonly
+        />
+      </el-descriptions-item>
+    </el-descriptions>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="showDetailModal = false">關閉</el-button>
+        <el-button type="primary" @click="copyLogId(selectedLog.id)">
+          複製 ID
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -397,8 +385,8 @@ const averageDuration = computed(() => {
 });
 
 const requestBodyText = computed(() => {
-  if (!selectedLog.value?.requestBody) return "";
-  return JSON.stringify(selectedLog.value.requestBody, null, 2);
+  if (!selectedLog.value.context?.requestBody) return "";
+  return JSON.stringify(selectedLog.value.context.requestBody, null, 2);
 });
 
 // 初始化

@@ -13,17 +13,14 @@ export class IndexedDBLogger {
     // setInterval(() => {
     //   this.cleanupOldLogs(30);
     // }, 3600000);
-
   }
-
-
 
   async getConnection() {
     if (!this._dbConnection) {
       this._dbConnection = await this.openDatabase();
     }
     return this._dbConnection;
-  }  
+  }
 
   // 開啟或創建數據庫
   async openDatabase() {
@@ -84,8 +81,7 @@ export class IndexedDBLogger {
 
   // 添加日誌條目
   async addLog(logEntry) {
-    try {   
-
+    try {
       const db = await this.openDatabase();
 
       return new Promise((resolve, reject) => {
@@ -121,21 +117,21 @@ export class IndexedDBLogger {
   async addLogs(logEntries) {
     // 批次新增
     const db = await this.getConnection();
-    const tx = db.transaction([this.storeName], 'readwrite');
-    
+    const tx = db.transaction([this.storeName], "readwrite");
+
     for (const entry of logEntries) {
       tx.objectStore(this.storeName).add(entry);
     }
-    
+
     await tx.complete;
   }
 
   async flushLogs() {
     if (this._logQueue.length === 0) return;
-    
+
     const logs = [...this._logQueue];
     this._logQueue = [];
-    
+
     // 批次寫入
     await this.addLogsBatch(logs);
   }

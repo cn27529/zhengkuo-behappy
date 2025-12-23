@@ -55,303 +55,362 @@ export class MonthlyDonateService {
   }
 
   /**
-   * 創建新的百元贊助記錄
+   * 創建新的百元贊助人
    */
   async createMonthlyDonate(donateData) {
     try {
       const createISOTime = DateUtils.getCurrentISOTime();
       const donateId = await generateGitHashBrowser(createISOTime);
 
-      const newDonate = {
+      const processedData = {
         ...donateData,
         donateId,
         createdAt: createISOTime,
-        updatedAt: "",
-        updatedUser: "",
       };
 
       if (baseService.mode !== "directus") {
         // Mock 模式
         const mockDonate = {
-          id: Math.floor(Math.random() * 1000) + 1,
-          ...newDonate,
+          id: crypto.randomUUID(), // 標準且保證唯一
+          ...processedData,
         };
 
-        console.warn("⚠️ 當前模式不為 Directus，百元贊助記錄創建成功");
+        console.warn("⚠️ 當前模式不為 Directus，百元贊助人創建成功");
         return {
           success: true,
           data: mockDonate,
-          message: "Mock 模式：百元贊助記錄創建成功",
+          message: "Mock 模式：百元贊助人創建成功",
         };
-      } else {
-        const myHeaders = await baseService.getAuthJsonHeaders();
-        const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
-        const apiUrl = `${url}`;
-        const response = await fetch(apiUrl, {
-          method: "POST",
-          headers: myHeaders,
-          body: JSON.stringify(newDonate),
-        });
-
-        const result = await baseService.handleDirectusResponse(
-          response,
-          "成功創建百元贊助記錄"
-        );
-        return result;
       }
-    } catch (error) {
-      console.error("❌ 創建百元贊助記錄失敗:", error);
-      return {
-        success: false,
-        data: null,
-        message: `創建百元贊助記錄失敗: ${error.message}`,
+
+      const startTime = Date.now();
+      const logContext = {
+        service: "MonthlyDonateService",
+        operation: "createMonthlyDonate",
+        method: "POST",
+        startTime: startTime,
+        endpoint: getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate),
+        requestBody: processedData, // ✅ 記錄請求 body
       };
+
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const url = getApiUrl(baseService.apiEndpoints.itemsMonthlyDonate);
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(processedData),
+      });
+
+      // 計算實際耗時
+      const duration = Date.now() - startTime;
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功創建百元贊助人",
+        { ...logContext, duration }
+      );
+      return result;
+    } catch (error) {
+      console.error("❌ 創建百元贊助人失敗:", error);
+      return this.handleDirectusError(error);
     }
   }
 
   /**
-   * 更新百元贊助記錄
+   * 更新百元贊助人
    */
   async updateMonthlyDonate(id, donateData) {
-    try {
-      const updateData = {
-        ...donateData,
+    const updateData = {
+      ...donateData,
+      updatedAt: DateUtils.getCurrentISOTime(),
+    };
+
+    if (baseService.mode !== "directus") {
+      // Mock 模式
+      const mockDonate = {
+        id,
+        ...updateData,
       };
 
-      if (baseService.mode !== "directus") {
-        // Mock 模式
-        const mockDonate = {
-          id,
-          ...updateData,
-        };
-
-        console.warn("⚠️ 當前模式不為 Directus，百元贊助記錄更新成功");
-        return {
-          success: true,
-          data: mockDonate,
-          message: "Mock 模式：百元贊助記錄更新成功",
-        };
-      } else {
-        const myHeaders = await baseService.getAuthJsonHeaders();
-        const url = `${getApiUrl(
-          baseService.apiEndpoints.itemsMonthlyDonate
-        )}/${id}`;
-        const apiUrl = `${url}`;
-        const response = await fetch(apiUrl, {
-          method: "PATCH",
-          headers: myHeaders,
-          body: JSON.stringify(updateData),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await baseService.handleDirectusResponse(
-          response,
-          "成功更新百元贊助記錄"
-        );
-        return result;
-      }
-    } catch (error) {
-      console.error("❌ 更新百元贊助記錄失敗:", error);
+      console.warn("⚠️ 當前模式不為 Directus，百元贊助人更新成功");
       return {
-        success: false,
-        data: null,
-        message: `更新百元贊助記錄失敗: ${error.message}`,
+        success: true,
+        data: mockDonate,
+        message: "Mock 模式：百元贊助人更新成功",
       };
+    }
+
+    try {
+      const startTime = Date.now();
+      const logContext = {
+        service: "MonthlyDonateService",
+        operation: "updateMonthlyDonate",
+        method: "PATCH",
+        startTime: startTime,
+        endpoint: `${getApiUrl(
+          baseService.apiEndpoints.itemsMonthlyDonate
+        )}/${id}`,
+        requestBody: updateData, // ✅ 記錄請求 body
+      };
+
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const url = `${getApiUrl(
+        baseService.apiEndpoints.itemsMonthlyDonate
+      )}/${id}`;
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const duration = Date.now() - startTime;
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功更新百元贊助人",
+        { ...logContext, duration }
+      );
+      return result;
+    } catch (error) {
+      console.error("❌ 更新百元贊助人失敗:", error);
+      return this.handleDirectusError(error);
     }
   }
 
   /**
-   * 刪除百元贊助記錄
+   * 刪除百元贊助人
    */
-  async deleteMonthlyDonate(id) {
-    try {
-      if (baseService.mode !== "directus") {
-        // Mock 模式
-        console.warn("⚠️ 當前模式不為 Directus，百元贊助記錄刪除成功");
-        return {
-          success: true,
-          message: "Mock 模式：百元贊助記錄刪除成功",
-        };
-      } else {
-        const myHeaders = await baseService.getAuthJsonHeaders();
-        const url = `${baseService.apiEndpoints.itemsMonthlyDonate}/${id}`;
-        const apiUrl = `${url}`;
-        const response = await fetch(apiUrl, {
-          method: "DELETE",
-          headers: myHeaders,
-        });
+  async deleteMonthlyDonate(recordId) {
+    if (baseService.mode !== "directus") {
+      // Mock 模式
+      console.warn("⚠️ 當前模式不為 Directus，百元贊助人刪除成功");
+      return {
+        success: true,
+        message: "Mock 模式：百元贊助人刪除成功",
+      };
+    }
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        return {
-          success: true,
-          message: "百元贊助記錄刪除成功",
-        };
-      }
-    } catch (error) {
-      console.error("❌ 刪除百元贊助記錄失敗:", error);
+    const currentDelete = await this.getMonthlyDonateById(recordId);
+    if (!currentDelete) {
       return {
         success: false,
-        message: `刪除百元贊助記錄失敗: ${error.message}`,
+        message: `找不到 ID 為 ${recordId} 的百元贊助人`,
+        data: null,
       };
+    }
+
+    const startTime = Date.now();
+    const logContext = {
+      service: "MonthlyDonateService",
+      operation: "deleteMonthlyDonate",
+      method: "DELETE",
+      startTime: startTime,
+      endpoint: `${getApiUrl(
+        baseService.apiEndpoints.itemsMonthlyDonate
+      )}/${recordId}`,
+      requestBody: currentDelete, // 刪除的資料
+    };
+
+    try {
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const url = `${getApiUrl(
+        baseService.apiEndpoints.itemsMonthlyDonate
+      )}/${recordId}`;
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: myHeaders,
+      });
+
+      const duration = Date.now() - startTime;
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功刪除百元贊助人",
+        { ...logContext, duration }
+      );
+      return result;
+    } catch (error) {
+      console.error(`刪除百元贊助人失敗 (ID: ${recordId})`, error);
+      return this.handleDirectusError(error);
     }
   }
 
   // ========== donateItems 操作方法 ==========
 
   /**
-   * 新增 donateItem 到指定贊助記錄
+   * 新增指定贊助記錄
    */
   async addDonateItem(donateId, itemData) {
+    const donateItemsId = generateGitHash();
+    const newDonateItem = {
+      ...itemData,
+      donateItemsId: donateItemsId,
+      createdAt: DateUtils.getCurrentISOTime(),
+    };
+
+    if (baseService.mode !== "directus") {
+      // Mock 模式
+      console.warn("⚠️ 當前模式不為 Directus，贊助項目添加成功");
+      return {
+        success: true,
+        data: newDonateItem,
+        message: "Mock 模式：贊助項目添加成功",
+      };
+    }
+
     try {
-      if (baseService.mode !== "directus") {
-        // Mock 模式
-        const newDonateItem = {
-          ...itemData,
-          donateItemsId: DateUtils.getCurrentISOTime(),
-          createdAt: DateUtils.getCurrentISOTime(),
-          createdUser: "admin",
-          updatedAt: "",
-          updatedUser: "",
-        };
+      // 先獲取現有的贊助記錄
+      const donateResponse = await this.getMonthlyDonateById(donateId);
 
-        console.warn("⚠️ 當前模式不為 Directus，贊助項目添加成功");
-        return {
-          success: true,
-          data: newDonateItem,
-          message: "Mock 模式：贊助項目添加成功",
-        };
-      } else {
-        // 先獲取現有的贊助記錄
-        const donateResponse = await this.getMonthlyDonateById(donateId);
-
-        if (!donateResponse.success) {
-          return donateResponse;
-        }
-
-        const currentDonate = donateResponse.data;
-        const newDonateItem = {
-          ...itemData,
-          donateItemsId: generateGitHash(),
-        };
-
-        // 添加新項目到 donateItems 數組
-        const updatedDonateItems = [
-          ...(currentDonate.donateItems || []),
-          newDonateItem,
-        ];
-
-        // 更新整個贊助記錄
-        const updateData = {
-          donateItems: updatedDonateItems,
-        };
-
-        const myHeaders = await baseService.getAuthJsonHeaders();
-        const url = getApiUrl(
-          `${baseService.apiEndpoints.itemsMonthlyDonate}/${donateId}`
-        );
-        const apiUrl = `${url}`;
-        const response = await fetch(apiUrl, {
-          method: "PATCH",
-          headers: myHeaders,
-          body: JSON.stringify(updateData),
-        });
-
-        const result = await baseService.handleDirectusResponse(
-          response,
-          "成功添加贊助項目"
-        );
-        return result;
+      if (!donateResponse.success) {
+        return donateResponse;
       }
+
+      const currentDonate = donateResponse.data;
+      // 添加新項目到 donateItems 數組
+      const updatedDonateItems = [
+        ...(currentDonate.donateItems || []),
+        newDonateItem,
+      ];
+
+      // 更新整個贊助記錄
+      const processedData = {
+        donateItems: updatedDonateItems,
+        updatedAt: DateUtils.getCurrentISOTime(),
+      };
+
+      // ✅ 在 try 外面定義，確保 catch 也能訪問
+      const startTime = Date.now();
+      const logContext = {
+        service: "MonthlyDonateService",
+        operation: "addDonateItem",
+        method: "PATCH",
+        startTime: startTime,
+        endpoint: getApiUrl(
+          `${baseService.apiEndpoints.itemsMonthlyDonate}/${donateId}`
+        ),
+        requestBody: processedData,
+      };
+
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const url = getApiUrl(
+        `${baseService.apiEndpoints.itemsMonthlyDonate}/${donateId}`
+      );
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(processedData),
+      });
+
+      const duration = Date.now() - startTime;
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功添加贊助項目",
+        { ...logContext, duration }
+      );
+      return result;
     } catch (error) {
       console.error("❌ 添加贊助項目失敗:", error);
-      return {
-        success: false,
-        data: null,
-        message: `添加贊助項目失敗: ${error.message}`,
-      };
+      return this.handleDirectusError(error);
     }
   }
 
   /**
-   * 更新指定 donateItem
+   * 更新指定贊助記錄
    */
   async updateDonateItem(recordId, donateItemsId, itemData) {
+    if (baseService.mode !== "directus") {
+      // Mock 模式
+      const updatedItem = {
+        donateItemsId,
+        ...itemData,
+      };
+
+      console.warn("⚠️ 當前模式不為 Directus，贊助項目更新成功");
+      return {
+        success: true,
+        data: updatedItem,
+        message: "Mock 模式：贊助項目更新成功",
+      };
+    }
+
     try {
-      if (baseService.mode !== "directus") {
-        // Mock 模式
-        const updatedItem = {
-          donateItemsId,
-          ...itemData,
-        };
+      // 先獲取現有的贊助記錄
+      const donateResponse = await this.getMonthlyDonateById(recordId);
 
-        console.warn("⚠️ 當前模式不為 Directus，贊助項目更新成功");
-        return {
-          success: true,
-          data: updatedItem,
-          message: "Mock 模式：贊助項目更新成功",
-        };
-      } else {
-        // 先獲取現有的贊助記錄
-        const donateResponse = await this.getMonthlyDonateById(recordId);
-
-        if (!donateResponse.success) {
-          return donateResponse;
-        }
-
-        const currentDonate = donateResponse.data;
-        const donateItems = currentDonate.donateItems || [];
-
-        // 找到要更新的項目索引
-        const itemIndex = donateItems.findIndex(
-          (item) => item.donateItemsId === donateItemsId
-        );
-
-        if (itemIndex === -1) {
-          return {
-            success: false,
-            data: null,
-            message: `找不到 donateItemsId 為 ${donateItemsId} 的贊助項目`,
-          };
-        }
-
-        // 更新項目
-        const updatedItem = {
-          ...donateItems[itemIndex],
-          ...itemData,
-        };
-
-        donateItems[itemIndex] = updatedItem;
-
-        // 更新整個贊助記錄
-        const updateData = {
-          donateItems: donateItems,
-        };
-
-        const myHeaders = await baseService.getAuthJsonHeaders();
-        const utl = getApiUrl(
-          `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
-        );
-        const apiUrl = `${utl}`;
-        const response = await fetch(apiUrl, {
-          method: "PATCH",
-          headers: myHeaders,
-          body: JSON.stringify(updateData),
-        });
-
-        const result = await baseService.handleDirectusResponse(
-          response,
-          "成功更新贊助項目"
-        );
-        return result;
+      if (!donateResponse.success) {
+        return donateResponse;
       }
+
+      const currentDonate = donateResponse.data;
+      const donateItems = currentDonate.donateItems || [];
+
+      // 找到要更新的項目索引
+      const itemIndex = donateItems.findIndex(
+        (item) => item.donateItemsId === donateItemsId
+      );
+
+      if (itemIndex === -1) {
+        return {
+          success: false,
+          data: null,
+          message: `找不到 donateItemsId 為 ${donateItemsId} 的贊助項目`,
+        };
+      }
+
+      // 更新項目
+      const updatedItem = {
+        ...donateItems[itemIndex],
+        ...itemData,
+      };
+
+      donateItems[itemIndex] = updatedItem;
+
+      // 更新整個贊助記錄
+      const updateData = {
+        donateItems: donateItems,
+      };
+
+      const startTime = Date.now();
+      const logContext = {
+        service: "MonthlyDonateService",
+        operation: "updateDonateItem",
+        method: "PATCH",
+        startTime: startTime,
+        endpoint: getApiUrl(
+          `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
+        ),
+        requestBody: updateData,
+      };
+
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const utl = getApiUrl(
+        `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
+      );
+      const apiUrl = `${utl}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(updateData),
+      });
+
+      const duration = Date.now() - startTime;
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功更新贊助項目",
+        { ...logContext, duration }
+      );
+      return result;
     } catch (error) {
       console.error("❌ 更新贊助項目失敗:", error);
+      console.error(
+        `❌ 更新贊助項目失敗 (ID: ${recordId} donateItemsId: ${donateItemsId}) ${error.message}`
+      );
       return {
         success: false,
         data: null,
@@ -361,69 +420,92 @@ export class MonthlyDonateService {
   }
 
   /**
-   * 刪除指定 donateItem
+   * 刪除指定贊助記錄
    */
   async deleteDonateItem(recordId, itemsId) {
-    try {
-      if (baseService.mode !== "directus") {
-        // Mock 模式
-        console.warn("⚠️ 當前模式不為 Directus，贊助項目刪除成功");
-        return {
-          success: true,
-          message: "Mock 模式：贊助項目刪除成功",
-        };
-      } else {
-        // 先獲取現有的贊助記錄
-        const donateResponse = await this.getMonthlyDonateById(recordId);
-
-        if (!donateResponse.success) {
-          return donateResponse;
-        }
-
-        const currentDonate = donateResponse.data;
-        let donateItems = currentDonate.donateItems || [];
-
-        // 過濾掉要刪除的項目
-        const originalLength = donateItems.length;
-        donateItems = donateItems.filter(
-          (item) => item.donateItemsId !== itemsId
-        );
-
-        if (originalLength === donateItems.length) {
-          return {
-            success: false,
-            message: `找不到 donateItemsId 為 ${itemsId} 的贊助項目`,
-          };
-        }
-
-        // 更新整個贊助記錄
-        const updateData = {
-          donateItems: donateItems,
-        };
-
-        const myHeaders = await baseService.getAuthJsonHeaders();
-        const url = getApiUrl(
-          `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
-        );
-        const apiUrl = `${url}`;
-        const response = await fetch(apiUrl, {
-          method: "PATCH",
-          headers: myHeaders,
-          body: JSON.stringify(updateData),
-        });
-
-        const result = await baseService.handleDirectusResponse(
-          response,
-          "成功刪除贊助項目"
-        );
-        return result;
-      }
-    } catch (error) {
-      console.error("❌ 刪除贊助項目失敗:", error);
+    if (baseService.mode !== "directus") {
+      // Mock 模式
+      console.warn("⚠️ 當前模式不為 Directus，贊助項目刪除成功");
       return {
-        success: false,
-        message: `刪除贊助項目失敗: ${error.message}`,
+        success: true,
+        message: "Mock 模式：贊助項目刪除成功",
       };
+    }
+
+    try {
+      // 先獲取現有的贊助記錄
+      const donateResponse = await this.getMonthlyDonateById(recordId);
+
+      if (!donateResponse.success) {
+        return donateResponse;
+      }
+
+      const currentDonate = donateResponse.data;
+      let donateItems = currentDonate.donateItems || [];
+
+      let currentDelete = donateItems.find(
+        (item) => item.donateItemsId === itemsId
+      );
+      if (!currentDelete) {
+        return {
+          success: false,
+          message: `找不到 donateItemsId 為 ${itemsId} 的贊助項目`,
+        };
+      }
+
+      // 過濾掉要刪除的項目
+      const originalLength = donateItems.length;
+      donateItems = donateItems.filter(
+        (item) => item.donateItemsId !== itemsId
+      );
+
+      if (originalLength === donateItems.length) {
+        return {
+          success: false,
+          message: `找不到 donateItemsId 為 ${itemsId} 的贊助項目`,
+        };
+      }
+
+      // 更新整個贊助記錄
+      const updateData = {
+        donateItems: donateItems,
+      };
+
+      const startTime = Date.now();
+      const logContext = {
+        service: "MonthlyDonateService",
+        operation: "deleteDonateItem",
+        method: "PATCH",
+        startTime: startTime,
+        endpoint: getApiUrl(
+          `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
+        ),
+        requestBody: currentDelete,
+      };
+
+      const myHeaders = await baseService.getAuthJsonHeaders();
+      const url = getApiUrl(
+        `${baseService.apiEndpoints.itemsMonthlyDonate}/${recordId}`
+      );
+      const apiUrl = `${url}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(updateData),
+      });
+
+      const duration = Date.now() - startTime;
+      const result = await baseService.handleDirectusResponse(
+        response,
+        "成功刪除贊助項目",
+        { ...logContext, duration }
+      );
+      return result;
+    } catch (error) {
+      console.error(
+        `❌ 刪除贊助項目失敗: (ID: ${recordId}, itemsId: ${itemsId}) ${error.message}`
+      );
+      return this.handleDirectusError(error);
     }
   }
 
@@ -447,7 +529,7 @@ export class MonthlyDonateService {
   }
 
   /**
-   * 根據 ID 獲取單筆百元贊助記錄
+   * 根據 ID 獲取單筆百元贊助人
    */
   async getMonthlyDonateById(recordId) {
     try {
@@ -486,6 +568,9 @@ export class MonthlyDonateService {
     }
   }
 
+  /**
+   * 根據 donateId 獲取百元贊助人
+   */
   async getMonthlyDonateByDonateId(donateId) {
     try {
       if (baseService.mode !== "directus") {
@@ -527,7 +612,7 @@ export class MonthlyDonateService {
   }
 
   /**
-   * 根據 registrationId 獲取百元贊助記錄
+   * 根據 registrationId 獲取百元贊助人
    */
   async getMonthlyDonateByRegistrationId(registrationId) {
     try {
@@ -569,7 +654,7 @@ export class MonthlyDonateService {
   }
 
   /**
-   * 根據 donateType 獲取百元贊助記錄
+   * 根據 donateType 獲取百元贊助人
    */
   async getMonthlyDonatesByDonateType(donateType) {
     try {
@@ -673,19 +758,61 @@ export class MonthlyDonateService {
     }
   }
 
-  /**
-   * 獲取當前模式
-   */
+  // ========== 錯誤處理 ==========
+  handleDirectusError(error) {
+    // 檢查網路錯誤
+    if (
+      error.message.includes("Failed to fetch") ||
+      error.message.includes("NetworkError")
+    ) {
+      return {
+        success: false,
+        message: "Directus 服務未啟動或網路連接失敗",
+        errorCode: "DIRECTUS_NOT_AVAILABLE",
+        details: "請確保 Directus 服務正在運行",
+      };
+    }
+
+    // 檢查認證錯誤
+    if (error.message.includes("401") || error.message.includes("token")) {
+      return {
+        success: false,
+        message: "認證失敗，請重新登入",
+        errorCode: "UNAUTHORIZED",
+        details: error.message,
+      };
+    }
+
+    // 檢查權限錯誤
+    if (error.message.includes("403")) {
+      return {
+        success: false,
+        message: "沒有操作權限",
+        errorCode: "FORBIDDEN",
+        details: error.message,
+      };
+    }
+
+    return {
+      success: false,
+      message: "Directus 操作失敗",
+      errorCode: "DIRECTUS_ERROR",
+      details: error.message,
+    };
+  }
+
+  // ========== 模式管理 ==========
   getCurrentMode() {
     return baseService.mode;
   }
 
-  /**
-   * 設置模式
-   */
   setMode(mode) {
-    baseService.setMode(mode);
-    console.log(`✅ 切換到 ${mode} 模式`);
+    if (["mock", "backend", "directus"].includes(mode)) {
+      baseService.mode = mode;
+      console.log(`✅ 切換到 ${mode} 模式`);
+    } else {
+      console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
+    }
   }
 }
 

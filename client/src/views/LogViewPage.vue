@@ -1,9 +1,9 @@
 <template>
-  <div class="log-view-page">
+  <div class="main-content">
     <!-- 頁面標題 -->
     <div class="page-header">
-      <h1>📊 API 調用日誌查看器</h1>
-      <p>查看和分析所有 Directus API 的調用記錄</p>
+      <h2>📊 API 調用日誌查看器</h2>
+      <!-- <p>查看和分析所有 Directus API 的調用記錄</p> -->
     </div>
 
     <!-- 統計卡片 -->
@@ -26,17 +26,15 @@
       </div>
     </div>
 
-    <!-- LogViewer 組件 -->
-    <div class="log-viewer-container">
-      <LogViewer ref="logViewer" />
-    </div>
-
-    <!-- 導航按鈕 -->
-    <div class="navigation">
-      <button @click="goBack" class="btn-back">← 返回上一頁</button>
-      <button @click="exportLogs" class="btn-export" :disabled="isExporting">
-        {{ isExporting ? "匯出中..." : "📥 匯出日誌" }}
-      </button>
+    <LogViewer ref="logViewer" />
+    <div class="log-view-page">
+      <!-- 導航按鈕 -->
+      <div class="navigation">
+        <button @click="goBack" class="btn-back">← 返回上一頁</button>
+        <button @click="exportLogs" class="btn-export" :disabled="isExporting">
+          {{ isExporting ? "匯出中..." : "📥 匯出日誌" }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -188,22 +186,6 @@ defineExpose({
   margin: 0 auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, sans-serif;
-}
-
-.page-header {
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.page-header h1 {
-  color: #2c3e50;
-  margin-bottom: 10px;
-  font-size: 28px;
-}
-
-.page-header p {
-  color: #7f8c8d;
-  font-size: 16px;
 }
 
 .stats-cards {

@@ -22,7 +22,7 @@ export class RegistrationService {
         message:
           "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式",
         data: {
-          id: Date.now(),
+          id: crypto.randomUUID(), // 標準且保證唯一
           ...registrationData,
         },
       };
