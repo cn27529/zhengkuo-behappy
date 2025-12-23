@@ -908,7 +908,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   /**
    * 新增贊助人（包含贊助項目）
    */
-  const submitDonate = async (donateData) => {
+  const submitDonator = async (donateData) => {
     loading.value = true;
     error.value = null;
 
@@ -972,6 +972,76 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     } catch (err) {
       error.value = err.message;
       console.error("❌ 創建贊助異常:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * 刪除贊助人（包含所有贊助項目）
+   * @param {string|number} donateId - 贊助記錄的 donateId 或 id
+   */
+  const deleteDonator = async (donateId) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      // 查找要刪除的贊助記錄
+      const exDonateIndex = allDonates.value.findIndex(
+        (d) => d.id === donateId || d.donateId === donateId
+      );
+
+      if (exDonateIndex === -1) {
+        throw new Error(`找不到 donateId 為 ${donateId} 的贊助記錄`);
+      }
+
+      const exDonate = allDonates.value[exDonateIndex];
+      const donatorName = exDonate.name;
+
+      console.log(`🗑️ 準備刪除贊助人: ${donatorName}`, {
+        id: exDonate.id,
+        donateId: exDonate.donateId,
+        itemsCount: exDonate.donateItems?.length || 0,
+      });
+
+      if (baseService.mode !== "directus") {
+        // Mock 模式：直接刪除本地數據
+        allDonates.value.splice(exDonateIndex, 1);
+
+        console.log(`✅ Mock 模式：成功刪除贊助人 ${donatorName}`);
+        console.warn("⚠️ 當前模式不為 Directus，成功刪除數據");
+
+        return {
+          success: true,
+          message: `贊助人 ${donatorName} 已刪除(Mock 模式)`,
+          data: { name: donatorName },
+        };
+      }
+
+      // Directus 模式：調用 API
+      const result = await monthlyDonateService.deleteMonthlyDonate(
+        exDonate.id // 使用數據庫中的 ID
+      );
+
+      if (result.success) {
+        // 更新本地數據：刪除記錄
+        allDonates.value.splice(exDonateIndex, 1);
+
+        console.log(`✅ 成功刪除贊助人: ${donatorName}`);
+        return {
+          success: true,
+          message: `贊助人 ${donatorName} 已刪除`,
+          data: result.data,
+        };
+      } else {
+        error.value = result.message;
+        console.error("❌ 刪除贊助人失敗:", result.message);
+        return result;
+      }
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 刪除贊助人異常:", err);
       throw err;
     } finally {
       loading.value = false;
@@ -1402,7 +1472,8 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     // Actions
     testMonthGeneration, // ✅ 新增
     getAllDonates,
-    submitDonate,
+    submitDonator,
+    deleteDonator,
     addDonateItem,
     updateDonateItem,
     deleteDonateItem,
