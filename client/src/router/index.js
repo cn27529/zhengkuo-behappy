@@ -21,7 +21,7 @@ const routes = [
     component: () => import("../views/AnimatedNumber.vue"),
   },
   {
-    path: "/donate-list",
+    path: "/monthly-donate",
     title: "每月贊助",
     component: () => import("../views/MonthlyDonate.vue"),
     meta: { requiresAuth: true },

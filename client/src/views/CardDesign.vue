@@ -229,16 +229,16 @@ import { useCardStore } from "../stores/cardStore.js";
 import { Delete } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { usePageStateStore } from "../stores/pageStateStore.js";
-import { useRegistrationStore } from "../stores/registrationStore.js";
+//import { useRegistrationStore } from "../stores/registrationStore.js";
 
 // 使用卡片 store
 const cardStore = useCardStore();
 const pageStateStore = usePageStateStore();
-const registrationStore = useRegistrationStore();
+//const registrationStore = useRegistrationStore();
 
 // DOM 引用
 const dropZoneRef = ref(null);
-const cardContainerRef = ref(null);
+//const cardContainerRef = ref(null);
 const cardBgRef = ref(null);
 const cardBgImageSrc = ref("/src/data/card-template-zk01b.png"); // 預設卡片模版
 

@@ -1,6 +1,6 @@
 <template>
   <!-- 查詢區 -->
-  <div class="search-section">
+  <div class="search-section" style="display: none">
     <div class="search-form">
       <div class="form-group">
         <label style="display: none" for="searchQuery">查詢條件</label>
@@ -64,22 +64,20 @@
         <div class="date-filter-row">
           <label>日期範圍:</label>
           <el-date-picker
-            :locale="zhTW"
             v-model="filter.dateFrom"
             type="date"
             placeholder="開始日期"
-            size="large"
+            size="small"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
             :disabled="loading"
           />
           <span>至</span>
           <el-date-picker
-            :locale="zhTW"
             v-model="filter.dateTo"
             type="date"
             placeholder="結束日期"
-            size="large"
+            size="small"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
             :disabled="loading"
@@ -344,10 +342,10 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
-import zhTW from "element-plus/dist/locale/zh-tw.mjs"; // 導入中文語言包
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Refresh, Delete } from "@element-plus/icons-vue";
 import { indexedDBLogger } from "../utils/indexedDB.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 // 響應式數據
 const logs = ref([]);
@@ -544,19 +542,15 @@ function handleCurrentChange(newPage) {
 
 // 格式化函數
 function formatTime(timestamp) {
-  return new Date(timestamp).toLocaleTimeString("zh-TW", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  return DateUtils.formatTime(timestamp);
 }
 
 function formatDate(timestamp) {
-  return new Date(timestamp).toLocaleDateString("zh-TW");
+  return DateUtils.formatDate(timestamp);
 }
 
 function formatFullTime(timestamp) {
-  return new Date(timestamp).toLocaleString("zh-TW");
+  return DateUtils.formatFullTime(timestamp);
 }
 
 // 樣式函數

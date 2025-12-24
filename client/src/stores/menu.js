@@ -71,7 +71,7 @@ export const useMenuStore = defineStore("menu", () => {
     {
       id: 7,
       name: "每月贊助",
-      path: "/donate-list",
+      path: "/monthly-donate",
       icon: "🈷️",
       component: "MonthlyDonate",
       requiredAuth: true,

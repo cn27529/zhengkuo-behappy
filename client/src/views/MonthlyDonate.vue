@@ -613,7 +613,7 @@
 
             <el-table-column prop="createdAt" label="建立時間" width="150">
               <template #default="{ row }">
-                {{ formatDate(row.createdAt) }}
+                {{ formatDateLong(row.createdAt) }}
               </template>
             </el-table-column>
             <el-table-column label="操作" width="120" align="center">
@@ -638,7 +638,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive, watch } from "vue";
+import { h, ref, computed, onMounted, reactive, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Edit, View, Search } from "@element-plus/icons-vue";
 import { useMonthlyDonateStore } from "../stores/monthlyDonateStore.js";
@@ -646,7 +646,7 @@ import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import IconSelector from "../components/IconSelector.vue";
 import { storeToRefs } from "pinia";
-import { baseService } from "../services/baseService.js";
+//import { baseService } from "../services/baseService.js";
 
 const monthlyDonateStore = useMonthlyDonateStore();
 
@@ -959,7 +959,7 @@ const formatMonth = (yearMonth) => {
   return `${year.toString().slice(-2)}年${parseInt(month)}`; //縮小為"25年9"字樣
 };
 
-const formatDate = (dateString) => {
+const formatDateLong = (dateString) => {
   return DateUtils.formatDateLong(dateString);
 };
 
@@ -1030,13 +1030,20 @@ const handleDeleteDonator = async (donator) => {
 
     // 確認對話框 - 顯示詳細信息
     await ElMessageBox.confirm(
-      `確定要刪除贊助人「${donator.name}」嗎？\n\n` +
-        `📊 統計信息：\n` +
-        `• 贊助項目：${itemsCount} 個\n` +
-        `• 總金額：${totalAmount.toLocaleString()} 元\n` +
-        `• 總月份：${totalMonths} 個月\n\n` +
-        `⚠️ 此操作將刪除該贊助人的所有贊助記錄，且無法恢復！`,
-      "確認刪除贊助人",
+      // `確定要刪除贊助人「${donator.name}」嗎？\n\n<br/>` +
+      //   `📊 統計信息：\n\n` +
+      //   `• 贊助項目：${itemsCount} 個\n\n` +
+      //   `• 總金額：${totalAmount.toLocaleString()} 元\n\n` +
+      //   `• 總月份：${totalMonths} 個月\n\n` +
+      //   `⚠️ 此操作將刪除該贊助人的所有贊助記錄，且無法恢復！`,
+      h("div", [
+        h("p", `📊 統計信息\n\n`),
+        h("p", `贊助項目：${itemsCount} 個\n\n`),
+        h("p", `總金額：${totalAmount.toLocaleString()} 元\n\n`),
+        h("p", `總月份：${totalMonths} 個月\n\n`),
+        h("p", `⚠️ 此操作將刪除該贊助人的所有贊助記錄，且無法恢復！`),
+      ]),
+      `確定刪除贊助人「${donator.name}」嗎？`,
       {
         confirmButtonText: "確定刪除",
         cancelButtonText: "取消",
@@ -1093,38 +1100,40 @@ const handleDeleteDonator = async (donator) => {
 };
 
 // 刪除前的二次確認（可選的額外安全措施）
-const confirmDeleteDonator = async (donator) => {
+const handleConfirmDeleteDonator = async (donator) => {
   // 如果贊助項目很多，要求輸入名稱確認
-  if (donator.donateItems?.length > 5) {
-    try {
-      const { value: inputName } = await ElMessageBox.prompt(
-        `贊助人「${donator.name}」有 ${donator.donateItems.length} 個贊助項目。\n` +
-          `為了安全起見，請輸入贊助人姓名以確認刪除：`,
-        "二次確認",
-        {
-          confirmButtonText: "確定刪除",
-          cancelButtonText: "取消",
-          inputPattern: /.+/,
-          inputErrorMessage: "請輸入贊助人姓名",
-          inputPlaceholder: donator.name,
-        }
-      );
+  // if (donator.donateItems?.length > 5) {
+  // } else {
+  //   // 直接刪除
+  //   await handleDeleteDonator(donator);
+  // }
 
-      if (inputName !== donator.name) {
-        ElMessage.warning("輸入的姓名不正確，已取消刪除");
-        return;
+  // 要求輸入名稱確認
+  try {
+    const { value: inputName } = await ElMessageBox.prompt(
+      `贊助人「${donator.name}」有 ${donator.donateItems.length} 個贊助項目。\n` +
+        `為了安全起見，請輸入贊助人姓名以確認刪除：`,
+      "二次確認",
+      {
+        confirmButtonText: "確定刪除",
+        cancelButtonText: "取消",
+        inputPattern: /.+/,
+        inputErrorMessage: "請輸入贊助人姓名",
+        inputPlaceholder: donator.name,
       }
+    );
 
-      // 繼續執行刪除
-      await handleDeleteDonator(donator);
-    } catch (err) {
-      if (err !== "cancel" && err !== "close") {
-        console.error("二次確認失敗:", err);
-      }
+    if (inputName !== donator.name) {
+      ElMessage.warning("輸入的姓名不正確，已取消刪除");
+      return;
     }
-  } else {
-    // 直接刪除
+
+    // 繼續執行刪除
     await handleDeleteDonator(donator);
+  } catch (err) {
+    if (err !== "cancel" && err !== "close") {
+      console.error("二次確認失敗:", err);
+    }
   }
 };
 

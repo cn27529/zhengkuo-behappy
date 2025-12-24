@@ -78,19 +78,16 @@ import { useAuthStore } from "./stores/authStore.js";
 import { useMenuStore } from "./stores/menu.js";
 import { ref, computed, onMounted, watch, provide, nextTick } from "vue";
 import appConfig from "./config/appConfig";
-import DevTools from "./components/DevTools.vue";
+//import DevTools from "./components/DevTools.vue";
 import { usePageStateStore } from "./stores/pageStateStore.js";
-import { ElMessage } from "element-plus";
+//import { ElMessage, ElMessageBox } from "element-plus";
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const menuStore = useMenuStore();
 const pageStateStore = usePageStateStore();
-
-//const appTitle = ref(appConfig.title);
 const appTitle = computed(() => appConfig.title);
-
 const myPageState = computed(() =>
   pageStateStore.loadPageState("registration")
 );

@@ -12,6 +12,19 @@ const DEFAULT_CONFIG = {
  */
 export const getCurrentISOTime = () => new Date().toISOString();
 
+export const formatFullTime = (timestamp) => {
+  const date = new Date(timestamp);
+  return date.toLocaleString(DEFAULT_CONFIG.locale, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: DEFAULT_CONFIG.hour12,
+    timeZone: DEFAULT_CONFIG.timeZone,
+  });
+};
+
 /**
  * 格式化日期為 YYYY-MM-DD 格式
  * @param {Date|string} date - 日期
@@ -89,9 +102,10 @@ export const formatTime = (dateString) => {
   try {
     const config = { ...DEFAULT_CONFIG };
     const date = new Date(dateString);
-    return date.toLocaleTimeString(config.locale, {
+    return date.toLocaleString(config.locale, {
       hour: "2-digit",
       minute: "2-digit",
+      second: "2-digit",
       hour12: config.hour12,
       timeZone: config.timeZone,
     });
@@ -188,6 +202,7 @@ export const isValidDate = (dateString) => {
 
 export const DateUtils = {
   getCurrentISOTime,
+  formatFullTime,
   formatDateYMD,
   formatDate,
   formatDateLong,

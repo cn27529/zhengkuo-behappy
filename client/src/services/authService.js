@@ -79,7 +79,7 @@ export class AuthService {
     };
 
     const passwordMap = {
-      admin: "123456",
+      admin: "admin@123456",
       zkuser01: "zk!123456",
       temple_staff: "zk!123456",
       volunteer: "zk!123456",

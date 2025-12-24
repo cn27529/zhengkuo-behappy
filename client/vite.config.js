@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 // import analyze from "rollup-plugin-analyzer";
- import { visualizer } from "rollup-plugin-visualizer";
+import { visualizer } from "rollup-plugin-visualizer";
 // import viteCompression from 'vite-plugin-compression';
 
 // https://vitejs.dev/config/

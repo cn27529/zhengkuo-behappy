@@ -89,19 +89,19 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { useAuthStore } from "../stores/authStore.js";
+//import { useRouter } from "vue-router";
+//import { ElMessage, ElMessageBox } from "element-plus";
+//import { useAuthStore } from "../stores/authStore.js";
 import { useActivityStore } from "../stores/activityStore.js";
 import AnimatedNumber from "../components/AnimatedNumber.vue";
 import { DateUtils } from "../utils/dateUtils.js";
 
-const router = useRouter();
-const authStore = useAuthStore();
+//const router = useRouter();
+//const authStore = useAuthStore();
 const activityStore = useActivityStore();
 
 // 从store获取數據
-const activities = computed(() => activityStore.activities);
+//const activities = computed(() => activityStore.activities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
 const upcomingActivities = computed(() => activityStore.upcomingActivities);
 const completedActivities = computed(() => activityStore.completedActivities);

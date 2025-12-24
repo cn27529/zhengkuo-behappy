@@ -130,7 +130,7 @@
           sortable
         >
           <template #default="{ row }">
-            <span class="date-time">{{ formatDate(row.createdAt) }}</span>
+            <span class="date-time">{{ formatDateLong(row.createdAt) }}</span>
           </template>
         </el-table-column>
 
@@ -147,7 +147,12 @@
               >
             </el-tooltip>
             <el-tooltip content="卡片設計" placement="top">
-              <el-button circle @click="handleCardDesign(row)" type="info" style="display: none;">
+              <el-button
+                circle
+                @click="handleCardDesign(row)"
+                type="info"
+                style="display: none"
+              >
                 💳
               </el-button>
             </el-tooltip>
@@ -435,7 +440,7 @@ const getStatusText = (state) => {
   return statusMap[state] || state;
 };
 
-const formatDate = (dateString) => {
+const formatDateLong = (dateString) => {
   return DateUtils.formatDateLong(dateString);
 };
 

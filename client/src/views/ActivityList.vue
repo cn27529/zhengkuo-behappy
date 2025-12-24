@@ -494,11 +494,10 @@
 
         <el-form-item label="活動日期" prop="date">
           <el-date-picker
-            :locale="zhTW"
             v-model="newActivity.date"
             type="datetime"
             placeholder="選擇日期時間"
-            style="width: 100%"
+            size="small"
             format="YYYY-MM-DD HH:mm"
             value-format="YYYY-MM-DD HH:mm"
             :disabled-date="disabledDate"
@@ -596,11 +595,10 @@
 
         <el-form-item label="活動日期" prop="date">
           <el-date-picker
-            :locale="zhTW"
             v-model="editingActivity.date"
             type="datetime"
             placeholder="選擇日期時間"
-            style="width: 100%"
+            size="small"
             format="YYYY-MM-DD HH:mm"
             value-format="YYYY-MM-DD HH:mm"
             :disabled-date="disabledDate"
@@ -693,7 +691,6 @@
 
 <script setup>
 import { ref, computed, onMounted, reactive } from "vue";
-import zhTW from "element-plus/dist/locale/zh-tw.mjs"; // 導入中文語言包
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
 import { useActivityStore } from "../stores/activityStore.js";
