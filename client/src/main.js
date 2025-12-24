@@ -4,10 +4,10 @@ import { createPinia } from "pinia";
 import { authService } from "./services/authService.js";
 
 import App from "./App.vue";
-import ElementPlus from "element-plus";
+//import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 // 導入中文語言包
-import zhTW from "element-plus/dist/locale/zh-tw.mjs";
+//import zhTW from "element-plus/dist/locale/zh-tw.mjs";
 import "./style.css";
 
 // 导入路由配置
@@ -17,7 +17,6 @@ import appConfig from "./config/appConfig.js";
 import { useMenuStore } from "./stores/menu.js";
 import { useRegistrationStore } from "./stores/registrationStore.js";
 import { usePageStateStore } from "./stores/pageStateStore.js";
-import { my } from "element-plus/es/locale/index.mjs";
 
 // 创建Pinia实例
 const pinia = createPinia();
@@ -65,10 +64,10 @@ const app = createApp(App);
 app.use(router);
 app.use(pinia);
 
-// 使用Element Plus组件库
-app.use(ElementPlus, {
-  locale: zhTW, // 使用中文語言包
-});
+// // 使用Element Plus组件库
+// app.use(ElementPlus, {
+//   locale: zhTW, // 使用中文語言包
+// });
 
 // 挂载應用
 app.mount("#app");

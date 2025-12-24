@@ -294,7 +294,6 @@
                 background
               />
             </div>
-
           </div>
         </el-tab-pane>
 
@@ -495,6 +494,7 @@
 
         <el-form-item label="活動日期" prop="date">
           <el-date-picker
+            :locale="zhTW"
             v-model="newActivity.date"
             type="datetime"
             placeholder="選擇日期時間"
@@ -596,6 +596,7 @@
 
         <el-form-item label="活動日期" prop="date">
           <el-date-picker
+            :locale="zhTW"
             v-model="editingActivity.date"
             type="datetime"
             placeholder="選擇日期時間"
@@ -692,6 +693,7 @@
 
 <script setup>
 import { ref, computed, onMounted, reactive } from "vue";
+import zhTW from "element-plus/dist/locale/zh-tw.mjs"; // 導入中文語言包
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
 import { useActivityStore } from "../stores/activityStore.js";
@@ -1360,7 +1362,6 @@ onMounted(() => {
   /* width: 100%; */
 }
 
-
 /* 響應式設計 */
 @media (max-width: 768px) {
   .search-input-group .el-input,
@@ -1420,6 +1421,4 @@ onMounted(() => {
     display: none;
   }
 }
-
-
 </style>

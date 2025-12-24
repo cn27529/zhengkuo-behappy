@@ -64,6 +64,7 @@
         <div class="date-filter-row">
           <label>日期範圍:</label>
           <el-date-picker
+            :locale="zhTW"
             v-model="filter.dateFrom"
             type="date"
             placeholder="開始日期"
@@ -74,6 +75,7 @@
           />
           <span>至</span>
           <el-date-picker
+            :locale="zhTW"
             v-model="filter.dateTo"
             type="date"
             placeholder="結束日期"
@@ -342,6 +344,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
+import zhTW from "element-plus/dist/locale/zh-tw.mjs"; // 導入中文語言包
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Refresh, Delete } from "@element-plus/icons-vue";
 import { indexedDBLogger } from "../utils/indexedDB.js";
