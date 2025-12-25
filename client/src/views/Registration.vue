@@ -684,7 +684,7 @@ const handleDeleteForm = (index) => {
   const formToDelete = registrationStore.formArray[index];
 
   ElMessageBox.confirm(
-    `確定要刪除「第${index + 1}張表單」嗎？此操作無法復原！`,
+    `確定要刪除「第${index + 1}張表單」嗎？⚠️ 此操作無法復原。`,
     "確認刪除",
     {
       confirmButtonText: "確定刪除",
@@ -860,7 +860,7 @@ const importFromBlessing = (person) => {
 // 重置表單處理
 const handleResetForm = () => {
   ElMessageBox.confirm(
-    "確定要清空所有表單資料嗎？此操作無法復原！",
+    "確定要清空所有表單資料嗎？⚠️ 此操作無法復原。",
     "確認清空",
     {
       confirmButtonText: "確定清空",
