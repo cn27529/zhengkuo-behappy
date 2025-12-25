@@ -936,7 +936,23 @@ const addBlessingPerson = registrationStore.addBlessingPerson;
 const removeBlessingPerson = registrationStore.removeBlessingPerson;
 const addAncestor = registrationStore.addAncestor;
 const removeAncestor = registrationStore.removeAncestor;
-const addSurvivor = registrationStore.addSurvivor;
+//const addSurvivor = registrationStore.addSurvivor;
+const addSurvivor = () => {
+  const response = registrationStore.addSurvivor();
+  if (response && response.status) {
+    if (response.status === "ok") {
+      ElMessage.success(response.message);
+    } else if (
+      response.status === "invalid" ||
+      response.status === "warning" ||
+      response.status === "duplicate" ||
+      response.status === "max"
+    ) {
+      ElMessage.warning(response.message);
+    }
+  }
+  return response;
+};
 const removeSurvivor = registrationStore.removeSurvivor;
 const copyBlessingAddress = registrationStore.copyBlessingAddress;
 

@@ -119,6 +119,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     // 祖先及陽上人
     const mySalvation = {
       address: "",
+      // 祖先
       ancestors: [
         {
           id: 1,
@@ -127,6 +128,7 @@ export const useRegistrationStore = defineStore("registration", () => {
           notes: "",
         },
       ],
+      // 陽上人
       survivors: [
         {
           id: 1,
@@ -614,6 +616,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // 增加祖先
   const addAncestor = () => {
     const newId =
       Math.max(
@@ -636,7 +639,13 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // 增加陽上人
   const addSurvivor = () => {
+    if (currentSurvivorsCount.value >= formConfig.value.maxSurvivors) {
+      setActionMessage("warning", "陽上人名單已達上限");
+      return { status: "max", message: "陽上人名單已達上限" };
+    }
+
     const newId =
       Math.max(
         ...registrationForm.value.salvation.survivors.map((s) => s.id),
@@ -659,6 +668,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
   };
 
+  // 從消災人員載入陽上人
   const importSurvivorFromBlessing = (person) => {
     const name = (person.name || "").trim();
     if (!name) {
@@ -672,6 +682,11 @@ export const useRegistrationStore = defineStore("registration", () => {
     if (exists) {
       setActionMessage("warning", "此人已在陽上人名單中");
       return { status: "duplicate", message: "此人已在陽上人名單中" };
+    }
+
+    if (currentSurvivorsCount.value >= formConfig.value.maxSurvivors) {
+      setActionMessage("warning", "陽上人名單已達上限");
+      return { status: "max", message: "陽上人名單已達上限" };
     }
 
     const newId =
@@ -720,6 +735,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     return { status: "ok", message: "已將聯絡人加入消災人員" };
   };
 
+  // 將聯絡人加入陽上人
   const addContactToSurvivors = () => {
     const name = (registrationForm.value.contact.name || "").trim();
     if (!name) {
