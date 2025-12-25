@@ -178,7 +178,7 @@
               </template>
             </el-table-column>
 
-            <!-- 動態生成24個月份的欄位 -->
+            <!-- 動態生成月份的欄位 -->
             <el-table-column
               v-for="month in monthColumns"
               :key="month.yearMonth"
@@ -198,7 +198,7 @@
                       :content="getMonthTooltip(row.months[month.yearMonth])"
                       placement="top"
                     >
-                      <span class="donate-indicator">💰</span>
+                      <span class="donate-indicator">♥️</span>
                     </el-tooltip>
                   </template>
                   <template v-else>
