@@ -1270,7 +1270,7 @@ const handleAddDonateItem = async () => {
 const deleteDonateItem = async (donator, item) => {
   try {
     await ElMessageBox.confirm(
-      `確定要刪除這個贊助項目嗎？\n金額：${item.price}元\n月份：${item.months.length}個月`,
+      `確定要刪除這個贊助項目嗎？\n金額：${item.price}元\n月份：${item.months.length}個月，⚠️ 此操作無法復原。`,
       "確認刪除",
       {
         confirmButtonText: "確定",

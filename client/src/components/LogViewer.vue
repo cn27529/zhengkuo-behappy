@@ -450,7 +450,7 @@ function refreshLogs() {
 async function clearOldLogs() {
   try {
     await ElMessageBox.confirm(
-      "確定要清理30天前的舊日誌嗎？此操作無法復原。",
+      "確定要清理30天前的舊日誌嗎？⚠️ 此操作無法復原。",
       "確認清理",
       {
         confirmButtonText: "確定",
@@ -481,7 +481,7 @@ async function clearAllLogs() {
 
     // 確認對話框
     await ElMessageBox.confirm(
-      `確定要清理全部 ${count} 條日誌記錄嗎？此操作無法復原！`,
+      `確定要清理全部 ${count} 條日誌記錄嗎？⚠️ 此操作無法復原。`,
       "確認清理全部日誌",
       {
         confirmButtonText: "確定清理",
