@@ -134,7 +134,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="180" fixed="right" align="center">
+        <el-table-column label="操作" width="200" fixed="right" align="center">
           <template #default="{ row }">
             <el-tooltip content="編輯表單" placement="top">
               <el-button circle @click="handleEdit(row)" type="primary">
@@ -147,14 +147,9 @@
               >
             </el-tooltip>
             <el-tooltip content="卡片設計" placement="top">
-              <el-button
-                circle
-                @click="handleCardDesign(row)"
-                type="info"
-                style="display: none"
+              <el-button type="info" circle @click="handleCardDesign(row)"
+                >💳</el-button
               >
-                💳
-              </el-button>
             </el-tooltip>
           </template>
         </el-table-column>

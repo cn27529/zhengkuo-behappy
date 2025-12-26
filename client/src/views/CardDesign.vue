@@ -65,7 +65,7 @@
     <section class="card-data">
       <h2 class="section-title">卡片數據</h2>
 
-      <div class="data-section" style="display: none">
+      <div class="data-section" style="display: block">
         <!-- <h3 class="section-title">卡片模版</h3> -->
         <div class="form-switcher">
           <div class="form-tabs">

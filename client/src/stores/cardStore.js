@@ -10,7 +10,8 @@ export const useCardStore = defineStore("card", () => {
   // 卡片模組列表
   const cardTemplates = ref([
     { id: "zk01b", name: "空白模版" },
-    { id: "zk02b", name: "中字模版" },
+    { id: "zk02b", name: "宗親模版" },
+    { id: "zk03a", name: "合家模版" },
     // 未來可以繼續添加更多模組
   ]);
 
