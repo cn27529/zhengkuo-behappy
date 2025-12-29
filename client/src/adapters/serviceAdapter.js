@@ -168,6 +168,7 @@ class ServiceAdapter {
    */
   get activityService() {
     return {
+      // CRUD 操作
       createActivity: (...args) =>
         this.callServiceMethod("activity", "createActivity", ...args),
       updateActivity: (...args) =>
@@ -178,14 +179,54 @@ class ServiceAdapter {
         this.callServiceMethod("activity", "getAllActivities", ...args),
       getActivityById: (...args) =>
         this.callServiceMethod("activity", "getActivityById", ...args),
+
+      // 查詢方法
+      getActivitiesByActivityId: (...args) =>
+        this.callServiceMethod(
+          "activity",
+          "getActivitiesByActivityId",
+          ...args
+        ),
+      getActivitiesByItemType: (...args) =>
+        this.callServiceMethod("activity", "getActivitiesByItemType", ...args),
+      getActivitiesByState: (...args) =>
+        this.callServiceMethod("activity", "getActivitiesByState", ...args),
       getUpcomingActivities: (...args) =>
         this.callServiceMethod("activity", "getUpcomingActivities", ...args),
       getCompletedActivities: (...args) =>
         this.callServiceMethod("activity", "getCompletedActivities", ...args),
+      getActivitiesByDateRange: (...args) =>
+        this.callServiceMethod("activity", "getActivitiesByDateRange", ...args),
+
+      // 統計方法
+      getMonthlyStats: (...args) =>
+        this.callServiceMethod("activity", "getMonthlyStats", ...args),
+
+      // 狀態管理
+      updateParticipants: (...args) =>
+        this.callServiceMethod("activity", "updateParticipants", ...args),
       completeActivity: (...args) =>
         this.callServiceMethod("activity", "completeActivity", ...args),
       cancelActivity: (...args) =>
         this.callServiceMethod("activity", "cancelActivity", ...args),
+
+      // 模式管理
+      getCurrentMode: (...args) =>
+        this.callServiceMethod("activity", "getCurrentMode", ...args),
+      setMode: (...args) =>
+        this.callServiceMethod("activity", "setMode", ...args),
+
+      // 錯誤處理
+      handleDirectusError: (...args) =>
+        this.callServiceMethod("activity", "handleDirectusError", ...args),
+
+      // 計算統計（如果有的話）
+      calculateMonthlyStats: (...args) =>
+        this.callServiceMethod("activity", "calculateMonthlyStats", ...args),
+
+      // 獲取模擬數據（如果有的話）
+      getMockMonthlyStats: (...args) =>
+        this.callServiceMethod("activity", "getMockMonthlyStats", ...args),
     };
   }
 
