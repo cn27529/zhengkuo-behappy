@@ -1,9 +1,23 @@
 // ========== 日期時間工具函數 ==========
 
-const DEFAULT_CONFIG = {
+const DEFAULT_CONFIG = Object.freeze({
   timeZone: import.meta.env.VITE_APP_TIMEZONE || "Asia/Taipei",
   locale: import.meta.env.VITE_APP_LOCALE || "zh-TW",
   hour12: import.meta.env.VITE_APP_HOUR12 !== "false",
+});
+
+const createFormatter = (options) => (dateString) => {
+  if (!dateString) return "-";
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleString(DEFAULT_CONFIG.locale, {
+      timeZone: DEFAULT_CONFIG.timeZone,
+      hour12: DEFAULT_CONFIG.hour12,
+      ...options,
+    });
+  } catch {
+    return dateString;
+  }
 };
 
 /**
@@ -12,18 +26,13 @@ const DEFAULT_CONFIG = {
  */
 export const getCurrentISOTime = () => new Date().toISOString();
 
-export const formatFullTime = (timestamp) => {
-  const date = new Date(timestamp);
-  return date.toLocaleString(DEFAULT_CONFIG.locale, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: DEFAULT_CONFIG.hour12,
-    timeZone: DEFAULT_CONFIG.timeZone,
-  });
-};
+export const formatFullTime = createFormatter({
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
 /**
  * 格式化日期為 YYYY-MM-DD 格式
@@ -32,10 +41,8 @@ export const formatFullTime = (timestamp) => {
  */
 export const formatDateYMD = (date) => {
   const d = new Date(date);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-${String(d.getDate()).padStart(2, "0")}`;
+  const pad = (num) => String(num).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 };
 
 /**
@@ -45,24 +52,11 @@ export const formatDateYMD = (date) => {
  * @param {string} timeZone - 本地時區
  * @returns {string} 格式化後的日期字符串
  */
-export const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  try {
-    const config = { ...DEFAULT_CONFIG };
-    const date = new Date(dateString);
-    return date.toLocaleString(config.locale, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      //hour: "2-digit",
-      //minute: "2-digit",
-      hour12: config.hour12,
-      timeZone: config.timeZone,
-    });
-  } catch {
-    return dateString;
-  }
-};
+export const formatDate = createFormatter({
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 
 /**
  * 格式化日期為本地時間長格式
@@ -71,24 +65,13 @@ export const formatDate = (dateString) => {
  * @param {string} timeZone - 本地時區
  * @returns {string} 本地時間格式化字符串
  */
-export const formatDateLong = (dateString) => {
-  if (!dateString) return "-";
-  try {
-    const config = { ...DEFAULT_CONFIG };
-    const date = new Date(dateString);
-    return date.toLocaleString(config.locale, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: config.hour12,
-      timeZone: config.timeZone,
-    });
-  } catch {
-    return dateString;
-  }
-};
+export const formatDateLong = createFormatter({
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
 /**
  * 格式化時間為 HH:mm 格式
@@ -97,22 +80,11 @@ export const formatDateLong = (dateString) => {
  * @param {string} timeZone - 本地時區
  * @returns {string} 格式化後的時間字符串
  */
-export const formatTime = (dateString) => {
-  if (!dateString) return "-";
-  try {
-    const config = { ...DEFAULT_CONFIG };
-    const date = new Date(dateString);
-    return date.toLocaleString(config.locale, {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: config.hour12,
-      timeZone: config.timeZone,
-    });
-  } catch {
-    return dateString;
-  }
-};
+export const formatTime = createFormatter({
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
 
 /**
  * 格式化日期時間為 YYYY-MM-DD HH:mm 格式
@@ -121,13 +93,8 @@ export const formatTime = (dateString) => {
  */
 export const formatDateTimeYMD = (date) => {
   const d = new Date(date);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(
-    2,
-    "0"
-  )}:${String(d.getMinutes()).padStart(2, "0")}`;
+  const pad = (num) => String(num).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
 /**
@@ -137,24 +104,13 @@ export const formatDateTimeYMD = (date) => {
  * @param {string} timeZone - 本地時區
  * @returns {string} 格式化後的日期時間字符串
  */
-export const formatDateTime = (dateString) => {
-  if (!dateString) return "-";
-  try {
-    const config = { ...DEFAULT_CONFIG };
-    const date = new Date(dateString);
-    return date.toLocaleString(config.locale, {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: config.hour12,
-      timeZone: config.timeZone,
-    });
-  } catch {
-    return dateString;
-  }
-};
+export const formatDateTime = createFormatter({
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
 /**
  * 計算一年前的日期
@@ -177,6 +133,12 @@ export const getMonthsAgo = (months) => {
   return date;
 };
 
+export const getDaysAgo = (days) => {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date;
+};
+
 /**
  * 檢查日期是否在指定時間範圍內
  * @param {string} dateString - 日期字符串
@@ -190,6 +152,13 @@ export const isWithinMonths = (dateString, months = 12) => {
   return targetDate >= cutoffDate;
 };
 
+export const isWithinDays = (dateString, days = 30) => {
+  if (!dateString) return false;
+  const targetDate = new Date(dateString);
+  const cutoffDate = getDaysAgo(days);
+  return targetDate >= cutoffDate;
+};
+
 /**
  * 檢查日期是否為有效日期
  * @param {string} dateString - 日期字符串
@@ -200,7 +169,7 @@ export const isValidDate = (dateString) => {
   return date instanceof Date && !isNaN(date);
 };
 
-export const DateUtils = {
+export const DateUtils = Object.freeze({
   getCurrentISOTime,
   formatFullTime,
   formatDateYMD,
@@ -211,6 +180,8 @@ export const DateUtils = {
   formatDateTimeYMD,
   getOneYearAgo,
   getMonthsAgo,
+  getDaysAgo,
   isWithinMonths,
+  isWithinDays,
   isValidDate,
-};
+});
