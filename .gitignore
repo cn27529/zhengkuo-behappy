@@ -148,4 +148,44 @@ server拷貝/*
 package-lock.json
 stats.html
 
-.vscode/*
+# 編輯器 / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Rust 編譯產物
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo 緩存
+Cargo.lock  # 如果是應用程式，保留此文件；如果是庫，則忽略
+.cargo/
+
+# 環境變數文件
+#.env
+#.env.local
+#.env.*.local
+
+# 數據庫文件
+#*.db
+#*.sqlite
+#*.sqlite3
+
+# 日誌文件
+*.log
+logs/
+
+# 測試覆蓋率
+tarpaulin-report.html
+cobertura.xml
+
+# 文檔
+/doc/
+
+# 其他
+*.orig
+.cache/
