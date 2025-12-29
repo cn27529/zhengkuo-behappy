@@ -26,6 +26,12 @@ const createFormatter = (options) => (dateString) => {
  */
 export const getCurrentISOTime = () => new Date().toISOString();
 
+/**
+ * 格式化完整時間（年/月/日 時:分）
+ * 自動將儲存的 UTC 時間轉換為用戶本地時區
+ * @param {string} dateString - UTC 格式日期字符串
+ * @returns {string} 格式化後的完整時間字符串
+ */
 export const formatFullTime = createFormatter({
   year: "numeric",
   month: "2-digit",
@@ -133,6 +139,11 @@ export const getMonthsAgo = (months) => {
   return date;
 };
 
+/**
+ * 計算 N 天前的日期
+ * @param {number} days - 天數
+ * @returns {Date} N 天前的日期
+ */
 export const getDaysAgo = (days) => {
   const date = new Date();
   date.setDate(date.getDate() - days);
@@ -152,6 +163,12 @@ export const isWithinMonths = (dateString, months = 12) => {
   return targetDate >= cutoffDate;
 };
 
+/**
+ * 檢查日期是否在指定天數範圍內
+ * @param {string} dateString - 日期字符串
+ * @param {number} days - 天數範圍（預設 30 天）
+ * @returns {boolean} 是否在範圍內
+ */
 export const isWithinDays = (dateString, days = 30) => {
   if (!dateString) return false;
   const targetDate = new Date(dateString);
@@ -169,6 +186,10 @@ export const isValidDate = (dateString) => {
   return date instanceof Date && !isNaN(date);
 };
 
+/**
+ * 日期工具函數集合
+ * 提供統一的日期時間處理接口
+ */
 export const DateUtils = Object.freeze({
   getCurrentISOTime,
   formatFullTime,
