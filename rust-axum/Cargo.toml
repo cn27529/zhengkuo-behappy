@@ -3,6 +3,9 @@
 name = "rust-backend"
 version = "0.1.0"
 edition = "2021"
+authors = ["cn27529 <cn27529@example.com>"]
+description = "Rust Axum API Services"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 # Web 框架

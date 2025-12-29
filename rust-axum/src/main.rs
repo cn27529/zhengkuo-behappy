@@ -6,7 +6,9 @@ use axum::{
     routing::get,
     Router,
     Extension,
+    Json,
 };
+use serde_json::{json, Value};
 use std::net::SocketAddr;
 use tower_http::cors::CorsLayer;
 
@@ -39,6 +41,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/", get(|| async { "Hello from Axum + SQLite!" }))
         .route("/health", get(health_check))
         .route("/db-test", get(db_test))
+        .route("/api/activities", get(get_activities))  
+        //.route("/api/auth/login", post(login))
         .layer(cors)
         .layer(Extension(pool));  // 添加數據庫連接池到 Extension
 
@@ -59,6 +63,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     axum::serve(listener, app).await?;
 
     Ok(())
+}
+
+
+async fn get_activities() -> Json<Value> {
+    Json(json!({
+        "data": [
+            {
+                "id": 1,
+                "name": "Rust 測試活動",
+                "participants": 100,
+                "date": "2024-01-01T00:00:00Z",
+                "state": "upcoming"
+            }
+        ],
+        "meta": {
+            "total": 1
+        }
+    }))
 }
 
 async fn health_check() -> &'static str {

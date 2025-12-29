@@ -1,11 +1,27 @@
+./client
+├── src
+│   ├── App.vue
+│   ├── main.js
+│   ├── rustServices
+│   │   ├── baseRustService.js
+│   │   ├── rustActivityService.js
+│   │   ├── rustAuthService.js
+│   │   └── rustServiceFactory.js
+│   ├── services
+│   │   ├── activityService.js
+│   │   ├── authService.js
+│   │   ├── baseService.js
+│   │   ├── monthlyDonateService.js
+│   │   ├── mydataService.js
+│   │   └── registrationService.js
+└── vite.config.js
+./db
+├── data.db
 ./rust-axum
-├── Cargo.lock
 ├── Cargo.toml
 ├── README.md
-├── data.db
-├── migrations
-│   └── 001_create_activities.sql
 └── src
+    ├── db.rs
     ├── handlers
     │   └── mod.rs
     ├── main.rs
@@ -17,5 +33,3 @@
     │   └── mod.rs
     └── utils
         └── mod.rs
-
-8 directories, 11 files

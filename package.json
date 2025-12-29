@@ -10,7 +10,10 @@
     "start:server": "cd server && npm run dev",
     "start:client": "cd client && npm run dev",
     "start:build:client": "cd client && npm run build:analyze",
-    "dev": "concurrently \"npm:start:server\" \"npm:start:client\" "
+    "start:build:server": "cd server && npm run build",
+    "start:build:rust": "cd rust-axum && cargo build",
+    "start:rust": "cd rust-axum && cargo run",
+    "dev": "concurrently \"npm:start:server\" \"npm:start:client\" \"npm:start:rust\" "
   },
   "keywords": [],
   "author": "",
