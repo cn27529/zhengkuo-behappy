@@ -157,13 +157,13 @@ stats.html
 .DS_Store
 
 # Rust 編譯產物
-/target/
+*/target/
 **/*.rs.bk
 *.pdb
 
 # Cargo 緩存
 Cargo.lock  # 如果是應用程式，保留此文件；如果是庫，則忽略
-.cargo/
+*/.cargo/
 
 # 環境變數文件
 #.env
@@ -177,7 +177,7 @@ Cargo.lock  # 如果是應用程式，保留此文件；如果是庫，則忽略
 
 # 日誌文件
 *.log
-logs/
+/logs/
 
 # 測試覆蓋率
 tarpaulin-report.html
