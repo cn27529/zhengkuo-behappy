@@ -4,8 +4,6 @@
   "description": "An zhengkuo-behappy app for eform app",
   "main": "index.js",
   "scripts": {
-    "build:netlify": "cd client && npm install && npm run build",
-    "install:netlify": "cd client && npm install",
     "test:mydata": "node scripts/testMydata.js",
     "test:mydata-create": "node scripts/testMydata.js --create",
     "test:hash": "node scripts/testGitHash.js",
