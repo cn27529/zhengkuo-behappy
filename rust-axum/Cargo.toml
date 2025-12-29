@@ -1,0 +1,47 @@
+# rust-axum/Cargo.toml
+[package]
+name = "rust-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Web 框架
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+
+# 序列化
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# 數據庫
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite"] }
+
+# 認證
+jsonwebtoken = "9.0"
+argon2 = "0.5"
+
+# 日期時間
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.6", features = ["serde", "v4"] }
+
+# 日誌
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# 錯誤處理
+anyhow = "1.0"
+thiserror = "1.0"
+
+# 環境變數
+dotenv = "0.15"
+
+# API 文檔
+utoipa = { version = "3", features = ["axum_extras"] }
+utoipa-swagger-ui = "3"
+
+[dev-dependencies]
+reqwest = "0.11"
