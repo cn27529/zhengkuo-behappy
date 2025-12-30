@@ -212,34 +212,6 @@ export class RegistrationService {
     }
   }
 
-  // 在 registrationService.js 中添加測試方法
-  async testSimpleQuery() {
-    try {
-      console.log("🧪 開始簡單查詢測試...");
-
-      // 測試 1: 最簡單的查詢
-      const url = `${getApiUrl(
-        baseService.apiEndpoints.itemsRegistration
-      )}?limit=1`;
-      const apiUrl = `${url}`;
-      console.log("📡 測試 URL:", apiUrl);
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: myHeaders,
-      });
-
-      const result = await baseService.handleDirectusResponse(
-        response,
-        "簡單查詢成功"
-      );
-      return result;
-    } catch (error) {
-      console.error("❌ 測試查詢異常:", error);
-      return { success: false, error: error.message };
-    }
-  }
-
   async deleteRegistration(id) {
     if (baseService.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
@@ -275,6 +247,8 @@ export class RegistrationService {
   }
 
   // ========== 查詢方法 ==========
+
+  // 根據報名表 formId 查詢報名表
   async getRegistrationsByFormId(formId) {
     return this.getAllRegistrations({
       filter: {
@@ -283,6 +257,7 @@ export class RegistrationService {
     });
   }
 
+  // 根據狀態查詢報名表
   async getRegistrationsByState(state) {
     return this.getAllRegistrations({
       filter: {
@@ -291,15 +266,18 @@ export class RegistrationService {
     });
   }
 
+  // 根據用戶 ID 查詢報名表
   async getRegistrationsByUser(userId) {
     return this.getAllRegistrations({
       filter: {
-        createdUser: { _eq: userId },
+        user_created: { _eq: userId },
       },
     });
   }
 
   // ========== 狀態管理 ==========
+
+  // 變更報名表狀態
   async submitRegistration(id) {
     return this.updateRegistration(id, {
       state: "submitted",
@@ -307,6 +285,7 @@ export class RegistrationService {
     });
   }
 
+  // 變更報名表狀態
   async completeRegistration(id) {
     return this.updateRegistration(id, {
       state: "completed",

@@ -4,12 +4,13 @@ import { DateUtils } from "../utils/dateUtils.js";
 
 export class RustRegistrationService {
   constructor() {
+    this.serviceName = "RustRegistrationService";
     this.base = baseRustService;
     this.endpoint = this.base.endpoints.registrations;
   }
 
   /**
-   * 創建活動（與 Directus 接口兼容）
+   * 創建報名登記（與 Directus 接口兼容）
    */
   async createRegistration(registrationData, context = {}) {
     const processedData = {
@@ -24,6 +25,7 @@ export class RustRegistrationService {
         body: JSON.stringify(processedData),
       },
       {
+        service: this.serviceName,
         operation: "createRegistration",
         ...context,
       }
@@ -31,7 +33,7 @@ export class RustRegistrationService {
   }
 
   /**
-   * 獲取所有活動（支持分頁、過濾、排序）
+   * 獲取所有報名登記（支持分頁、過濾、排序）
    */
   async getAllRegistrations(params = {}, context = {}) {
     const queryParams = new URLSearchParams();
@@ -76,7 +78,7 @@ export class RustRegistrationService {
   }
 
   /**
-   * 獲取單個活動
+   * 獲取單個報名登記
    */
   async getRegistrationById(id, context = {}) {
     return await this.base.rustFetch(
@@ -93,7 +95,7 @@ export class RustRegistrationService {
   }
 
   /**
-   * 更新活動
+   * 更新報名登記
    */
   async updateRegistration(id, registrationData, context = {}) {
     const updateData = {
@@ -108,6 +110,7 @@ export class RustRegistrationService {
         body: JSON.stringify(updateData),
       },
       {
+        service: this.serviceName,
         operation: "updateRegistration",
         id,
         ...context,
@@ -116,7 +119,7 @@ export class RustRegistrationService {
   }
 
   /**
-   * 刪除活動
+   * 刪除報名登記
    */
   async deleteRegistration(id, context = {}) {
     return await this.base.rustFetch(
@@ -125,6 +128,7 @@ export class RustRegistrationService {
         method: "DELETE",
       },
       {
+        service: this.serviceName,
         operation: "deleteRegistration",
         id,
         ...context,
@@ -132,18 +136,109 @@ export class RustRegistrationService {
     );
   }
 
-  /**
-   * 獲取活動統計（Rust 特有功能）
-   */
-  async getRegistrationStats(timeRange = "month", context = {}) {
+  // 根據報名表 formId 查詢報名表
+  async getRegistrationsByFormId(formId, context = {}) {
     return await this.base.rustFetch(
-      `${this.endpoint}/stats?range=${timeRange}`,
+      `${this.endpoint}/by-form-id/${formId}`,
       {
         method: "GET",
       },
       {
-        operation: "getRegistrationStats",
-        timeRange,
+        operation: "getRegistrationsByFormId",
+        formId,
+        ...context,
+      }
+    );
+  }
+
+  // 根據狀態查詢報名表
+  async getRegistrationsByState(state, context = {}) {
+    return await this.base.rustFetch(
+      `${this.endpoint}/by-state/${state}`,
+      {
+        method: "GET",
+      },
+      {
+        operation: "getRegistrationsByState",
+        state,
+        ...context,
+      }
+    );
+  }
+
+  // 根據用戶 ID 查詢報名表
+  async getRegistrationsByUser(userId, context = {}) {
+    return await this.base.rustFetch(
+      `${this.endpoint}/by-user/${userId}`,
+      {
+        method: "GET",
+      },
+      {
+        operation: "getRegistrationsByUser",
+        userId,
+        ...context,
+      }
+    );
+  }
+
+  // 變更報名表狀態
+  async submitRegistration(id, context = {}) {
+    const updateData = {
+      state: "submitted",
+      updatedAt: DateUtils.getCurrentISOTime(),
+    };
+
+    return this.updateRegistration(
+      id,
+      {
+        ...updateData,
+      },
+      {
+        service: this.serviceName,
+        operation: "submitRegistration",
+        id,
+        ...context,
+      }
+    );
+  }
+
+  // 變更報名表狀態
+  async completeRegistration(id, context = {}) {
+    const updateData = {
+      state: "completed",
+      updatedAt: DateUtils.getCurrentISOTime(),
+    };
+
+    return this.updateRegistration(
+      id,
+      {
+        ...updateData,
+      },
+      {
+        service: this.serviceName,
+        operation: "completeRegistration",
+        id,
+        ...context,
+      }
+    );
+  }
+
+  async saveDraft(id, registrationData, context = {}) {
+    const updateData = {
+      ...registrationData,
+      state: "saved",
+      updatedAt: DateUtils.getCurrentISOTime(),
+    };
+
+    return this.updateRegistration(
+      id,
+      {
+        ...updateData,
+      },
+      {
+        service: this.serviceName,
+        operation: "saveDraft",
+        id,
         ...context,
       }
     );
@@ -168,7 +263,7 @@ export class RustRegistrationService {
   }
 
   /**
-   * 搜索活動（全文搜索）
+   * 搜索報名登記（全文搜索）
    */
   async searchRegistrations(query, options = {}, context = {}) {
     return await this.base.rustFetch(
