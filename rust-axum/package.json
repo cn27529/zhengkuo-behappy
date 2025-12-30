@@ -1,0 +1,13 @@
+{
+  "name": "rust-axum",
+  "version": "1.0.0",
+  "description": "rust axum api server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cargo build",
+    "run": "cargo run"
+  },
+  "author": "cn27529",
+  "license": "MIT"
+}
