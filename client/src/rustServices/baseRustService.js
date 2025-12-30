@@ -1,5 +1,6 @@
 // src/rustServices/baseRustService.js
 import { DateUtils } from "../utils/dateUtils.js";
+import { indexedDBLogger } from "../utils/indexedDB.js";
 
 export class BaseRustService {
   constructor() {
@@ -8,7 +9,7 @@ export class BaseRustService {
     // 配置
     this.rustApiBaseUrl =
       import.meta.env.VITE_RUST_API_URL || "http://localhost:3000";
-    this.mode = import.meta.env.VITE_RUST_MODE || "mock"; // rust, mock, hybrid
+    this.mode = import.meta.env.VITE_RUST_MODE || "rust"; // rust, mock, hybrid
 
     // API 端點（簡潔的 RESTful 風格）
     this.endpoints = {
@@ -81,7 +82,7 @@ export class BaseRustService {
       }
 
       // 清除可能的 undefined 值
-      const cleanedOptions = {
+      const finalOptions = {
         ...defaultOptions,
         ...options,
         headers: {
@@ -91,39 +92,40 @@ export class BaseRustService {
       };
 
       // 移除 undefined 的頭部
-      Object.keys(cleanedOptions.headers).forEach((key) => {
-        if (cleanedOptions.headers[key] === undefined) {
-          delete cleanedOptions.headers[key];
+      Object.keys(finalOptions.headers).forEach((key) => {
+        if (finalOptions.headers[key] === undefined) {
+          delete finalOptions.headers[key];
         }
       });
 
       const url = this.getUrl(endpoint);
 
-      console.log("🔍 [Rust Fetch] 詳細調試:", {
+      console.log("🦀 [Rust] Fetch詳細調試:", {
         rustApiBaseUrl: this.rustApiBaseUrl,
         endpoint: endpoint,
         fullUrl: url,
-        method: cleanedOptions.method,
-        mode: cleanedOptions.mode,
-        credentials: cleanedOptions.credentials,
-        headers: cleanedOptions.headers,
-        hasBody: !!cleanedOptions.body,
+        method: finalOptions.method,
+        mode: finalOptions.mode,
+        credentials: finalOptions.credentials,
+        headers: finalOptions.headers,
+        hasBody: !!finalOptions.body,
       });
 
       // 日誌上下文
       logContext = {
         timestamp: DateUtils.getCurrentISOTime(),
-        service: "RustService",
+        //service: "BaseRustService",
+        service: context.service || "unknown",
         operation: context.operation || endpoint.split("/").pop() || "unknown",
         endpoint: url,
-        method: cleanedOptions.method || "GET",
+        method: finalOptions.method || "GET",
         startTime,
       };
 
-      console.log(`🦀 [Rust] 發送請求: ${cleanedOptions.method} ${url}`);
+      console.log(`🦀 [Rust] 發送請求: ${finalOptions.method} ${url}`);
 
       // 使用更簡單的 fetch，避免複雜配置
-      const response = await fetch(url, cleanedOptions);
+      const response = await fetch(url, finalOptions);
       const duration = Date.now() - startTime;
 
       console.log("✅🦀 [Rust] 收到響應:", {
@@ -185,16 +187,15 @@ export class BaseRustService {
         };
       }
 
-      return result;
-
       // // 更新性能指標
       // this.updateMetrics(duration, response.ok);
       // // Rust 專用響應處理
-      // const result = await this.handleRustResponse(response, {
+      // result = await this.handleRustResponse(response, {
       //   ...logContext,
       //   duration,
       // });
-      //return result;
+
+      return result;
     } catch (error) {
       console.error(`🦀 [Rust] 請求失敗:`, error);
 
@@ -404,7 +405,6 @@ export class BaseRustService {
     if (isSuccess) {
       this.metrics.successRequests++;
     }
-
     // 計算平均響應時間（加權移動平均）
     this.metrics.avgResponseTime =
       this.metrics.avgResponseTime * 0.9 + duration * 0.1;

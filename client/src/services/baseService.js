@@ -87,8 +87,6 @@ export class BaseService {
     }
   }
 
-  
-
   /**
    * indexedDB 過濾敏感信息
    */
@@ -182,7 +180,7 @@ export class BaseService {
       method: context.method || "GET",
       status: response?.status || 0,
       statusText: response?.statusText || "",
-      context: {  
+      context: {
         service: context.service || "unknown",
         operation: context.operation || "unknown",
         startTime: context.startTime || Date.now(),

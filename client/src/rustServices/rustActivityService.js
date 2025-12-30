@@ -4,8 +4,10 @@ import { DateUtils } from "../utils/dateUtils.js";
 
 export class RustActivityService {
   constructor() {
+    this.serviceName = "RustActivityService";
     this.base = baseRustService;
     this.endpoint = this.base.endpoints.activities;
+    console.log(`RustActivityService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
   // ========== 核心 CRUD 方法 ==========
@@ -26,6 +28,7 @@ export class RustActivityService {
         body: JSON.stringify(processedData),
       },
       {
+        service: this.serviceName,
         operation: "createActivity",
         ...context,
       }
@@ -121,6 +124,7 @@ export class RustActivityService {
         body: JSON.stringify(updateData),
       },
       {
+        service: this.serviceName,
         operation: "updateActivity",
         id,
         ...context,
@@ -138,6 +142,7 @@ export class RustActivityService {
         method: "DELETE",
       },
       {
+        service: this.serviceName,
         operation: "deleteActivity",
         id,
         ...context,

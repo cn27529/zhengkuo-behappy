@@ -1,12 +1,15 @@
 // src/services/activitiesService.js
-import { baseService, getApiUrl } from "./baseService.js";
+import { baseService } from "./baseService.js";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
 export class ActivityService {
   // ========== 建構函式 ==========
   constructor() {
-    console.log(`ActivityService 初始化: 當前模式為 ${baseService.mode}`);
+    this.serviceName = "ActivityService";
+    this.base = baseService;
+    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsActivity}`;
+    console.log(`ActivityService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
   // ========== 使用示例：不同的調用方式 ==========
@@ -15,7 +18,7 @@ export class ActivityService {
     const startTime = Date.now();
     const response = await fetch(url, { method: "GET" });
 
-    const result = await baseService.handleDirectusResponse(
+    const result = await this.base.handleDirectusResponse(
       response,
       "操作成功",
       {
@@ -63,7 +66,7 @@ export class ActivityService {
   async createActivity(activityData) {
     const createISOTime = DateUtils.getCurrentISOTime();
 
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn(
         "活動創建成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
       );
@@ -96,11 +99,11 @@ export class ActivityService {
     // ✅ 在 try 外面定義，確保 catch 也能訪問
     const startTime = Date.now();
     const logContext = {
-      service: "ActivityService",
+      service: this.serviceName,
       operation: "createActivity",
       method: "POST",
       startTime: startTime,
-      endpoint: getApiUrl(baseService.apiEndpoints.itemsActivity),
+      endpoint: this.endpoint,
       requestBody: processedData, // ✅ 記錄請求 body
     };
 
@@ -108,7 +111,7 @@ export class ActivityService {
       console.log("🚀 Directus 服務健康檢查中...");
 
       // 先檢查連線
-      const healthCheck = await baseService.checkConnection();
+      const healthCheck = await this.base.checkConnection();
       if (!healthCheck.online) {
         return {
           success: false,
@@ -119,8 +122,8 @@ export class ActivityService {
       }
       console.log("✅ Directus 服務健康檢查通過");
 
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const url = getApiUrl(baseService.apiEndpoints.itemsActivity);
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const url = this.endpoint;
       const apiUrl = `${url}`;
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -130,7 +133,7 @@ export class ActivityService {
 
       // 計算實際耗時
       const duration = Date.now() - startTime;
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功創建活動",
         { ...logContext, duration }
@@ -150,7 +153,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 更新結果
    */
   async updateActivity(recordId, activityData) {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -163,21 +166,17 @@ export class ActivityService {
     // ✅ 同樣在 try 外面定義
     const startTime = Date.now();
     const logContext = {
-      service: "ActivityService",
+      service: this.serviceName,
       operation: "updateActivity",
       method: "PATCH",
       startTime: startTime,
-      endpoint: `${getApiUrl(
-        baseService.apiEndpoints.itemsActivity
-      )}/${recordId}`,
+      endpoint: `${this.endpoint}/${recordId}`,
       requestBody: updateData, // ✅ 記錄請求 body
     };
 
     try {
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const url = `${getApiUrl(
-        baseService.apiEndpoints.itemsActivity
-      )}/${recordId}`;
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const url = `${this.endpoint}/${recordId}`;
 
       const response = await fetch(url, {
         method: "PATCH",
@@ -186,7 +185,7 @@ export class ActivityService {
       });
 
       const duration = Date.now() - startTime;
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功更新活動",
         { ...logContext, duration }
@@ -205,7 +204,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 刪除結果
    */
   async deleteActivity(recordId) {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -221,21 +220,17 @@ export class ActivityService {
 
     const startTime = Date.now();
     const logContext = {
-      service: "ActivityService",
+      service: this.serviceName,
       operation: "deleteActivity",
       method: "DELETE",
       startTime: startTime,
-      endpoint: `${getApiUrl(
-        baseService.apiEndpoints.itemsActivity
-      )}/${recordId}`,
+      endpoint: `${this.endpoint}/${recordId}`,
       requestBody: currentDelete, // 刪除的資料
     };
 
     try {
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const url = `${getApiUrl(
-        baseService.apiEndpoints.itemsActivity
-      )}/${recordId}`;
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const url = `${this.endpoint}/${recordId}`;
 
       const response = await fetch(url, {
         method: "DELETE",
@@ -243,7 +238,7 @@ export class ActivityService {
       });
 
       const duration = Date.now() - startTime;
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功刪除活動",
         { ...logContext, duration }
@@ -262,23 +257,21 @@ export class ActivityService {
    * @returns {Promise<Object>} 活動資料
    */
   async getActivityById(recordId) {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const url = `${getApiUrl(
-        baseService.apiEndpoints.itemsActivity
-      )}/${recordId}?fields=*`;
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const url = `${this.endpoint}/${recordId}?fields=*`;
 
       const response = await fetch(url, {
         method: "GET",
         headers: myHeaders,
       });
 
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功獲取活動"
       );
@@ -309,7 +302,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 活動列表
    */
   async getAllActivities(params = {}) {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -339,17 +332,17 @@ export class ActivityService {
         queryParams.append("offset", params.offset);
       }
 
-      const url = getApiUrl(baseService.apiEndpoints.itemsActivity);
+      const url = this.endpoint;
       const apiUrl = `${url}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
-      const myHeaders = await baseService.getAuthJsonHeaders();
+      const myHeaders = await this.base.getAuthJsonHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
       });
 
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功獲取所有活動"
       );
@@ -442,7 +435,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 月度統計數據
    */
   async getMonthlyStats() {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，返回模擬數據");
       return {
         success: true,
@@ -620,12 +613,12 @@ export class ActivityService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
-    return baseService.mode;
+    return this.base.mode;
   }
 
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
-      baseService.mode = mode;
+      this.base.mode = mode;
       console.log(`✅ 切換到 ${mode} 模式`);
     } else {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
