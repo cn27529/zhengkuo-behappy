@@ -263,22 +263,107 @@ class ServiceAdapter {
   }
 
   /**
-   * MonthlyDonate 服務代理
+   * MonthlyDonate 服務代理（補充完整所有方法）
    */
   get monthlyDonateService() {
     return {
-      createMonthlyDonate: (...args) =>
-        this.callServiceMethod("monthlyDonate", "createMonthlyDonate", ...args),
-      updateMonthlyDonate: (...args) =>
-        this.callServiceMethod("monthlyDonate", "updateMonthlyDonate", ...args),
-      deleteMonthlyDonate: (...args) =>
-        this.callServiceMethod("monthlyDonate", "deleteMonthlyDonate", ...args),
+      // 核心 CRUD 操作
       getAllMonthlyDonates: (...args) =>
         this.callServiceMethod(
           "monthlyDonate",
           "getAllMonthlyDonates",
           ...args
         ),
+      createMonthlyDonate: (...args) =>
+        this.callServiceMethod("monthlyDonate", "createMonthlyDonate", ...args),
+      updateMonthlyDonate: (...args) =>
+        this.callServiceMethod("monthlyDonate", "updateMonthlyDonate", ...args),
+      deleteMonthlyDonate: (...args) =>
+        this.callServiceMethod("monthlyDonate", "deleteMonthlyDonate", ...args),
+
+      // 查詢方法
+      getMonthlyDonateById: (...args) =>
+        this.callServiceMethod(
+          "monthlyDonate",
+          "getMonthlyDonateById",
+          ...args
+        ),
+      getMonthlyDonateByDonateId: (...args) =>
+        this.callServiceMethod(
+          "monthlyDonate",
+          "getMonthlyDonateByDonateId",
+          ...args
+        ),
+      getMonthlyDonateByRegistrationId: (...args) =>
+        this.callServiceMethod(
+          "monthlyDonate",
+          "getMonthlyDonateByRegistrationId",
+          ...args
+        ),
+      getMonthlyDonatesByDonateType: (...args) =>
+        this.callServiceMethod(
+          "monthlyDonate",
+          "getMonthlyDonatesByDonateType",
+          ...args
+        ),
+
+      // donateItems 操作方法
+      addDonateItem: (...args) =>
+        this.callServiceMethod("monthlyDonate", "addDonateItem", ...args),
+      updateDonateItem: (...args) =>
+        this.callServiceMethod("monthlyDonate", "updateDonateItem", ...args),
+      deleteDonateItem: (...args) =>
+        this.callServiceMethod("monthlyDonate", "deleteDonateItem", ...args),
+
+      // 統計方法
+      getMonthlyDonateStats: (...args) =>
+        this.callServiceMethod(
+          "monthlyDonate",
+          "getMonthlyDonateStats",
+          ...args
+        ),
+      getDonationStats: (...args) =>
+        this.callServiceMethod("monthlyDonate", "getDonationStats", ...args),
+
+      // 實用方法
+      getCurrentUser: (...args) =>
+        this.callServiceMethod("monthlyDonate", "getCurrentUser", ...args),
+      generateMockData: (...args) =>
+        this.callServiceMethod("monthlyDonate", "generateMockData", ...args),
+
+      // 模式管理
+      getCurrentMode: (...args) =>
+        this.callServiceMethod("monthlyDonate", "getCurrentMode", ...args),
+      setMode: (...args) =>
+        this.callServiceMethod("monthlyDonate", "setMode", ...args),
+
+      // 錯誤處理
+      handleDirectusError: (...args) =>
+        this.callServiceMethod("monthlyDonate", "handleDirectusError", ...args),
+
+      // Rust 特有功能（如果有的話）
+      batchOperations: (...args) =>
+        this.callServiceMethod("monthlyDonate", "batchOperations", ...args),
+      searchMonthlyDonates: (...args) =>
+        this.callServiceMethod(
+          "monthlyDonate",
+          "searchMonthlyDonates",
+          ...args
+        ),
+      exportMonthlyDonates: (...args) =>
+        this.callServiceMethod(
+          "monthlyDonate",
+          "exportMonthlyDonates",
+          ...args
+        ),
+      getDonationTypeStats: (...args) =>
+        this.callServiceMethod(
+          "monthlyDonate",
+          "getDonationTypeStats",
+          ...args
+        ),
+      getDonationTrend: (...args) =>
+        this.callServiceMethod("monthlyDonate", "getDonationTrend", ...args),
     };
   }
 
