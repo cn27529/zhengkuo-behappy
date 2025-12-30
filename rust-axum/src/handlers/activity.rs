@@ -10,6 +10,36 @@ use crate::models::activity::{
     Activity, ActivityQuery, ApiResponse, CreateActivityRequest, Meta, UpdateActivityRequest,
 };
 
+const ACTIVITY_FULL_QUERY: &str = r#"
+SELECT 
+    id,
+    user_created,
+    CASE 
+        WHEN date_created IS NOT NULL 
+        THEN datetime(date_created / 1000, 'unixepoch') 
+        ELSE NULL 
+    END as date_created,
+    user_updated,
+    CASE 
+        WHEN date_updated IS NOT NULL 
+        THEN datetime(date_updated / 1000, 'unixepoch') 
+        ELSE NULL 
+    END as date_updated,
+    activityId,
+    name,
+    item_type,
+    participants,
+    date,
+    state,
+    icon,
+    description,
+    location,
+    createdAt,
+    updatedAt
+FROM activityDB
+"#;
+
+
 /// 獲取所有活動
 pub async fn get_all_activities(
     Query(params): Query<ActivityQuery>,
@@ -18,37 +48,8 @@ pub async fn get_all_activities(
     // 構建查詢
     //let mut query = String::from("SELECT * FROM activityDB WHERE 1=1");
     // 修改查詢，將毫秒轉換為 ISO 字符串
-let mut query = String::from(
-    r#"
-    SELECT 
-        id,
-        user_created,
-        CASE 
-            WHEN date_created IS NOT NULL 
-            THEN datetime(date_created / 1000, 'unixepoch') 
-            ELSE NULL 
-        END as date_created,
-        user_updated,
-        CASE 
-            WHEN date_updated IS NOT NULL 
-            THEN datetime(date_updated / 1000, 'unixepoch') 
-            ELSE NULL 
-        END as date_updated,
-        activityId,
-        name,
-        item_type,
-        participants,
-        date,
-        state,
-        icon,
-        description,
-        location,
-        createdAt,
-        updatedAt
-    FROM activityDB 
-    WHERE 1=1
-    "#
-);
+     let mut query = format!("{} WHERE 1=1", ACTIVITY_FULL_QUERY);
+
     let mut count_query = String::from("SELECT COUNT(*) FROM activityDB WHERE 1=1");
 
     // 添加過濾條件
@@ -81,7 +82,7 @@ let mut query = String::from(
     let offset = params.offset.unwrap_or(0);
     query.push_str(&format!(" LIMIT {} OFFSET {}", limit, offset));
 
-    tracing::debug!("執行查詢: {}", query);
+    //tracing::debug!("執行活動查詢: {}", query);
 
     // 執行查詢
     let activities = sqlx::query_as::<_, Activity>(&query)
@@ -100,7 +101,7 @@ let mut query = String::from(
         .fetch_one(&pool)
         .await
         .map_err(|e| {
-            tracing::error!("查詢總數失敗: {}", e);
+            tracing::error!("查詢活動總數失敗: {}", e);
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(ApiResponse::error(format!("查詢總數失敗: {}", e))),
@@ -122,7 +123,9 @@ pub async fn get_activity_by_id(
     Path(id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
 ) -> Result<Json<ApiResponse<Activity>>, (StatusCode, Json<ApiResponse<Activity>>)> {
-    let activity = sqlx::query_as::<_, Activity>("SELECT * FROM activityDB WHERE id = ?")
+    
+    let query = format!("{} WHERE id = ?", ACTIVITY_FULL_QUERY);
+    let activity = sqlx::query_as::<_, Activity>(&query)
         .bind(id)
         .fetch_optional(&pool)
         .await
@@ -148,18 +151,19 @@ pub async fn get_activity_by_activity_id(
     Path(activity_id): Path<String>,
     Extension(pool): Extension<SqlitePool>,
 ) -> Result<Json<ApiResponse<Activity>>, (StatusCode, Json<ApiResponse<Activity>>)> {
-    let activity =
-        sqlx::query_as::<_, Activity>("SELECT * FROM activityDB WHERE activityId = ?")
-            .bind(&activity_id)
-            .fetch_optional(&pool)
-            .await
-            .map_err(|e| {
-                tracing::error!("查詢活動失敗: {}", e);
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(ApiResponse::error(format!("查詢失敗: {}", e))),
-                )
-            })?;
+     
+     let query = format!("{} WHERE activityId = ?", ACTIVITY_FULL_QUERY);
+    let activity = sqlx::query_as::<_, Activity>(&query)
+        .bind(&activity_id)
+        .fetch_optional(&pool)
+        .await
+        .map_err(|e| {
+            tracing::error!("查詢活動失敗: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(ApiResponse::error(format!("查詢失敗: {}", e))),
+            )
+        })?;
 
     match activity {
         Some(activity) => Ok(Json(ApiResponse::success(activity))),
@@ -239,7 +243,8 @@ pub async fn create_activity(
     let id = result.last_insert_rowid();
 
     // 返回創建的記錄
-    let activity = sqlx::query_as::<_, Activity>("SELECT * FROM activityDB WHERE id = ?")
+    let query = format!("{} WHERE id = ?", ACTIVITY_FULL_QUERY);
+    let activity = sqlx::query_as::<_, Activity>(&query)
         .bind(id)
         .fetch_one(&pool)
         .await
@@ -352,7 +357,8 @@ pub async fn update_activity(
     })?;
 
     // 返回更新後的記錄
-    let activity = sqlx::query_as::<_, Activity>("SELECT * FROM activityDB WHERE id = ?")
+    let query = format!("{} WHERE id = ?", ACTIVITY_FULL_QUERY);
+    let activity = sqlx::query_as::<_, Activity>(&query)
         .bind(id)
         .fetch_one(&pool)
         .await

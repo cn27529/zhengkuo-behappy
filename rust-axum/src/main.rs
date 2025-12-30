@@ -20,7 +20,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_env_filter(std::env::var("RUST_LOG").unwrap_or_else(|_| "debug".to_string()))
         .init();
 
-    tracing::info!("🚀 啟動 Rust Axum 後端服務...");
+    tracing::info!("🚀🦀 [Rust] Axum 啟動後端服務...");
     tracing::info!("📦 使用現有 Directus SQLite 數據庫");
 
     // 創建數據庫連接池（連接到 Directus 的數據庫）
@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 測試數據庫連接
     if let Err(e) = db::test_connection(&pool).await {
-        tracing::error!("❌ 數據庫連接測試失敗: {}", e);
+        tracing::error!("❌🦀 [Rust] 數據庫連接測試失敗: {}", e);
         return Err(e.into());
     }
 
@@ -41,18 +41,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             tracing::info!("  - 表列表: {:?}", stats.table_names);
         }
         Err(e) => {
-            tracing::warn!("⚠️ 無法獲取數據庫統計: {}", e);
+            tracing::warn!("⚠️🦀 [Rust] 無法獲取數據庫統計: {}", e);
         }
     }
 
     // ⚠️ 不運行遷移！直接使用 Directus 創建的表
-    tracing::info!("✅ 數據庫連接成功，使用 Directus 管理的表結構");
+    tracing::info!("✅🦀 [Rust] 數據庫連接成功，使用 Directus 管理的表結構");
 
     // 配置 CORS
+    // 當 allow_credentials(true) 時，不能同時使用 allow_headers(Any)（即 *）。
     let cors = CorsLayer::new()
-        .allow_origin(Any) // 開發環境允許所有來源
+        .allow_origin(Any)
         .allow_methods(Any)
         .allow_headers(Any);
+        //.allow_credentials(true);  // 如果需要 cookie/認證
 
     // 創建活動路由
     let activity_routes = routes::activity::create_routes();
@@ -74,21 +76,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let addr = SocketAddr::from((host.parse::<std::net::IpAddr>()?, port));
 
-    tracing::info!("🚀 服務器運行在 http://{}", addr);
-    tracing::info!("");
-    tracing::info!("📚 API 端點:");
-    tracing::info!("  健康檢查:");
-    tracing::info!("    GET    /health                    - 服務健康狀態");
-    tracing::info!("    GET    /db-test                   - 數據庫連接測試");
-    tracing::info!("");
-    tracing::info!("  活動 API:");
-    tracing::info!("    GET    /api/activities            - 獲取所有活動");
-    tracing::info!("    POST   /api/activities            - 創建新活動");
-    tracing::info!("    GET    /api/activities/:id        - 獲取單個活動");
-    tracing::info!("    PATCH  /api/activities/:id        - 更新活動");
-    tracing::info!("    DELETE /api/activities/:id        - 刪除活動");
-    tracing::info!("");
-    tracing::info!("💡 提示: Directus 管理 Auth，Axum 處理數據 CRUD");
+    tracing::info!("🚀🦀 [Rust] 服務器運行在 http://{}", addr);
+    // tracing::info!("");
+    // tracing::info!("📚 API 端點:");
+    // tracing::info!("  健康檢查:");
+    // tracing::info!("    GET    /health                    - 服務健康狀態");
+    // tracing::info!("    GET    /db-test                   - 數據庫連接測試");
+    // tracing::info!("");
+    // tracing::info!("  活動 API:");
+    // tracing::info!("    GET    /api/activities            - 獲取所有活動");
+    // tracing::info!("    POST   /api/activities            - 創建新活動");
+    // tracing::info!("    GET    /api/activities/:id        - 獲取單個活動");
+    // tracing::info!("    PATCH  /api/activities/:id        - 更新活動");
+    // tracing::info!("    DELETE /api/activities/:id        - 刪除活動");
+    // tracing::info!("");
+    tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth，Axum 處理數據 CRUD");
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;

@@ -36,6 +36,8 @@ export class RustActivityService {
    * 獲取所有活動（支持分頁、過濾、排序）
    */
   async getAllActivities(params = {}, context = {}) {
+    console.log("🦀 [Rust] 服務器獲取活動數據...");
+
     const queryParams = new URLSearchParams();
     queryParams.append("fields", "*");
 
@@ -253,16 +255,115 @@ export class RustActivityService {
    * 獲取月度統計
    */
   async getMonthlyStats(context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/stats/monthly`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getMonthlyStats",
-        ...context,
+    console.log("📊 獲取月度統計數據...");
+
+    try {
+      // 首先獲取所有活動
+      const activitiesResult = await this.getAllActivities(
+        {},
+        {
+          ...context,
+          operation: "getAllActivitiesForStats",
+        }
+      );
+
+      if (!activitiesResult.success) {
+        throw new Error("無法獲取活動數據用於統計");
       }
-    );
+
+      const activities = activitiesResult.data;
+
+      // 本地計算月度統計
+      const monthlyStats = this.calculateMonthlyStats(activities);
+
+      return {
+        success: true,
+        data: monthlyStats,
+        message: "成功計算月度統計",
+        isLocallyCalculated: true,
+      };
+    } catch (error) {
+      console.error("❌ 獲取月度統計失敗:", error);
+
+      // 返回默認統計或空數組
+      return {
+        success: true,
+        data: [],
+        message: "使用默認統計數據",
+        isLocallyCalculated: true,
+        error: error.message,
+      };
+    }
+  }
+
+  /**
+   * 本地計算月度統計
+   */
+  calculateMonthlyStats(activities) {
+    console.log("🧮 本地計算月度統計，活動數量:", activities.length);
+
+    // 創建月份映射
+    const monthNames = [
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月",
+    ];
+
+    // 初始化統計對象
+    const statsByMonth = {};
+    monthNames.forEach((month) => {
+      statsByMonth[month] = {
+        month,
+        participants: 0,
+        events: 0,
+        activities: [],
+      };
+    });
+
+    // 統計每個月份的數據
+    activities.forEach((activity) => {
+      if (!activity.date) return;
+
+      try {
+        const date = new Date(activity.date);
+        const monthIndex = date.getMonth(); // 0-11
+        const month = monthNames[monthIndex];
+
+        if (month && statsByMonth[month]) {
+          statsByMonth[month].participants += activity.participants || 0;
+          statsByMonth[month].events += 1;
+          statsByMonth[month].activities.push({
+            id: activity.id,
+            name: activity.name,
+            date: activity.date,
+            participants: activity.participants || 0,
+          });
+        }
+      } catch (error) {
+        console.warn("⚠️ 處理活動日期時出錯:", activity.date, error);
+      }
+    });
+
+    // 轉換為數組並過濾
+    const result = Object.values(statsByMonth)
+      .filter((stat) => stat.events > 0) // 只返回有活動的月份
+      .map((stat) => ({
+        ...stat,
+        avgParticipants:
+          stat.events > 0 ? Math.round(stat.participants / stat.events) : 0,
+      }));
+
+    console.log("📊 計算完成的統計數據:", result);
+    return result;
   }
 
   /**
@@ -436,7 +537,7 @@ export class RustActivityService {
    * 設置模式（在 Rust 服務中無效，但保持接口兼容）
    */
   setMode(mode) {
-    console.warn(`⚠️ Rust 服務不支持切換模式，當前固定為 rust 模式`);
+    console.warn(`⚠️🦀 [Rust] 服務不支持切換模式，當前固定為 rust 模式`);
     return "rust";
   }
 

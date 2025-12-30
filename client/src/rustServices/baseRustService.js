@@ -27,7 +27,8 @@ export class BaseRustService {
       users: "/api/users",
 
       // 系統
-      health: "/api/health",
+      health: "/health",
+      dbTest: "/db-test",
       serverInfo: "/api/server/info",
       metrics: "/api/metrics",
     };
@@ -55,67 +56,145 @@ export class BaseRustService {
    * Rust 風格的 API 調用（與 Directus 不同）
    */
   async rustFetch(endpoint, options = {}, context = {}) {
-    const startTime = Date.now();
-    this.metrics.totalRequests++;
-
-    const defaultOptions = {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      credentials: "include", // 支持 Cookie 認證
-    };
-
-    // 添加認證令牌
-    const token = this.getRustToken();
-    if (token) {
-      defaultOptions.headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    const finalOptions = {
-      ...defaultOptions,
-      ...options,
-      headers: {
-        ...defaultOptions.headers,
-        ...(options.headers || {}),
-      },
-    };
-
-    const url = this.getUrl(endpoint);
-
-    // 日誌上下文
-    const logContext = {
-      timestamp: DateUtils.getCurrentISOTime(),
-      service: "RustService",
-      operation: context.operation || endpoint.split("/").pop() || "unknown",
-      endpoint: url,
-      method: finalOptions.method || "GET",
-      startTime,
-    };
+    let logContext = {};
 
     try {
-      console.log(`🦀 [Rust] 請求: ${finalOptions.method || "GET"} ${url}`);
+      const startTime = Date.now();
+      this.metrics.totalRequests++;
 
-      // Mock 模式
-      if (this.mode === "mock") {
-        await this.mockDelay();
-        return this.handleMockResponse(endpoint, finalOptions, logContext);
+      // 更安全的默認配置
+      const defaultOptions = {
+        method: options.method || "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        mode: "cors",
+        credentials: "omit", // 對於 GET 請求，通常用 omit
+        cache: "no-cache",
+      };
+
+      // 添加認證令牌
+      const token = this.getRustToken();
+      if (token) {
+        defaultOptions.headers["Authorization"] = `Bearer ${token}`;
       }
 
-      // 實際請求
-      const response = await fetch(url, finalOptions);
-      const duration = Date.now() - startTime;
+      // 清除可能的 undefined 值
+      const cleanedOptions = {
+        ...defaultOptions,
+        ...options,
+        headers: {
+          ...defaultOptions.headers,
+          ...(options.headers || {}),
+        },
+      };
 
-      // 更新性能指標
-      this.updateMetrics(duration, response.ok);
-
-      // Rust 專用響應處理
-      const result = await this.handleRustResponse(response, {
-        ...logContext,
-        duration,
+      // 移除 undefined 的頭部
+      Object.keys(cleanedOptions.headers).forEach((key) => {
+        if (cleanedOptions.headers[key] === undefined) {
+          delete cleanedOptions.headers[key];
+        }
       });
 
+      const url = this.getUrl(endpoint);
+
+      console.log("🔍 [Rust Fetch] 詳細調試:", {
+        rustApiBaseUrl: this.rustApiBaseUrl,
+        endpoint: endpoint,
+        fullUrl: url,
+        method: cleanedOptions.method,
+        mode: cleanedOptions.mode,
+        credentials: cleanedOptions.credentials,
+        headers: cleanedOptions.headers,
+        hasBody: !!cleanedOptions.body,
+      });
+
+      // 日誌上下文
+      logContext = {
+        timestamp: DateUtils.getCurrentISOTime(),
+        service: "RustService",
+        operation: context.operation || endpoint.split("/").pop() || "unknown",
+        endpoint: url,
+        method: cleanedOptions.method || "GET",
+        startTime,
+      };
+
+      console.log(`🦀 [Rust] 發送請求: ${cleanedOptions.method} ${url}`);
+
+      // 使用更簡單的 fetch，避免複雜配置
+      const response = await fetch(url, cleanedOptions);
+      const duration = Date.now() - startTime;
+
+      console.log("✅🦀 [Rust] 收到響應:", {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries([...response.headers.entries()]),
+        duration: `${duration}ms`,
+      });
+
+      // 處理響應
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌🦀 [Rust] 響應錯誤:", {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+        });
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      // 檢查 Rust 返回的格式
+      console.log("📦🦀 [Rust] 響應數據結構:", {
+        hasDataProperty: "data" in data,
+        hasSuccessProperty: "success" in data,
+        dataType: typeof data,
+        isArray: Array.isArray(data),
+        dataSample: Array.isArray(data) ? data[0] : data,
+      });
+
+      // 適配不同的響應格式
+      let result;
+      if (data.success !== undefined) {
+        // Rust ApiResponse 格式
+        result = {
+          success: data.success,
+          data: data.data || data,
+          message: data.message || "成功",
+          meta: data.meta || null,
+          duration,
+        };
+      } else if (Array.isArray(data)) {
+        // 直接數組格式
+        result = {
+          success: true,
+          data: data,
+          message: "成功",
+          duration,
+        };
+      } else {
+        // 對象格式
+        result = {
+          success: true,
+          data: data,
+          message: "成功",
+          duration,
+        };
+      }
+
       return result;
+
+      // // 更新性能指標
+      // this.updateMetrics(duration, response.ok);
+      // // Rust 專用響應處理
+      // const result = await this.handleRustResponse(response, {
+      //   ...logContext,
+      //   duration,
+      // });
+      //return result;
     } catch (error) {
       console.error(`🦀 [Rust] 請求失敗:`, error);
 
@@ -311,7 +390,7 @@ export class BaseRustService {
    * 錯誤包裝
    */
   wrapRustError(error, context) {
-    const rustError = new Error(`🦀 [Rust] ${error.message}`);
+    const rustError = new Error(`❌🦀 [Rust] ${error.message}`);
     rustError.context = context;
     rustError.isRustError = true;
     rustError.timestamp = DateUtils.getCurrentISOTime();

@@ -23,7 +23,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
         "MEMORY" => SqliteJournalMode::Memory,
         "WAL" => SqliteJournalMode::Wal,
         _ => {
-            tracing::warn!("⚠️ 無效的 SQLITE_JOURNAL_MODE: {}，使用預設 WAL", journal_mode);
+            tracing::warn!("⚠️🦀 [Rust] 無效的 SQLITE_JOURNAL_MODE: {}，使用預設 WAL", journal_mode);
             SqliteJournalMode::Wal
         }
     };
@@ -39,7 +39,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
         "FULL" => SqliteSynchronous::Full,
         "EXTRA" => SqliteSynchronous::Extra,
         _ => {
-            tracing::warn!("⚠️ 無效的 SQLITE_SYNCHRONOUS: {}，使用預設 NORMAL", synchronous);
+            tracing::warn!("⚠️🦀 [Rust] 無效的 SQLITE_SYNCHRONOUS: {}，使用預設 NORMAL", synchronous);
             SqliteSynchronous::Normal
         }
     };
@@ -57,7 +57,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
         .synchronous(synchronous)                         // 設置同步模式
         .busy_timeout(Duration::from_secs(busy_timeout)); // 設置忙碌超時
 
-    tracing::info!("⚙️ SQLite 配置:");
+    tracing::info!("⚙️🦀 [Rust] SQLite 配置:");
     tracing::info!("  - Journal Mode: {:?}", journal_mode);
     tracing::info!("  - Synchronous: {:?}", synchronous);
     tracing::info!("  - Busy Timeout: {} 秒", busy_timeout);
@@ -73,7 +73,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
         .and_then(|v| v.parse::<u64>().ok())
         .unwrap_or(3);
 
-    tracing::info!("🔗 連接池配置:");
+    tracing::info!("🔗🦀 [Rust] 連接池配置:");
     tracing::info!("  - 最大連接數: {}", max_connections);
     tracing::info!("  - 獲取連接超時: {} 秒", acquire_timeout);
 
@@ -84,20 +84,20 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
         .connect_with(connect_options)
         .await?;
 
-    tracing::info!("✅ SQLite 數據庫連接池創建成功");
+    tracing::info!("✅🦀 [Rust] SQLite 數據庫連接池創建成功");
     
     Ok(pool)
 }
 
 /// 測試數據庫連接
 pub async fn test_connection(pool: &SqlitePool) -> Result<(), sqlx::Error> {
-    tracing::info!("🧪 測試數據庫連接...");
+    tracing::info!("🧪🦀 [Rust] 測試數據庫連接...");
     
     sqlx::query("SELECT 1")
         .fetch_one(pool)
         .await?;
     
-    tracing::info!("✅ 數據庫連接測試成功");
+    tracing::info!("✅🦀 [Rust] 數據庫連接測試成功");
     Ok(())
 }
 

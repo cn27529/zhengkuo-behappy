@@ -70,14 +70,14 @@ export class RustServiceFactory {
           break;
         // ... 其他服務
         default:
-          throw new Error(`未知的 Rust 服務: ${serviceName}`);
+          throw new Error(`❌🦀 [Rust] 未知的服務: ${serviceName}`);
       }
 
       serviceCache.set(serviceName, service);
-      console.log(`🦀 已加載 Rust 服務: ${serviceName}`);
+      console.log(`🦀 [Rust] 服務已加載: ${serviceName}`);
       return service;
     } catch (error) {
-      console.error(`🦀 加載 Rust 服務失敗: ${serviceName}`, error);
+      console.error(`❌🦀 [Rust] 服務加載失敗: ${serviceName}`, error);
       throw error;
     }
   }

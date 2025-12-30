@@ -14,8 +14,8 @@ async function loadRustServices() {
     const [
       { rustActivityService },
       { rustAuthService },
-      //{ rustRegistrationService },
-      //{ rustMonthlyDonateService },
+      { rustRegistrationService },
+      { rustMonthlyDonateService },
     ] = await Promise.all([
       import("../rustServices/rustActivityService.js"),
       import("../rustServices/rustAuthService.js"),
@@ -30,10 +30,10 @@ async function loadRustServices() {
       monthlyDonate: rustMonthlyDonateService,
     };
 
-    console.log("✅ Rust 服務加載完成");
+    console.log("✅🦀 [Rust] 服務加載完成");
     return rustServices;
   } catch (error) {
-    console.error("❌ Rust 服務加載失敗:", error);
+    console.error("❌ [Rust] 服務加載失敗:", error);
     throw error;
   }
 }
@@ -68,16 +68,17 @@ class ServiceAdapter {
   async getService(serviceName) {
     try {
       if (this.backend === "axum") {
-        // 嘗試使用 Rust 服務
+        // 使用 Rust 服務
+        console.log("🦀 使用 [Rust] 服務");
         const rust = await loadRustServices();
         return rust[serviceName];
       } else {
         // 使用 Directus 服務
+        console.log("🦀 使用 Directus 服務");
         return this.directusServices[serviceName];
       }
     } catch (error) {
       console.error(`獲取 ${serviceName} 服務失敗:`, error);
-
       // 自動降級到 Directus
       if (this.autoFallback && this.backend === "axum") {
         console.warn("⚠️ 自動降級到 Directus 服務");

@@ -66,14 +66,14 @@ export class RustMonthlyDonateService {
   async createMonthlyDonate(donateData, context = {}) {
     const createISOTime = DateUtils.getCurrentISOTime();
     const donateId = await generateGitHashBrowser(createISOTime);
-    
+
     const processedData = {
       ...donateData,
       donateId,
       createdAt: createISOTime,
     };
 
-    if(this.base.mode !== 'rust') {
+    if (this.base.mode !== "rust") {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Rust，百元贊助人創建成功");
       return {
@@ -430,7 +430,7 @@ export class RustMonthlyDonateService {
    * 設置模式（在 Rust 服務中無效，但保持接口兼容）
    */
   setMode(mode) {
-    console.warn(`⚠️ Rust 服務不支持切換模式，當前固定為 rust 模式`);
+    console.warn(`⚠️🦀 [Rust] 服務不支持切換模式，當前固定為 rust 模式`);
     return "rust";
   }
 
@@ -440,7 +440,10 @@ export class RustMonthlyDonateService {
    * Rust 特定的錯誤處理
    */
   handleDirectusError(error) {
-    if (error.message.includes("NetworkError") || error.message.includes("Failed to fetch")) {
+    if (
+      error.message.includes("NetworkError") ||
+      error.message.includes("Failed to fetch")
+    ) {
       return {
         success: false,
         message: "Rust 服務未啟動或網路連接失敗",
@@ -449,7 +452,10 @@ export class RustMonthlyDonateService {
       };
     }
 
-    if (error.message.includes("401") || error.message.includes("Unauthorized")) {
+    if (
+      error.message.includes("401") ||
+      error.message.includes("Unauthorized")
+    ) {
       return {
         success: false,
         message: "認證失敗，請重新登入",
