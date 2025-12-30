@@ -26,7 +26,7 @@ jsonwebtoken = "9.0"
 argon2 = "0.5"
 
 # 日期時間
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4", features = ["serde", "clock"] }
 
 # UUID
 uuid = { version = "1.6", features = ["serde", "v4"] }

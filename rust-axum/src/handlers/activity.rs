@@ -16,7 +16,39 @@ pub async fn get_all_activities(
     Extension(pool): Extension<SqlitePool>,
 ) -> Result<Json<ApiResponse<Vec<Activity>>>, (StatusCode, Json<ApiResponse<Vec<Activity>>>)> {
     // 構建查詢
-    let mut query = String::from("SELECT * FROM activityDB WHERE 1=1");
+    //let mut query = String::from("SELECT * FROM activityDB WHERE 1=1");
+    // 修改查詢，將毫秒轉換為 ISO 字符串
+let mut query = String::from(
+    r#"
+    SELECT 
+        id,
+        user_created,
+        CASE 
+            WHEN date_created IS NOT NULL 
+            THEN datetime(date_created / 1000, 'unixepoch') 
+            ELSE NULL 
+        END as date_created,
+        user_updated,
+        CASE 
+            WHEN date_updated IS NOT NULL 
+            THEN datetime(date_updated / 1000, 'unixepoch') 
+            ELSE NULL 
+        END as date_updated,
+        activityId,
+        name,
+        item_type,
+        participants,
+        date,
+        state,
+        icon,
+        description,
+        location,
+        createdAt,
+        updatedAt
+    FROM activityDB 
+    WHERE 1=1
+    "#
+);
     let mut count_query = String::from("SELECT COUNT(*) FROM activityDB WHERE 1=1");
 
     // 添加過濾條件

@@ -140,6 +140,7 @@ impl<T> ApiResponse<T> {
         }
     }
 
+    #[allow(dead_code)]  // 添加这个属性，是因为函数定义但未被调用，所以 Rust 会警告。
     pub fn error_with_details(message: String, errors: Vec<String>) -> Self {
         Self {
             success: false,

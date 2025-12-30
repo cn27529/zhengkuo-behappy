@@ -136,6 +136,7 @@ pub async fn get_db_stats(pool: &SqlitePool) -> Result<DbStats, sqlx::Error> {
 pub struct DbStats {
     pub table_count: usize,
     pub table_names: Vec<String>,
+    #[allow(dead_code)]  // 添加这个属性来忽略未使用警告
     pub size_bytes: i64,
     pub size_mb: f64,
 }
