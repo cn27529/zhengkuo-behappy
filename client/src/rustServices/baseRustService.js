@@ -228,8 +228,8 @@ export class BaseRustService {
     return (
       sessionStorage.getItem("auth-token") ||
       localStorage.getItem("auth-token") ||
-      sessionStorage.getItem("auth_token") || // 兼容原有令牌
-      localStorage.getItem("auth_token")
+      sessionStorage.getItem("auth-token") || // 兼容原有令牌
+      localStorage.getItem("auth-token")
     );
   }
 

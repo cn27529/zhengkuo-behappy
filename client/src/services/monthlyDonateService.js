@@ -11,6 +11,7 @@ export class MonthlyDonateService {
     console.log(`MonthlyDonateService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
+  // ========== 核心 CRUD 方法 ==========
   /**
    * 獲取所有百元贊助記錄
    */
