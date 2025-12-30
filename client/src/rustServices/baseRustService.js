@@ -233,16 +233,16 @@ export class BaseRustService {
     }
 
     if (contentType.includes("application/json")) {
-      const result = await response.json();
+      const jsonResult = await response.json();
 
       // Rust 常見響應格式
       return {
         success: true,
-        data: result.data || result,
-        message: result.message || "成功",
-        meta: result.meta || null,
+        data: jsonResult.data || jsonResult,
+        message: jsonResult.message || "成功",
+        meta: jsonResult.meta || null,
         duration,
-        rawResponse: result,
+        rawResponse: jsonResult,
       };
     }
 
