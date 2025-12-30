@@ -147,33 +147,33 @@ export class BaseRustService {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const jsonResult = await response.json();
 
       // 檢查 Rust 返回的格式
       console.log("📦🦀 [Rust] 響應數據結構:", {
-        hasDataProperty: "data" in data,
-        hasSuccessProperty: "success" in data,
-        dataType: typeof data,
-        isArray: Array.isArray(data),
-        dataSample: Array.isArray(data) ? data[0] : data,
+        hasDataProperty: "data" in jsonResult,
+        hasSuccessProperty: "success" in jsonResult,
+        dataType: typeof jsonResult,
+        isArray: Array.isArray(jsonResult),
+        data: Array.isArray(jsonResult) ? jsonResult[0] : jsonResult,
       });
 
       // 適配不同的響應格式
       let result;
-      if (data.success !== undefined) {
+      if (jsonResult.success !== undefined) {
         // Rust ApiResponse 格式
         result = {
-          success: data.success,
-          data: data.data || data,
-          message: data.message || "成功",
-          meta: data.meta || null,
+          success: jsonResult.success,
+          data: jsonResult.data || jsonResult,
+          message: jsonResult.message || "成功",
+          meta: jsonResult.meta || null,
           duration,
         };
-      } else if (Array.isArray(data)) {
+      } else if (Array.isArray(jsonResult)) {
         // 直接數組格式
         result = {
           success: true,
-          data: data,
+          data: jsonResult,
           message: "成功",
           duration,
         };
@@ -181,7 +181,7 @@ export class BaseRustService {
         // 對象格式
         result = {
           success: true,
-          data: data,
+          data: jsonResult,
           message: "成功",
           duration,
         };
@@ -233,16 +233,16 @@ export class BaseRustService {
     }
 
     if (contentType.includes("application/json")) {
-      const data = await response.json();
+      const result = await response.json();
 
       // Rust 常見響應格式
       return {
         success: true,
-        data: data.data || data,
-        message: data.message || "成功",
-        meta: data.meta || null,
+        data: result.data || result,
+        message: result.message || "成功",
+        meta: result.meta || null,
         duration,
-        rawResponse: data,
+        rawResponse: result,
       };
     }
 
