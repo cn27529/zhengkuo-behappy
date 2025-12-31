@@ -12,6 +12,14 @@ export class ActivityService {
     console.log(`ActivityService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
+  async healthCheck() {
+    return await this.base.healthCheck();
+  }
+
+  getIsMock() {
+    return this.base.isMock;
+  }
+
   // ========== 使用示例：不同的調用方式 ==========
   // 範例 1: 帶完整 context（會記錄日誌）
   async exampleWithContext() {
@@ -66,10 +74,8 @@ export class ActivityService {
   async createActivity(activityData) {
     const createISOTime = DateUtils.getCurrentISOTime();
 
-    if (this.base.mode !== "directus") {
-      console.warn(
-        "活動創建成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
-      );
+    if (this.getIsMock()) {
+      console.warn("活動創建成功！⚠️ 當前模式不是 directus，無法創建數據");
       return {
         success: true,
         message: "活動創建成功！⚠️ 當前模式不是 directus，無法創建數據",
@@ -110,8 +116,8 @@ export class ActivityService {
     try {
       console.log("🚀 Directus 服務健康檢查中...");
 
-      // 先檢查連線
-      const healthCheck = await this.base.checkConnection();
+      // 先檢查連接
+      const healthCheck = await this.base.healthCheck();
       if (!healthCheck.online) {
         return {
           success: false,
@@ -120,7 +126,7 @@ export class ActivityService {
           data: null,
         };
       }
-      console.log("✅ Directus 服務健康檢查通過");
+      console.log("✅ 後端服務健康檢查通過");
 
       const myHeaders = await this.base.getAuthJsonHeaders();
       const apiUrl = `${this.endpoint}`;
@@ -152,9 +158,12 @@ export class ActivityService {
    * @returns {Promise<Object>} 更新結果
    */
   async updateActivity(recordId, activityData) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法更新數據",
+      };
     }
 
     const updateData = {
@@ -202,9 +211,12 @@ export class ActivityService {
    * @returns {Promise<Object>} 刪除結果
    */
   async deleteActivity(recordId) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法刪除數據",
+      };
     }
 
     const currentDelete = await this.getActivityById(recordId);
@@ -254,9 +266,12 @@ export class ActivityService {
    * @returns {Promise<Object>} 活動資料
    */
   async getActivityById(recordId) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法獲取數據",
+      };
     }
 
     try {
@@ -298,9 +313,12 @@ export class ActivityService {
    * @returns {Promise<Object>} 活動列表
    */
   async getAllActivities(params = {}) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法獲取數據",
+      };
     }
 
     try {
@@ -430,12 +448,12 @@ export class ActivityService {
    * @returns {Promise<Object>} 月度統計數據
    */
   async getMonthlyStats() {
-    if (this.base.mode !== "directus") {
-      console.warn("⚠️ 當前模式不是 directus，返回模擬數據");
+    if (this.getIsMock()) {
+      console.warn("⚠️ 當前模式不是 directus，返回模擬月度統計數據");
       return {
         success: true,
         data: this.getMockMonthlyStats(),
-        message: "返回模擬月度統計數據",
+        message: "⚠️ 當前模式不是 directus，返回模擬月度統計數據",
       };
     }
 
@@ -608,6 +626,10 @@ export class ActivityService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
+    if (sessionStorage.getItem("auth-mode") !== null) {
+      this.base.mode = sessionStorage.getItem("auth-mode");
+    }
+    console.log("getCurrentMode: ", this.base.mode);
     return this.base.mode;
   }
 

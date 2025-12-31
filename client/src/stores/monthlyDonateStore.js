@@ -873,7 +873,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     error.value = null;
 
     try {
-      if (baseService.mode !== "directus") {
+      if (monthlyDonateService.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 贊助數據");
         allDonates.value = mockDatas;
         return {
@@ -947,14 +947,13 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       console.log("📦 添加新贊助:", newDonate);
 
-      if (baseService.mode !== "directus") {
+      if (monthlyDonateService.getIsMock()) {
         allDonates.value.push(newDonate);
-        console.warn("⚠️ 當前模式不為 Directus，成功創建數據");
+        console.warn("⚠️ 當前模式不是 directus，無法創建數據");
         return {
           success: true,
           data: newDonate,
-          message:
-            "贊助創建成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式",
+          message: "贊助創建成功！⚠️ 當前模式不是 directus，無法創建數據",
         };
       }
 
@@ -1005,7 +1004,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         itemsCount: exDonate.donateItems?.length || 0,
       });
 
-      if (baseService.mode !== "directus") {
+      if (monthlyDonateService.getIsMock()) {
         // Mock 模式：直接刪除本地數據
         allDonates.value.splice(exDonateIndex, 1);
 
@@ -1085,7 +1084,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         updatedUser: "",
       };
 
-      if (baseService.mode !== "directus") {
+      if (monthlyDonateService.getIsMock()) {
         // Mock 模式：直接更新本地數據
         exDonate.donateItems.push(newDonateItem);
         exDonate.updatedAt = createISOTime;
@@ -1161,7 +1160,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       const updateISOTime = DateUtils.getCurrentISOTime();
 
-      if (baseService.mode !== "directus") {
+      if (monthlyDonateService.getIsMock()) {
         // Mock 模式：更新本地數據
         exDonate.donateItems[itemIndex] = {
           ...exDonate.donateItems[itemIndex],
@@ -1246,7 +1245,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         throw new Error(`找不到 donateItemsId 為 ${itemId} 的贊助項目`);
       }
 
-      if (baseService.mode !== "directus") {
+      if (monthlyDonateService.getIsMock()) {
         // Mock 模式：刪除本地數據
         exDonate.donateItems.splice(itemIndex, 1);
 

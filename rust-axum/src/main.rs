@@ -10,6 +10,9 @@ mod handlers;
 mod models;
 mod routes;
 
+// 重新導出 ApiResponse 和 Meta，這樣編譯器知道它們被外部使用
+pub use models::api_response::{ApiResponse, Meta};
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 加載 .env 文件

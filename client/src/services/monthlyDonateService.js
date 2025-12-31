@@ -14,12 +14,20 @@ export class MonthlyDonateService {
     console.log(`MonthlyDonateService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
+  async healthCheck() {
+    return await this.base.healthCheck();
+  }
+
+  getIsMock() {
+    return this.base.isMock;
+  }
+
   // ========== 核心 CRUD 方法 ==========
   /**
    * 獲取所有百元贊助記錄
    */
   async getAllMonthlyDonates(params = {}) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不為 Directus，返回空百元贊助記錄列表");
       // Mock 模式
       return {
@@ -71,7 +79,7 @@ export class MonthlyDonateService {
       createdAt: createISOTime,
     };
 
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Directus，百元贊助人創建成功");
       return {
@@ -124,7 +132,7 @@ export class MonthlyDonateService {
       id: recordId,
     };
 
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       // Mock 模式
       const mockData = {
         ...updateData,
@@ -178,7 +186,7 @@ export class MonthlyDonateService {
    * 刪除百元贊助人
    */
   async deleteMonthlyDonate(recordId) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Directus，百元贊助人刪除成功");
       return {
@@ -240,7 +248,7 @@ export class MonthlyDonateService {
       createdAt: DateUtils.getCurrentISOTime(),
     };
 
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Directus，贊助項目添加成功");
       return {
@@ -307,7 +315,7 @@ export class MonthlyDonateService {
    * 更新指定贊助記錄
    */
   async updateDonateItem(recordId, donateItemsId, itemData) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       // Mock 模式
       const updatedItem = {
         donateItemsId,
@@ -401,7 +409,7 @@ export class MonthlyDonateService {
    * 刪除指定贊助記錄
    */
   async deleteDonateItem(recordId, itemsId) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Directus，贊助項目刪除成功");
       return {
@@ -506,7 +514,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonateById(recordId) {
     try {
-      if (this.base.mode !== "directus") {
+      if (this.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄");
         return {
@@ -543,7 +551,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonateByDonateId(donateId) {
     try {
-      if (this.base.mode !== "directus") {
+      if (this.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄列表");
         return {
@@ -585,7 +593,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonateByRegistrationId(registrationId) {
     try {
-      if (this.base.mode !== "directus") {
+      if (this.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄列表");
         return {
@@ -626,7 +634,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonatesByDonateType(donateType) {
     try {
-      if (this.base.mode !== "directus") {
+      if (this.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄列表");
         return {
@@ -667,7 +675,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonateStats() {
     try {
-      if (this.base.mode !== "directus") {
+      if (this.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助統計");
         return {
@@ -769,6 +777,10 @@ export class MonthlyDonateService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
+    if (sessionStorage.getItem("auth-mode") !== null) {
+      this.base.mode = sessionStorage.getItem("auth-mode");
+    }
+    console.log("getCurrentMode: ", this.base.mode);
     return this.base.mode;
   }
 

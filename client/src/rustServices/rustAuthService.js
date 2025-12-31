@@ -7,6 +7,10 @@ export class RustAuthService {
     this.endpoint = this.base.endpoints.auth;
   }
 
+  getIsMock() {
+    return this.base.isMock;
+  }
+
   /**
    * Rust 登入（可能使用不同於 Directus 的認證方式）
    */

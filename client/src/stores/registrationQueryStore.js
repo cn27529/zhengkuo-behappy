@@ -1,10 +1,10 @@
-// src/stores/queryStore.js
+// src/stores/registrationQueryStore.js
 // 本檔為查詢表單的 Pinia store，管理查詢表單的狀態與操作。
 import { defineStore } from "pinia";
 import { ref, computed, h } from "vue";
-import { registrationService } from "../services/registrationService.js";
-import { authService } from "../services/authService.js";
-import { baseService } from "../services/baseService.js";
+//import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
+import { registrationService } from "../services/registrationService.js"; // 移除舊的導入
+//import { baseService } from "../services/baseService.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
@@ -31,7 +31,7 @@ export const useQueryStore = defineStore("query", () => {
     isLoading.value = true;
     try {
       // 檢查是否為 directus 模式
-      if (baseService.mode !== "directus") {
+      if (registrationService.getIsMock()) {
         console.warn("⚠️ 當前模式不是 directus，使用 Mock 數據");
 
         if (!mockRegistrations || mockRegistrations.length === 0) {
@@ -67,21 +67,21 @@ export const useQueryStore = defineStore("query", () => {
       // Directus 模式
       console.log("開始查詢報名表數據...", queryData);
 
-      // 先檢查連線 ✅ 修正：正確的健康檢查邏輯
+      // 先檢查連接 ✅ 修正：正確的健康檢查邏輯
       // 在健康檢查後添加詳細日誌
-      const healthCheck = await baseService.checkConnection();
-      console.log("🔍 連線檢查結果:", healthCheck);
-
-      if (!healthCheck.online) {
-        console.error("❌ 連線檢查失敗，停止查詢");
-        return {
-          success: false,
-          online: false,
-          message: healthCheck.message,
-          data: null,
-        };
-      }
-      console.log("✅ Directus 服務健康檢查通過");
+      // const healthCheck = await baseService.healthCheck();
+      // if (healthCheck.online) {
+      //   console.log("✅ 後端服務健康檢查通過");
+      // } else {
+      //   const message = `❌ 服務連接失敗，無法查詢表單: ${healthCheck.message}`;
+      //   console.error(message);
+      //   return {
+      //     success: false,
+      //     online: false,
+      //     message: message,
+      //     data: null,
+      //   };
+      // }
 
       const params = {
         //sort: "-date_created",

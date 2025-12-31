@@ -10,6 +10,10 @@ export class RustActivityService {
     console.log(`RustActivityService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
+  getIsMock() {
+    return this.base.isMock;
+  }
+
   // ========== 核心 CRUD 方法 ==========
 
   /**
@@ -598,7 +602,7 @@ export class RustActivityService {
    */
   async healthCheck() {
     return await this.base.rustFetch(
-      `${this.base.baseUrl}/health`,
+      `${this.base.rustApiBaseUrl}/health`,
       {
         method: "GET",
       },
@@ -613,7 +617,7 @@ export class RustActivityService {
    */
   async getServiceInfo() {
     return await this.base.rustFetch(
-      `${this.base.baseUrl}/info`,
+      `${this.base.rustApiBaseUrl}/info`,
       {
         method: "GET",
       },

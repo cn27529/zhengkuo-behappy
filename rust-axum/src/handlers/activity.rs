@@ -6,8 +6,10 @@ use axum::{
 };
 use sqlx::SqlitePool;
 
+use crate::models::api_response::{ApiResponse, Meta};
+
 use crate::models::activity::{
-    Activity, ActivityQuery, ApiResponse, CreateActivityRequest, Meta, UpdateActivityRequest,
+    Activity, ActivityQuery, CreateActivityRequest, UpdateActivityRequest,
 };
 
 const ACTIVITY_FULL_QUERY: &str = r#"

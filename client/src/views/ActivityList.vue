@@ -693,7 +693,7 @@
 import { ref, computed, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
-import { useActivityStore } from "../stores/rustActivityStore.js";
+import { useActivityStore } from "../stores/activityStore.js";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import IconSelector from "../components/IconSelector.vue";

@@ -4,6 +4,7 @@ import { indexedDBLogger } from "../utils/indexedDB.js";
 
 export class BaseService {
   constructor() {
+    this.isMock = import.meta.env.VITE_MOCK === true;
     // 可切換模式: 'mock' 或 'backend'
     this.mode = import.meta.env.VITE_AUTH_MODE || "mock";
 
@@ -23,7 +24,7 @@ export class BaseService {
       usersMe: "/users/me", // Directus 端點
       itemsMydata: "/items/mydata", // mydata測試
       itemsRegistration: "/items/registrationDB", // 新增 registrationDB 端點
-      serverPing: "/server/ping", // 伺服器連線檢查端點
+      serverPing: "/server/ping", // 伺服器連接檢查端點
       serverInfo: "/server/info", // 伺服器資訊端點
       itemsActivity: "/items/activityDB", // 新增 activityDB 端點
       itemsMonthlyDonate: "/items/monthlyDonateDB", // 新增 monthlyDonateDB 端點
@@ -364,56 +365,6 @@ export class BaseService {
     }
   }
 
-  // 處理 Directus API 回應
-  // async handleDirectusResponse(response) {
-  //   try {
-  //     if (!response.ok) {
-  //       throw new Error(
-  //         `HTTP Directus 錯誤:${response.status}: ${response.statusText}`
-  //       );
-  //     }
-
-  //     // 詳細的 HTTP 狀態碼處理
-  //     if (response.status === 403) {
-  //       const errorText = await response.text();
-  //       console.error("❌ 403 權限拒絕詳細信息:", errorText);
-  //       throw new Error(`權限拒絕 (403): ${errorText}`);
-  //     }
-
-  //     if (response.status === 401) {
-  //       const errorText = await response.text();
-  //       console.error("❌ 401 未經授權詳細信息:", errorText);
-  //       throw new Error("未經授權 (401): 請檢查認證令牌");
-  //     }
-
-  //     // 修正：檢查回應是否有內容
-  //     let result = null;
-  //     const contentType = response.headers.get("content-type");
-  //     if (contentType && contentType.includes("application/json")) {
-  //       result = await response.json();
-  //     }
-
-  //     // 修正：根據 Directus API 的回應模式調整
-  //     return {
-  //       success: true,
-  //       data: result ? result.data : null,
-  //       message: result ? result.message : null,
-  //     };
-
-  //     // if (!response.ok) {
-  //     //   const errorData = await response.json().catch(() => ({}));
-  //     //   throw new Error(errorData.message || `Directus 錯誤: ${response.status}`);
-  //     // }
-  //     // const result = await response.json();
-  //     // return result.data;
-  //   } catch (error) {
-  //     console.error("Directus 回應異常:", error);
-  //     throw error;
-  //   }
-  // }
-
-  // 獲取伺服器資訊，返回伺服器資訊對象或 null
-
   async serverInfo() {
     try {
       const apiUrl = `${this.apiBaseUrl}${this.apiEndpoints.serverInfo}`;
@@ -463,13 +414,12 @@ export class BaseService {
   }
 
   // 檢查後端連接狀態，返回一個包含 success 和 message 的對象
-  async checkConnection() {
-    // Mock 模式總是返回成功
-    if (this.mode !== "directus") {
+  async healthCheck() {
+    if (this.isMock) {
       return {
         success: true,
         online: true,
-        message: `${this.mode} 模式連線正常`,
+        message: `${this.mode} 模式連接正常`,
       };
     }
 
@@ -480,28 +430,28 @@ export class BaseService {
         timeout: 5000,
       });
 
-      console.log("檢查後端連接回應狀態:", JSON.stringify(response));
+      console.log("檢查後端服務連接回應狀態:", JSON.stringify(response));
 
       if (response.ok) {
-        console.log("伺服器連線正常");
+        console.log("服務連接正常");
         return {
           success: true,
           online: true,
-          message: "伺服器連線正常",
+          message: "服務連接正常",
         };
       } else {
         return {
           success: false,
           online: false,
-          message: "伺服器無回應",
+          message: "服務連接異常",
         };
       }
     } catch (error) {
-      console.error("伺服器連線異常:", error);
+      console.error("服務連接異常:", error);
       return {
         success: false,
         online: false,
-        message: `伺服器連線異常: ${error.message}`,
+        message: `服務連接異常: ${error.message}`,
       };
     }
   }

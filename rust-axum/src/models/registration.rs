@@ -1,7 +1,9 @@
 // src/models/registration.rs
 use serde::{Deserialize, Serialize};
-//use serde_json::Value;
 use sqlx::FromRow;
+
+// 導入共享的 API 響應結構
+//use super::api_response::{ApiResponse, Meta};
 
 /// 報名記錄模型 - 對應 Directus 的 registrationDB 表結構
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -39,7 +41,7 @@ pub struct Registration {
     #[sqlx(rename = "createdAt", default)]
     pub created_at: Option<String>,    // varchar(255)
     #[sqlx(rename = "updatedAt", default)]
-    pub updated_at: Option<String>,    // varchar(255)
+    pub updated_at: Option<String>,    // varchar(255)    
 }
 
 /// 創建報名記錄請求
@@ -59,6 +61,8 @@ pub struct CreateRegistrationRequest {
     pub contact: Option<String>,
     #[serde(default)]
     pub blessing: Option<String>,
+     #[serde(default)]
+    pub user_created: Option<String>,  // 新增：可選的 user_created
 }
 
 /// 更新報名記錄請求
@@ -72,6 +76,8 @@ pub struct UpdateRegistrationRequest {
     pub salvation: Option<String>,
     pub contact: Option<String>,
     pub blessing: Option<String>,
+     #[serde(default)]
+    pub user_updated: Option<String>,  // 新增：可選的 user_updated
 }
 
 /// 查詢參數

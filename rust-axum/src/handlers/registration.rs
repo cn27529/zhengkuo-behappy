@@ -6,12 +6,12 @@ use axum::{
 };
 use sqlx::SqlitePool;
 
+// 導入共享的 API 響應結構
+use crate::models::api_response::{ApiResponse, Meta};
+
 use crate::models::registration::{
     CreateRegistrationRequest, Registration, RegistrationQuery, UpdateRegistrationRequest,
 };
-
-// 引入 activity 模組中的 ApiResponse 和 Meta
-use crate::models::activity::{ApiResponse, Meta};
 
 const REGISTRATION_FULL_QUERY: &str = r#"
 SELECT 
@@ -232,16 +232,26 @@ pub async fn create_registration(
     // 生成當前時間戳
     let now = chrono::Utc::now().to_rfc3339();
 
+    // 確定 user_created 的值
+    // 優先使用 payload 中的值，如果沒有則使用默認值
+    let user_created_value = payload.user_created.unwrap_or_else(|| {
+        // 這裡可以根據業務需求設置默認值
+        // 例如：空字符串、特定標識、或當前用戶 ID（如果有認證）
+        "system".to_string()
+    });
+
     // 插入新記錄
     let result = sqlx::query(
         r#"
         INSERT INTO registrationDB (
+            user_created,
             state, formId, formName, formSource, 
             salvation, contact, blessing, createdAt, updatedAt
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
+    .bind(&user_created_value)  // 使用判斷後的值
     .bind(&payload.state)
     .bind(&payload.form_id)
     .bind(&payload.form_name)
@@ -340,6 +350,12 @@ pub async fn update_registration(
     if let Some(blessing) = &payload.blessing {
         updates.push("blessing = ?");
         bindings.push(blessing.clone());
+    }
+
+    // 在更新語句中添加 user_updated
+    if let Some(user_updated) = &payload.user_updated {
+        updates.push("user_updated = ?");
+        bindings.push(user_updated.clone());
     }
 
     if updates.is_empty() {

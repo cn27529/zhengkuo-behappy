@@ -9,6 +9,14 @@ export class AuthService {
     console.log(`AuthService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
+  async healthCheck() {
+    return await this.base.healthCheck();
+  }
+
+  getIsMock() {
+    return this.base.isMock;
+  }
+
   // ========== 通用方法 ==========
   async handleDirectusResponse(response) {
     return await this.base.handleDirectusResponse(response);
@@ -808,7 +816,7 @@ export class AuthService {
       if (mode === "backend") {
         // 檢查後端連接狀態
 
-        this.base.checkConnection().then((healthCheck) => {
+        this.base.healthCheck().then((healthCheck) => {
           if (healthCheck.online) {
             console.log("✅ 後端服務健康檢查通過");
           } else {
@@ -817,7 +825,7 @@ export class AuthService {
         });
       } else if (mode === "directus") {
         // 檢查後端連接狀態
-        this.base.checkConnection().then((healthCheck) => {
+        this.base.healthCheck().then((healthCheck) => {
           if (healthCheck.online) {
             console.log("✅ Directus 服務健康檢查通過");
           } else {

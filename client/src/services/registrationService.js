@@ -12,18 +12,23 @@ export class RegistrationService {
     console.log(`RegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
+  async healthCheck() {
+    return await this.base.healthCheck();
+  }
+
+  getIsMock() {
+    return this.base.isMock;
+  }
+
   // ========== CRUD 操作 ==========
   async createRegistration(registrationData) {
     const createISOTime = DateUtils.getCurrentISOTime();
 
-    if (this.base.mode !== "directus") {
-      console.warn(
-        "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
-      );
+    if (this.getIsMock()) {
+      console.warn("報名提交成功！⚠️ 當前模式不是 directus，無法創建數據");
       return {
         success: true,
-        message:
-          "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式",
+        message: "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據",
         data: {
           id: crypto.randomUUID(), // 標準且保證唯一
           ...registrationData,
@@ -32,8 +37,8 @@ export class RegistrationService {
     }
 
     try {
-      // 先檢查連線 ✅ 修正：正確的健康檢查邏輯
-      const healthCheck = await this.base.checkConnection();
+      // 先檢查連接 ✅ 修正：正確的健康檢查邏輯
+      const healthCheck = await this.base.healthCheck();
       if (!healthCheck.online) {
         return {
           success: false,
@@ -42,7 +47,7 @@ export class RegistrationService {
           data: null,
         };
       }
-      console.log("✅ Directus 服務健康檢查通過");
+      console.log("✅ 後端服務健康檢查通過");
 
       const formId = await generateGitHashBrowser(createISOTime);
       // 準備提交數據
@@ -91,9 +96,12 @@ export class RegistrationService {
   }
 
   async updateRegistration(id, registrationData) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法更新數據",
+      };
     }
 
     try {
@@ -123,9 +131,12 @@ export class RegistrationService {
   }
 
   async getRegistrationById(id) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法獲取數據",
+      };
     }
 
     try {
@@ -148,9 +159,12 @@ export class RegistrationService {
   }
 
   async getAllRegistrations(params = {}) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法獲取數據",
+      };
     }
 
     try {
@@ -208,9 +222,12 @@ export class RegistrationService {
   }
 
   async deleteRegistration(id) {
-    if (this.base.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法刪除數據",
+      };
     }
 
     try {
@@ -338,6 +355,10 @@ export class RegistrationService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
+    if (sessionStorage.getItem("auth-mode") !== null) {
+      this.base.mode = sessionStorage.getItem("auth-mode");
+    }
+    console.log("getCurrentMode: ", this.base.mode);
     return this.base.mode;
   }
 

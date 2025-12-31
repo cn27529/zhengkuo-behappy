@@ -31,33 +31,81 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   // 提取為顶层共用函数（在 setupFormSync 之前定义）
   const loadFormToRegistration = (formData) => {
-    //console.log("📡 加載表單到報名表單中…", { formData });
+    console.log("📡 加載表單到報名表單中…", { formData });
 
+    // 檢查 formData 是否存在
+    if (!formData) {
+      console.error("❌ 傳入的 formData 為 undefined 或 null");
+      return;
+    }
+
+    // 複製頂層屬性
     Object.keys(formData).forEach((key) => {
       if (key !== "contact" && key !== "blessing" && key !== "salvation") {
         registrationForm.value[key] = formData[key];
       }
     });
 
-    Object.keys(formData.contact).forEach((key) => {
-      registrationForm.value.contact[key] = formData.contact[key];
-    });
+    // 複製聯絡人資訊
+    if (formData.contact) {
+      Object.keys(formData.contact).forEach((key) => {
+        registrationForm.value.contact[key] = formData.contact[key];
+      });
+    } else {
+      console.warn("⚠️ 表單數據中缺少 contact 屬性");
+    }
 
-    registrationForm.value.blessing.address = formData.blessing.address;
-    registrationForm.value.blessing.persons.length = 0;
-    formData.blessing.persons.forEach((person) => {
-      registrationForm.value.blessing.persons.push({ ...person });
-    });
+    // 複製消災人員資訊
+    if (formData.blessing) {
+      registrationForm.value.blessing.address = formData.blessing.address || "";
 
-    registrationForm.value.salvation.address = formData.salvation.address;
-    registrationForm.value.salvation.ancestors.length = 0;
-    formData.salvation.ancestors.forEach((ancestor) => {
-      registrationForm.value.salvation.ancestors.push({ ...ancestor });
-    });
-    registrationForm.value.salvation.survivors.length = 0;
-    formData.salvation.survivors.forEach((survivor) => {
-      registrationForm.value.salvation.survivors.push({ ...survivor });
-    });
+      // 清空現有陣列
+      registrationForm.value.blessing.persons.length = 0;
+
+      // 安全地複製 persons
+      if (
+        formData.blessing.persons &&
+        Array.isArray(formData.blessing.persons)
+      ) {
+        formData.blessing.persons.forEach((person) => {
+          registrationForm.value.blessing.persons.push({ ...person });
+        });
+      }
+    } else {
+      console.warn("⚠️ 表單數據中缺少 blessing 屬性");
+    }
+
+    // 複製超度資訊
+    if (formData.salvation) {
+      registrationForm.value.salvation.address =
+        formData.salvation.address || "";
+
+      // 清空現有陣列
+      registrationForm.value.salvation.ancestors.length = 0;
+      registrationForm.value.salvation.survivors.length = 0;
+
+      // 安全地複製 ancestors
+      if (
+        formData.salvation.ancestors &&
+        Array.isArray(formData.salvation.ancestors)
+      ) {
+        formData.salvation.ancestors.forEach((ancestor) => {
+          registrationForm.value.salvation.ancestors.push({ ...ancestor });
+        });
+      }
+
+      // 安全地複製 survivors
+      if (
+        formData.salvation.survivors &&
+        Array.isArray(formData.salvation.survivors)
+      ) {
+        formData.salvation.survivors.forEach((survivor) => {
+          registrationForm.value.salvation.survivors.push({ ...survivor });
+        });
+      }
+    } else {
+      console.warn("⚠️ 表單數據中缺少 salvation 屬性");
+    }
   };
 
   // 當用戶編輯頁面時，自動同步回 formArray
@@ -803,12 +851,11 @@ export const useRegistrationStore = defineStore("registration", () => {
       registrationForm.value.createdAt = createISOTime;
       registrationForm.value.state = "submitted";
 
-      if (baseService.mode !== "directus") {
+      if (registrationService.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，報名提交成功！");
         return {
           success: true,
-          message:
-            "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式",
+          message: "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據",
           data: {
             id: Date.now(),
             ...registrationForm.value,
@@ -816,23 +863,22 @@ export const useRegistrationStore = defineStore("registration", () => {
         };
       }
 
-      console.log("🔍 正在檢查 Directus 服務連線狀態...");
-      // 先檢查連線 ✅ 修正：正確的健康檢查邏輯
-      const healthCheck = await baseService.checkConnection();
-      if (!healthCheck.online) {
-        registrationForm.value.formId = ""; // 重置 formId，允許重新提交
-        const message = `${"❌ Directus 服務連線失敗，無法提交報名表單："} ${
-          healthCheck.message
-        }`;
-        console.error(message);
-        return {
-          success: false,
-          online: false,
-          message: message,
-          data: null,
-        };
-      }
-      console.log("✅ Directus 服務健康檢查通過");
+      // 先檢查連接 ✅ 修正：正確的健康檢查邏輯
+      // const healthCheck = await baseService.healthCheck();
+      // if (healthCheck.online) {
+      //   console.log("✅ 後端服務健康檢查通過");
+      // } else {
+      //   registrationForm.value.formId = ""; // 重置 formId，允許重新提交
+      //   const message = `❌ 服務連接失敗，無法創建表單: ${healthCheck.message}`;
+      //   console.error(message);
+      //   return {
+      //     success: false,
+      //     online: false,
+      //     message: message,
+      //     data: null,
+      //   };
+      // }
+
       console.log("🚀 開始提交並創建報名表單...");
       // 創建報名表單
       const result = await registrationService.createRegistration(
@@ -846,7 +892,7 @@ export const useRegistrationStore = defineStore("registration", () => {
           success: result.success,
           message: "報名提交成功！",
           formId: result.formId,
-          dbName: baseService.apiEndpoints.itemsRegistration,
+          dbName: registrationService.base.apiEndpoints.itemsRegistration,
           data: {
             ...result.data,
           },
@@ -970,7 +1016,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         propsData.formId !== "" &&
         propsData.id !== ""
       ) {
-        if (baseService.mode === "mock") {
+        if (registrationService.getIsMock()) {
           // mock模式嘗試找到對應的數據
           mockData = mockDatas.find((item) => item.formId === propsData.formId);
         }
@@ -1053,7 +1099,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
 
       // 不是 directus 模式下，載入 Mock 數據
-      if (baseService.mode !== "directus") {
+      if (registrationService.getIsMock()) {
         console.warn(
           "表單載入成功！⚠️ 當前模式不是 directus，無法從服務器加載表單"
         );
@@ -1063,11 +1109,11 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
 
       // 检查连接
-      const healthCheck = await baseService.checkConnection();
-      if (!healthCheck.online) {
-        console.error("❌ Directus 服務連線失敗");
-        return false;
-      }
+      // const healthCheck = await baseService.healthCheck();
+      // if (!healthCheck.online) {
+      //   console.error("❌ Directus 服務連接失敗");
+      //   return false;
+      // }
 
       // 从服务器获取表單數據
       const result = await registrationService.getRegistrationById(
@@ -1112,11 +1158,11 @@ export const useRegistrationStore = defineStore("registration", () => {
       throw new Error("表單驗證失敗，請檢查所有必填欄位");
     }
 
-    if (baseService.mode !== "directus") {
+    if (registrationService.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return {
         success: true,
-        message: "表單更新成功！⚠️ 當前模式不是 directus，無法更新服務器數據",
+        message: "表單更新成功！⚠️ 當前模式不是 directus，無法更新數據",
         data: registrationForm.value,
       };
     }
@@ -1139,17 +1185,19 @@ export const useRegistrationStore = defineStore("registration", () => {
       registrationForm.value.state = "updated"; // 更新后状态改为已提交
 
       // 检查连接
-      const healthCheck = await baseService.checkConnection();
-      if (!healthCheck.online) {
-        const message = `❌ Directus 服務連線失敗，無法更新表單: ${healthCheck.message}`;
-        console.error(message);
-        return {
-          success: false,
-          online: false,
-          message: message,
-          data: null,
-        };
-      }
+      // const healthCheck = await baseService.healthCheck();
+      // if (healthCheck.online) {
+      //   console.log("✅ 後端服務健康檢查通過");
+      // } else {
+      //   const message = `❌ 服務連接失敗，無法更新表單: ${healthCheck.message}`;
+      //   console.error(message);
+      //   return {
+      //     success: false,
+      //     online: false,
+      //     message: message,
+      //     data: null,
+      //   };
+      // }
 
       console.log(`🔄 開始更新表單: formId=${formId}, id=${id}`);
 

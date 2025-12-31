@@ -45,6 +45,7 @@ import { useRouter } from "vue-router";
 import LogViewer from "../components/LogViewer.vue";
 import { indexedDBLogger } from "../utils/indexedDB.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { mock_logs } from "../data/mock_logs.js";
 
 const router = useRouter();
 const logViewer = ref(null);
@@ -52,39 +53,7 @@ const logs = ref([]);
 const isExporting = ref(false);
 
 // 模擬數據（如果沒有真實日誌）
-const mockLogs = [
-  {
-    id: 1,
-    endpoint: "/auth/login",
-    method: "POST",
-    status: 200,
-    duration: 345,
-    timestamp: DateUtils.getCurrentISOTime(),
-    success: true,
-    context: { service: "AuthService", operation: "login" },
-  },
-  {
-    id: 2,
-    endpoint: "/items/activityDB",
-    method: "GET",
-    status: 200,
-    duration: 230,
-    timestamp: new Date(Date.now() - 3600000).toISOString(),
-    success: true,
-    context: { service: "ActivityService", operation: "getAllActivities" },
-  },
-  {
-    id: 3,
-    endpoint: "/items/mydata",
-    method: "POST",
-    status: 500,
-    duration: 1200,
-    timestamp: new Date(Date.now() - 7200000).toISOString(),
-    success: false,
-    errorText: "Internal Server Error",
-    context: { service: "DataService", operation: "createData" },
-  },
-];
+const mockLogs = mock_logs;
 
 // 計算屬性
 const totalLogs = computed(() => logs.value.length);

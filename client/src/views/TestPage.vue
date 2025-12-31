@@ -2,18 +2,18 @@
 <template>
   <div class="test-page">
     <h2>🔧 認證服務測試頁面</h2>
-    
+
     <div class="controls">
       <div class="control-group">
         <h3>🔄 模式切換</h3>
         <div class="button-group">
-          <button 
+          <button
             :class="{ active: authMode === 'mock' }"
             @click="setMode('mock')"
           >
             🎭 Mock 模式
           </button>
-          <button 
+          <button
             :class="{ active: authMode === 'directus' }"
             @click="setMode('directus')"
           >
@@ -22,40 +22,47 @@
         </div>
         <div class="mode-info">
           <span class="mode-indicator" :class="authMode">
-            {{ authMode === 'mock' ? '🎭 模擬模式' : '🚀 後端模式' }}
+            {{ authMode === "mock" ? "🎭 模擬模式" : "🚀 後端模式" }}
           </span>
-          <span v-if="authMode === 'directus'" class="backend-status" :class="backendHealth.available ? 'healthy' : 'unhealthy'">
-            {{ backendHealth.available ? '✅ 後端服務正常' : '❌ 後端服務異常' }}
+          <span
+            v-if="authMode === 'directus'"
+            class="backend-status"
+            :class="backendHealth.available ? 'healthy' : 'unhealthy'"
+          >
+            {{
+              backendHealth.available ? "✅ 後端服務正常" : "❌ 後端服務異常"
+            }}
           </span>
         </div>
       </div>
-      
+
       <div class="control-group">
         <h3>🧪 測試功能</h3>
         <div class="button-group">
           <button @click="testValidation" :disabled="testing">
-            {{ testing ? '測試中...' : '測試 Token 驗證' }}
+            {{ testing ? "測試中..." : "測試 Token 驗證" }}
           </button>
           <button @click="testRefresh" :disabled="testing">
-            {{ testing ? '測試中...' : '測試 Token 刷新' }}
+            {{ testing ? "測試中..." : "測試 Token 刷新" }}
           </button>
           <button @click="testBackendHealth" :disabled="testing">
-            {{ testing ? '檢查中...' : '檢查後端狀態' }}
+            {{ testing ? "檢查中..." : "檢查後端狀態" }}
           </button>
-          <button @click="clearAll" class="danger">
-            🗑️ 清除所有儲存
-          </button>
+          <button @click="clearAll" class="danger">🗑️ 清除所有儲存</button>
         </div>
       </div>
 
       <div class="control-group" v-if="testResult">
         <h3>📊 測試結果</h3>
-        <div class="test-result" :class="testResult.success ? 'success' : 'error'">
+        <div
+          class="test-result"
+          :class="testResult.success ? 'success' : 'error'"
+        >
           <pre>{{ testResult }}</pre>
         </div>
       </div>
     </div>
-    
+
     <div class="status">
       <h3>📈 當前狀態</h3>
       <div class="status-grid">
@@ -65,20 +72,24 @@
         </div>
         <div class="status-item">
           <label>認證狀態:</label>
-          <span :class="authStore.isAuthenticated ? 'authenticated' : 'unauthenticated'">
-            {{ authStore.isAuthenticated ? '✅ 已認證' : '❌ 未認證' }}
+          <span
+            :class="
+              authStore.isAuthenticated ? 'authenticated' : 'unauthenticated'
+            "
+          >
+            {{ authStore.isAuthenticated ? "✅ 已認證" : "❌ 未認證" }}
           </span>
         </div>
         <div class="status-item">
           <label>當前用戶:</label>
-          <span>{{ authStore.user ? authStore.user.displayName : '無' }}</span>
+          <span>{{ authStore.user ? authStore.user.displayName : "無" }}</span>
         </div>
         <div class="status-item">
           <label>加載狀態:</label>
-          <span>{{ authStore.isLoading ? '🔄 加載中' : '✅ 閒置' }}</span>
+          <span>{{ authStore.isLoading ? "🔄 加載中" : "✅ 閒置" }}</span>
         </div>
       </div>
-      
+
       <h4>📦 儲存狀態</h4>
       <pre class="storage-status">{{ storageStatus }}</pre>
     </div>
@@ -87,8 +98,8 @@
     <div class="control-group" v-if="authMode === 'mock'">
       <h3>👥 快速登入測試 (僅 Mock 模式)</h3>
       <div class="test-accounts">
-        <button 
-          v-for="account in testAccounts" 
+        <button
+          v-for="account in testAccounts"
           :key="account.username"
           @click="quickLogin(account)"
           class="account-btn"
@@ -101,7 +112,10 @@
     </div>
 
     <!-- 後端模式提示 -->
-    <div v-if="authMode === 'mock' && !backendHealth.available" class="warning-banner">
+    <div
+      v-if="authMode === 'mock' && !backendHealth.available"
+      class="warning-banner"
+    >
       <h4>⚠️ 後端服務警告</h4>
       <p>後端服務可能未啟動或無法連接。請確保：</p>
       <ul>
@@ -131,44 +145,63 @@ const storageStatus = computed(() => ({
   authToken: sessionStorage.getItem("auth-token"),
   authRefreshToken: sessionStorage.getItem("auth-refresh-token"),
   sessionStorageKeys: Object.keys(sessionStorage),
-
 }));
 
 const testAccounts = [
-  { username: 'admin', password: 'password!123456', displayName: '阿德民', role: 'admin' },
-  { username: 'temple_staff', password: 'temple123', displayName: '寺廟工作人員', role: 'staff' },
-  { username: 'volunteer', password: 'volunteer123', displayName: '志工', role: 'volunteer' },
-  { username: 'user01', password: 'user0123', displayName: '一般用戶01', role: 'user' }
+  {
+    username: "admin",
+    password: "password!123456",
+    displayName: "阿德民",
+    role: "admin",
+  },
+  {
+    username: "temple_staff",
+    password: "temple123",
+    displayName: "寺廟工作人員",
+    role: "staff",
+  },
+  {
+    username: "volunteer",
+    password: "volunteer123",
+    displayName: "志工",
+    role: "volunteer",
+  },
+  {
+    username: "user01",
+    password: "user0123",
+    displayName: "一般用戶01",
+    role: "user",
+  },
 ];
 
 const setMode = async (mode) => {
   authService.setMode(mode);
   authMode.value = mode;
   sessionStorage.setItem("auth-mode", mode);
-  
+
   // 切換到後端模式時檢查健康狀態
   if (mode === "directus") {
     await testBackendHealth();
   } else {
     backendHealth.value = { available: false, checked: false };
   }
-  
+
   testResult.value = null;
 };
 
 const testValidation = async () => {
   testing.value = true;
   testResult.value = null;
-  
+
   try {
     const result = await authService.validateToken();
     testResult.value = result;
-    console.log('Token 驗證結果:', result);
+    console.log("Token 驗證結果:", result);
   } catch (error) {
     testResult.value = {
       success: false,
-      message: '測試過程中發生錯誤',
-      error: error.message
+      message: "測試過程中發生錯誤",
+      error: error.message,
     };
   } finally {
     testing.value = false;
@@ -178,16 +211,16 @@ const testValidation = async () => {
 const testRefresh = async () => {
   testing.value = true;
   testResult.value = null;
-  
+
   try {
     const result = await authService.refreshToken();
     testResult.value = result;
-    console.log('Token 刷新結果:', result);
+    console.log("Token 刷新結果:", result);
   } catch (error) {
     testResult.value = {
       success: false,
-      message: '測試過程中發生錯誤',
-      error: error.message
+      message: "測試過程中發生錯誤",
+      error: error.message,
     };
   } finally {
     testing.value = false;
@@ -195,18 +228,17 @@ const testRefresh = async () => {
 };
 
 const testBackendHealth = async () => {
-  if (authMode.value !== 'directus') {
+  if (authMode.value !== "directus") {
     testResult.value = {
       success: false,
-      message: '此功能僅在後端模式下可用'
+      message: "此功能僅在後端模式下可用",
     };
     return;
   }
-  
+
   testing.value = true;
   try {
-
-    const healthCheck = await baseService.checkConnection();
+    const healthCheck = await baseService.healthCheck();
     if (healthCheck.online) {
       console.log("✅ 後端服務健康檢查通過");
     } else {
@@ -216,15 +248,14 @@ const testBackendHealth = async () => {
     backendHealth.value = { ...healthCheck, checked: true };
     testResult.value = {
       success: healthCheck.online,
-      message: healthCheck.online ? '後端服務正常' : '後端服務不可用',
-      data: healthCheck
+      message: healthCheck.online ? "後端服務正常" : "後端服務不可用",
+      data: healthCheck,
     };
-    
   } catch (error) {
     testResult.value = {
       success: false,
-      message: '檢查後端狀態時發生錯誤',
-      error: error.message
+      message: "檢查後端狀態時發生錯誤",
+      error: error.message,
     };
   } finally {
     testing.value = false;
@@ -232,24 +263,24 @@ const testBackendHealth = async () => {
 };
 
 const quickLogin = async (account) => {
-  if (authMode.value !== 'mock') {
-    alert('快速登入僅在 Mock 模式下可用');
+  if (authMode.value !== "mock") {
+    alert("快速登入僅在 Mock 模式下可用");
     return;
   }
-  
+
   testing.value = true;
   try {
     const result = await authStore.login(account.username, account.password);
     testResult.value = {
       success: true,
       message: `快速登入成功: ${account.displayName}`,
-      data: result
+      data: result,
     };
   } catch (error) {
     testResult.value = {
       success: false,
       message: `快速登入失敗: ${account.displayName}`,
-      error: error.message
+      error: error.message,
     };
   } finally {
     testing.value = false;
@@ -258,9 +289,9 @@ const quickLogin = async (account) => {
 
 const clearAll = () => {
   sessionStorage.clear();
-  sessionStorage.removeItem('auth-user');
-  sessionStorage.removeItem('auth-token');
-  sessionStorage.removeItem('auth-refresh-token');
+  sessionStorage.removeItem("auth-user");
+  sessionStorage.removeItem("auth-token");
+  sessionStorage.removeItem("auth-refresh-token");
   // 保留開發模式設置
   const devMode = sessionStorage.getItem("auth-mode");
   sessionStorage.clear();
@@ -272,7 +303,7 @@ const clearAll = () => {
 
 // 初始化時檢查後端狀態
 onMounted(async () => {
-  if (authMode.value === 'directus') {
+  if (authMode.value === "directus") {
     await testBackendHealth();
   }
 });

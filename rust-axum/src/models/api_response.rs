@@ -3,6 +3,7 @@ use serde::Serialize;
 
 /// API 響應結構（與前端 baseService 格式一致）
 #[derive(Debug, Serialize)]
+#[allow(dead_code)]
 pub struct ApiResponse<T> {
     pub success: bool,
     pub data: Option<T>,
@@ -13,12 +14,14 @@ pub struct ApiResponse<T> {
 
 /// 元數據結構
 #[derive(Debug, Serialize)]
+#[allow(dead_code)]
 pub struct Meta {
     pub total: i64,
     pub limit: Option<i64>,
     pub offset: Option<i64>,
 }
 
+#[allow(dead_code)]  // 為整個 impl 塊添加
 impl<T> ApiResponse<T> {
     pub fn success(data: T) -> Self {
         Self {

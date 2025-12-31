@@ -10,6 +10,10 @@ export class RustRegistrationService {
     console.log(`RustRegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
+  getIsMock() {
+    return this.base.isMock;
+  }
+
   /**
    * 創建報名登記（與 Directus 接口兼容）
    */
@@ -294,6 +298,100 @@ export class RustRegistrationService {
         operation: "exportRegistrations",
         format,
         ...context,
+      }
+    );
+  }
+
+  // ========== 模式管理 ==========
+
+  /**
+   * 獲取當前模式
+   */
+  getCurrentMode() {
+    return "rust"; // Rust 服務總是 rust 模式
+  }
+
+  /**
+   * 設置模式（在 Rust 服務中無效，但保持接口兼容）
+   */
+  setMode(mode) {
+    console.warn(`⚠️🦀 [Rust] 服務不支持切換模式，當前固定為 rust 模式`);
+    return "rust";
+  }
+
+  // ========== 錯誤處理 ==========
+
+  /**
+   * Rust 特定的錯誤處理
+   */
+  handleRustError(error) {
+    if (
+      error.message.includes("NetworkError") ||
+      error.message.includes("Failed to fetch")
+    ) {
+      return {
+        success: false,
+        message: "Rust 服務未啟動或網路連接失敗",
+        errorCode: "RUST_NOT_AVAILABLE",
+        details: "請確保 Rust 服務正在運行",
+      };
+    }
+
+    if (
+      error.message.includes("401") ||
+      error.message.includes("Unauthorized")
+    ) {
+      return {
+        success: false,
+        message: "認證失敗，請重新登入",
+        errorCode: "UNAUTHORIZED",
+        details: error.message,
+      };
+    }
+
+    if (error.message.includes("404")) {
+      return {
+        success: false,
+        message: "資源不存在",
+        errorCode: "NOT_FOUND",
+        details: error.message,
+      };
+    }
+
+    return {
+      success: false,
+      message: "Rust 服務操作失敗",
+      errorCode: "RUST_ERROR",
+      details: error.message,
+    };
+  }
+
+  /**
+   * 健康檢查
+   */
+  async healthCheck() {
+    return await this.base.rustFetch(
+      `${this.base.rustApiBaseUrl}/health`,
+      {
+        method: "GET",
+      },
+      {
+        operation: "healthCheck",
+      }
+    );
+  }
+
+  /**
+   * 獲取服務信息
+   */
+  async getServiceInfo() {
+    return await this.base.rustFetch(
+      `${this.base.rustApiBaseUrl}/info`,
+      {
+        method: "GET",
+      },
+      {
+        operation: "getServiceInfo",
       }
     );
   }

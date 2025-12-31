@@ -10,6 +10,10 @@ export class RustMonthlyDonateService {
     this.endpoint = this.base.endpoints.monthlyDonates || "monthly-donates";
   }
 
+  getIsMock() {
+    return this.base.isMock;
+  }
+
   // ========== 核心 CRUD 方法 ==========
 
   /**
@@ -439,7 +443,7 @@ export class RustMonthlyDonateService {
   /**
    * Rust 特定的錯誤處理
    */
-  handleDirectusError(error) {
+  handleRustError(error) {
     if (
       error.message.includes("NetworkError") ||
       error.message.includes("Failed to fetch")
@@ -486,7 +490,7 @@ export class RustMonthlyDonateService {
    */
   async healthCheck() {
     return await this.base.rustFetch(
-      `${this.base.baseUrl}/health`,
+      `${this.base.rustApiBaseUrl}/health`,
       {
         method: "GET",
       },
@@ -501,7 +505,7 @@ export class RustMonthlyDonateService {
    */
   async getServiceInfo() {
     return await this.base.rustFetch(
-      `${this.base.baseUrl}/info`,
+      `${this.base.rustApiBaseUrl}/info`,
       {
         method: "GET",
       },

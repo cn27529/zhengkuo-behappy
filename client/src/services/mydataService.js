@@ -9,10 +9,13 @@ export class MydataService {
     console.log(`MydataService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
+  getIsMock() {
+    return this.base.isMock;
+  }
   // ========== CRUD 操作 ==========
   async getAllMydata(params = {}) {
-    if (baseService.mode !== "directus") {
-      console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
+    if (this.getIsMock()) {
+      console.warn("⚠️ 當前模式不為 Directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
@@ -62,9 +65,12 @@ export class MydataService {
   }
 
   async getMydataById(id) {
-    if (baseService.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法獲取數據",
+      };
     }
 
     try {
@@ -87,9 +93,12 @@ export class MydataService {
   }
 
   async createMydata(mydataData) {
-    if (baseService.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法創建數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法創建數據",
+      };
     }
 
     try {
@@ -134,9 +143,12 @@ export class MydataService {
   }
 
   async updateMydata(id, mydataData) {
-    if (baseService.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法更新數據",
+      };
     }
 
     try {
@@ -160,9 +172,12 @@ export class MydataService {
   }
 
   async deleteMydata(id) {
-    if (baseService.mode !== "directus") {
+    if (this.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
-      return { success: false, message: "請切換到 directus 模式" };
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法刪除數據",
+      };
     }
 
     try {
@@ -263,7 +278,11 @@ export class MydataService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
-    return baseService.mode;
+    if (sessionStorage.getItem("auth-mode") !== null) {
+      this.base.mode = sessionStorage.getItem("auth-mode");
+    }
+    console.log("getCurrentMode: ", this.base.mode);
+    return this.base.mode;
   }
 
   setMode(mode) {
@@ -274,11 +293,18 @@ export class MydataService {
       // 健康檢查
       if (mode === "directus") {
         // 檢查後端連接狀態
-        baseService.checkConnection().then((healthCheck) => {
+        baseService.healthCheck().then((healthCheck) => {
           if (healthCheck.online) {
-            console.log("✅ Directus 服務健康檢查通過");
+            console.log("✅ 後端服務健康檢查通過");
           } else {
-            console.warn("⚠️ Directus 服務可能未啟動:", healthCheck);
+            const message = `❌ 服務連接失敗，無法獲取表單: ${healthCheck.message}`;
+            console.error(message);
+            return {
+              success: false,
+              online: false,
+              message: message,
+              data: null,
+            };
           }
         });
       }

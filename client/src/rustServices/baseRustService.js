@@ -6,6 +6,8 @@ export class BaseRustService {
   constructor() {
     console.log("🦀 BaseRustService 初始化");
 
+    this.isMock = import.meta.env.VITE_MOCK === true;
+
     // 配置
     this.rustApiBaseUrl =
       import.meta.env.VITE_RUST_API_URL || "http://localhost:3000";
