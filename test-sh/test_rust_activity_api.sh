@@ -22,7 +22,7 @@ CREATE_RESPONSE=$(curl -s -X POST "$BASE_URL/api/activities" \
   -H "Content-Type: application/json" \
   -d '{
     "activityId": "ACT-2024-001",
-    "name": "新春祈福法會",
+    "name": "RUST新春祈福法會",
     "itemType": "ceremony",
     "participants": 150,
     "date": "2024-02-10T10:00:00Z",
@@ -69,19 +69,19 @@ echo "8️⃣ 查詢進行中的活動"
 curl -s "$BASE_URL/api/activities?state=ongoing" | jq .
 echo -e "\n"
 
-# 9. 測試分頁
-echo "9️⃣ 測試分頁 (limit=5, offset=0)"
-curl -s "$BASE_URL/api/activities?limit=5&offset=0" | jq .
-echo -e "\n"
+# # 9. 測試分頁
+# echo "9️⃣ 測試分頁 (limit=5, offset=0)"
+# curl -s "$BASE_URL/api/activities?limit=5&offset=0" | jq .
+# echo -e "\n"
 
-# 10. 刪除活動
-echo "🔟 刪除活動 (ID: $ACTIVITY_ID)"
-curl -s -X DELETE "$BASE_URL/api/activities/$ACTIVITY_ID" | jq .
-echo -e "\n"
+# # 10. 刪除活動
+# echo "🔟 刪除活動 (ID: $ACTIVITY_ID)"
+# curl -s -X DELETE "$BASE_URL/api/activities/$ACTIVITY_ID" | jq .
+# echo -e "\n"
 
-# 11. 驗證刪除
-echo "1️⃣1️⃣ 驗證活動已刪除"
-curl -s "$BASE_URL/api/activities/$ACTIVITY_ID" | jq .
-echo -e "\n"
+# # 11. 驗證刪除
+# echo "1️⃣1️⃣ 驗證活動已刪除"
+# curl -s "$BASE_URL/api/activities/$ACTIVITY_ID" | jq .
+# echo -e "\n"
 
 echo "✅ 測試完成！"
