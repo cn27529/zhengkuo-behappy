@@ -10,10 +10,6 @@ export class RustMonthlyDonateService {
     this.endpoint = this.base.endpoints.monthlyDonates || "monthly-donates";
   }
 
-  getIsMock() {
-    return this.base.isMock;
-  }
-
   // ========== 核心 CRUD 方法 ==========
 
   /**

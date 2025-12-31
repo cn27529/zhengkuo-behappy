@@ -43,6 +43,10 @@ export class BaseService {
     };
   }
 
+  getIsMock() {
+    return this.isMock;
+  }
+
   /**
    * indexedDB 保存日誌條目
    * 改進版：條件式保存日誌

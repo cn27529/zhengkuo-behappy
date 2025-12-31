@@ -16,10 +16,6 @@ export class RegistrationService {
     return await this.base.healthCheck();
   }
 
-  getIsMock() {
-    return this.base.isMock;
-  }
-
   // ========== CRUD 操作 ==========
   async createRegistration(registrationData) {
     const createISOTime = DateUtils.getCurrentISOTime();

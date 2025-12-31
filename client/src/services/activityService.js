@@ -16,10 +16,6 @@ export class ActivityService {
     return await this.base.healthCheck();
   }
 
-  getIsMock() {
-    return this.base.isMock;
-  }
-
   // ========== 使用示例：不同的調用方式 ==========
   // 範例 1: 帶完整 context（會記錄日誌）
   async exampleWithContext() {

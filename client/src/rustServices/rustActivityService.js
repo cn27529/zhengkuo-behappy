@@ -10,10 +10,6 @@ export class RustActivityService {
     console.log(`RustActivityService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
-  getIsMock() {
-    return this.base.isMock;
-  }
-
   // ========== 核心 CRUD 方法 ==========
 
   /**

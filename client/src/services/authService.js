@@ -13,10 +13,6 @@ export class AuthService {
     return await this.base.healthCheck();
   }
 
-  getIsMock() {
-    return this.base.isMock;
-  }
-
   // ========== 通用方法 ==========
   async handleDirectusResponse(response) {
     return await this.base.handleDirectusResponse(response);

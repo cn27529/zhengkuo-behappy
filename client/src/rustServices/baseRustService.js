@@ -44,6 +44,10 @@ export class BaseRustService {
     };
   }
 
+  getIsMock() {
+    return this.isMock;
+  }
+
   /**
    * 獲取完整的 API URL
    */

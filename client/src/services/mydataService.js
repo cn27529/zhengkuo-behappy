@@ -9,9 +9,6 @@ export class MydataService {
     console.log(`MydataService 初始化: 當前模式為 ${baseService.mode}`);
   }
 
-  getIsMock() {
-    return this.base.isMock;
-  }
   // ========== CRUD 操作 ==========
   async getAllMydata(params = {}) {
     if (this.getIsMock()) {

@@ -18,10 +18,6 @@ export class MonthlyDonateService {
     return await this.base.healthCheck();
   }
 
-  getIsMock() {
-    return this.base.isMock;
-  }
-
   // ========== 核心 CRUD 方法 ==========
   /**
    * 獲取所有百元贊助記錄

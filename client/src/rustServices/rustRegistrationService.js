@@ -10,10 +10,6 @@ export class RustRegistrationService {
     console.log(`RustRegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
-  getIsMock() {
-    return this.base.isMock;
-  }
-
   /**
    * 創建報名登記（與 Directus 接口兼容）
    */
