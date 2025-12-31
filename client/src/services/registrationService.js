@@ -1,19 +1,22 @@
 // src/services/registrationService.js
-import { baseService, getApiUrl } from "../services/baseService.js";
+import { baseService } from "../services/baseService.js";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
 export class RegistrationService {
   // ========== 建構函式 ==========
   constructor() {
-    console.log(`RegistrationService 初始化: 當前模式為 ${baseService.mode}`);
+    this.serverName = "RegistrationService";
+    this.base = baseService;
+    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsRegistration}`;
+    console.log(`RegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
   // ========== CRUD 操作 ==========
   async createRegistration(registrationData) {
     const createISOTime = DateUtils.getCurrentISOTime();
 
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn(
         "報名提交成功！⚠️ 當前模式不是 directus，無法創建數據，請切換到 directus 模式"
       );
@@ -30,7 +33,7 @@ export class RegistrationService {
 
     try {
       // 先檢查連線 ✅ 修正：正確的健康檢查邏輯
-      const healthCheck = await baseService.checkConnection();
+      const healthCheck = await this.base.checkConnection();
       if (!healthCheck.online) {
         return {
           success: false,
@@ -68,16 +71,15 @@ export class RegistrationService {
         },
       };
 
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const url = getApiUrl(baseService.apiEndpoints.itemsRegistration);
-      const apiUrl = `${url}`;
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const apiUrl = this.endpoint;
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: myHeaders,
         body: JSON.stringify(processedData),
       });
 
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功創建報名表"
       );
@@ -89,7 +91,7 @@ export class RegistrationService {
   }
 
   async updateRegistration(id, registrationData) {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -101,18 +103,15 @@ export class RegistrationService {
         updatedUser: registrationData.updatedUser || "system",
       };
 
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const url = `${getApiUrl(
-        baseService.apiEndpoints.itemsRegistration
-      )}/${id}`;
-      const apiUrl = `${url}`;
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const apiUrl = `${this.endpoint}/${id}`;
       const response = await fetch(apiUrl, {
         method: "PATCH",
         headers: myHeaders,
         body: JSON.stringify(updateData),
       });
 
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功更新報名表"
       );
@@ -124,23 +123,20 @@ export class RegistrationService {
   }
 
   async getRegistrationById(id) {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const url = `${getApiUrl(
-        baseService.apiEndpoints.itemsRegistration
-      )}/${id}?fields=*`;
-      const apiUrl = `${url}`;
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const apiUrl = `${this.endpoint}/${id}?fields=*`;
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
       });
 
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功獲取報名表"
       );
@@ -152,7 +148,7 @@ export class RegistrationService {
   }
 
   async getAllRegistrations(params = {}) {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -173,10 +169,9 @@ export class RegistrationService {
         queryParams.append("sort", params.sort);
       }
 
-      const url = getApiUrl(baseService.apiEndpoints.itemsRegistration);
-      const apiUrl = `${url}?${queryParams.toString()}`;
+      const apiUrl = `${this.endpoint}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
-      const myHeaders = await baseService.getAuthJsonHeaders();
+      const myHeaders = await this.base.getAuthJsonHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
@@ -201,7 +196,7 @@ export class RegistrationService {
         throw new Error(errorData.message || `HTTP ${response.status} 錯誤`);
       }
 
-      const result = await baseService.handleDirectusResponse(
+      const result = await this.base.handleDirectusResponse(
         response,
         "成功獲取報名表列表"
       );
@@ -213,17 +208,14 @@ export class RegistrationService {
   }
 
   async deleteRegistration(id) {
-    if (baseService.mode !== "directus") {
+    if (this.base.mode !== "directus") {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
 
     try {
-      const myHeaders = await baseService.getAuthJsonHeaders();
-      const url = `${getApiUrl(
-        baseService.apiEndpoints.itemsRegistration
-      )}/${id}`;
-      const apiUrl = `${url}`;
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const apiUrl = `${this.endpoint}/${id}`;
       const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: myHeaders,
@@ -346,12 +338,12 @@ export class RegistrationService {
 
   // ========== 模式管理 ==========
   getCurrentMode() {
-    return baseService.mode;
+    return this.base.mode;
   }
 
   setMode(mode) {
     if (["mock", "backend", "directus"].includes(mode)) {
-      baseService.mode = mode;
+      this.base.mode = mode;
       console.log(`RegistrationService 模式已切換為: ${mode}`);
     } else {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');

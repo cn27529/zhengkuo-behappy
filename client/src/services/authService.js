@@ -1,27 +1,24 @@
 // src/services/authService.js
-import { baseService, getApiUrl } from "../services/baseService.js";
+import { baseService } from "../services/baseService.js";
 import userData from "../data/auth_user.json";
 
 export class AuthService {
   constructor() {
-    console.log(
-      `AuthService 初始化: baseService.mode 當前模式為 ${baseService.mode}`
-    );
-    console.log(
-      `AuthService 初始化: baseService.isDev 當前開發模式為 ${baseService.isDev}`
-    );
+    this.serverName = "AuthService";
+    this.base = baseService;
+    console.log(`AuthService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
   // ========== 通用方法 ==========
   async handleDirectusResponse(response) {
-    return await baseService.handleDirectusResponse(response);
+    return await this.base.handleDirectusResponse(response);
   }
 
   async login(username, password) {
-    console.log(`登入請求 - 模式: ${baseService.mode}, 用戶: ${username}`);
+    console.log(`登入請求 - 模式: ${this.base.mode}, 用戶: ${username}`);
 
     // 在控制台輸出警告
-    if (baseService.mode === "mock") {
+    if (this.base.mode === "mock") {
       console.warn(
         "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
           "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
@@ -29,17 +26,17 @@ export class AuthService {
       );
 
       return this.mockLogin(username, password);
-    } else if (baseService.mode === "backend") {
+    } else if (this.base.mode === "backend") {
       return this.backendLogin(username, password);
-    } else if (baseService.mode === "directus") {
+    } else if (this.base.mode === "directus") {
       return this.directusLogin(username, password);
     }
   }
 
   async logout() {
-    if (baseService.mode === "backend") {
+    if (this.base.mode === "backend") {
       return this.backendLogout();
-    } else if (baseService.mode === "directus") {
+    } else if (this.base.mode === "directus") {
       return this.directusLogout();
     }
     return { success: true };
@@ -59,9 +56,9 @@ export class AuthService {
   }
 
   async refreshToken() {
-    if (baseService.mode === "mock") {
+    if (this.base.mode === "mock") {
       return this.mockRefreshToken();
-    } else if (baseService.mode === "directus") {
+    } else if (this.base.mode === "directus") {
       return this.directusRefreshToken();
     } else {
       return this.backendRefreshToken();
@@ -200,19 +197,17 @@ export class AuthService {
   // ========== Directus 方法 ==========
   async directusLogin(username, password) {
     try {
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.authLogin),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: username, // Directus 通常使用 email
-            password: password,
-          }),
-        }
-      );
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authLogin}`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username, // Directus 通常使用 email
+          password: password,
+        }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -231,7 +226,8 @@ export class AuthService {
         const { access_token, refresh_token, expires } = result.data;
 
         // 獲取用戶資訊
-        const userResponse = await fetch(`${baseService.apiBaseUrl}/users/me`, {
+        const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.usersMe}`;
+        const userResponse = await fetch(apiUrl, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -292,19 +288,17 @@ export class AuthService {
     try {
       console.log("開始 Directus 2FA 登入流程");
 
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.authLogin),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: username,
-            password: password,
-          }),
-        }
-      );
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authLogin}`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username,
+          password: password,
+        }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -364,7 +358,8 @@ export class AuthService {
     try {
       console.log("開始 Directus 2FA 驗證");
 
-      const response = await fetch(getApiUrl("/auth/tfa"), {
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.auth2FA}`;
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -428,7 +423,8 @@ export class AuthService {
     const { access_token, refresh_token, expires } = authData;
 
     // 獲取用戶資訊
-    const userResponse = await fetch(`${baseService.apiBaseUrl}/users/me`, {
+    const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.usersMe}`;
+    const userResponse = await fetch(apiUrl, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -468,19 +464,17 @@ export class AuthService {
       }
 
       // Directus 登出請求
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.authLogout),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            refresh_token: refreshToken,
-          }),
-        }
-      );
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authLogout}`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          refresh_token: refreshToken,
+        }),
+      });
 
       // 即使 Directus 登出失敗，也認為成功（因為前端狀態已經清除）
       if (!response.ok) {
@@ -523,7 +517,8 @@ export class AuthService {
       }
 
       // 使用 /users/me 端點驗證 token
-      const response = await fetch(getApiUrl(baseService.apiEndpoints.authMe), {
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.usersMe}`;
+      const response = await fetch(apiUrl, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -569,18 +564,16 @@ export class AuthService {
         return { success: false, message: "未找到 Refresh Token" };
       }
 
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.authRefresh),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            refresh_token: refreshToken,
-          }),
-        }
-      );
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authRefresh}`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refresh_token: refreshToken,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -622,16 +615,14 @@ export class AuthService {
   // ========== 後端 API 方法 ==========
   async backendLogin(username, password) {
     try {
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.authLogin),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        }
-      );
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authLogin}`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
       if (!response.ok) {
         // 如果後端返回錯誤狀態碼
@@ -675,16 +666,14 @@ export class AuthService {
         return { success: true };
       }
 
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.authLogout),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authLogout}`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       // 即使後端登出失敗，也認為成功（因為前端狀態已經清除）
       if (!response.ok) {
@@ -706,15 +695,13 @@ export class AuthService {
         return { success: false, message: "未找到 Token" };
       }
 
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.authValidate),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authValidate}`;
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -748,16 +735,14 @@ export class AuthService {
         return { success: false, message: "未找到 Refresh Token" };
       }
 
-      const response = await fetch(
-        getApiUrl(baseService.apiEndpoints.authRefresh),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ refreshToken }),
-        }
-      );
+      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authRefresh}`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -785,36 +770,36 @@ export class AuthService {
 
   // ========== 輔助方法 ==========
   async mockDelay() {
-    return new Promise((resolve) => setTimeout(resolve, baseService.mockDelay));
+    return new Promise((resolve) => setTimeout(resolve, this.base.mockDelay));
   }
 
   getCurrentMode() {
     if (sessionStorage.getItem("auth-mode") !== null) {
-      baseService.mode = sessionStorage.getItem("auth-mode");
+      this.base.mode = sessionStorage.getItem("auth-mode");
     }
-    console.log("getCurrentMode: ", baseService.mode);
-    return baseService.mode;
+    console.log("getCurrentMode: ", this.base.mode);
+    return this.base.mode;
   }
 
   getCurrentDev() {
     if (sessionStorage.getItem("auth-dev") !== null) {
-      baseService.isDev = sessionStorage.getItem("auth-dev");
+      this.base.isDev = sessionStorage.getItem("auth-dev");
     }
-    //console.log("getCurrentDev: ", baseService.isDev);
-    return baseService.isDev === "true" ? true : false;
+    //console.log("getCurrentDev: ", this.base.isDev);
+    return this.base.isDev === "true" ? true : false;
   }
 
   // 修改 setDev 方法 ,用於設置是否為開發模式，可開啟調試模式
   setDev(isDev) {
     console.log("setDev: ", isDev);
-    baseService.isDev = isDev;
+    this.base.isDev = isDev;
     sessionStorage.setItem("auth-dev", isDev);
-    console.log(`🔧 開發模式已切換為: ${baseService.isDev} `);
+    console.log(`🔧 開發模式已切換為: ${this.base.isDev} `);
   }
 
   // 修改 setMode 方法中的健康檢查
   setMode(mode) {
-    baseService.mode = mode;
+    this.base.mode = mode;
     console.log(`開發模式已切換為: ${mode}`);
     sessionStorage.setItem("auth-mode", mode);
 
@@ -823,7 +808,7 @@ export class AuthService {
       if (mode === "backend") {
         // 檢查後端連接狀態
 
-        baseService.checkConnection().then((healthCheck) => {
+        this.base.checkConnection().then((healthCheck) => {
           if (healthCheck.online) {
             console.log("✅ 後端服務健康檢查通過");
           } else {
@@ -832,7 +817,7 @@ export class AuthService {
         });
       } else if (mode === "directus") {
         // 檢查後端連接狀態
-        baseService.checkConnection().then((healthCheck) => {
+        this.base.checkConnection().then((healthCheck) => {
           if (healthCheck.online) {
             console.log("✅ Directus 服務健康檢查通過");
           } else {

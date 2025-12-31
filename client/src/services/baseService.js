@@ -20,7 +20,7 @@ export class BaseService {
       authProfile: "/auth/profile", // 用戶信息
       authValidate: "/auth/validate", // token 驗證
       auth2FA: "/auth/tfa", // 2FA 驗證
-      authMe: "/users/me", // Directus 端點
+      usersMe: "/users/me", // Directus 端點
       itemsMydata: "/items/mydata", // mydata測試
       itemsRegistration: "/items/registrationDB", // 新增 registrationDB 端點
       serverPing: "/server/ping", // 伺服器連線檢查端點
@@ -416,8 +416,7 @@ export class BaseService {
 
   async serverInfo() {
     try {
-      const url = getApiUrl(this.apiEndpoints.serverInfo);
-      const apiUrl = `${url}`;
+      const apiUrl = `${this.apiBaseUrl}${this.apiEndpoints.serverInfo}`;
       const response = await fetch(apiUrl, {
         method: "GET",
         timeout: 5000,
@@ -442,8 +441,7 @@ export class BaseService {
   // 檢查伺服器是否在線，返回布林值
   async serverPing() {
     try {
-      const url = getApiUrl(this.apiEndpoints.serverPing);
-      const apiUrl = `${url}`;
+      const apiUrl = `${this.apiBaseUrl}${this.apiEndpoints.serverPing}`;
       const response = await fetch(apiUrl, {
         method: "GET",
         timeout: 5000,
@@ -476,8 +474,7 @@ export class BaseService {
     }
 
     try {
-      const url = getApiUrl(this.apiEndpoints.serverInfo);
-      const apiUrl = `${url}`;
+      const apiUrl = `${this.apiBaseUrl}${this.apiEndpoints.serverInfo}`;
       const response = await fetch(apiUrl, {
         method: "GET",
         timeout: 5000,
@@ -592,7 +589,7 @@ export class BaseService {
 
 export const baseService = new BaseService();
 
-// 獲取完整的 API URL
-export const getApiUrl = (endpoint) => {
-  return `${baseService.apiBaseUrl}${endpoint}`;
-};
+// // 獲取完整的 API URL
+// export const getApiUrl = (endpoint) => {
+//   return `${baseService.apiBaseUrl}${endpoint}`;
+// };

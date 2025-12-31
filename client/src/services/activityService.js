@@ -123,8 +123,7 @@ export class ActivityService {
       console.log("✅ Directus 服務健康檢查通過");
 
       const myHeaders = await this.base.getAuthJsonHeaders();
-      const url = this.endpoint;
-      const apiUrl = `${url}`;
+      const apiUrl = `${this.endpoint}`;
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: myHeaders,
@@ -176,9 +175,8 @@ export class ActivityService {
 
     try {
       const myHeaders = await this.base.getAuthJsonHeaders();
-      const url = `${this.endpoint}/${recordId}`;
-
-      const response = await fetch(url, {
+      const apiUrl = `${this.endpoint}/${recordId}`;
+      const response = await fetch(apiUrl, {
         method: "PATCH",
         headers: myHeaders,
         body: JSON.stringify(updateData),
@@ -230,9 +228,8 @@ export class ActivityService {
 
     try {
       const myHeaders = await this.base.getAuthJsonHeaders();
-      const url = `${this.endpoint}/${recordId}`;
-
-      const response = await fetch(url, {
+      const apiUrl = `${this.endpoint}/${recordId}`;
+      const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: myHeaders,
       });
@@ -264,9 +261,8 @@ export class ActivityService {
 
     try {
       const myHeaders = await this.base.getAuthJsonHeaders();
-      const url = `${this.endpoint}/${recordId}?fields=*`;
-
-      const response = await fetch(url, {
+      const apiUrl = `${this.endpoint}/${recordId}?fields=*`;
+      const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
       });
@@ -332,8 +328,7 @@ export class ActivityService {
         queryParams.append("offset", params.offset);
       }
 
-      const url = this.endpoint;
-      const apiUrl = `${url}?${queryParams.toString()}`;
+      const apiUrl = `${this.endpoint}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
 
       const myHeaders = await this.base.getAuthJsonHeaders();

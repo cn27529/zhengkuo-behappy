@@ -7,6 +7,7 @@ export class RustRegistrationService {
     this.serviceName = "RustRegistrationService";
     this.base = baseRustService;
     this.endpoint = this.base.endpoints.registrations;
+    console.log(`RustRegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
   /**
