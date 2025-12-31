@@ -40,6 +40,7 @@ async function loadRustServices() {
 
 class ServiceAdapter {
   constructor() {
+    this.isMock = import.meta.env.VITE_MOCK === true;
     this.backend = import.meta.env.VITE_BACKEND_TYPE || "directus";
     this.autoFallback = import.meta.env.VITE_AUTO_FALLBACK === "true";
     this.fallbackBackend = "directus";
@@ -59,6 +60,10 @@ class ServiceAdapter {
     };
 
     this.maxErrors = 3;
+  }
+
+  getIsMock() {
+    return this.isMock;
   }
 
   /**

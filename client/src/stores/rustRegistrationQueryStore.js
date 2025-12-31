@@ -85,7 +85,7 @@ export const useQueryStore = defineStore("query", () => {
 
       const params = {
         //sort: "-date_created",
-        //sort: "-createdAt",
+        sort: "-createdAt",
       };
 
       const result =
