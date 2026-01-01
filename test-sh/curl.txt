@@ -24,3 +24,7 @@ curl -X OPTIONS http://localhost:3000/api/activities \
 
 
 curl -s "http://localhost:3000/api/activities?fields=*,contact.*" | jq '.'
+
+curl -s "http://localhost:3000/api/registrations?fields=*,contact.*" | jq '.'
+
+curl -s "http://localhost:3000/api/monthly-donates?fields=*,contact.*" | jq '.'
