@@ -224,7 +224,7 @@ import { ElMessage } from "element-plus";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { authService } from "../services/authService";
-import { useQueryStore } from "../stores/rustRegistrationQueryStore.js";
+import { useQueryStore } from "../stores/registrationQueryStore.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
