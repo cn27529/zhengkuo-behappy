@@ -62,6 +62,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 創建活動路由
     let activity_routes = routes::activity::create_routes();
     let registration_routes =  routes::registration::create_routes();
+    let monthly_donate_routes =  routes::monthly_donate::create_routes();
 
     // 創建主路由
     let app = Router::new()
@@ -69,7 +70,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/health", get(health_check))
         .route("/db-test", get(db_test))
         .merge(activity_routes) // 合併活動路由
-        .merge(registration_routes) // 合併報名記錄路由
+        .merge(registration_routes) // 合併報名登記路由
+        .merge(monthly_donate_routes) // 合併每月捐款記錄路由
         .layer(cors)
         .layer(Extension(pool)); // 添加數據庫連接池
 

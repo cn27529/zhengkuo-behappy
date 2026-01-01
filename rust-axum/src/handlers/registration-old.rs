@@ -10,7 +10,7 @@ use sqlx::SqlitePool;
 use crate::models::api_response::{ApiResponse, Meta};
 
 use crate::models::registration::{
-    CreateRegistrationRequest, Registration, RegistrationResponse, RegistrationQuery, UpdateRegistrationRequest,
+    CreateRegistrationRequest, Registration, RegistrationQuery, UpdateRegistrationRequest,
 };
 
 const REGISTRATION_FULL_QUERY: &str = r#"
@@ -44,7 +44,7 @@ FROM registrationDB
 pub async fn get_all_registrations(
     Query(params): Query<RegistrationQuery>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<Vec<RegistrationResponse>>>, (StatusCode, Json<ApiResponse<Vec<RegistrationResponse>>>)> {
+) -> Result<Json<ApiResponse<Vec<Registration>>>, (StatusCode, Json<ApiResponse<Vec<Registration>>>)> {
     let mut query = format!("{} WHERE 1=1", REGISTRATION_FULL_QUERY);
     let mut count_query = String::from("SELECT COUNT(*) FROM registrationDB WHERE 1=1");
 
@@ -102,14 +102,8 @@ pub async fn get_all_registrations(
             )
         })?;
 
-    // 🔥 關鍵：將 Vec<Registration> 轉換為 Vec<RegistrationResponse>
-    let responses: Vec<RegistrationResponse> = registrations
-        .into_iter()
-        .map(|reg| reg.into())
-        .collect();
-
     Ok(Json(ApiResponse::success_with_meta(
-        responses,
+        registrations,
         Meta {
             total: total.0,
             limit: Some(limit),
@@ -121,7 +115,7 @@ pub async fn get_all_registrations(
 pub async fn get_registration_by_form_id(
     Path(form_id): Path<String>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<RegistrationResponse>>, (StatusCode, Json<ApiResponse<RegistrationResponse>>)> {
+) -> Result<Json<ApiResponse<Registration>>, (StatusCode, Json<ApiResponse<Registration>>)> {
     
     let query = format!("{} WHERE formId = ?", REGISTRATION_FULL_QUERY);
     let registration = sqlx::query_as::<_, Registration>(&query)
@@ -137,11 +131,7 @@ pub async fn get_registration_by_form_id(
         })?;
 
     match registration {
-        Some(registration) => {
-            // 🔥 轉換為 RegistrationResponse
-            let response: RegistrationResponse = registration.into();
-            Ok(Json(ApiResponse::success(response)))
-        },
+        Some(registration) => Ok(Json(ApiResponse::success(registration))),
         None => Err((
             StatusCode::NOT_FOUND,
             Json(ApiResponse::error(format!("找不到 formId 為 {} 的報名記錄", form_id))),
@@ -152,7 +142,7 @@ pub async fn get_registration_by_form_id(
 pub async fn get_registration_by_state(
     Path(state): Path<String>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<RegistrationResponse>>, (StatusCode, Json<ApiResponse<RegistrationResponse>>)> {
+) -> Result<Json<ApiResponse<Registration>>, (StatusCode, Json<ApiResponse<Registration>>)> {
     
     let query = format!("{} WHERE state = ?", REGISTRATION_FULL_QUERY);
     let registration = sqlx::query_as::<_, Registration>(&query)
@@ -168,10 +158,7 @@ pub async fn get_registration_by_state(
         })?;
 
     match registration {
-        Some(registration) => {
-            // 🔥 轉換為 RegistrationResponse
-            Ok(Json(ApiResponse::success(registration.into())))
-        },
+        Some(registration) => Ok(Json(ApiResponse::success(registration))),
         None => Err((
             StatusCode::NOT_FOUND,
             Json(ApiResponse::error(format!("找不到 state 為 {} 的報名記錄", state))),
@@ -182,7 +169,7 @@ pub async fn get_registration_by_state(
 pub async fn get_registration_by_user(
     Path(user_id): Path<String>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<RegistrationResponse>>, (StatusCode, Json<ApiResponse<RegistrationResponse>>)> {
+) -> Result<Json<ApiResponse<Registration>>, (StatusCode, Json<ApiResponse<Registration>>)> {
     
     let query = format!("{} WHERE user_created = ?", REGISTRATION_FULL_QUERY);
     let registration = sqlx::query_as::<_, Registration>(&query)
@@ -198,22 +185,22 @@ pub async fn get_registration_by_user(
         })?;
 
     match registration {
-        Some(registration) => {
-            // 🔥 轉換為 RegistrationResponse
-            Ok(Json(ApiResponse::success(registration.into())))
-        },
+        Some(registration) => Ok(Json(ApiResponse::success(registration))),
         None => Err((
             StatusCode::NOT_FOUND,
             Json(ApiResponse::error(format!("找不到 user_created 為 {} 的報名記錄", user_id))),
         )),
     }   
+
 }
+
+
 
 /// 根據 ID 獲取單個報名記錄
 pub async fn get_registration_by_id(
     Path(id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<RegistrationResponse>>, (StatusCode, Json<ApiResponse<RegistrationResponse>>)> {
+) -> Result<Json<ApiResponse<Registration>>, (StatusCode, Json<ApiResponse<Registration>>)> {
     
     let query = format!("{} WHERE id = ?", REGISTRATION_FULL_QUERY);
     let registration = sqlx::query_as::<_, Registration>(&query)
@@ -229,10 +216,7 @@ pub async fn get_registration_by_id(
         })?;
 
     match registration {
-        Some(registration) => {
-            // 🔥 轉換為 RegistrationResponse
-            Ok(Json(ApiResponse::success(registration.into())))
-        },
+        Some(registration) => Ok(Json(ApiResponse::success(registration))),
         None => Err((
             StatusCode::NOT_FOUND,
             Json(ApiResponse::error(format!("找不到 ID 為 {} 的報名記錄", id))),
@@ -244,19 +228,17 @@ pub async fn get_registration_by_id(
 pub async fn create_registration(
     Extension(pool): Extension<SqlitePool>,
     Json(payload): Json<CreateRegistrationRequest>,
-) -> Result<Json<ApiResponse<RegistrationResponse>>, (StatusCode, Json<ApiResponse<RegistrationResponse>>)> {
+) -> Result<Json<ApiResponse<Registration>>, (StatusCode, Json<ApiResponse<Registration>>)> {
     // 生成當前時間戳
     let now = chrono::Utc::now().to_rfc3339();
 
     // 確定 user_created 的值
+    // 優先使用 payload 中的值，如果沒有則使用默認值
     let user_created_value = payload.user_created.unwrap_or_else(|| {
+        // 這裡可以根據業務需求設置默認值
+        // 例如：空字符串、特定標識、或當前用戶 ID（如果有認證）
         "system".to_string()
     });
-
-    // 🔥 將 JsonValue 轉換為字符串存入資料庫
-    let salvation_str = payload.salvation.map(|v| v.to_string());
-    let contact_str = payload.contact.map(|v| v.to_string());
-    let blessing_str = payload.blessing.map(|v| v.to_string());
 
     // 插入新記錄
     let result = sqlx::query(
@@ -269,14 +251,14 @@ pub async fn create_registration(
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
-    .bind(&user_created_value)
+    .bind(&user_created_value)  // 使用判斷後的值
     .bind(&payload.state)
     .bind(&payload.form_id)
     .bind(&payload.form_name)
     .bind(&payload.form_source)
-    .bind(&salvation_str)
-    .bind(&contact_str)
-    .bind(&blessing_str)
+    .bind(&payload.salvation)
+    .bind(&payload.contact)
+    .bind(&payload.blessing)
     .bind(&now)
     .bind(&now)
     .execute(&pool)
@@ -305,9 +287,8 @@ pub async fn create_registration(
             )
         })?;
 
-    // 🔥 轉換為 RegistrationResponse
     Ok(Json(ApiResponse::success_with_message(
-        registration.into(),
+        registration,
         "成功創建報名記錄".to_string(),
     )))
 }
@@ -317,7 +298,7 @@ pub async fn update_registration(
     Path(id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
     Json(payload): Json<UpdateRegistrationRequest>,
-) -> Result<Json<ApiResponse<RegistrationResponse>>, (StatusCode, Json<ApiResponse<RegistrationResponse>>)> {
+) -> Result<Json<ApiResponse<Registration>>, (StatusCode, Json<ApiResponse<Registration>>)> {
     // 檢查記錄是否存在
     let exists: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM registrationDB WHERE id = ?")
         .bind(id)
@@ -358,19 +339,17 @@ pub async fn update_registration(
         updates.push("formSource = ?");
         bindings.push(form_source.clone());
     }
-    
-    // 🔥 將 JsonValue 轉換為字符串
     if let Some(salvation) = &payload.salvation {
         updates.push("salvation = ?");
-        bindings.push(salvation.to_string());
+        bindings.push(salvation.clone());
     }
     if let Some(contact) = &payload.contact {
         updates.push("contact = ?");
-        bindings.push(contact.to_string());
+        bindings.push(contact.clone());
     }
     if let Some(blessing) = &payload.blessing {
         updates.push("blessing = ?");
-        bindings.push(blessing.to_string());
+        bindings.push(blessing.clone());
     }
 
     // 在更新語句中添加 user_updated
@@ -424,9 +403,8 @@ pub async fn update_registration(
             )
         })?;
 
-    // 🔥 轉換為 RegistrationResponse
     Ok(Json(ApiResponse::success_with_message(
-        registration.into(),
+        registration,
         "成功更新報名記錄".to_string(),
     )))
 }

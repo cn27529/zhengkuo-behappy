@@ -1,11 +1,11 @@
-// src/models/registration.rs
+// src/models/monthly_donate.rs
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use serde_json::Value as JsonValue;
 
-/// 報名記錄模型 - 對應 Directus 的 registrationDB 表結構
+/// 每月捐款記錄模型 - 對應 Directus 的 monthlyDonateDB 表結構
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
-pub struct Registration {
+pub struct MonthlyDonate {
     // Directus 系統字段
     pub id: i64,
     #[sqlx(default)]
@@ -19,44 +19,34 @@ pub struct Registration {
     
     // 業務字段
     #[sqlx(default)]
-    pub state: Option<String>,
-    #[sqlx(rename = "formId", default)]
-    pub form_id: Option<String>,
-    #[sqlx(rename = "formName", default)]
-    pub form_name: Option<String>,
-    #[sqlx(rename = "formSource", default)]
-    pub form_source: Option<String>,
+    pub name: Option<String>,
+    
+    #[sqlx(rename = "registrationId", default)]
+    pub registration_id: Option<i64>,
+    
+    #[sqlx(rename = "donateId", default)]
+    pub donate_id: Option<String>,
+    
+    #[sqlx(rename = "donateType", default)]
+    pub donate_type: Option<String>,
     
     // JSON 字段 - 使用 serde_json::Value
-    #[sqlx(default)]
+    #[sqlx(rename = "donateItems", default)]
     #[serde(
         serialize_with = "serialize_json_string",
         deserialize_with = "deserialize_json_string",
         skip_serializing_if = "Option::is_none"
     )]
-    pub salvation: Option<String>,
+    pub donate_items: Option<String>,
     
     #[sqlx(default)]
-    #[serde(
-        serialize_with = "serialize_json_string",
-        deserialize_with = "deserialize_json_string",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub contact: Option<String>,
-    
-    #[sqlx(default)]
-    #[serde(
-        serialize_with = "serialize_json_string",
-        deserialize_with = "deserialize_json_string",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub blessing: Option<String>,
+    pub memo: Option<String>,
     
     // 自定義時間戳
     #[sqlx(rename = "createdAt", default)]
     pub created_at: Option<String>,
     #[sqlx(rename = "updatedAt", default)]
-    pub updated_at: Option<String>,    
+    pub updated_at: Option<String>,
 }
 
 // 自定義序列化函數：將 JSON 字符串轉為 JSON 對象
@@ -90,42 +80,45 @@ where
     Ok(value.map(|v| v.to_string()))
 }
 
-/// 創建報名記錄請求
+/// 創建每月捐款記錄請求
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CreateRegistrationRequest {
+pub struct CreateMonthlyDonateRequest {
     #[serde(default)]
-    pub state: Option<String>,
-    pub form_id: String,
+    pub name: Option<String>,
+    
     #[serde(default)]
-    pub form_name: Option<String>,
+    pub registration_id: Option<i64>,
+    
     #[serde(default)]
-    pub form_source: Option<String>,
+    pub donate_id: Option<String>,
+    
+    #[serde(default)]
+    pub donate_type: Option<String>,
     
     // 接收 JSON 對象，自動轉為字符串
     #[serde(default)]
-    pub salvation: Option<JsonValue>,
+    pub donate_items: Option<JsonValue>,
+    
     #[serde(default)]
-    pub contact: Option<JsonValue>,
-    #[serde(default)]
-    pub blessing: Option<JsonValue>,
+    pub memo: Option<String>,
     
     #[serde(default)]
     pub user_created: Option<String>,
 }
 
-/// 更新報名記錄請求
+/// 更新每月捐款記錄請求
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct UpdateRegistrationRequest {
-    pub state: Option<String>,
-    pub form_id: Option<String>,
-    pub form_name: Option<String>,
-    pub form_source: Option<String>,
+pub struct UpdateMonthlyDonateRequest {
+    pub name: Option<String>,
+    pub registration_id: Option<i64>,
+    pub donate_id: Option<String>,
+    pub donate_type: Option<String>,
     
-    pub salvation: Option<JsonValue>,
-    pub contact: Option<JsonValue>,
-    pub blessing: Option<JsonValue>,
+    pub donate_items: Option<JsonValue>,
+    
+    pub memo: Option<String>,
     
     #[serde(default)]
     pub user_updated: Option<String>,
@@ -134,18 +127,20 @@ pub struct UpdateRegistrationRequest {
 /// 查詢參數
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct RegistrationQuery {
-    pub state: Option<String>,
-    pub form_id: Option<String>,
+pub struct MonthlyDonateQuery {
+    pub name: Option<String>,
+    pub registration_id: Option<i64>,
+    pub donate_id: Option<String>,
+    pub donate_type: Option<String>,
     pub limit: Option<i64>,
     pub offset: Option<i64>,
     pub sort: Option<String>,
 }
 
-/// API 響應用的報名記錄 DTO
+/// API 響應用的每月捐款記錄 DTO
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct RegistrationResponse {
+pub struct MonthlyDonateResponse {
     pub id: i64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_created: Option<String>,
@@ -156,21 +151,20 @@ pub struct RegistrationResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub date_updated: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub state: Option<String>,
+    pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub form_id: Option<String>,
+    pub registration_id: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub form_name: Option<String>,
+    pub donate_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub form_source: Option<String>,
+    pub donate_type: Option<String>,
     
     // JSON 字段直接使用 JsonValue
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub salvation: Option<JsonValue>,
+    pub donate_items: Option<JsonValue>,
+    
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub contact: Option<JsonValue>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub blessing: Option<JsonValue>,
+    pub memo: Option<String>,
     
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_at: Option<String>,
@@ -178,26 +172,23 @@ pub struct RegistrationResponse {
     pub updated_at: Option<String>,
 }
 
-impl From<Registration> for RegistrationResponse {
-    fn from(reg: Registration) -> Self {
+impl From<MonthlyDonate> for MonthlyDonateResponse {
+    fn from(donate: MonthlyDonate) -> Self {
         Self {
-            id: reg.id,
-            user_created: reg.user_created,
-            date_created: reg.date_created,
-            user_updated: reg.user_updated,
-            date_updated: reg.date_updated,
-            state: reg.state,
-            form_id: reg.form_id,
-            form_name: reg.form_name,
-            form_source: reg.form_source,
-            salvation: reg.salvation
+            id: donate.id,
+            user_created: donate.user_created,
+            date_created: donate.date_created,
+            user_updated: donate.user_updated,
+            date_updated: donate.date_updated,
+            name: donate.name,
+            registration_id: donate.registration_id,
+            donate_id: donate.donate_id,
+            donate_type: donate.donate_type,
+            donate_items: donate.donate_items
                 .and_then(|s| serde_json::from_str(&s).ok()),
-            contact: reg.contact
-                .and_then(|s| serde_json::from_str(&s).ok()),
-            blessing: reg.blessing
-                .and_then(|s| serde_json::from_str(&s).ok()),
-            created_at: reg.created_at,
-            updated_at: reg.updated_at,
+            memo: donate.memo,
+            created_at: donate.created_at,
+            updated_at: donate.updated_at,
         }
     }
 }
