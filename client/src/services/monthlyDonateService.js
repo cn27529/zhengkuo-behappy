@@ -23,7 +23,7 @@ export class MonthlyDonateService {
    * 獲取所有百元贊助記錄
    */
   async getAllMonthlyDonates(params = {}) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不為 Directus，返回空百元贊助記錄列表");
       // Mock 模式
       return {
@@ -75,7 +75,7 @@ export class MonthlyDonateService {
       createdAt: createISOTime,
     };
 
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Directus，百元贊助人創建成功");
       return {
@@ -114,7 +114,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error("❌ 創建百元贊助人失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleMonthlyDonateDirectusError(error);
     }
   }
 
@@ -128,7 +128,7 @@ export class MonthlyDonateService {
       id: recordId,
     };
 
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       // Mock 模式
       const mockData = {
         ...updateData,
@@ -174,7 +174,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error("❌ 更新百元贊助人失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleMonthlyDonateDirectusError(error);
     }
   }
 
@@ -182,7 +182,7 @@ export class MonthlyDonateService {
    * 刪除百元贊助人
    */
   async deleteMonthlyDonate(recordId) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Directus，百元贊助人刪除成功");
       return {
@@ -227,7 +227,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error(`刪除百元贊助人失敗 (ID: ${recordId})`, error);
-      return this.handleDirectusError(error);
+      return this.handleMonthlyDonateDirectusError(error);
     }
   }
 
@@ -244,7 +244,7 @@ export class MonthlyDonateService {
       createdAt: DateUtils.getCurrentISOTime(),
     };
 
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Directus，贊助項目添加成功");
       return {
@@ -303,7 +303,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error("❌ 添加贊助項目失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleMonthlyDonateDirectusError(error);
     }
   }
 
@@ -311,7 +311,7 @@ export class MonthlyDonateService {
    * 更新指定贊助記錄
    */
   async updateDonateItem(recordId, donateItemsId, itemData) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       // Mock 模式
       const updatedItem = {
         donateItemsId,
@@ -405,7 +405,7 @@ export class MonthlyDonateService {
    * 刪除指定贊助記錄
    */
   async deleteDonateItem(recordId, itemsId) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Directus，贊助項目刪除成功");
       return {
@@ -482,7 +482,7 @@ export class MonthlyDonateService {
       console.error(
         `❌ 刪除贊助項目失敗: (ID: ${recordId}, itemsId: ${itemsId}) ${error.message}`
       );
-      return this.handleDirectusError(error);
+      return this.handleMonthlyDonateDirectusError(error);
     }
   }
 
@@ -510,7 +510,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonateById(recordId) {
     try {
-      if (this.getIsMock()) {
+      if (this.base.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄");
         return {
@@ -547,7 +547,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonateByDonateId(donateId) {
     try {
-      if (this.getIsMock()) {
+      if (this.base.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄列表");
         return {
@@ -589,7 +589,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonateByRegistrationId(registrationId) {
     try {
-      if (this.getIsMock()) {
+      if (this.base.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄列表");
         return {
@@ -630,7 +630,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonatesByDonateType(donateType) {
     try {
-      if (this.getIsMock()) {
+      if (this.base.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助記錄列表");
         return {
@@ -671,7 +671,7 @@ export class MonthlyDonateService {
    */
   async getMonthlyDonateStats() {
     try {
-      if (this.getIsMock()) {
+      if (this.base.getIsMock()) {
         // Mock 模式
         console.warn("⚠️ 當前模式不為 Directus，返回百元贊助統計");
         return {
@@ -711,64 +711,9 @@ export class MonthlyDonateService {
     }
   }
 
-  /**
-   * 獲取當前登錄用戶
-   */
-  async getCurrentUser() {
-    try {
-      const userInfo = sessionStorage.getItem("auth-user");
-      if (userInfo) {
-        const user = JSON.parse(userInfo);
-        return user.id || user.username || user.displayName || "unknown";
-      }
-      return "anonymous";
-    } catch (error) {
-      console.error("獲取用戶信息失敗:", error);
-      return "anonymous";
-    }
-  }
-
   // ========== 錯誤處理 ==========
-  handleDirectusError(error) {
-    // 檢查網路錯誤
-    if (
-      error.message.includes("Failed to fetch") ||
-      error.message.includes("NetworkError")
-    ) {
-      return {
-        success: false,
-        message: "Directus 服務未啟動或網路連接失敗",
-        errorCode: "DIRECTUS_NOT_AVAILABLE",
-        details: "請確保 Directus 服務正在運行",
-      };
-    }
-
-    // 檢查認證錯誤
-    if (error.message.includes("401") || error.message.includes("token")) {
-      return {
-        success: false,
-        message: "認證失敗，請重新登入",
-        errorCode: "UNAUTHORIZED",
-        details: error.message,
-      };
-    }
-
-    // 檢查權限錯誤
-    if (error.message.includes("403")) {
-      return {
-        success: false,
-        message: "沒有操作權限",
-        errorCode: "FORBIDDEN",
-        details: error.message,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Directus 操作失敗",
-      errorCode: "DIRECTUS_ERROR",
-      details: error.message,
-    };
+  handleMonthlyDonateDirectusError(error) {
+    return this.base.handleDirectusError(error);
   }
 
   // ========== 模式管理 ==========

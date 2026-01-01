@@ -12,6 +12,10 @@ export class RegistrationService {
     console.log(`RegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
+  getIsMock() {
+    return this.base.getIsMock();
+  }
+
   async healthCheck() {
     return await this.base.healthCheck();
   }
@@ -20,7 +24,7 @@ export class RegistrationService {
   async createRegistration(registrationData) {
     const createISOTime = DateUtils.getCurrentISOTime();
 
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("報名提交成功！⚠️ 當前模式不是 directus，無法創建數據");
       return {
         success: true,
@@ -87,12 +91,12 @@ export class RegistrationService {
       return result;
     } catch (error) {
       console.error("創建報名表失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleRegistrationDirectusError(error);
     }
   }
 
   async updateRegistration(id, registrationData) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return {
         success: false,
@@ -122,12 +126,12 @@ export class RegistrationService {
       return result;
     } catch (error) {
       console.error(`更新報名表 (ID: ${id}) 失敗:`, error);
-      return this.handleDirectusError(error);
+      return this.handleRegistrationDirectusError(error);
     }
   }
 
   async getRegistrationById(id) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return {
         success: false,
@@ -150,12 +154,12 @@ export class RegistrationService {
       return result;
     } catch (error) {
       console.error(`獲取報名表 (ID: ${id}) 失敗:`, error);
-      return this.handleDirectusError(error);
+      return this.handleRegistrationDirectusError(error);
     }
   }
 
   async getAllRegistrations(params = {}) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return {
         success: false,
@@ -213,12 +217,12 @@ export class RegistrationService {
       return result;
     } catch (error) {
       console.error("❌ 獲取報名表列表失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleRegistrationDirectusError(error);
     }
   }
 
   async deleteRegistration(id) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return {
         success: false,
@@ -247,7 +251,7 @@ export class RegistrationService {
       };
     } catch (error) {
       console.error(`刪除報名表 (ID: ${id}) 失敗:`, error);
-      return this.handleDirectusError(error);
+      return this.handleRegistrationDirectusError(error);
     }
   }
 
@@ -307,46 +311,8 @@ export class RegistrationService {
   }
 
   // ========== 錯誤處理 ==========
-  handleDirectusError(error) {
-    // 檢查網路錯誤
-    if (
-      error.message.includes("Failed to fetch") ||
-      error.message.includes("NetworkError")
-    ) {
-      return {
-        success: false,
-        message: "Directus 服務未啟動或網路連接失敗",
-        errorCode: "DIRECTUS_NOT_AVAILABLE",
-        details: "請確保 Directus 服務正在運行",
-      };
-    }
-
-    // 檢查認證錯誤
-    if (error.message.includes("401") || error.message.includes("token")) {
-      return {
-        success: false,
-        message: "認證失敗，請重新登入",
-        errorCode: "UNAUTHORIZED",
-        details: error.message,
-      };
-    }
-
-    // 檢查權限錯誤
-    if (error.message.includes("403")) {
-      return {
-        success: false,
-        message: "沒有操作權限",
-        errorCode: "FORBIDDEN",
-        details: error.message,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Directus 操作失敗",
-      errorCode: "DIRECTUS_ERROR",
-      details: error.message,
-    };
+  handleRegistrationDirectusError(error) {
+    return this.base.handleDirectusError(error);
   }
 
   // ========== 模式管理 ==========

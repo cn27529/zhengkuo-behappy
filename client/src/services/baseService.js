@@ -539,6 +539,48 @@ export class BaseService {
       throw error;
     }
   }
+
+  handleDirectusError(error) {
+    // 檢查網路錯誤
+    if (
+      error.message.includes("Failed to fetch") ||
+      error.message.includes("NetworkError")
+    ) {
+      return {
+        success: false,
+        message: "Directus 服務未啟動或網路連接失敗",
+        errorCode: "DIRECTUS_NOT_AVAILABLE",
+        details: "請確保 Directus 服務正在運行",
+      };
+    }
+
+    // 檢查認證錯誤
+    if (error.message.includes("401") || error.message.includes("token")) {
+      return {
+        success: false,
+        message: "認證失敗，請重新登入",
+        errorCode: "UNAUTHORIZED",
+        details: error.message,
+      };
+    }
+
+    // 檢查權限錯誤
+    if (error.message.includes("403")) {
+      return {
+        success: false,
+        message: "沒有操作權限",
+        errorCode: "FORBIDDEN",
+        details: error.message,
+      };
+    }
+
+    return {
+      success: false,
+      message: "Directus 操作失敗",
+      errorCode: "DIRECTUS_ERROR",
+      details: error.message,
+    };
+  }
 }
 
 export const baseService = new BaseService();

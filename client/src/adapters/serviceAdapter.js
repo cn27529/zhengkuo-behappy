@@ -60,6 +60,26 @@ class ServiceAdapter {
     };
 
     this.maxErrors = 3;
+
+    // 初始化扁平化方法
+    this._initializeFlatMethods();
+  }
+
+  /**
+   * 獲取當前登錄用戶（直接實現，不走 callServiceMethod）
+   */
+  async getCurrentUser() {
+    try {
+      const userInfo = sessionStorage.getItem("auth-user");
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+        return user.id || user.username || user.displayName || "unknown";
+      }
+      return "anonymous";
+    } catch (error) {
+      console.error("獲取用戶信息失敗:", error);
+      return "anonymous";
+    }
   }
 
   getIsMock() {
@@ -162,42 +182,120 @@ class ServiceAdapter {
   }
 
   /**
-   * Activity 服務代理（完整版）
+   * 初始化扁平化方法
    */
-  get activityService() {
-    const proxy = {
-      // 模式管理
-      getCurrentMode: () => this.getCurrentMode(),
-      setMode: (mode) => this.setMode(mode),
-      //getBackendInfo: () => this.getErrorStats(),
-      getIsMock: () => this.getIsMock(),
-    };
-
-    // 添加所有方法
-    const methods = [
-      // CRUD
+  _initializeFlatMethods() {
+    // Activity 方法
+    const activityMethods = [
       "createActivity",
       "updateActivity",
       "deleteActivity",
       "getAllActivities",
       "getActivityById",
-      // 查詢
       "getActivitiesByActivityId",
       "getActivitiesByItemType",
       "getActivitiesByState",
       "getUpcomingActivities",
       "getCompletedActivities",
       "getActivitiesByDateRange",
-      // 統計
       "getMonthlyStats",
       "calculateMonthlyStats",
       "getMockMonthlyStats",
-      // 狀態管理
       "updateParticipants",
       "completeActivity",
       "cancelActivity",
-      // 錯誤處理
-      "handleDirectusError",
+      "handleActivityDirectusError",
+    ];
+
+    activityMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("activity", method, ...args);
+    });
+
+    // Auth 方法（getCurrentUser 已在類中直接實現）
+    const authMethods = ["login", "logout", "refreshToken", "validateToken"];
+
+    authMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("auth", method, ...args);
+    });
+
+    // Registration 方法
+    const registrationMethods = [
+      "createRegistration",
+      "updateRegistration",
+      "deleteRegistration",
+      "getAllRegistrations",
+      "getRegistrationById",
+      "getRegistrationsByFormId",
+      "getRegistrationsByState",
+      "getRegistrationsByUser",
+      "submitRegistration",
+      "completeRegistration",
+      "saveDraft",
+      "handleRegistrationDirectusError",
+    ];
+
+    registrationMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("registration", method, ...args);
+    });
+
+    // MonthlyDonate 方法
+    const monthlyDonateMethods = [
+      "getAllMonthlyDonates",
+      "createMonthlyDonate",
+      "updateMonthlyDonate",
+      "deleteMonthlyDonate",
+      "getMonthlyDonateById",
+      "getMonthlyDonateByDonateId",
+      "getMonthlyDonateByRegistrationId",
+      "getMonthlyDonatesByDonateType",
+      "addDonateItem",
+      "updateDonateItem",
+      "deleteDonateItem",
+      "getMonthlyDonateStats",
+      "getDonationStats",
+      "generateMockData",
+      "handleMonthlyDonateDirectusError",
+    ];
+
+    monthlyDonateMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("monthlyDonate", method, ...args);
+    });
+  }
+
+  /**
+   * 向後兼容的服務訪問器（舊方式仍可用）
+   */
+  get activityService() {
+    const proxy = {
+      getCurrentMode: () => this.getCurrentMode(),
+      setMode: (mode) => this.setMode(mode),
+      getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
+    };
+
+    const methods = [
+      "createActivity",
+      "updateActivity",
+      "deleteActivity",
+      "getAllActivities",
+      "getActivityById",
+      "getActivitiesByActivityId",
+      "getActivitiesByItemType",
+      "getActivitiesByState",
+      "getUpcomingActivities",
+      "getCompletedActivities",
+      "getActivitiesByDateRange",
+      "getMonthlyStats",
+      "calculateMonthlyStats",
+      "getMockMonthlyStats",
+      "updateParticipants",
+      "completeActivity",
+      "cancelActivity",
+      "handleActivityDirectusError",
     ];
 
     methods.forEach((method) => {
@@ -208,23 +306,15 @@ class ServiceAdapter {
     return proxy;
   }
 
-  /**
-   * Auth 服務代理
-   */
   get authService() {
     const proxy = {
       getCurrentMode: () => this.getCurrentMode(),
       setMode: (mode) => this.setMode(mode),
       getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
     };
 
-    const methods = [
-      "login",
-      "logout",
-      "refreshToken",
-      "validateToken",
-      "getCurrentUser",
-    ];
+    const methods = ["login", "logout", "refreshToken", "validateToken"];
 
     methods.forEach((method) => {
       proxy[method] = (...args) =>
@@ -234,14 +324,12 @@ class ServiceAdapter {
     return proxy;
   }
 
-  /**
-   * Registration 服務代理
-   */
   get registrationService() {
     const proxy = {
       getCurrentMode: () => this.getCurrentMode(),
       setMode: (mode) => this.setMode(mode),
       getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
     };
 
     const methods = [
@@ -256,7 +344,7 @@ class ServiceAdapter {
       "submitRegistration",
       "completeRegistration",
       "saveDraft",
-      "handleDirectusError",
+      "handleRegistrationDirectusError",
     ];
 
     methods.forEach((method) => {
@@ -267,14 +355,12 @@ class ServiceAdapter {
     return proxy;
   }
 
-  /**
-   * MonthlyDonate 服務代理
-   */
   get monthlyDonateService() {
     const proxy = {
       getCurrentMode: () => this.getCurrentMode(),
       setMode: (mode) => this.setMode(mode),
       getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
     };
 
     const methods = [
@@ -291,9 +377,8 @@ class ServiceAdapter {
       "deleteDonateItem",
       "getMonthlyDonateStats",
       "getDonationStats",
-      "getCurrentUser",
       "generateMockData",
-      "handleDirectusError",
+      "handleMonthlyDonateDirectusError",
     ];
 
     methods.forEach((method) => {

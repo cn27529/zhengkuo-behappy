@@ -70,7 +70,7 @@ export class ActivityService {
   async createActivity(activityData) {
     const createISOTime = DateUtils.getCurrentISOTime();
 
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("活動創建成功！⚠️ 當前模式不是 directus，無法創建數據");
       return {
         success: true,
@@ -143,7 +143,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error("創建活動失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleActivityDirectusError(error);
     }
   }
 
@@ -154,7 +154,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 更新結果
    */
   async updateActivity(recordId, activityData) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return {
         success: false,
@@ -197,7 +197,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 更新活動失敗 (ID: ${recordId})`, error);
-      return this.handleDirectusError(error);
+      return this.handleActivityDirectusError(error);
     }
   }
 
@@ -207,7 +207,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 刪除結果
    */
   async deleteActivity(recordId) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return {
         success: false,
@@ -252,7 +252,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 刪除活動失敗 (ID: ${recordId})`, error);
-      return this.handleDirectusError(error);
+      return this.handleActivityDirectusError(error);
     }
   }
 
@@ -262,7 +262,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 活動資料
    */
   async getActivityById(recordId) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return {
         success: false,
@@ -286,7 +286,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error(`獲取活動 (ID: ${recordId}) 失敗:`, error);
-      return this.handleDirectusError(error);
+      return this.handleActivityDirectusError(error);
     }
   }
 
@@ -309,7 +309,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 活動列表
    */
   async getAllActivities(params = {}) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return {
         success: false,
@@ -358,7 +358,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error("❌ 獲取活動列表失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleActivityDirectusError(error);
     }
   }
 
@@ -444,7 +444,7 @@ export class ActivityService {
    * @returns {Promise<Object>} 月度統計數據
    */
   async getMonthlyStats() {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，返回模擬月度統計數據");
       return {
         success: true,
@@ -471,7 +471,7 @@ export class ActivityService {
       };
     } catch (error) {
       console.error("獲取月度統計失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleActivityDirectusError(error);
     }
   }
 
@@ -578,46 +578,8 @@ export class ActivityService {
   }
 
   // ========== 錯誤處理 ==========
-  handleDirectusError(error) {
-    // 檢查網路錯誤
-    if (
-      error.message.includes("Failed to fetch") ||
-      error.message.includes("NetworkError")
-    ) {
-      return {
-        success: false,
-        message: "Directus 服務未啟動或網路連接失敗",
-        errorCode: "DIRECTUS_NOT_AVAILABLE",
-        details: "請確保 Directus 服務正在運行",
-      };
-    }
-
-    // 檢查認證錯誤
-    if (error.message.includes("401") || error.message.includes("token")) {
-      return {
-        success: false,
-        message: "認證失敗，請重新登入",
-        errorCode: "UNAUTHORIZED",
-        details: error.message,
-      };
-    }
-
-    // 檢查權限錯誤
-    if (error.message.includes("403")) {
-      return {
-        success: false,
-        message: "沒有操作權限",
-        errorCode: "FORBIDDEN",
-        details: error.message,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Directus 操作失敗",
-      errorCode: "DIRECTUS_ERROR",
-      details: error.message,
-    };
+  handleActivityDirectusError(error) {
+    return this.base.handleDirectusError(error);
   }
 
   // ========== 模式管理 ==========

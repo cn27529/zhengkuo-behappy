@@ -11,7 +11,7 @@ export class MydataService {
 
   // ========== CRUD 操作 ==========
   async getAllMydata(params = {}) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不為 Directus，無法獲取數據");
       return { success: false, message: "請切換到 directus 模式" };
     }
@@ -57,12 +57,12 @@ export class MydataService {
       return result;
     } catch (error) {
       console.error("獲取 Mydata 數據失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleMydataDirectusError(error);
     }
   }
 
   async getMydataById(id) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
       return {
         success: false,
@@ -85,12 +85,12 @@ export class MydataService {
       return result;
     } catch (error) {
       console.error(`獲取 Mydata 項目 (ID: ${id}) 失敗:`, error);
-      return this.handleDirectusError(error);
+      return this.handleMydataDirectusError(error);
     }
   }
 
   async createMydata(mydataData) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法創建數據");
       return {
         success: false,
@@ -135,12 +135,12 @@ export class MydataService {
       return result;
     } catch (error) {
       console.error("創建 Mydata 項目失敗:", error);
-      return this.handleDirectusError(error);
+      return this.handleMydataDirectusError(error);
     }
   }
 
   async updateMydata(id, mydataData) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return {
         success: false,
@@ -164,12 +164,12 @@ export class MydataService {
       return result;
     } catch (error) {
       console.error(`更新 Mydata 項目 (ID: ${id}) 失敗:`, error);
-      return this.handleDirectusError(error);
+      return this.handleMydataDirectusError(error);
     }
   }
 
   async deleteMydata(id) {
-    if (this.getIsMock()) {
+    if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return {
         success: false,
@@ -198,7 +198,7 @@ export class MydataService {
       };
     } catch (error) {
       console.error(`刪除 Mydata 項目 (ID: ${id}) 失敗:`, error);
-      return this.handleDirectusError(error);
+      return this.handleMydataDirectusError(error);
     }
   }
 
@@ -231,46 +231,8 @@ export class MydataService {
   }
 
   // ========== 錯誤處理 ==========
-  handleDirectusError(error) {
-    // 檢查網路錯誤
-    if (
-      error.message.includes("Failed to fetch") ||
-      error.message.includes("NetworkError")
-    ) {
-      return {
-        success: false,
-        message: "Directus 服務未啟動或網路連接失敗",
-        errorCode: "DIRECTUS_NOT_AVAILABLE",
-        details: "請確保 Directus 服務正在運行",
-      };
-    }
-
-    // 檢查認證錯誤
-    if (error.message.includes("401") || error.message.includes("token")) {
-      return {
-        success: false,
-        message: "認證失敗，請重新登入",
-        errorCode: "UNAUTHORIZED",
-        details: error.message,
-      };
-    }
-
-    // 檢查權限錯誤
-    if (error.message.includes("403")) {
-      return {
-        success: false,
-        message: "沒有操作權限",
-        errorCode: "FORBIDDEN",
-        details: error.message,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Directus 操作失敗",
-      errorCode: "DIRECTUS_ERROR",
-      details: error.message,
-    };
+  handleMydataDirectusError(error) {
+    return this.base.handleDirectusError(error);
   }
 
   // ========== 模式管理 ==========

@@ -777,6 +777,10 @@ export class AuthService {
     return new Promise((resolve) => setTimeout(resolve, this.base.mockDelay));
   }
 
+  handleAuthDirectusError(error) {
+    return this.base.handleDirectusError(error);
+  }
+
   getCurrentMode() {
     if (sessionStorage.getItem("auth-mode") !== null) {
       this.base.mode = sessionStorage.getItem("auth-mode");

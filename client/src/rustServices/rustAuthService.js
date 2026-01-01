@@ -55,17 +55,34 @@ export class RustAuthService {
   /**
    * 獲取當前用戶信息
    */
-  async getCurrentUser(context = {}) {
-    return await this.base.rustFetch(
-      this.endpoint.me,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getCurrentUser",
-        ...context,
+  // async getCurrentUser(context = {}) {
+  //   return await this.base.rustFetch(
+  //     this.endpoint.me,
+  //     {
+  //       method: "GET",
+  //     },
+  //     {
+  //       operation: "getCurrentUser",
+  //       ...context,
+  //     }
+  //   );
+  // }
+
+  /**
+   * 獲取當前登錄用戶
+   */
+  async getCurrentUser() {
+    try {
+      const userInfo = sessionStorage.getItem("auth-user");
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+        return user.id || user.username || user.displayName || "unknown";
       }
-    );
+      return "anonymous";
+    } catch (error) {
+      console.error("獲取用戶信息失敗:", error);
+      return "anonymous";
+    }
   }
 
   /**
