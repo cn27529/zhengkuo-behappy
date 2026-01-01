@@ -9,7 +9,7 @@ use sqlx::SqlitePool;
 use crate::models::api_response::{ApiResponse, Meta};
 
 use crate::models::activity::{
-    Activity, ActivityQuery, CreateActivityRequest, UpdateActivityRequest,
+    Activity, ActivityQuery, CreateActivityRequest, UpdateActivityRequest, ActivityResponse,
 };
 
 const ACTIVITY_FULL_QUERY: &str = r#"
@@ -41,17 +41,12 @@ SELECT
 FROM activityDB
 "#;
 
-
 /// 獲取所有活動
 pub async fn get_all_activities(
     Query(params): Query<ActivityQuery>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<Vec<Activity>>>, (StatusCode, Json<ApiResponse<Vec<Activity>>>)> {
-    // 構建查詢
-    //let mut query = String::from("SELECT * FROM activityDB WHERE 1=1");
-    // 修改查詢，將毫秒轉換為 ISO 字符串
-     let mut query = format!("{} WHERE 1=1", ACTIVITY_FULL_QUERY);
-
+) -> Result<Json<ApiResponse<Vec<ActivityResponse>>>, (StatusCode, Json<ApiResponse<Vec<ActivityResponse>>>)> {
+    let mut query = format!("{} WHERE 1=1", ACTIVITY_FULL_QUERY);
     let mut count_query = String::from("SELECT COUNT(*) FROM activityDB WHERE 1=1");
 
     // 添加過濾條件
@@ -84,8 +79,6 @@ pub async fn get_all_activities(
     let offset = params.offset.unwrap_or(0);
     query.push_str(&format!(" LIMIT {} OFFSET {}", limit, offset));
 
-    //tracing::debug!("執行活動查詢: {}", query);
-
     // 執行查詢
     let activities = sqlx::query_as::<_, Activity>(&query)
         .fetch_all(&pool)
@@ -110,8 +103,14 @@ pub async fn get_all_activities(
             )
         })?;
 
+    // 🔥 關鍵：將 Vec<Activity> 轉換為 Vec<ActivityResponse>
+    let responses: Vec<ActivityResponse> = activities
+        .into_iter()
+        .map(|activity| activity.into())
+        .collect();
+
     Ok(Json(ApiResponse::success_with_meta(
-        activities,
+        responses,
         Meta {
             total: total.0,
             limit: Some(limit),
@@ -124,7 +123,7 @@ pub async fn get_all_activities(
 pub async fn get_activity_by_id(
     Path(id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<Activity>>, (StatusCode, Json<ApiResponse<Activity>>)> {
+) -> Result<Json<ApiResponse<ActivityResponse>>, (StatusCode, Json<ApiResponse<ActivityResponse>>)> {
     
     let query = format!("{} WHERE id = ?", ACTIVITY_FULL_QUERY);
     let activity = sqlx::query_as::<_, Activity>(&query)
@@ -140,7 +139,11 @@ pub async fn get_activity_by_id(
         })?;
 
     match activity {
-        Some(activity) => Ok(Json(ApiResponse::success(activity))),
+        Some(activity) => {
+            // 🔥 轉換為 ActivityResponse
+            let response: ActivityResponse = activity.into();
+            Ok(Json(ApiResponse::success(response)))
+        },
         None => Err((
             StatusCode::NOT_FOUND,
             Json(ApiResponse::error(format!("找不到 ID 為 {} 的活動", id))),
@@ -152,9 +155,9 @@ pub async fn get_activity_by_id(
 pub async fn get_activity_by_activity_id(
     Path(activity_id): Path<String>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<Activity>>, (StatusCode, Json<ApiResponse<Activity>>)> {
+) -> Result<Json<ApiResponse<ActivityResponse>>, (StatusCode, Json<ApiResponse<ActivityResponse>>)> {
      
-     let query = format!("{} WHERE activityId = ?", ACTIVITY_FULL_QUERY);
+    let query = format!("{} WHERE activityId = ?", ACTIVITY_FULL_QUERY);
     let activity = sqlx::query_as::<_, Activity>(&query)
         .bind(&activity_id)
         .fetch_optional(&pool)
@@ -168,7 +171,10 @@ pub async fn get_activity_by_activity_id(
         })?;
 
     match activity {
-        Some(activity) => Ok(Json(ApiResponse::success(activity))),
+        Some(activity) => {
+            // 🔥 轉換為 ActivityResponse
+            Ok(Json(ApiResponse::success(activity.into())))
+        },
         None => Err((
             StatusCode::NOT_FOUND,
             Json(ApiResponse::error(format!(
@@ -179,11 +185,11 @@ pub async fn get_activity_by_activity_id(
     }
 }
 
-/// 創建新活動（不處理 Directus 系統字段，讓 Directus 管理）
+/// 創建新活動
 pub async fn create_activity(
     Extension(pool): Extension<SqlitePool>,
     Json(payload): Json<CreateActivityRequest>,
-) -> Result<Json<ApiResponse<Activity>>, (StatusCode, Json<ApiResponse<Activity>>)> {
+) -> Result<Json<ApiResponse<ActivityResponse>>, (StatusCode, Json<ApiResponse<ActivityResponse>>)> {
     // 檢查 activityId 是否已存在
     let exists: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM activityDB WHERE activityId = ?")
@@ -211,7 +217,7 @@ pub async fn create_activity(
     // 生成當前時間戳
     let now = chrono::Utc::now().to_rfc3339();
 
-    // 插入新記錄（只插入業務字段，Directus 字段保持 NULL）
+    // 插入新記錄
     let result = sqlx::query(
         r#"
         INSERT INTO activityDB (
@@ -258,8 +264,9 @@ pub async fn create_activity(
             )
         })?;
 
+    // 🔥 轉換為 ActivityResponse
     Ok(Json(ApiResponse::success_with_message(
-        activity,
+        activity.into(),
         "成功創建活動".to_string(),
     )))
 }
@@ -269,7 +276,7 @@ pub async fn update_activity(
     Path(id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
     Json(payload): Json<UpdateActivityRequest>,
-) -> Result<Json<ApiResponse<Activity>>, (StatusCode, Json<ApiResponse<Activity>>)> {
+) -> Result<Json<ApiResponse<ActivityResponse>>, (StatusCode, Json<ApiResponse<ActivityResponse>>)> {
     // 檢查活動是否存在
     let exists: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM activityDB WHERE id = ?")
         .bind(id)
@@ -372,8 +379,9 @@ pub async fn update_activity(
             )
         })?;
 
+    // 🔥 轉換為 ActivityResponse
     Ok(Json(ApiResponse::success_with_message(
-        activity,
+        activity.into(),
         "成功更新活動".to_string(),
     )))
 }

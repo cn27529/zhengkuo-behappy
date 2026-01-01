@@ -146,15 +146,19 @@ pub struct RegistrationQuery {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RegistrationResponse {
+    
+    // Directus 系統字段
     pub id: i64,
-    #[serde(skip_serializing_if = "Option::is_none")]
+     #[serde(rename = "user_created", skip_serializing_if = "Option::is_none")]
     pub user_created: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "date_created", skip_serializing_if = "Option::is_none")]
     pub date_created: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "user_updated", skip_serializing_if = "Option::is_none")]
     pub user_updated: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "date_updated", skip_serializing_if = "Option::is_none")]
     pub date_updated: Option<String>,
+
+    // 自定義字段
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
