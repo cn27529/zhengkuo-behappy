@@ -2,9 +2,8 @@
 // 本檔為查詢表單的 Pinia store，管理查詢表單的狀態與操作。
 import { defineStore } from "pinia";
 import { ref, computed, h } from "vue";
-//import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
-import { registrationService } from "../services/registrationService.js"; // 移除舊的導入
-//import { baseService } from "../services/baseService.js";
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
+//import { registrationService } from "../services/registrationService.js"; // 移除舊的導入
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
@@ -31,7 +30,7 @@ export const useQueryStore = defineStore("query", () => {
     isLoading.value = true;
     try {
       // 檢查是否為 directus 模式
-      if (registrationService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不是 directus，使用 Mock 數據");
 
         if (!mockRegistrations || mockRegistrations.length === 0) {
@@ -88,7 +87,7 @@ export const useQueryStore = defineStore("query", () => {
         sort: "-createdAt",
       };
 
-      const result = await registrationService.getAllRegistrations(params);
+      const result = await serviceAdapter.getAllRegistrations(params);
 
       if (result.success) {
         console.log("後端查詢成功:", result.data?.length || 0, "筆資料");

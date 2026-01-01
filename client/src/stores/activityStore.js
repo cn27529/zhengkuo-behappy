@@ -350,7 +350,7 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
         const processedActivities = mockDatas.map((activity) => ({
           ...activity,
@@ -365,9 +365,7 @@ export const useActivityStore = defineStore("activity", () => {
       }
 
       console.log("📄 從服務器獲取活動數據...");
-      const result = await serviceAdapter.activityService.getAllActivities(
-        params
-      );
+      const result = await serviceAdapter.getAllActivities(params);
 
       if (result.success) {
         allActivities.value = result.data || [];
@@ -427,7 +425,7 @@ export const useActivityStore = defineStore("activity", () => {
 
       console.log("📦 添加新活動:", activity);
 
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         allActivities.value.push(activity);
         return {
           success: true,
@@ -436,9 +434,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.activityService.createActivity(
-        newActivity
-      );
+      const result = await serviceAdapter.createActivity(newActivity);
 
       if (result.success) {
         allActivities.value.push(result.data);
@@ -471,7 +467,7 @@ export const useActivityStore = defineStore("activity", () => {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         activity.participants = newParticipants;
         activity.updatedAt = DateUtils.getCurrentISOTime();
         console.warn("⚠️ 當前模式不為 Directus，參與人次已更新");
@@ -482,7 +478,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.activityService.updateParticipants(
+      const result = await serviceAdapter.updateParticipants(
         activityId,
         newParticipants
       );
@@ -519,7 +515,7 @@ export const useActivityStore = defineStore("activity", () => {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         allActivities.value[index] = {
           ...allActivities.value[index],
           ...activityData,
@@ -534,7 +530,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.activityService.updateActivity(
+      const result = await serviceAdapter.updateActivity(
         activityId,
         activityData
       );
@@ -573,7 +569,7 @@ export const useActivityStore = defineStore("activity", () => {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         allActivities.value.splice(index, 1);
         console.warn("⚠️ 當前模式不為 Directus，活動已刪除");
         return {
@@ -582,9 +578,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.activityService.deleteActivity(
-        activityId
-      );
+      const result = await serviceAdapter.deleteActivity(activityId);
 
       if (result.success) {
         allActivities.value.splice(index, 1);
@@ -617,7 +611,7 @@ export const useActivityStore = defineStore("activity", () => {
         throw new Error(`找不到 ID 為 ${activityId} 的活動`);
       }
 
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         activity.state = "completed";
         activity.updatedAt = DateUtils.getCurrentISOTime();
         console.warn("⚠️ 當前模式不為 Directus，活動已標記為完成");
@@ -628,9 +622,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.activityService.completeActivity(
-        activityId
-      );
+      const result = await serviceAdapter.completeActivity(activityId);
 
       if (result.success) {
         activity.state = "completed";
@@ -659,7 +651,7 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，使用本地計算的月度統計");
         monthlyStats.value = calculateMonthlyStatsFromActivities();
         return {
@@ -669,7 +661,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.activityService.getMonthlyStats();
+      const result = await serviceAdapter.getMonthlyStats();
 
       if (result.success) {
         monthlyStats.value = result.data || [];
@@ -746,7 +738,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，使用本地獲取活動");
         return {
           success: false,
@@ -754,10 +746,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result =
-        await serviceAdapter.activityService.getActivitiesByActivityId(
-          activityId
-        );
+      const result = await serviceAdapter.getActivitiesByActivityId(activityId);
 
       if (result.success && result.data && result.data.length > 0) {
         return {
@@ -788,7 +777,7 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         const filtered = allActivities.value.filter(
           (a) => a.type === item_type || a.item_type === item_type
         );
@@ -800,8 +789,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result =
-        await serviceAdapter.activityService.getActivitiesByItemType(item_type);
+      const result = await serviceAdapter.getActivitiesByItemType(item_type);
 
       if (result.success) {
         return result;
@@ -833,7 +821,7 @@ export const useActivityStore = defineStore("activity", () => {
     error.value = null;
 
     try {
-      if (serviceAdapter.activityService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         const filtered = allActivities.value.filter((a) => a.state === state);
         console.warn("⚠️ 當前模式不為 Directus，使用本地獲取活動");
         return {
@@ -843,9 +831,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.activityService.getActivitiesByState(
-        state
-      );
+      const result = await serviceAdapter.getActivitiesByState(state);
 
       if (result.success) {
         return result;
@@ -888,11 +874,11 @@ export const useActivityStore = defineStore("activity", () => {
    * 模式管理
    */
   const getCurrentMode = () => {
-    return serviceAdapter.activityService.getCurrentMode();
+    return serviceAdapter.getCurrentMode();
   };
 
   const setMode = (mode) => {
-    serviceAdapter.activityService.setMode(mode);
+    serviceAdapter.setMode(mode);
   };
 
   // ========== 返回 Store 接口 ==========

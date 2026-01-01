@@ -4,8 +4,8 @@
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
-import { registrationService } from "../services/registrationService.js";
-import { baseService } from "../services/baseService.js";
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
+//import { registrationService } from "../services/registrationService.js"; // 移除舊的導入
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_registrations.json";
@@ -851,7 +851,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       registrationForm.value.createdAt = createISOTime;
       registrationForm.value.state = "submitted";
 
-      if (registrationService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，報名提交成功！");
         return {
           success: true,
@@ -881,7 +881,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       console.log("🚀 開始提交並創建報名表單...");
       // 創建報名表單
-      const result = await registrationService.createRegistration(
+      const result = await serviceAdapter.createRegistration(
         registrationForm.value
       );
 
@@ -892,7 +892,7 @@ export const useRegistrationStore = defineStore("registration", () => {
           success: result.success,
           message: "報名提交成功！",
           formId: result.formId,
-          dbName: registrationService.base.apiEndpoints.itemsRegistration,
+          dbName: "registrationDB",
           data: {
             ...result.data,
           },
@@ -1016,7 +1016,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         propsData.formId !== "" &&
         propsData.id !== ""
       ) {
-        if (registrationService.getIsMock()) {
+        if (serviceAdapter.getIsMock()) {
           // mock模式嘗試找到對應的數據
           mockData = mockDatas.find((item) => item.formId === propsData.formId);
         }
@@ -1099,7 +1099,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
 
       // 不是 directus 模式下，載入 Mock 數據
-      if (registrationService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         console.warn(
           "表單載入成功！⚠️ 當前模式不是 directus，無法從服務器加載表單"
         );
@@ -1116,9 +1116,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       // }
 
       // 从服务器获取表單數據
-      const result = await registrationService.getRegistrationById(
-        propsData.id
-      );
+      const result = await serviceAdapter.getRegistrationById(propsData.id);
 
       console.log("服務器返回的表單數據:", result);
 
@@ -1158,7 +1156,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       throw new Error("表單驗證失敗，請檢查所有必填欄位");
     }
 
-    if (registrationService.getIsMock()) {
+    if (serviceAdapter.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return {
         success: true,
@@ -1202,7 +1200,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       console.log(`🔄 開始更新表單: formId=${formId}, id=${id}`);
 
       // 更新报名的表單
-      const result = await registrationService.updateRegistration(
+      const result = await serviceAdapter.updateRegistration(
         id,
         registrationForm.value
       );

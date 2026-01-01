@@ -2,10 +2,10 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
-import { baseService } from "../services/baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_monthlyDonates.json";
-import { monthlyDonateService } from "../services/monthlyDonateService.js";
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
+//import { monthlyDonateService } from "../services/monthlyDonateService.js"; // 移除舊的導入
 import { authService } from "../services/authService.js";
 
 export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
@@ -873,7 +873,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     error.value = null;
 
     try {
-      if (monthlyDonateService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 贊助數據");
         allDonates.value = mockDatas;
         return {
@@ -885,7 +885,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       // TODO: 未來串接 API
       console.log("📄 從服務器獲取贊助數據...");
-      const result = await monthlyDonateService.getAllMonthlyDonates(params);
+      const result = await serviceAdapter.getAllMonthlyDonates(params);
       if (result.success) {
         allDonates.value = result.data || [];
         console.log(`✅ 成功獲取 ${allDonates.value.length} 個贊助記錄`);
@@ -947,7 +947,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       console.log("📦 添加新贊助:", newDonate);
 
-      if (monthlyDonateService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         allDonates.value.push(newDonate);
         console.warn("⚠️ 當前模式不是 directus，無法創建數據");
         return {
@@ -958,7 +958,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // TODO: 未來串接 API
-      const result = await monthlyDonateService.createMonthlyDonate(newDonate);
+      const result = await serviceAdapter.createMonthlyDonate(newDonate);
       if (result.success) {
         allDonates.value.push(result.data);
         console.log("✅ 成功創建贊助:", result.data.name);
@@ -1004,7 +1004,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         itemsCount: exDonate.donateItems?.length || 0,
       });
 
-      if (monthlyDonateService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         // Mock 模式：直接刪除本地數據
         allDonates.value.splice(exDonateIndex, 1);
 
@@ -1019,7 +1019,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // Directus 模式：調用 API
-      const result = await monthlyDonateService.deleteMonthlyDonate(
+      const result = await serviceAdapter.deleteMonthlyDonate(
         exDonate.id // 使用數據庫中的 ID
       );
 
@@ -1084,7 +1084,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         updatedUser: "",
       };
 
-      if (monthlyDonateService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         // Mock 模式：直接更新本地數據
         exDonate.donateItems.push(newDonateItem);
         exDonate.updatedAt = createISOTime;
@@ -1113,7 +1113,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       exDonate.memo = itemData.memo || exDonate.memo;
 
       // 更新贊助記錄備註
-      const result = await monthlyDonateService.updateMonthlyDonate(
+      const result = await serviceAdapter.updateMonthlyDonate(
         exDonate.id,
         exDonate
       );
@@ -1160,7 +1160,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       const updateISOTime = DateUtils.getCurrentISOTime();
 
-      if (monthlyDonateService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         // Mock 模式：更新本地數據
         exDonate.donateItems[itemIndex] = {
           ...exDonate.donateItems[itemIndex],
@@ -1181,7 +1181,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // Directus 模式：調用 API
-      const result = await monthlyDonateService.updateDonateItem(
+      const result = await serviceAdapter.updateDonateItem(
         exDonate.id, // 使用數據庫中的 ID
         itemId,
         {
@@ -1245,7 +1245,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         throw new Error(`找不到 donateItemsId 為 ${itemId} 的贊助項目`);
       }
 
-      if (monthlyDonateService.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         // Mock 模式：刪除本地數據
         exDonate.donateItems.splice(itemIndex, 1);
 
@@ -1265,7 +1265,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // Directus 模式：調用 API
-      const result = await monthlyDonateService.deleteDonateItem(
+      const result = await serviceAdapter.deleteDonateItem(
         exDonate.id, // 使用數據庫中的 ID
         itemId
       );
