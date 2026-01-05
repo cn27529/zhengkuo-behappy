@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CORS 測試</title>
+</head>
+
+<body>
+    <h1>CORS 測試頁面</h1>
+    <button onclick="testRustAPI()">測試 Rust API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testRustAPI() {
+            const url = 'http://localhost:3000/api/activities';
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = '<p>測試中...</p>';
+
+            try {
+                // 測試 1: 簡單請求
+                console.log('🔍 測試簡單請求...');
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+
+                console.log('✅ 響應:', response);
+
+                const data = await response.json();
+                console.log('✅ 數據:', data);
+
+                resultDiv.innerHTML = `
+          <p style="color: green;">✅ 請求成功！</p>
+          <p>狀態: ${response.status} ${response.statusText}</p>
+          <p>數據條目: ${data.data ? data.data.length : data.length}</p>
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        `;
+
+            } catch (error) {
+                console.error('❌ 錯誤:', error);
+                resultDiv.innerHTML = `
+          <p style="color: red;">❌ 請求失敗</p>
+          <p>錯誤: ${error.message}</p>
+          <p>名稱: ${error.name}</p>
+        `;
+            }
+        }
+
+        // 頁面加載時自動測試
+        window.onload = testRustAPI;
+    </script>
+</body>
+
+</html>
