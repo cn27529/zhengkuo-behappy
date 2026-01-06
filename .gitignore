@@ -189,3 +189,4 @@ cobertura.xml
 # 其他
 *.orig
 .cache/
+**/Cargo.lock
