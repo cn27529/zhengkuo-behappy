@@ -1,8 +1,10 @@
 // src/main.rs
 use axum::{routing::get, Extension, Json, Router};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use sqlx::Row;  // ✅ 添加這行！
+use sqlx::Row;
 use std::net::SocketAddr;
+use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 
 mod db;
@@ -12,6 +14,44 @@ mod routes;
 
 // 重新導出 ApiResponse 和 Meta，這樣編譯器知道它們被外部使用
 pub use models::api_response::{ApiResponse, Meta};
+
+// 應用狀態
+#[derive(Clone)]
+struct AppState {
+    pool: sqlx::SqlitePool,
+    start_time: chrono::DateTime<chrono::Utc>,
+    version: String,
+}
+
+// Server Info 響應結構
+#[derive(Serialize)]
+struct ServerInfo {
+    name: String,
+    version: String,
+    uptime_seconds: i64,
+    database_connected: bool,
+    database_type: String,
+    database_path: String,
+    current_time: String,
+    architecture: Architecture,
+}
+
+#[derive(Serialize)]
+struct Architecture {
+    auth_backend: String,
+    data_backend: String,
+    database: String,
+}
+
+// Server Ping 響應結構
+#[derive(Serialize)]
+struct PingResponse {
+    status: String,
+    message: String,
+    timestamp: String,
+    database_ping: bool,
+    response_time_ms: u128,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -51,29 +91,38 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ⚠️ 不運行遷移！直接使用 Directus 創建的表
     tracing::info!("✅🦀 [Rust] 數據庫連接成功，使用 Directus 管理的表結構");
 
+    // 創建應用狀態
+    let state = Arc::new(AppState {
+        pool: pool.clone(),
+        start_time: chrono::Utc::now(),
+        version: env!("CARGO_PKG_VERSION").to_string(),
+    });
+
     // 配置 CORS
-    // 當 allow_credentials(true) 時，不能同時使用 allow_headers(Any)（即 *）。
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(Any)
         .allow_headers(Any);
-        //.allow_credentials(true);  // 如果需要 cookie/認證
 
     // 創建活動路由
     let activity_routes = routes::activity::create_routes();
-    let registration_routes =  routes::registration::create_routes();
-    let monthly_donate_routes =  routes::monthly_donate::create_routes();
+    let registration_routes = routes::registration::create_routes();
+    let monthly_donate_routes = routes::monthly_donate::create_routes();
 
     // 創建主路由
     let app = Router::new()
         .route("/", get(root_handler))
         .route("/health", get(health_check))
         .route("/db-test", get(db_test))
-        .merge(activity_routes) // 合併活動路由
-        .merge(registration_routes) // 合併報名登記路由
-        .merge(monthly_donate_routes) // 合併每月捐款記錄路由
+        // 添加 server info 和 ping 端點
+        .route("/server/info", get(server_info))
+        .route("/server/ping", get(server_ping))
+        .merge(activity_routes)
+        .merge(registration_routes)
+        .merge(monthly_donate_routes)
         .layer(cors)
-        .layer(Extension(pool)); // 添加數據庫連接池
+        .layer(Extension(state.clone()))
+        .layer(Extension(pool));
 
     // 啟動服務器
     let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
@@ -84,19 +133,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = SocketAddr::from((host.parse::<std::net::IpAddr>()?, port));
 
     tracing::info!("🚀🦀 [Rust] 服務器運行在 http://{}", addr);
-    // tracing::info!("");
-    // tracing::info!("📚 API 端點:");
-    // tracing::info!("  健康檢查:");
-    // tracing::info!("    GET    /health                    - 服務健康狀態");
-    // tracing::info!("    GET    /db-test                   - 數據庫連接測試");
-    // tracing::info!("");
-    // tracing::info!("  活動 API:");
-    // tracing::info!("    GET    /api/activities            - 獲取所有活動");
-    // tracing::info!("    POST   /api/activities            - 創建新活動");
-    // tracing::info!("    GET    /api/activities/:id        - 獲取單個活動");
-    // tracing::info!("    PATCH  /api/activities/:id        - 更新活動");
-    // tracing::info!("    DELETE /api/activities/:id        - 刪除活動");
-    // tracing::info!("");
+    tracing::info!("");
+    tracing::info!("📚 系統端點:");
+    tracing::info!("  GET    /                           - 根路徑");
+    tracing::info!("  GET    /health                     - 健康檢查");
+    tracing::info!("  GET    /db-test                    - 數據庫測試");
+    tracing::info!("  GET    /api/server/info            - 服務器信息");
+    tracing::info!("  GET    /api/server/ping            - 服務器 Ping");
+    tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth，Axum 處理數據 CRUD");
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
@@ -108,11 +152,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 async fn root_handler() -> Json<Value> {
     Json(json!({
         "name": "Rust Axum Backend",
-        "version": "0.1.0",
+        "version": env!("CARGO_PKG_VERSION"),
         "status": "running",
         "description": "數據 API 後端 (與 Directus 共享 SQLite)",
         "endpoints": {
             "health": "/health",
+            "server_info": "/api/server/info",
+            "server_ping": "/api/server/ping",
             "activities": "/api/activities",
             "db_test": "/db-test"
         },
@@ -152,4 +198,66 @@ async fn db_test(Extension(pool): Extension<sqlx::SqlitePool>) -> Json<Value> {
             "message": format!("❌ 數據庫連接失敗: {}", e)
         })),
     }
+}
+
+// Server Info 端點
+async fn server_info(Extension(state): Extension<Arc<AppState>>) -> Json<ServerInfo> {
+    // 計算運行時間
+    let uptime = chrono::Utc::now() - state.start_time;
+
+    // 檢查數據庫連接
+    let db_connected = sqlx::query("SELECT 1")
+        .fetch_one(&state.pool)
+        .await
+        .is_ok();
+
+    // 獲取數據庫路徑
+    let database_path = std::env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "未知".to_string())
+        .replace("sqlite:", "");
+
+    let info = ServerInfo {
+        name: "Rust Axum Backend".to_string(),
+        version: state.version.clone(),
+        uptime_seconds: uptime.num_seconds(),
+        database_connected: db_connected,
+        database_type: "SQLite".to_string(),
+        database_path,
+        current_time: chrono::Utc::now().to_rfc3339(),
+        architecture: Architecture {
+            auth_backend: "Directus".to_string(),
+            data_backend: "Rust Axum".to_string(),
+            database: "Shared SQLite".to_string(),
+        },
+    };
+
+    Json(info)
+}
+
+// Server Ping 端點
+async fn server_ping(Extension(state): Extension<Arc<AppState>>) -> Json<PingResponse> {
+    let start = std::time::Instant::now();
+    let now = chrono::Utc::now();
+
+    // 嘗試 ping 數據庫
+    let db_ping = sqlx::query("SELECT 1")
+        .fetch_one(&state.pool)
+        .await
+        .is_ok();
+
+    let response_time = start.elapsed().as_millis();
+
+    let response = PingResponse {
+        status: if db_ping { "ok".to_string() } else { "degraded".to_string() },
+        message: if db_ping {
+            "服務器健康，數據庫響應正常".to_string()
+        } else {
+            "服務器運行中，但數據庫連接失敗".to_string()
+        },
+        timestamp: now.to_rfc3339(),
+        database_ping: db_ping,
+        response_time_ms: response_time,
+    };
+
+    Json(response)
 }

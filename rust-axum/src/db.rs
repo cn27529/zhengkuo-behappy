@@ -52,7 +52,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
 
     // 配置 SQLite 連接選項
     let connect_options = SqliteConnectOptions::from_str(&database_url)?
-        .create_if_missing(true)                          // 自動創建數據庫文件（如果不存在）
+        .create_if_missing(false)                         // 不自動創建數據庫（使用現有的）
         .journal_mode(journal_mode)                       // 設置日誌模式
         .synchronous(synchronous)                         // 設置同步模式
         .busy_timeout(Duration::from_secs(busy_timeout)); // 設置忙碌超時
@@ -136,7 +136,7 @@ pub async fn get_db_stats(pool: &SqlitePool) -> Result<DbStats, sqlx::Error> {
 pub struct DbStats {
     pub table_count: usize,
     pub table_names: Vec<String>,
-    #[allow(dead_code)]  // 添加这个属性来忽略未使用警告
+    #[allow(dead_code)]
     pub size_bytes: i64,
     pub size_mb: f64,
 }
