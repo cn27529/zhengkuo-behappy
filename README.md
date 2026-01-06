@@ -40,3 +40,8 @@ git reset --hard 9ac12b1
 這樣 zk-client-netlify 就會恢復成 reset 前的內容。
 若遠端也被 force push 過，需要推回去
 git push origin zk-client-netlify --force
+
+# axum-admin
+https://github.com/orchid-admin/axum-admin/tree/main
+https://github.com/lingdu1234/axum_admin?tab=readme-ov-file
+https://docs.rs/axum-login/latest/axum_login/
