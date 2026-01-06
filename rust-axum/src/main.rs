@@ -1,11 +1,12 @@
 // src/main.rs
 use axum::{routing::get, Extension, Json, Router};
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 use serde_json::{json, Value};
-use sqlx::Row;
+use sqlx::{Row, SqlitePool};
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
+use axum_sql_viewer::{SqliteProvider, SqlViewerLayer};
 
 mod db;
 mod handlers;
@@ -91,6 +92,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ⚠️ 不運行遷移！直接使用 Directus 創建的表
     tracing::info!("✅🦀 [Rust] 數據庫連接成功，使用 Directus 管理的表結構");
 
+    
+    
     // 創建應用狀態
     let state = Arc::new(AppState {
         pool: pool.clone(),
@@ -109,7 +112,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let registration_routes = routes::registration::create_routes();
     let monthly_donate_routes = routes::monthly_donate::create_routes();
 
-    // 創建主路由
+    
+    // ✅ 創建 SqliteProvider（DatabaseProvider 的實現）
+    // let sqlite_provider = axum_sql_viewer::SqliteProvider::new(pool.clone());
+    // let sql_viewer_layer = axum_sql_viewer::SqlViewerLayer::new("/", sqlite_provider);
+    // let sql_viewer_router = sql_viewer_layer.into_router();        
+    let viewer_pool = SqlitePool::connect("sqlite:../db/data.db")
+        .await
+        .unwrap();
+
+    // 創建主路由 - 使用 nest 而不是 merge
     let app = Router::new()
         .route("/", get(root_handler))
         .route("/health", get(health_check))
@@ -119,7 +131,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/server/ping", get(server_ping))
         .merge(activity_routes)
         .merge(registration_routes)
-        .merge(monthly_donate_routes)
+        .merge(monthly_donate_routes)        
+        // Add the SQL viewer at /sql-viewer
+        .merge(SqlViewerLayer::sqlite("/sql-viewer", viewer_pool).into_router())
         .layer(cors)
         .layer(Extension(state.clone()))
         .layer(Extension(pool));
@@ -140,6 +154,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /db-test                    - 數據庫測試");
     tracing::info!("  GET    /api/server/info            - 服務器信息");
     tracing::info!("  GET    /api/server/ping            - 服務器 Ping");
+    tracing::info!("  GET    /sql-viewer                 - SQL 數據庫查看器");
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth，Axum 處理數據 CRUD");
 
@@ -150,17 +165,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn root_handler() -> Json<Value> {
+     let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
+    
     Json(json!({
         "name": "Rust Axum Backend",
-        "version": env!("CARGO_PKG_VERSION"),
+        "version": "0.1.0",
         "status": "running",
         "description": "數據 API 後端 (與 Directus 共享 SQLite)",
+        "server": format!("http://{}:{}", host, port),
         "endpoints": {
             "health": "/health",
-            "server_info": "/api/server/info",
-            "server_ping": "/api/server/ping",
             "activities": "/api/activities",
-            "db_test": "/db-test"
+            "registrations": "/api/registrations",
+            "monthly_donates": "/api/monthly-donates",
+            "db_test": "/db-test",
+            "sql_viewer": "/__sql"
         },
         "architecture": {
             "auth_backend": "Directus (login, users, permissions)",

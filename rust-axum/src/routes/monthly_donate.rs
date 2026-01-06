@@ -14,24 +14,24 @@ pub fn create_routes() -> Router {
         // 創建新每月捐款記錄
         .route("/api/monthly-donates", post(monthly_donate::create_monthly_donate))
         // 根據數據庫 ID 獲取每月捐款記錄
-        .route("/api/monthly-donates/:id", get(monthly_donate::get_monthly_donate_by_id))
+        .route("/api/monthly-donates/{id}", get(monthly_donate::get_monthly_donate_by_id))
         // 更新每月捐款記錄
-        .route("/api/monthly-donates/:id", patch(monthly_donate::update_monthly_donate))
+        .route("/api/monthly-donates/{id}", patch(monthly_donate::update_monthly_donate))
         // 刪除每月捐款記錄
-        .route("/api/monthly-donates/:id", delete(monthly_donate::delete_monthly_donate))
+        .route("/api/monthly-donates/{id}", delete(monthly_donate::delete_monthly_donate))
         // 根據 donateId 獲取每月捐款記錄
         .route(
-            "/api/monthly-donates/by-donate-id/:donate_id",
+            "/api/monthly-donates/by-donate-id/{donate_id}",
             get(monthly_donate::get_monthly_donate_by_donate_id),
         )
         // 根據 registrationId 獲取每月捐款記錄
         .route(
-            "/api/monthly-donates/by-registration/:registration_id",
+            "/api/monthly-donates/by-registration/{registration_id}",
             get(monthly_donate::get_monthly_donate_by_registration_id),
         )
         // 根據 donateType 獲取每月捐款記錄
         .route(
-            "/api/monthly-donates/by-type/:donate_type",
+            "/api/monthly-donates/by-type/{donate_type}",
             get(monthly_donate::get_monthly_donate_by_donate_type),
         )
         // 以下是根據 rustMonthlyDonateService.js 中的方法添加的路由
@@ -67,23 +67,23 @@ pub fn create_routes() -> Router {
         // )
         // // 獲取捐贈趨勢
         // .route(
-        //     "/api/monthly-donates/stats/trend/:period",
+        //     "/api/monthly-donates/stats/trend/{period}",
         //     get(monthly_donate::get_donation_trend),
         // )
         // // 以下為 donateItems 操作方法的路由（需要額外實現）
         // // 新增指定贊助記錄
         // .route(
-        //     "/api/monthly-donates/:id/items",
+        //     "/api/monthly-donates/{id}/items",
         //     post(monthly_donate::add_donate_item),
         // )
         // // 更新指定贊助記錄
         // .route(
-        //     "/api/monthly-donates/:id/items/:items_id",
+        //     "/api/monthly-donates/{id}/items/{items_id}",
         //     patch(monthly_donate::update_donate_item),
         // )
         // // 刪除指定贊助記錄
         // .route(
-        //     "/api/monthly-donates/:id/items/:items_id",
+        //     "/api/monthly-donates/{id}/items/{items_id}",
         //     delete(monthly_donate::delete_donate_item),
         // )
         // // 健康檢查

@@ -13,15 +13,15 @@ pub fn create_routes() -> Router {
         .route("/api/activities", get(activity::get_all_activities))
         // 創建新活動
         .route("/api/activities", post(activity::create_activity))
-        // 根據數據庫 ID 獲取活動
-        .route("/api/activities/:id", get(activity::get_activity_by_id))
-        // 更新活動
-        .route("/api/activities/:id", patch(activity::update_activity))
-        // 刪除活動
-        .route("/api/activities/:id", delete(activity::delete_activity))
-        // 根據 activityId 獲取活動
+        // 根據數據庫 ID 獲取活動 - ✅ 修正：使用 {id} 而不是 :id
+        .route("/api/activities/{id}", get(activity::get_activity_by_id))
+        // 更新活動 - ✅ 修正：使用 {id} 而不是 :id
+        .route("/api/activities/{id}", patch(activity::update_activity))
+        // 刪除活動 - ✅ 修正：使用 {id} 而不是 :id
+        .route("/api/activities/{id}", delete(activity::delete_activity))
+        // 根據 activityId 獲取活動 - ✅ 修正：使用 {activity_id} 而不是 :activity_id
         .route(
-            "/api/activities/by-activity-id/:activity_id",
+            "/api/activities/by-activity-id/{activity_id}",
             get(activity::get_activity_by_activity_id),
         )
 }
