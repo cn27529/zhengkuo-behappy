@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
             margin: 0 auto;
             background: white;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
@@ -229,16 +230,19 @@
         }
 
         @media (max-width: 768px) {
-            .input-row, .comparison-grid {
+
+            .input-row,
+            .comparison-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔍 Service 方法比對工具</h1>
+            <h1>🔍 Service method 方法比對工具</h1>
             <p>自動分析並比對 Directus 與 Rust Service 的方法差異</p>
         </div>
 
@@ -271,7 +275,7 @@
     <script>
         function extractMethods(code, serviceName) {
             const methods = new Set();
-            
+
             // 匹配 async 方法
             const asyncRegex = /async\s+(\w+)\s*\(/g;
             let match;
@@ -282,7 +286,7 @@
                     methods.add(methodName);
                 }
             }
-            
+
             // 匹配普通方法
             const methodRegex = /^\s*(\w+)\s*\([^)]*\)\s*\{/gm;
             while ((match = methodRegex.exec(code)) !== null) {
@@ -291,7 +295,7 @@
                     methods.add(methodName);
                 }
             }
-            
+
             return Array.from(methods).sort();
         }
 
@@ -326,7 +330,7 @@
 
         function displayResults(data) {
             const resultsDiv = document.getElementById('results');
-            
+
             const html = `
                 <div class="result-section">
                     <h2>📊 統計總覽</h2>
@@ -431,4 +435,5 @@
         }
     </script>
 </body>
+
 </html>

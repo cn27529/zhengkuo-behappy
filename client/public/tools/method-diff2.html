@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
             margin: 0 auto;
             background: white;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
@@ -181,7 +182,7 @@
             border: 2px solid #dee2e6;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .comparison-table thead {
@@ -287,11 +288,11 @@
             .input-row {
                 grid-template-columns: 1fr;
             }
-            
+
             .comparison-table {
                 font-size: 12px;
             }
-            
+
             .comparison-table th,
             .comparison-table td {
                 padding: 12px;
@@ -299,11 +300,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔍 Service 方法比對工具</h1>
-            <p>自動分析並比對 Directus 與 Rust Service 的方法差異（表格版）</p>
+            <h1>🔍 Service method 方法比對工具</h1>
+            <p>自動分析並比對 Directus 與 Rust Service 的方法差異</p>
         </div>
 
         <div class="input-section">
@@ -335,7 +337,7 @@
     <script>
         function extractMethods(code, serviceName) {
             const methods = new Set();
-            
+
             // 匹配 async 方法
             const asyncRegex = /async\s+(\w+)\s*\(/g;
             let match;
@@ -345,7 +347,7 @@
                     methods.add(methodName);
                 }
             }
-            
+
             // 匹配普通方法
             const methodRegex = /^\s*(\w+)\s*\([^)]*\)\s*\{/gm;
             while ((match = methodRegex.exec(code)) !== null) {
@@ -354,7 +356,7 @@
                     methods.add(methodName);
                 }
             }
-            
+
             return Array.from(methods).sort();
         }
 
@@ -399,7 +401,7 @@
 
         function displayResults(data) {
             const resultsDiv = document.getElementById('results');
-            
+
             const html = `
                 <div class="stats">
                     <div class="stat-card">
@@ -447,25 +449,25 @@
                     </thead>
                     <tbody>
                         ${data.comparison.map(item => {
-                            let rowClass = '';
-                            let statusIcon = '';
-                            let statusText = '';
-                            
-                            if (item.inDirectus && item.inRust) {
-                                rowClass = 'row-both';
-                                statusIcon = '✅';
-                                statusText = '兩邊都有';
-                            } else if (item.inDirectus) {
-                                rowClass = 'row-directus-only';
-                                statusIcon = '📄';
-                                statusText = '僅 D';
-                            } else {
-                                rowClass = 'row-rust-only';
-                                statusIcon = '🦀';
-                                statusText = '僅 R';
-                            }
-                            
-                            return `
+                let rowClass = '';
+                let statusIcon = '';
+                let statusText = '';
+
+                if (item.inDirectus && item.inRust) {
+                    rowClass = 'row-both';
+                    statusIcon = '✅';
+                    statusText = '兩邊都有';
+                } else if (item.inDirectus) {
+                    rowClass = 'row-directus-only';
+                    statusIcon = '📄';
+                    statusText = '僅 D';
+                } else {
+                    rowClass = 'row-rust-only';
+                    statusIcon = '🦀';
+                    statusText = '僅 R';
+                }
+
+                return `
                                 <tr class="${rowClass}">
                                     <td>
                                         ${item.inDirectus ? `
@@ -488,7 +490,7 @@
                                     </td>
                                 </tr>
                             `;
-                        }).join('')}
+            }).join('')}
                     </tbody>
                 </table>
 
@@ -519,4 +521,5 @@
         }
     </script>
 </body>
+
 </html>
