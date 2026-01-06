@@ -2,11 +2,11 @@
 use axum::{routing::get, Extension, Json, Router};
 use serde::{Serialize};
 use serde_json::{json, Value};
-use sqlx::{Row, SqlitePool};
+use sqlx::{Row};
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
-use axum_sql_viewer::{SqliteProvider, SqlViewerLayer};
+use axum_sql_viewer::{SqlViewerLayer};
 
 mod db;
 mod handlers;
@@ -111,15 +111,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let activity_routes = routes::activity::create_routes();
     let registration_routes = routes::registration::create_routes();
     let monthly_donate_routes = routes::monthly_donate::create_routes();
-
     
     // ✅ 創建 SqliteProvider（DatabaseProvider 的實現）
-    // let sqlite_provider = axum_sql_viewer::SqliteProvider::new(pool.clone());
-    // let sql_viewer_layer = axum_sql_viewer::SqlViewerLayer::new("/", sqlite_provider);
-    // let sql_viewer_router = sql_viewer_layer.into_router();        
-    let viewer_pool = SqlitePool::connect("sqlite:../db/data.db")
-        .await
-        .unwrap();
+    let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
 
     // 創建主路由 - 使用 nest 而不是 merge
     let app = Router::new()
@@ -133,7 +127,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(registration_routes)
         .merge(monthly_donate_routes)        
         // Add the SQL viewer at /sql-viewer
-        .merge(SqlViewerLayer::sqlite("/sql-viewer", viewer_pool).into_router())
+        .merge(sql_viewer_router)
         .layer(cors)
         .layer(Extension(state.clone()))
         .layer(Extension(pool));
