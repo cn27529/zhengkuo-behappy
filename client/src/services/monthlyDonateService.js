@@ -14,7 +14,11 @@ export class MonthlyDonateService {
     console.log(`MonthlyDonateService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
-  async healthCheck() {
+  async getServerInfo() {
+    return await this.base.serverInfo();
+  }
+
+  async getHealthCheck() {
     return await this.base.healthCheck();
   }
 

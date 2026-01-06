@@ -32,7 +32,8 @@ export class BaseRustService {
       // 系統
       health: "/health",
       dbTest: "/db-test",
-      serverInfo: "/api/server/info",
+      serverInfo: "/server/info",
+      serverPing: "/server/ping",
       metrics: "/api/metrics",
     };
 
@@ -42,6 +43,42 @@ export class BaseRustService {
       successRequests: 0,
       avgResponseTime: 0,
     };
+  }
+
+  async dbTest() {
+    return await this.rustFetch(
+      `${this.rustApiBaseUrl}${this.endpoints.dbTest}`,
+      {
+        method: "GET",
+      },
+      {
+        operation: "dbTest",
+      }
+    );
+  }
+
+  async serverInfo() {
+    return await this.rustFetch(
+      `${this.rustApiBaseUrl}${this.endpoints.serverInfo}`,
+      {
+        method: "GET",
+      },
+      {
+        operation: "getServerInfo",
+      }
+    );
+  }
+
+  async healthCheck() {
+    return await this.rustFetch(
+      `${this.rustApiBaseUrl}${this.endpoints.health}`,
+      {
+        method: "GET",
+      },
+      {
+        operation: "healthCheck",
+      }
+    );
   }
 
   getIsMock() {

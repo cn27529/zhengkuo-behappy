@@ -118,6 +118,20 @@ export class RustAuthService {
       };
     }
   }
+
+  /**
+   * 健康檢查
+   */
+  async getHealthCheck() {
+    return await this.base.healthCheck();
+  }
+
+  /**
+   * 獲取服務信息
+   */
+  async getServerInfo() {
+    return await this.base.serverInfo();
+  }
 }
 
 export const rustAuthService = new RustAuthService();

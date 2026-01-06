@@ -205,6 +205,8 @@ class ServiceAdapter {
       "completeActivity",
       "cancelActivity",
       "handleActivityDirectusError",
+      "getHealthCheck",
+      "getServerInfo",
     ];
 
     activityMethods.forEach((method) => {
@@ -234,6 +236,8 @@ class ServiceAdapter {
       "completeRegistration",
       "saveDraft",
       "handleRegistrationDirectusError",
+      "getHealthCheck",
+      "getServerInfo",
     ];
 
     registrationMethods.forEach((method) => {
@@ -258,6 +262,8 @@ class ServiceAdapter {
       "getDonationStats",
       "generateMockData",
       "handleMonthlyDonateDirectusError",
+      "getHealthCheck",
+      "getServerInfo",
     ];
 
     monthlyDonateMethods.forEach((method) => {
@@ -296,6 +302,8 @@ class ServiceAdapter {
       "completeActivity",
       "cancelActivity",
       "handleActivityDirectusError",
+      "getHealthCheck",
+      "getServerInfo",
     ];
 
     methods.forEach((method) => {
@@ -314,7 +322,14 @@ class ServiceAdapter {
       getCurrentUser: () => this.getCurrentUser(),
     };
 
-    const methods = ["login", "logout", "refreshToken", "validateToken"];
+    const methods = [
+      "login",
+      "logout",
+      "refreshToken",
+      "validateToken",
+      "getHealthCheck",
+      "getServerInfo",
+    ];
 
     methods.forEach((method) => {
       proxy[method] = (...args) =>
@@ -345,6 +360,8 @@ class ServiceAdapter {
       "completeRegistration",
       "saveDraft",
       "handleRegistrationDirectusError",
+      "getHealthCheck",
+      "getServerInfo",
     ];
 
     methods.forEach((method) => {
@@ -379,6 +396,8 @@ class ServiceAdapter {
       "getDonationStats",
       "generateMockData",
       "handleMonthlyDonateDirectusError",
+      "getHealthCheck",
+      "getServerInfo",
     ];
 
     methods.forEach((method) => {

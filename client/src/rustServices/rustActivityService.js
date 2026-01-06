@@ -596,31 +596,15 @@ export class RustActivityService {
   /**
    * 健康檢查
    */
-  async healthCheck() {
-    return await this.base.rustFetch(
-      `${this.base.rustApiBaseUrl}/health`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "healthCheck",
-      }
-    );
+  async getHealthCheck() {
+    return await this.base.healthCheck();
   }
 
   /**
    * 獲取服務信息
    */
-  async getServiceInfo() {
-    return await this.base.rustFetch(
-      `${this.base.rustApiBaseUrl}/info`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getServiceInfo",
-      }
-    );
+  async getServerInfo() {
+    return await this.base.serverInfo();
   }
 }
 

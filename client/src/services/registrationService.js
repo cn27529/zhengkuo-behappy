@@ -12,12 +12,16 @@ export class RegistrationService {
     console.log(`RegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
-  getIsMock() {
-    return this.base.getIsMock();
+  async getServerInfo() {
+    return await this.base.serverInfo();
   }
 
-  async healthCheck() {
+  async getHealthCheck() {
     return await this.base.healthCheck();
+  }
+
+  getIsMock() {
+    return this.base.getIsMock();
   }
 
   // ========== CRUD 操作 ==========

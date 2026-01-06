@@ -333,42 +333,6 @@ export class BaseService {
     }
   }
 
-  // 改進的錯誤信息提取方法
-  extractErrorMessage(errorText) {
-    if (!errorText) {
-      return "無詳細錯誤信息";
-    }
-
-    try {
-      const errorJson = JSON.parse(errorText);
-
-      // Directus 錯誤格式: { errors: [...] }
-      if (Array.isArray(errorJson.errors) && errorJson.errors.length > 0) {
-        return errorJson.errors
-          .map((err) => err.message || err.toString())
-          .join("; "); // 使用分號更清晰
-      }
-
-      // 直接的 message 字段
-      if (errorJson.message) {
-        return errorJson.message;
-      }
-
-      // 其他可能的錯誤字段
-      if (errorJson.error) {
-        return typeof errorJson.error === "string"
-          ? errorJson.error
-          : JSON.stringify(errorJson.error);
-      }
-
-      // 返回整個 JSON（限制長度）
-      return JSON.stringify(errorJson).substring(0, 200);
-    } catch {
-      // 不是 JSON，返回原始文本
-      return errorText.substring(0, 200);
-    }
-  }
-
   async serverInfo() {
     try {
       const apiUrl = `${this.apiBaseUrl}${this.apiEndpoints.serverInfo}`;
@@ -457,6 +421,42 @@ export class BaseService {
         online: false,
         message: `服務連接異常: ${error.message}`,
       };
+    }
+  }
+
+  // 改進的錯誤信息提取方法
+  extractErrorMessage(errorText) {
+    if (!errorText) {
+      return "無詳細錯誤信息";
+    }
+
+    try {
+      const errorJson = JSON.parse(errorText);
+
+      // Directus 錯誤格式: { errors: [...] }
+      if (Array.isArray(errorJson.errors) && errorJson.errors.length > 0) {
+        return errorJson.errors
+          .map((err) => err.message || err.toString())
+          .join("; "); // 使用分號更清晰
+      }
+
+      // 直接的 message 字段
+      if (errorJson.message) {
+        return errorJson.message;
+      }
+
+      // 其他可能的錯誤字段
+      if (errorJson.error) {
+        return typeof errorJson.error === "string"
+          ? errorJson.error
+          : JSON.stringify(errorJson.error);
+      }
+
+      // 返回整個 JSON（限制長度）
+      return JSON.stringify(errorJson).substring(0, 200);
+    } catch {
+      // 不是 JSON，返回原始文本
+      return errorText.substring(0, 200);
     }
   }
 
