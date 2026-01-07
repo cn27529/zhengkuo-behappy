@@ -22,7 +22,9 @@
     <p>VITE_APP_LOCALE: {{ env.appLocale }}</p>
     <p>VITE_APP_HOUR12: {{ env.appHour12 }}</p>
     <h3>indexedDB.js</h3>
-    <p>VITE_LOG_RESPONSE: {{ env.logResponse }}</p>
+    <p>VITE_LOG_RESPONSE: {{ env.logResponse }}
+      <el-tag>log設置true, false</el-tag>
+    </p>
     <p>
       VITE_LOG_LEVEL: {{ env.logLevel }}
       <el-tag>debug, info, warn, error</el-tag>
@@ -32,9 +34,17 @@
     <p>VITE_RUST_API_URL: {{ env.rustApiUrl }}</p>
     <p>
       VITE_RUST_MODE: {{ env.rustMode }}
-      <el-tag>rust, mock, hybrid</el-tag>
+      <el-tag>優雅降級 rust, mock, hybrid</el-tag>
     </p>
-    <p>VITE_RUST_ENABLED: {{ env.rustEnabled }}</p>
+    <p>VITE_BACKEND_TYPE: {{ env.backendType }}
+      <el-tag>主後端配置, axum, directus</el-tag>
+    </p>
+    <p>VITE_FALLBACK_BACKEND: {{ env.fallbackBackend }}
+      <el-tag>備援後端配置, directus</el-tag>
+    </p>
+    <p>VITE_AUTO_FALLBACK: {{ env.autoFallback }}
+      <el-tag>自動降級開關, true</el-tag>
+    </p>
     <h3>環境變量加載: {{ env.loaded ? "成功" : "失敗" }}</h3>
     <p></p>
   </div>
@@ -57,9 +67,11 @@ const env = {
   logResponse: import.meta.env.VITE_LOG_RESPONSE,
   logLevel: import.meta.env.VITE_LOG_LEVEL,
   remoteLogUrl: import.meta.env.VITE_REMOTE_LOG_URL,
-  rustApiUrl: import.meta.env.VITE_RUST_API_URL,
-  rustMode: import.meta.env.VITE_RUST_MODE,
-  rustEnabled: import.meta.env.VITE_RUST_ENABLED,
+  rustApiUrl: import.meta.env.VITE_RUST_API_URL, // Rust API 地址
+  rustMode: import.meta.env.VITE_RUST_MODE,  // 優雅降級 rust, mock, hybrid
+  backendType: import.meta.env.VITE_BACKEND_TYPE, //主後端配置,axum, directus
+  fallbackBackend: import.meta.env.VITE_FALLBACK_BACKEND, //備援後端配置
+  autoFallback: import.meta.env.VITE_AUTO_FALLBACK, //自動降級開關
   // 判斷是否加載成功
   loaded: !!(
     import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY
