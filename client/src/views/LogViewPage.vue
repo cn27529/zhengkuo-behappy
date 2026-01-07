@@ -45,7 +45,7 @@ import { useRouter } from "vue-router";
 import LogViewer from "../components/LogViewer.vue";
 import { indexedDBLogger } from "../utils/indexedDB.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import { mock_logs } from "../data/mock_logs.js";
+import mock_logs from "../data/mock_logs.json";
 
 const router = useRouter();
 const logViewer = ref(null);

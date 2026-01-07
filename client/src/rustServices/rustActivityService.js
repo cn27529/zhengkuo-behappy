@@ -13,33 +13,175 @@ export class RustActivityService {
   // ========== 核心 CRUD 方法 ==========
 
   /**
-   * 創建活動（與 Directus 接口兼容）
+   * ✅ 創建活動（與 Directus 接口兼容）
    */
-  async createActivity(activityData, context = {}) {
+  async createActivity(activityData, additionalContext = {}) {
+    // ✅ 在 try 外面定義，確保 catch 也能訪問
+    const startTime = Date.now();
+    
     const processedData = {
       ...activityData,
       createdAt: DateUtils.getCurrentISOTime(),
     };
 
-    return await this.base.rustFetch(
-      this.endpoint,
-      {
-        method: "POST",
-        body: JSON.stringify(processedData),
-      },
-      {
-        service: this.serviceName,
-        operation: "createActivity",
-        ...context,
+    const logContext = {
+      service: this.serviceName,
+      operation: "createActivity",
+      method: "POST",
+      startTime: startTime,
+      endpoint: this.endpoint,
+      requestBody: processedData, // ✅ 記錄請求 body
+      ...additionalContext,
+    };
+
+    try {
+      console.log("🦀 [Rust] 創建活動:", processedData);
+
+      const result = await this.base.rustFetch(
+        this.endpoint,
+        {
+          method: "POST",
+          body: JSON.stringify(processedData),
+        },
+        logContext // ✅ 傳入完整的 context
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 創建活動失敗:", error);
+      return this.handleRustError(error);
+    }
+  }
+
+  /**
+   * ✅ 更新活動
+   */
+  async updateActivity(id, activityData, additionalContext = {}) {
+    const startTime = Date.now();
+    
+    const updateData = {
+      ...activityData,
+      updatedAt: DateUtils.getCurrentISOTime(),
+    };
+
+    const logContext = {
+      service: this.serviceName,
+      operation: "updateActivity",
+      method: "PATCH",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/${id}`,
+      requestBody: updateData, // ✅ 記錄請求 body
+      id,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(`🦀 [Rust] 更新活動 (ID: ${id}):`, updateData);
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(updateData),
+        },
+        logContext
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 更新活動失敗 (ID: ${id}):`, error);
+      return this.handleRustError(error);
+    }
+  }
+
+  /**
+   * ✅ 刪除活動
+   */
+  async deleteActivity(id, additionalContext = {}) {
+    const startTime = Date.now();
+
+    const logContext = {
+      service: this.serviceName,
+      operation: "deleteActivity",
+      method: "DELETE",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/${id}`,
+      id,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(`🦀 [Rust] 刪除活動 (ID: ${id})`);
+
+      // ✅ 可選：先獲取要刪除的數據（像 activityService 一樣）
+      const currentActivity = await this.getActivityById(id, {
+        operation: "getActivityBeforeDelete",
+      });
+
+      if (currentActivity.success && currentActivity.data) {
+        logContext.requestBody = currentActivity.data; // ✅ 記錄被刪除的數據
       }
-    );
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${id}`,
+        {
+          method: "DELETE",
+        },
+        logContext
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 刪除活動失敗 (ID: ${id}):`, error);
+      return this.handleRustError(error);
+    }
+  }
+
+  /**
+   * 獲取單個活動（READ 操作，可選擇是否記錄日誌）
+   */
+  async getActivityById(id, additionalContext = {}) {
+    // ✅ READ 操作通常不需要詳細日誌，但可以選擇性添加
+    const shouldLog = additionalContext.forceLog || false;
+    
+    const logContext = shouldLog ? {
+      service: this.serviceName,
+      operation: additionalContext.operation || "getActivityById",
+      method: "GET",
+      startTime: Date.now(),
+      endpoint: `${this.endpoint}/${id}`,
+      id,
+      ...additionalContext,
+    } : {
+      // 最小 context，不會被記錄（因為缺少必要信息）
+      operation: additionalContext.operation || "getActivityById",
+      id,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${id}`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 獲取活動失敗 (ID: ${id}):`, error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 獲取所有活動（支持分頁、過濾、排序）
    */
-  async getAllActivities(params = {}, context = {}) {
+  async getAllActivities(params = {}, additionalContext = {}) {
     console.log("🦀 [Rust] 服務器獲取活動數據...");
+
+    // ✅ READ 操作可選日誌
+    const shouldLog = additionalContext.forceLog || false;
 
     const queryParams = new URLSearchParams();
     queryParams.append("fields", "*");
@@ -48,7 +190,6 @@ export class RustActivityService {
     if (params.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         if (typeof value === "object") {
-          // 處理 Directus 的查詢運算符
           if (value._eq) {
             queryParams.append(key, value._eq);
           } else if (value._between) {
@@ -79,75 +220,33 @@ export class RustActivityService {
       ? `${this.endpoint}?${queryParams.toString()}`
       : this.endpoint;
 
-    return await this.base.rustFetch(
-      endpoint,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getAllActivities",
-        ...context,
-      }
-    );
-  }
-
-  /**
-   * 獲取單個活動
-   */
-  async getActivityById(id, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/${id}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getActivityById",
-        id,
-        ...context,
-      }
-    );
-  }
-
-  /**
-   * 更新活動
-   */
-  async updateActivity(id, activityData, context = {}) {
-    const updateData = {
-      ...activityData,
-      updatedAt: DateUtils.getCurrentISOTime(),
+    const logContext = shouldLog ? {
+      service: this.serviceName,
+      operation: "getAllActivities",
+      method: "GET",
+      startTime: Date.now(),
+      endpoint: endpoint,
+      queryParams: params,
+      ...additionalContext,
+    } : {
+      service: this.serviceName,
+      operation: "getAllActivities",
     };
 
-    return await this.base.rustFetch(
-      `${this.endpoint}/${id}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify(updateData),
-      },
-      {
-        service: this.serviceName,
-        operation: "updateActivity",
-        id,
-        ...context,
-      }
-    );
-  }
+    try {
+      const result = await this.base.rustFetch(
+        endpoint,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
 
-  /**
-   * 刪除活動
-   */
-  async deleteActivity(id, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/${id}`,
-      {
-        method: "DELETE",
-      },
-      {
-        service: this.serviceName,
-        operation: "deleteActivity",
-        id,
-        ...context,
-      }
-    );
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取活動列表失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   // ========== 查詢方法 ==========
@@ -155,103 +254,166 @@ export class RustActivityService {
   /**
    * 根據活動 ID 獲取活動（使用自定義 activityId 欄位）
    */
-  async getActivitiesByActivityId(activityId, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/by-activity-id/${activityId}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getActivitiesByActivityId",
-        activityId,
-        ...context,
-      }
-    );
+  async getActivitiesByActivityId(activityId, additionalContext = {}) {
+    const logContext = {
+      operation: "getActivitiesByActivityId",
+      activityId,
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/by-activity-id/${activityId}`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 根據 activityId 獲取活動失敗 (${activityId}):`, error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 根據類型獲取活動
    */
-  async getActivitiesByItemType(item_type, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/by-type/${item_type}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getActivitiesByItemType",
-        item_type,
-        ...context,
-      }
-    );
+  async getActivitiesByItemType(item_type, additionalContext = {}) {
+    const logContext = {
+      operation: "getActivitiesByItemType",
+      item_type,
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/by-type/${item_type}`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 根據類型獲取活動失敗 (${item_type}):`, error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 根據狀態獲取活動
    */
-  async getActivitiesByState(state, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/by-state/${state}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getActivitiesByState",
-        state,
-        ...context,
-      }
-    );
+  async getActivitiesByState(state, additionalContext = {}) {
+    const logContext = {
+      operation: "getActivitiesByState",
+      state,
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/by-state/${state}`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 根據狀態獲取活動失敗 (${state}):`, error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 獲取即將到來的活動
    */
-  async getUpcomingActivities(context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/upcoming`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getUpcomingActivities",
-        ...context,
-      }
-    );
+  async getUpcomingActivities(additionalContext = {}) {
+    const logContext = {
+      operation: "getUpcomingActivities",
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/upcoming`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取即將到來的活動失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 獲取已完成的活動
    */
-  async getCompletedActivities(context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/completed`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getCompletedActivities",
-        ...context,
-      }
-    );
+  async getCompletedActivities(additionalContext = {}) {
+    const logContext = {
+      operation: "getCompletedActivities",
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/completed`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取已完成的活動失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 根據日期範圍獲取活動
    */
-  async getActivitiesByDateRange(startDate, endDate, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/by-date-range`,
-      {
-        method: "POST",
-        body: JSON.stringify({ startDate, endDate }),
-      },
-      {
-        operation: "getActivitiesByDateRange",
-        startDate,
-        endDate,
-        ...context,
-      }
-    );
+  async getActivitiesByDateRange(startDate, endDate, additionalContext = {}) {
+    const startTime = Date.now();
+    
+    const requestBody = { startDate, endDate };
+    
+    const logContext = {
+      service: this.serviceName,
+      operation: "getActivitiesByDateRange",
+      method: "POST",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/by-date-range`,
+      requestBody: requestBody,
+      startDate,
+      endDate,
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/by-date-range`,
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 根據日期範圍獲取活動失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   // ========== 統計方法 ==========
@@ -259,7 +421,7 @@ export class RustActivityService {
   /**
    * 獲取月度統計
    */
-  async getMonthlyStats(context = {}) {
+  async getMonthlyStats(additionalContext = {}) {
     console.log("📊 獲取月度統計數據...");
 
     try {
@@ -267,7 +429,7 @@ export class RustActivityService {
       const activitiesResult = await this.getAllActivities(
         {},
         {
-          ...context,
+          ...additionalContext,
           operation: "getAllActivitiesForStats",
         }
       );
@@ -307,23 +469,11 @@ export class RustActivityService {
   calculateMonthlyStats(activities) {
     console.log("🧮 本地計算月度統計，活動數量:", activities.length);
 
-    // 創建月份映射
     const monthNames = [
-      "1月",
-      "2月",
-      "3月",
-      "4月",
-      "5月",
-      "6月",
-      "7月",
-      "8月",
-      "9月",
-      "10月",
-      "11月",
-      "12月",
+      "1月", "2月", "3月", "4月", "5月", "6月",
+      "7月", "8月", "9月", "10月", "11月", "12月",
     ];
 
-    // 初始化統計對象
     const statsByMonth = {};
     monthNames.forEach((month) => {
       statsByMonth[month] = {
@@ -334,13 +484,12 @@ export class RustActivityService {
       };
     });
 
-    // 統計每個月份的數據
     activities.forEach((activity) => {
       if (!activity.date) return;
 
       try {
         const date = new Date(activity.date);
-        const monthIndex = date.getMonth(); // 0-11
+        const monthIndex = date.getMonth();
         const month = monthNames[monthIndex];
 
         if (month && statsByMonth[month]) {
@@ -358,9 +507,8 @@ export class RustActivityService {
       }
     });
 
-    // 轉換為數組並過濾
     const result = Object.values(statsByMonth)
-      .filter((stat) => stat.events > 0) // 只返回有活動的月份
+      .filter((stat) => stat.events > 0)
       .map((stat) => ({
         ...stat,
         avgParticipants:
@@ -371,57 +519,113 @@ export class RustActivityService {
     return result;
   }
 
+  // ========== 狀態管理方法（CUD 操作）==========
+
   /**
-   * 更新活動參與人次
+   * ✅ 更新活動參與人次
    */
-  async updateParticipants(id, participants, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/${id}/participants`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({ participants }),
-      },
-      {
-        operation: "updateParticipants",
-        id,
-        participants,
-        ...context,
-      }
-    );
+  async updateParticipants(id, participants, additionalContext = {}) {
+    const startTime = Date.now();
+    
+    const requestBody = { participants };
+    
+    const logContext = {
+      service: this.serviceName,
+      operation: "updateParticipants",
+      method: "PATCH",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/${id}/participants`,
+      requestBody: requestBody,
+      id,
+      participants,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(`🦀 [Rust] 更新參與人次 (ID: ${id}):`, participants);
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${id}/participants`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(requestBody),
+        },
+        logContext
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 更新參與人次失敗 (ID: ${id}):`, error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
-   * 完成活動
+   * ✅ 完成活動
    */
-  async completeActivity(id, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/${id}/complete`,
-      {
-        method: "PATCH",
-      },
-      {
-        operation: "completeActivity",
-        id,
-        ...context,
-      }
-    );
+  async completeActivity(id, additionalContext = {}) {
+    const startTime = Date.now();
+    
+    const logContext = {
+      service: this.serviceName,
+      operation: "completeActivity",
+      method: "PATCH",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/${id}/complete`,
+      id,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(`🦀 [Rust] 完成活動 (ID: ${id})`);
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${id}/complete`,
+        {
+          method: "PATCH",
+        },
+        logContext
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 完成活動失敗 (ID: ${id}):`, error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
-   * 取消活動
+   * ✅ 取消活動
    */
-  async cancelActivity(id, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/${id}/cancel`,
-      {
-        method: "PATCH",
-      },
-      {
-        operation: "cancelActivity",
-        id,
-        ...context,
-      }
-    );
+  async cancelActivity(id, additionalContext = {}) {
+    const startTime = Date.now();
+    
+    const logContext = {
+      service: this.serviceName,
+      operation: "cancelActivity",
+      method: "PATCH",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/${id}/cancel`,
+      id,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(`🦀 [Rust] 取消活動 (ID: ${id})`);
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${id}/cancel`,
+        {
+          method: "PATCH",
+        },
+        logContext
+      );
+
+      return result;
+    } catch (error) {
+      console.error(`❌ 取消活動失敗 (ID: ${id}):`, error);
+      return this.handleRustError(error);
+    }
   }
 
   // ========== Rust 特有功能 ==========
@@ -429,104 +633,180 @@ export class RustActivityService {
   /**
    * 獲取活動統計（Rust 特有功能）
    */
-  async getActivityStats(timeRange = "month", context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/stats?range=${timeRange}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getActivityStats",
-        timeRange,
-        ...context,
-      }
-    );
+  async getActivityStats(timeRange = "month", additionalContext = {}) {
+    const logContext = {
+      operation: "getActivityStats",
+      timeRange,
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/stats?range=${timeRange}`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取活動統計失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
-   * 批量操作（Rust 特有功能）
+   * ✅ 批量操作（Rust 特有功能）
    */
-  async batchOperations(operations, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/batch`,
-      {
-        method: "POST",
-        body: JSON.stringify({ operations }),
-      },
-      {
-        operation: "batchOperations",
-        count: operations.length,
-        ...context,
-      }
-    );
+  async batchOperations(operations, additionalContext = {}) {
+    const startTime = Date.now();
+    
+    const requestBody = { operations };
+    
+    const logContext = {
+      service: this.serviceName,
+      operation: "batchOperations",
+      method: "POST",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/batch`,
+      requestBody: requestBody,
+      count: operations.length,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(`🦀 [Rust] 批量操作，數量: ${operations.length}`);
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/batch`,
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 批量操作失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
-   * 搜索活動（全文搜索）
+   * ✅ 搜索活動（全文搜索）
    */
-  async searchActivities(query, options = {}, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/search`,
-      {
-        method: "POST",
-        body: JSON.stringify({ query, ...options }),
-      },
-      {
-        operation: "searchActivities",
-        query,
-        ...context,
-      }
-    );
+  async searchActivities(query, options = {}, additionalContext = {}) {
+    const startTime = Date.now();
+    
+    const requestBody = { query, ...options };
+    
+    const logContext = {
+      service: this.serviceName,
+      operation: "searchActivities",
+      method: "POST",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/search`,
+      requestBody: requestBody,
+      query,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(`🦀 [Rust] 搜索活動: "${query}"`);
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/search`,
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 搜索活動失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 導出活動數據
    */
-  async exportActivities(format = "csv", params = {}, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/export?format=${format}&${new URLSearchParams(params)}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "exportActivities",
-        format,
-        ...context,
-      }
-    );
+  async exportActivities(format = "csv", params = {}, additionalContext = {}) {
+    const logContext = {
+      operation: "exportActivities",
+      format,
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/export?format=${format}&${new URLSearchParams(params)}`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 導出活動數據失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 獲取活動類型統計
    */
-  async getActivityTypeStats(context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/stats/types`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getActivityTypeStats",
-        ...context,
-      }
-    );
+  async getActivityTypeStats(additionalContext = {}) {
+    const logContext = {
+      operation: "getActivityTypeStats",
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/stats/types`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取活動類型統計失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   /**
    * 獲取活動參與趨勢
    */
-  async getParticipationTrend(period = "month", context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/stats/trend/${period}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getParticipationTrend",
-        period,
-        ...context,
-      }
-    );
+  async getParticipationTrend(period = "month", additionalContext = {}) {
+    const logContext = {
+      operation: "getParticipationTrend",
+      period,
+      ...additionalContext,
+    };
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/stats/trend/${period}`,
+        {
+          method: "GET",
+        },
+        // 沒有 context 參數
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取參與趨勢失敗:", error);
+      return this.handleRustError(error);
+    }
   }
 
   // ========== 模式管理 ==========
@@ -535,7 +815,7 @@ export class RustActivityService {
    * 獲取當前模式
    */
   getCurrentMode() {
-    return "rust"; // Rust 服務總是 rust 模式
+    return "rust";
   }
 
   /**

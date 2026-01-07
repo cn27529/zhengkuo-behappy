@@ -7,34 +7,34 @@ export class BaseRustService {
     console.log("🦀 BaseRustService 初始化");
 
     this.isMock = import.meta.env.VITE_MOCK === true;
+    this.rustApiBaseUrl = import.meta.env.VITE_RUST_API_URL || "http://localhost:3000";
+    this.mode = import.meta.env.VITE_RUST_MODE || "rust";
 
-    // 配置
-    this.rustApiBaseUrl =
-      import.meta.env.VITE_RUST_API_URL || "http://localhost:3000";
-    this.mode = import.meta.env.VITE_RUST_MODE || "rust"; // rust, mock, hybrid
-
-    // API 端點（簡潔的 RESTful 風格）
+    // API 端點
     this.endpoints = {
-      // 認證
       auth: {
         login: "/api/auth/login",
         logout: "/api/auth/logout",
         refresh: "/api/auth/refresh",
         me: "/api/auth/me",
       },
-
-      // 數據資源
       activities: "/api/activities",
       registrations: "/api/registrations",
       monthlyDonates: "/api/monthly-donates",
       users: "/api/users",
-
-      // 系統
       health: "/health",
       dbTest: "/db-test",
       serverInfo: "/server/info",
       serverPing: "/server/ping",
       metrics: "/api/metrics",
+    };
+
+    // ✅ 新增：日誌配置（與 baseService 一致）
+    this.logConfig = {
+      enabled: import.meta.env.VITE_LOG_RESPONSE === "true" || false,
+      level: import.meta.env.VITE_LOG_LEVEL || "info",
+      maxLength: 1000,
+      onlyWithContext: true, // 只記錄有 context 的請求
     };
 
     // 性能監控
@@ -45,44 +45,392 @@ export class BaseRustService {
     };
   }
 
-  async dbTest() {
-    return await this.rustFetch(
-      `${this.rustApiBaseUrl}${this.endpoints.dbTest}`,
-      {
-        method: "GET",
+  // ========== 日誌相關方法 ==========
+
+  /**
+   * ✅ 生成日誌條目（與 baseService 統一格式）
+   */
+  generateLogEntry(response, context = {}) {
+    const logEntry = {
+      timestamp: DateUtils.getCurrentISOTime(),
+      endpoint: response?.url || context.endpoint || "unknown",
+      method: context.method || "GET",
+      status: response?.status || 0,
+      statusText: response?.statusText || "",
+      context: {
+        service: context.service || "unknown",
+        operation: context.operation || "unknown",
+        startTime: context.startTime || Date.now(),
+        ...context,
       },
-      {
-        operation: "dbTest",
-      }
-    );
+      duration: context.duration || 0,
+      success: false,
+      jsonParseError: false,
+      parseError: "",
+      error: false,
+      errorText: "",
+      errorMessage: "",
+      noContent: false,
+      // ✅ Rust 特有欄位
+      isRustService: true,
+      rustMode: this.mode,
+    };
+    return logEntry;
   }
 
-  async serverInfo() {
-    return await this.rustFetch(
-      `${this.rustApiBaseUrl}${this.endpoints.serverInfo}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getServerInfo",
+  /**
+   * ✅ 保存日誌條目（與 baseService 一致）
+   */
+  async saveLogEntry(logEntry) {
+    if (!this.logConfig.enabled) {
+      return;
+    }
+
+    // 檢查是否有有效的 context
+    if (this.logConfig.onlyWithContext) {
+      const hasValidContext =
+        logEntry.context &&
+        logEntry.context.service !== "unknown" &&
+        logEntry.context.operation !== "unknown";
+
+      if (!hasValidContext) {
+        console.log("⭐️ 跳過日誌記錄：缺少有效的 context");
+        return;
       }
-    );
+    }
+
+    try {
+      const sanitizedLog = this.sanitizeLogEntry(logEntry);
+      await indexedDBLogger.addLog(sanitizedLog);
+
+      // 遠程日誌
+      if (import.meta.env.VITE_REMOTE_LOG_URL) {
+        await this.sendToRemoteLog(sanitizedLog);
+      }
+
+      // 開發模式控制台顯示
+      if (import.meta.env.VITE_DEV) {
+        this.displayLogInConsole(sanitizedLog);
+      }
+    } catch (error) {
+      console.warn("日誌保存失敗:", error);
+    }
   }
 
-  async healthCheck() {
-    return await this.rustFetch(
-      `${this.rustApiBaseUrl}${this.endpoints.health}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "healthCheck",
-      }
-    );
+  /**
+   * ✅ 過濾敏感信息
+   */
+  sanitizeLogEntry(logEntry) {
+    const sanitized = { ...logEntry };
+    const sensitiveKeys = ["password", "token", "authorization", "cookie", "secret"];
+
+    if (sanitized.requestBody) {
+      sensitiveKeys.forEach((key) => {
+        if (sanitized.requestBody[key]) {
+          sanitized.requestBody[key] = "[FILTERED]";
+        }
+      });
+    }
+
+    if (sanitized.requestHeaders) {
+      sensitiveKeys.forEach((key) => {
+        if (sanitized.requestHeaders[key]) {
+          sanitized.requestHeaders[key] = "[FILTERED]";
+        }
+      });
+    }
+
+    return sanitized;
   }
 
-  getIsMock() {
-    return this.isMock;
+  /**
+   * ✅ 發送到遠程日誌服務
+   */
+  async sendToRemoteLog(logEntry) {
+    try {
+      const blob = new Blob([JSON.stringify(logEntry)], {
+        type: "application/json",
+      });
+
+      const success = navigator.sendBeacon?.(
+        import.meta.env.VITE_REMOTE_LOG_URL,
+        blob
+      );
+
+      if (!success) {
+        await fetch(import.meta.env.VITE_REMOTE_LOG_URL, {
+          method: "POST",
+          body: JSON.stringify(logEntry),
+          headers: { "Content-Type": "application/json" },
+          keepalive: true,
+        });
+      }
+    } catch (error) {
+      console.warn("遠程日誌發送失敗:", error);
+    }
+  }
+
+  /**
+   * ✅ 控制台顯示（開發用）
+   */
+  displayLogInConsole(logEntry) {
+    const style = logEntry.error
+      ? "background: #ffebee; color: #c62828; padding: 2px 4px; border-radius: 3px;"
+      : "background: #e8f5e9; color: #2e7d32; padding: 2px 4px; border-radius: 3px;";
+
+    console.groupCollapsed(
+      `%c🦀 ${logEntry.endpoint} - ${logEntry.status}`,
+      style
+    );
+    console.log("上下文:", logEntry.context);
+    console.log("耗時:", logEntry.duration, "ms");
+
+    if (logEntry.errorText) {
+      console.log("錯誤:", logEntry.errorText);
+    }
+
+    console.groupEnd();
+  }
+
+  // ========== 核心 Fetch 方法（改進版）==========
+
+  /**
+   * ✅ Rust 風格的 API 調用（整合日誌記錄）
+   */
+  async rustFetch(endpoint, options = {}, context = {}) {
+    const startTime = Date.now();
+    let logContext = {};
+    let response = null;
+
+    try {
+      this.metrics.totalRequests++;
+
+      // 準備請求選項
+      const defaultOptions = {
+        method: options.method || "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        mode: "cors",
+        credentials: "omit",
+        cache: "no-cache",
+      };
+
+      // 添加認證令牌
+      const token = this.getRustToken();
+      if (token) {
+        defaultOptions.headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const finalOptions = {
+        ...defaultOptions,
+        ...options,
+        headers: {
+          ...defaultOptions.headers,
+          ...(options.headers || {}),
+        },
+      };
+
+      // 清除 undefined 的頭部
+      Object.keys(finalOptions.headers).forEach((key) => {
+        if (finalOptions.headers[key] === undefined) {
+          delete finalOptions.headers[key];
+        }
+      });
+
+      const url = this.getUrl(endpoint);
+
+      // ✅ 準備日誌上下文
+      logContext = {
+        timestamp: DateUtils.getCurrentISOTime(),
+        service: context.service || "unknown",
+        operation: context.operation || "unknown",
+        endpoint: url,
+        method: finalOptions.method || "GET",
+        startTime,
+        requestBody: finalOptions.body ? JSON.parse(finalOptions.body) : null,
+        requestHeaders: { ...finalOptions.headers },
+      };
+
+      console.log("🦀 [Rust] Fetch詳細調試:", {
+        rustApiBaseUrl: this.rustApiBaseUrl,
+        endpoint: endpoint,
+        fullUrl: url,
+        method: finalOptions.method,
+        mode: finalOptions.mode,
+        credentials: finalOptions.credentials,
+        headers: finalOptions.headers,
+        hasBody: !!finalOptions.body,
+      });
+
+      console.log(`🦀 [Rust] 發送請求: ${finalOptions.method} ${url}`);
+
+      // 發送請求
+      response = await fetch(url, finalOptions);
+      const duration = Date.now() - startTime;
+
+      console.log("✅🦀 [Rust] 收到響應:", {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries([...response.headers.entries()]),
+        duration: `${duration}ms`,
+      });
+
+      // ✅ 創建日誌條目
+      let logEntry = this.generateLogEntry(response, {
+        ...logContext,
+        duration,
+      });
+
+      // ========== 錯誤處理 ==========
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌🦀 [Rust] 響應錯誤:", {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+        });
+
+        // ✅ 記錄錯誤日誌
+        logEntry.error = true;
+        logEntry.errorText = errorText.substring(0, this.logConfig.maxLength);
+        logEntry.errorMessage = this.extractErrorMessage(errorText);
+        await this.saveLogEntry(logEntry);
+
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // ========== 成功響應處理 ==========
+
+      // 處理 204 No Content
+      if (response.status === 204) {
+        logEntry.noContent = true;
+        logEntry.success = true;
+        await this.saveLogEntry(logEntry);
+
+        return {
+          success: true,
+          data: null,
+          message: "操作成功",
+          duration,
+        };
+      }
+
+      // 解析 JSON
+      let jsonResult;
+      try {
+        jsonResult = await response.json();
+      } catch (error) {
+        console.error("JSON 解析失敗:", error);
+        
+        logEntry.jsonParseError = true;
+        logEntry.parseError = error.message;
+        await this.saveLogEntry(logEntry);
+
+        throw new Error("服務器返回了無效的 JSON 格式");
+      }
+
+      console.log("📦🦀 [Rust] 響應數據結構:", {
+        hasDataProperty: "data" in jsonResult,
+        hasSuccessProperty: "success" in jsonResult,
+        dataType: typeof jsonResult,
+        isArray: Array.isArray(jsonResult),
+        data: Array.isArray(jsonResult) ? jsonResult[0] : jsonResult,
+      });
+
+      // 適配不同的響應格式
+      let result;
+      if (jsonResult.success !== undefined) {
+        result = {
+          success: jsonResult.success,
+          data: jsonResult.data || jsonResult,
+          message: jsonResult.message || "成功",
+          meta: jsonResult.meta || null,
+          duration,
+        };
+      } else if (Array.isArray(jsonResult)) {
+        result = {
+          success: true,
+          data: jsonResult,
+          message: "成功",
+          duration,
+        };
+      } else {
+        result = {
+          success: true,
+          data: jsonResult,
+          message: "成功",
+          duration,
+        };
+      }
+
+      // ✅ 記錄成功日誌
+      logEntry.success = true;
+      await this.saveLogEntry(logEntry);
+
+      // 更新性能指標
+      this.updateMetrics(duration, true);
+
+      return result;
+    } catch (error) {
+      console.error(`🦀 [Rust] 請求失敗:`, error);
+
+      // ✅ 確保錯誤也被記錄
+      if (response) {
+        const errorLogEntry = this.generateLogEntry(response, {
+          ...logContext,
+          duration: Date.now() - startTime,
+        });
+        errorLogEntry.error = true;
+        errorLogEntry.errorMessage = error.message;
+        await this.saveLogEntry(errorLogEntry);
+      }
+
+      // 優雅降級
+      if (this.mode === "hybrid" && context.fallbackToDirectus !== false) {
+        console.warn("🔄 降級到 Directus 服務");
+      }
+
+      throw this.wrapRustError(error, logContext);
+    }
+  }
+
+  // ========== 輔助方法 ==========
+
+  /**
+   * ✅ 提取錯誤信息（與 baseService 一致）
+   */
+  extractErrorMessage(errorText) {
+    if (!errorText) {
+      return "無詳細錯誤信息";
+    }
+
+    try {
+      const errorJson = JSON.parse(errorText);
+
+      // Rust 錯誤格式
+      if (errorJson.error) {
+        return typeof errorJson.error === "string"
+          ? errorJson.error
+          : JSON.stringify(errorJson.error);
+      }
+
+      if (errorJson.message) {
+        return errorJson.message;
+      }
+
+      if (Array.isArray(errorJson.errors) && errorJson.errors.length > 0) {
+        return errorJson.errors
+          .map((err) => err.message || err.toString())
+          .join("; ");
+      }
+
+      return JSON.stringify(errorJson).substring(0, 200);
+    } catch {
+      return errorText.substring(0, 200);
+    }
   }
 
   /**
@@ -97,261 +445,11 @@ export class BaseRustService {
   }
 
   /**
-   * Rust 風格的 API 調用（與 Directus 不同）
-   */
-  async rustFetch(endpoint, options = {}, context = {}) {
-    let logContext = {};
-
-    try {
-      const startTime = Date.now();
-      this.metrics.totalRequests++;
-
-      // 更安全的默認配置
-      const defaultOptions = {
-        method: options.method || "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        mode: "cors",
-        credentials: "omit", // 對於 GET 請求，通常用 omit
-        cache: "no-cache",
-      };
-
-      // 添加認證令牌
-      const token = this.getRustToken();
-      if (token) {
-        defaultOptions.headers["Authorization"] = `Bearer ${token}`;
-      }
-
-      // 清除可能的 undefined 值
-      const finalOptions = {
-        ...defaultOptions,
-        ...options,
-        headers: {
-          ...defaultOptions.headers,
-          ...(options.headers || {}),
-        },
-      };
-
-      // 移除 undefined 的頭部
-      Object.keys(finalOptions.headers).forEach((key) => {
-        if (finalOptions.headers[key] === undefined) {
-          delete finalOptions.headers[key];
-        }
-      });
-
-      const url = this.getUrl(endpoint);
-
-      console.log("🦀 [Rust] Fetch詳細調試:", {
-        rustApiBaseUrl: this.rustApiBaseUrl,
-        endpoint: endpoint,
-        fullUrl: url,
-        method: finalOptions.method,
-        mode: finalOptions.mode,
-        credentials: finalOptions.credentials,
-        headers: finalOptions.headers,
-        hasBody: !!finalOptions.body,
-      });
-
-      // 日誌上下文
-      logContext = {
-        timestamp: DateUtils.getCurrentISOTime(),
-        //service: "BaseRustService",
-        service: context.service || "unknown",
-        operation: context.operation || endpoint.split("/").pop() || "unknown",
-        endpoint: url,
-        method: finalOptions.method || "GET",
-        startTime,
-      };
-
-      console.log(`🦀 [Rust] 發送請求: ${finalOptions.method} ${url}`);
-
-      // 使用更簡單的 fetch，避免複雜配置
-      const response = await fetch(url, finalOptions);
-      const duration = Date.now() - startTime;
-
-      console.log("✅🦀 [Rust] 收到響應:", {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-        headers: Object.fromEntries([...response.headers.entries()]),
-        duration: `${duration}ms`,
-      });
-
-      // 處理響應
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌🦀 [Rust] 響應錯誤:", {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText,
-        });
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const jsonResult = await response.json();
-
-      // 檢查 Rust 返回的格式
-      console.log("📦🦀 [Rust] 響應數據結構:", {
-        hasDataProperty: "data" in jsonResult,
-        hasSuccessProperty: "success" in jsonResult,
-        dataType: typeof jsonResult,
-        isArray: Array.isArray(jsonResult),
-        data: Array.isArray(jsonResult) ? jsonResult[0] : jsonResult,
-      });
-
-      // 適配不同的響應格式
-      let result;
-      if (jsonResult.success !== undefined) {
-        // Rust ApiResponse 格式
-        result = {
-          success: jsonResult.success,
-          data: jsonResult.data || jsonResult,
-          message: jsonResult.message || "成功",
-          meta: jsonResult.meta || null,
-          duration,
-        };
-      } else if (Array.isArray(jsonResult)) {
-        // 直接數組格式
-        result = {
-          success: true,
-          data: jsonResult,
-          message: "成功",
-          duration,
-        };
-      } else {
-        // 對象格式
-        result = {
-          success: true,
-          data: jsonResult,
-          message: "成功",
-          duration,
-        };
-      }
-
-      // // 更新性能指標
-      // this.updateMetrics(duration, response.ok);
-      // // Rust 專用響應處理
-      // result = await this.handleRustResponse(response, {
-      //   ...logContext,
-      //   duration,
-      // });
-
-      return result;
-    } catch (error) {
-      console.error(`🦀 [Rust] 請求失敗:`, error);
-
-      // 優雅降級：可以自動切換到 Directus 或返回模擬數據
-      if (this.mode === "hybrid" && context.fallbackToDirectus !== false) {
-        console.warn("🔄 降級到 Directus 服務");
-        // 這裡可以調用原有的 Directus 服務
-      }
-
-      throw this.wrapRustError(error, logContext);
-    }
-  }
-
-  /**
-   * Rust 響應處理（與 Directus 格式不同）
-   */
-  async handleRustResponse(response, context) {
-    const { duration } = context;
-
-    if (!response.ok) {
-      const errorData = await this.parseRustError(response);
-      throw new Error(errorData.message || `Rust 錯誤: ${response.status}`);
-    }
-
-    // 處理不同類型的響應
-    const contentType = response.headers.get("content-type") || "";
-
-    if (response.status === 204) {
-      return {
-        success: true,
-        data: null,
-        message: "操作成功",
-        duration,
-      };
-    }
-
-    if (contentType.includes("application/json")) {
-      const jsonResult = await response.json();
-
-      // Rust 常見響應格式
-      return {
-        success: true,
-        data: jsonResult.data || jsonResult,
-        message: jsonResult.message || "成功",
-        meta: jsonResult.meta || null,
-        duration,
-        rawResponse: jsonResult,
-      };
-    }
-
-    // 其他類型響應
-    const text = await response.text();
-    return {
-      success: true,
-      data: text,
-      message: "成功",
-      duration,
-    };
-  }
-
-  /**
-   * Rust 錯誤解析
-   */
-  async parseRustError(response) {
-    try {
-      const text = await response.text();
-      if (!text) {
-        return {
-          message: `HTTP ${response.status}: ${response.statusText}`,
-          code: `HTTP_${response.status}`,
-        };
-      }
-
-      // 嘗試解析為 JSON
-      const json = JSON.parse(text);
-
-      // Axum/Actix 常見錯誤格式
-      if (json.error) {
-        return {
-          message: json.error,
-          code: json.code || "RUST_ERROR",
-          details: json.details,
-        };
-      }
-
-      if (json.message) {
-        return {
-          message: json.message,
-          code: "RUST_ERROR",
-        };
-      }
-
-      return {
-        message: text.substring(0, 200),
-        code: "RUST_ERROR",
-      };
-    } catch {
-      return {
-        message: `HTTP ${response.status}: ${response.statusText}`,
-        code: `HTTP_${response.status}`,
-      };
-    }
-  }
-
-  /**
    * 獲取 Rust 認證令牌
    */
   getRustToken() {
-    // 優先使用 Rust 專用令牌
     return (
       sessionStorage.getItem("auth-token") ||
-      localStorage.getItem("auth-token") ||
-      sessionStorage.getItem("auth-token") || // 兼容原有令牌
       localStorage.getItem("auth-token")
     );
   }
@@ -376,61 +474,6 @@ export class BaseRustService {
   }
 
   /**
-   * 模擬響應（用於測試）
-   */
-  async handleMockResponse(endpoint, options, context) {
-    await this.mockDelay();
-
-    const mockData = this.generateMockData(endpoint, options);
-
-    return {
-      success: true,
-      data: mockData,
-      message: "模擬數據 (Rust Mock)",
-      duration: context.duration || 100,
-      isMock: true,
-    };
-  }
-
-  /**
-   * 生成模擬數據
-   */
-  generateMockData(endpoint, options) {
-    const now = DateUtils.getCurrentISOTime();
-
-    if (endpoint.includes("/activities")) {
-      return {
-        id: crypto.randomUUID(),
-        name: "Rust 模擬活動",
-        participants: Math.floor(Math.random() * 100),
-        date: now,
-        state: "upcoming",
-        createdAt: now,
-        updatedAt: now,
-      };
-    }
-
-    if (endpoint.includes("/registrations")) {
-      return {
-        id: crypto.randomUUID(),
-        activityId: "mock-activity-123",
-        userName: "測試用戶",
-        userPhone: "0912345678",
-        createdAt: now,
-      };
-    }
-
-    return { endpoint, options, timestamp: now };
-  }
-
-  /**
-   * 模擬延遲
-   */
-  async mockDelay(ms = 300) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  /**
    * 錯誤包裝
    */
   wrapRustError(error, context) {
@@ -448,7 +491,6 @@ export class BaseRustService {
     if (isSuccess) {
       this.metrics.successRequests++;
     }
-    // 計算平均響應時間（加權移動平均）
     this.metrics.avgResponseTime =
       this.metrics.avgResponseTime * 0.9 + duration * 0.1;
   }
@@ -468,6 +510,45 @@ export class BaseRustService {
           : "0%",
       avgResponseTime: this.metrics.avgResponseTime.toFixed(2) + "ms",
     };
+  }
+
+  getIsMock() {
+    return this.isMock;
+  }
+
+  // ========== 快捷方法 ==========
+
+  async dbTest() {
+    return await this.rustFetch(
+      this.endpoints.dbTest,
+      { method: "GET" },
+      {
+        service: "BaseRustService",
+        operation: "dbTest",
+      }
+    );
+  }
+
+  async serverInfo() {
+    return await this.rustFetch(
+      this.endpoints.serverInfo,
+      { method: "GET" },
+      {
+        service: "BaseRustService",
+        operation: "getServerInfo",
+      }
+    );
+  }
+
+  async healthCheck() {
+    return await this.rustFetch(
+      this.endpoints.health,
+      { method: "GET" },
+      {
+        service: "BaseRustService",
+        operation: "healthCheck",
+      }
+    );
   }
 }
 
