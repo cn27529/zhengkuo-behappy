@@ -7,13 +7,14 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use axum_sql_viewer::{SqlViewerLayer};
+use tokio::signal; // ⭐ 新增：用於處理關閉信號
 
 mod db;
 mod handlers;
 mod models;
 mod routes;
 
-// 重新導出 ApiResponse 和 Meta，這樣編譯器知道它們被外部使用
+// 重新導出 ApiResponse 和 Meta,這樣編譯器知道它們被外部使用
 pub use models::api_response::{ApiResponse, Meta};
 
 // 應用狀態
@@ -54,6 +55,35 @@ struct PingResponse {
     response_time_ms: u128,
 }
 
+// ⭐ 新增：優雅關閉信號處理器
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {
+            tracing::info!("🛑 收到 Ctrl+C 信號，開始優雅關閉...");
+        },
+        _ = terminate => {
+            tracing::info!("🛑 收到終止信號，開始優雅關閉...");
+        },
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 加載 .env 文件
@@ -67,7 +97,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("🚀🦀 [Rust] Axum 啟動後端服務...");
     tracing::info!("📦 使用現有 Directus SQLite 數據庫");
 
-    // 創建數據庫連接池（連接到 Directus 的數據庫）
+    // 創建數據庫連接池(連接到 Directus 的數據庫)
     let pool = db::create_pool().await?;
 
     // 測試數據庫連接
@@ -89,8 +119,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    // ⚠️ 不運行遷移！直接使用 Directus 創建的表
-    tracing::info!("✅🦀 [Rust] 數據庫連接成功，使用 Directus 管理的表結構");
+    // ⚠️ 不運行遷移,直接使用 Directus 創建的表
+    tracing::info!("✅🦀 [Rust] 數據庫連接成功,使用 Directus 管理的表結構");
 
     
     
@@ -112,7 +142,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let registration_routes = routes::registration::create_routes();
     let monthly_donate_routes = routes::monthly_donate::create_routes();
     
-    // ✅ 創建 SqliteProvider（DatabaseProvider 的實現）
+    // ✅ 創建 SqliteProvider(DatabaseProvider 的實現)
     let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
 
     // 創建主路由 - 使用 nest 而不是 merge
@@ -130,7 +160,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(sql_viewer_router)
         .layer(cors)
         .layer(Extension(state.clone()))
-        .layer(Extension(pool));
+        .layer(Extension(pool.clone())); // ⭐ 修改：改用 clone，因為後面還要用 pool
 
     // 啟動服務器
     let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
@@ -150,10 +180,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /api/server/ping            - 服務器 Ping");
     tracing::info!("  GET    /sql-viewer                 - SQL 數據庫查看器");
     tracing::info!("");
-    tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth，Axum 處理數據 CRUD");
+    tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
-    axum::serve(listener, app).await?;
+    
+    // ⭐ 修改：加入優雅關閉支援
+    let graceful = axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal());
+    
+    // ⭐ 修改：等待服務器運行
+    if let Err(e) = graceful.await {
+        tracing::error!("❌ 服務器錯誤: {}", e);
+    }
+    
+    // ⭐ 新增：優雅關閉數據庫
+    tracing::info!("🔄 關閉數據庫連接池...");
+    if let Err(e) = db::graceful_shutdown(pool).await {
+        tracing::error!("❌ 數據庫關閉失敗: {}", e);
+    }
+    
+    tracing::info!("👋 應用程式已完全關閉");
 
     Ok(())
 }
@@ -264,9 +310,9 @@ async fn server_ping(Extension(state): Extension<Arc<AppState>>) -> Json<PingRes
     let response = PingResponse {
         status: if db_ping { "ok".to_string() } else { "degraded".to_string() },
         message: if db_ping {
-            "服務器健康，數據庫響應正常".to_string()
+            "服務器健康,數據庫響應正常".to_string()
         } else {
-            "服務器運行中，但數據庫連接失敗".to_string()
+            "服務器運行中,但數據庫連接失敗".to_string()
         },
         timestamp: now.to_rfc3339(),
         database_ping: db_ping,

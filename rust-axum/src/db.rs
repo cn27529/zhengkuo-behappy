@@ -11,7 +11,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
 
     tracing::info!("📦 連接數據庫: {}", database_url);
 
-    // 讀取 Journal Mode（預設 WAL）
+    // 讀取 Journal Mode(預設 WAL)
     let journal_mode = std::env::var("SQLITE_JOURNAL_MODE")
         .unwrap_or_else(|_| "WAL".to_string())
         .to_uppercase();
@@ -28,7 +28,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
         }
     };
 
-    // 讀取 Synchronous 模式（預設 NORMAL）
+    // 讀取 Synchronous 模式(預設 NORMAL)
     let synchronous = std::env::var("SQLITE_SYNCHRONOUS")
         .unwrap_or_else(|_| "NORMAL".to_string())
         .to_uppercase();
@@ -44,7 +44,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
         }
     };
 
-    // 讀取忙碌超時（預設 5 秒）
+    // 讀取忙碌超時(預設 5 秒)
     let busy_timeout = std::env::var("SQLITE_BUSY_TIMEOUT")
         .ok()
         .and_then(|v| v.parse::<u64>().ok())
@@ -52,10 +52,10 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
 
     // 配置 SQLite 連接選項
     let connect_options = SqliteConnectOptions::from_str(&database_url)?
-        .create_if_missing(false)                         // 不自動創建數據庫（使用現有的）
-        .journal_mode(journal_mode)                       // 設置日誌模式
-        .synchronous(synchronous)                         // 設置同步模式
-        .busy_timeout(Duration::from_secs(busy_timeout)); // 設置忙碌超時
+        .create_if_missing(false)
+        .journal_mode(journal_mode)
+        .synchronous(synchronous)
+        .busy_timeout(Duration::from_secs(busy_timeout));
 
     tracing::info!("⚙️🦀 [Rust] SQLite 配置:");
     tracing::info!("  - Journal Mode: {:?}", journal_mode);
@@ -79,14 +79,36 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
 
     // 創建連接池
     let pool = SqlitePoolOptions::new()
-        .max_connections(max_connections)                    // 最大連接數
-        .acquire_timeout(Duration::from_secs(acquire_timeout)) // 獲取連接超時
+        .max_connections(max_connections)
+        .acquire_timeout(Duration::from_secs(acquire_timeout))
         .connect_with(connect_options)
         .await?;
 
     tracing::info!("✅🦀 [Rust] SQLite 數據庫連接池創建成功");
     
     Ok(pool)
+}
+
+/// 優雅關閉數據庫連接池
+/// 
+/// 執行 WAL checkpoint 並關閉所有連接
+pub async fn graceful_shutdown(pool: SqlitePool) -> Result<(), sqlx::Error> {
+    tracing::info!("🔄🦀 [Rust] 開始優雅關閉數據庫...");
+    
+    // 執行 WAL checkpoint(TRUNCATE 模式會清理 WAL 檔案)
+    match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+        .execute(&pool)
+        .await
+    {
+        Ok(_) => tracing::info!("✅🦀 [Rust] WAL checkpoint 完成"),
+        Err(e) => tracing::warn!("⚠️🦀 [Rust] WAL checkpoint 失敗: {}", e),
+    }
+    
+    // 關閉連接池
+    pool.close().await;
+    tracing::info!("✅🦀 [Rust] 數據庫連接池已關閉");
+    
+    Ok(())
 }
 
 /// 測試數據庫連接
@@ -112,7 +134,7 @@ pub async fn get_db_stats(pool: &SqlitePool) -> Result<DbStats, sqlx::Error> {
 
     let table_names: Vec<String> = tables.into_iter().map(|(name,)| name).collect();
 
-    // 獲取數據庫大小（頁數）
+    // 獲取數據庫大小(頁數)
     let page_count: (i64,) = sqlx::query_as("PRAGMA page_count")
         .fetch_one(pool)
         .await?;
