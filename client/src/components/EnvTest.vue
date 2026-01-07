@@ -21,7 +21,7 @@
     <p>VITE_APP_TIMEZONE: {{ env.appTimezone }}</p>
     <p>VITE_APP_LOCALE: {{ env.appLocale }}</p>
     <p>VITE_APP_HOUR12: {{ env.appHour12 }}</p>
-    <h3>indexedDB.js</h3>
+    <h3>indexedDB.js設置</h3>
     <p>VITE_LOG_RESPONSE: {{ env.logResponse }}
       <el-tag>log設置true, false</el-tag>
     </p>
