@@ -320,46 +320,8 @@ export class RustRegistrationService {
   /**
    * Rust 特定的錯誤處理
    */
-  handleRustError(error) {
-    if (
-      error.message.includes("NetworkError") ||
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        success: false,
-        message: "Rust 服務未啟動或網路連接失敗",
-        errorCode: "RUST_NOT_AVAILABLE",
-        details: "請確保 Rust 服務正在運行",
-      };
-    }
-
-    if (
-      error.message.includes("401") ||
-      error.message.includes("Unauthorized")
-    ) {
-      return {
-        success: false,
-        message: "認證失敗，請重新登入",
-        errorCode: "UNAUTHORIZED",
-        details: error.message,
-      };
-    }
-
-    if (error.message.includes("404")) {
-      return {
-        success: false,
-        message: "資源不存在",
-        errorCode: "NOT_FOUND",
-        details: error.message,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Rust 服務操作失敗",
-      errorCode: "RUST_ERROR",
-      details: error.message,
-    };
+  handleRegistrationError(error) {
+    return this.base.handleRustError(error);
   }
 }
 

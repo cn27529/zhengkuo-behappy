@@ -18,15 +18,16 @@ export class RustActivityService {
    */
   async createActivity(activityData, additionalContext = {}) {
     // ✅ 在 try 外面定義，確保 catch 也能訪問
-    const startTime = Date.now();
     const createISOTime = DateUtils.getCurrentISOTime();
     const activityId = await generateGitHashBrowser(createISOTime);
+
     const processedData = {
       activityId: activityId,
       ...activityData,
       createdAt: createISOTime,
     };
 
+    const startTime = Date.now();
     const logContext = {
       service: this.serviceName,
       operation: "createActivity",
@@ -37,9 +38,18 @@ export class RustActivityService {
       ...additionalContext,
     };
 
+    if (this.base.getIsMock()) {
+      // Mock 模式
+      console.warn("⚠️ 當前模式不為 Rust，活動創建成功");
+      return {
+        success: true,
+        data: processedData,
+        message: "Mock 模式：活動創建成功",
+      };
+    }
+
     try {
       console.log("🦀 [Rust] 創建活動:", processedData);
-
       const result = await this.base.rustFetch(
         this.endpoint,
         {
@@ -52,7 +62,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 創建活動失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -93,7 +103,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 更新活動失敗 (ID: ${id}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -136,7 +146,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 刪除活動失敗 (ID: ${id}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -175,7 +185,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 獲取活動失敗 (ID: ${id}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -252,7 +262,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 獲取活動列表失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -280,7 +290,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 根據 activityId 獲取活動失敗 (${activityId}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -306,7 +316,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 根據類型獲取活動失敗 (${item_type}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -332,7 +342,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 根據狀態獲取活動失敗 (${state}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -357,7 +367,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 獲取即將到來的活動失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -382,7 +392,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 獲取已完成的活動失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -419,7 +429,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 根據日期範圍獲取活動失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -458,7 +468,6 @@ export class RustActivityService {
       };
     } catch (error) {
       console.error("❌ 獲取月度統計失敗:", error);
-
       // 返回默認統計或空數組
       return {
         success: true,
@@ -521,6 +530,7 @@ export class RustActivityService {
         }
       } catch (error) {
         console.warn("⚠️ 處理活動日期時出錯:", activity.date, error);
+        return this.handleActivityError(error);
       }
     });
 
@@ -573,7 +583,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 更新參與人次失敗 (ID: ${id}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -607,7 +617,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 完成活動失敗 (ID: ${id}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -641,7 +651,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 取消活動失敗 (ID: ${id}):`, error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -669,7 +679,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 獲取活動統計失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -707,7 +717,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 批量操作失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -745,7 +755,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 搜索活動失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -773,7 +783,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 導出活動數據失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -798,7 +808,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 獲取活動類型統計失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -824,7 +834,7 @@ export class RustActivityService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參與趨勢失敗:", error);
-      return this.handleRustError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -850,46 +860,8 @@ export class RustActivityService {
   /**
    * Rust 特定的錯誤處理
    */
-  handleRustError(error) {
-    if (
-      error.message.includes("NetworkError") ||
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        success: false,
-        message: "Rust 服務未啟動或網路連接失敗",
-        errorCode: "RUST_NOT_AVAILABLE",
-        details: "請確保 Rust 服務正在運行",
-      };
-    }
-
-    if (
-      error.message.includes("401") ||
-      error.message.includes("Unauthorized")
-    ) {
-      return {
-        success: false,
-        message: "認證失敗，請重新登入",
-        errorCode: "UNAUTHORIZED",
-        details: error.message,
-      };
-    }
-
-    if (error.message.includes("404")) {
-      return {
-        success: false,
-        message: "資源不存在",
-        errorCode: "NOT_FOUND",
-        details: error.message,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Rust 服務操作失敗",
-      errorCode: "RUST_ERROR",
-      details: error.message,
-    };
+  handleActivityError(error) {
+    return this.base.handleRustError(error);
   }
 }
 

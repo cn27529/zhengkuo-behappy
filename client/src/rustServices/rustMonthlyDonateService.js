@@ -19,17 +19,29 @@ export class RustMonthlyDonateService {
   /**
    * 創建新的百元贊助人
    */
-  async createMonthlyDonate(donateData, context = {}) {
+  async createMonthlyDonate(donateData, additionalContext = {}) {
+    // ✅ 在 try 外面定義，確保 catch 也能訪問
     const createISOTime = DateUtils.getCurrentISOTime();
     const donateId = await generateGitHashBrowser(createISOTime);
 
     const processedData = {
       ...donateData,
-      donateId,
+      donateId: donateId,
       createdAt: createISOTime,
     };
 
-    if (this.base.mode !== "rust") {
+    const startTime = Date.now();
+    const logContext = {
+      service: this.serviceName,
+      operation: "createMonthlyDonate",
+      method: "POST",
+      startTime: startTime,
+      endpoint: this.endpoint,
+      requestBody: processedData, // ✅ 記錄請求 body
+      ...additionalContext,
+    };
+
+    if (this.base.getIsMock()) {
       // Mock 模式
       console.warn("⚠️ 當前模式不為 Rust，百元贊助人創建成功");
       return {
@@ -39,17 +51,21 @@ export class RustMonthlyDonateService {
       };
     }
 
-    return await this.base.rustFetch(
-      this.endpoint,
-      {
-        method: "POST",
-        body: JSON.stringify(processedData),
-      },
-      {
-        operation: "createMonthlyDonate",
-        ...context,
-      }
-    );
+    try {
+      console.log("🦀 [Rust] 創建百元贊助人:", processedData);
+      const result = await this.base.rustFetch(
+        this.endpoint,
+        {
+          method: "POST",
+          body: JSON.stringify(processedData),
+        },
+        logContext // ✅ 傳入完整的 context
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ 創建百元贊助人失敗:", error);
+    }
   }
 
   /**
@@ -427,46 +443,8 @@ export class RustMonthlyDonateService {
   /**
    * Rust 特定的錯誤處理
    */
-  handleRustError(error) {
-    if (
-      error.message.includes("NetworkError") ||
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        success: false,
-        message: "Rust 服務未啟動或網路連接失敗",
-        errorCode: "RUST_NOT_AVAILABLE",
-        details: "請確保 Rust 服務正在運行",
-      };
-    }
-
-    if (
-      error.message.includes("401") ||
-      error.message.includes("Unauthorized")
-    ) {
-      return {
-        success: false,
-        message: "認證失敗，請重新登入",
-        errorCode: "UNAUTHORIZED",
-        details: error.message,
-      };
-    }
-
-    if (error.message.includes("404")) {
-      return {
-        success: false,
-        message: "資源不存在",
-        errorCode: "NOT_FOUND",
-        details: error.message,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Rust 服務操作失敗",
-      errorCode: "RUST_ERROR",
-      details: error.message,
-    };
+  handleMonthlyDonateError(error) {
+    return this.base.handleRustError(error);
   }
 }
 

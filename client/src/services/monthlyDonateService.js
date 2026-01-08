@@ -47,11 +47,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error("❌ 獲取百元贊助記錄失敗:", error);
-      return {
-        success: false,
-        data: [],
-        message: `獲取百元贊助記錄失敗: ${error.message}`,
-      };
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -62,6 +58,7 @@ export class MonthlyDonateService {
     const createISOTime = DateUtils.getCurrentISOTime();
     const donateId = await generateGitHashBrowser(createISOTime);
     const recordId = crypto.randomUUID(); // 標準且保證唯一
+
     const processedData = {
       //id: recordId,
       ...donateData,
@@ -108,7 +105,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error("❌ 創建百元贊助人失敗:", error);
-      return this.handleMonthlyDonateDirectusError(error);
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -168,7 +165,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error("❌ 更新百元贊助人失敗:", error);
-      return this.handleMonthlyDonateDirectusError(error);
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -221,7 +218,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error(`刪除百元贊助人失敗 (ID: ${recordId})`, error);
-      return this.handleMonthlyDonateDirectusError(error);
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -297,7 +294,7 @@ export class MonthlyDonateService {
       return result;
     } catch (error) {
       console.error("❌ 添加贊助項目失敗:", error);
-      return this.handleMonthlyDonateDirectusError(error);
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -383,15 +380,10 @@ export class MonthlyDonateService {
       );
       return result;
     } catch (error) {
-      console.error("❌ 更新贊助項目失敗:", error);
       console.error(
         `❌ 更新贊助項目失敗 (ID: ${recordId} donateItemsId: ${donateItemsId}) ${error.message}`
       );
-      return {
-        success: false,
-        data: null,
-        message: `更新贊助項目失敗: ${error.message}`,
-      };
+      this.handleMonthlyDonateError(error);
     }
   }
 
@@ -476,7 +468,7 @@ export class MonthlyDonateService {
       console.error(
         `❌ 刪除贊助項目失敗: (ID: ${recordId}, itemsId: ${itemsId}) ${error.message}`
       );
-      return this.handleMonthlyDonateDirectusError(error);
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -528,11 +520,7 @@ export class MonthlyDonateService {
       }
     } catch (error) {
       console.error("❌ 獲取百元贊助記錄失敗:", error);
-      return {
-        success: false,
-        data: null,
-        message: `獲取百元贊助記錄失敗: ${error.message}`,
-      };
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -570,11 +558,7 @@ export class MonthlyDonateService {
       }
     } catch (error) {
       console.error("❌ 獲取百元贊助記錄失敗:", error);
-      return {
-        success: false,
-        data: [],
-        message: `獲取百元贊助記錄失敗: ${error.message}`,
-      };
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -611,11 +595,7 @@ export class MonthlyDonateService {
       }
     } catch (error) {
       console.error("❌ 獲取百元贊助記錄失敗:", error);
-      return {
-        success: false,
-        data: [],
-        message: `獲取百元贊助記錄失敗: ${error.message}`,
-      };
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -652,11 +632,7 @@ export class MonthlyDonateService {
       }
     } catch (error) {
       console.error("❌ 獲取百元贊助記錄失敗:", error);
-      return {
-        success: false,
-        data: [],
-        message: `獲取百元贊助記錄失敗: ${error.message}`,
-      };
+      return this.handleMonthlyDonateError(error);
     }
   }
 
@@ -697,16 +673,12 @@ export class MonthlyDonateService {
       }
     } catch (error) {
       console.error("❌ 獲取百元贊助統計失敗:", error);
-      return {
-        success: false,
-        data: [],
-        message: `獲取百元贊助統計失敗: ${error.message}`,
-      };
+      return this.handleMonthlyDonateError(error);
     }
   }
 
   // ========== 錯誤處理 ==========
-  handleMonthlyDonateDirectusError(error) {
+  handleMonthlyDonateError(error) {
     return this.base.handleDirectusError(error);
   }
 

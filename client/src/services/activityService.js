@@ -139,7 +139,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error("創建活動失敗:", error);
-      return this.handleActivityDirectusError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -193,7 +193,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 更新活動失敗 (ID: ${recordId})`, error);
-      return this.handleActivityDirectusError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -248,7 +248,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error(`❌ 刪除活動失敗 (ID: ${recordId})`, error);
-      return this.handleActivityDirectusError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -282,7 +282,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error(`獲取活動 (ID: ${recordId}) 失敗:`, error);
-      return this.handleActivityDirectusError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -354,7 +354,7 @@ export class ActivityService {
       return result;
     } catch (error) {
       console.error("❌ 獲取活動列表失敗:", error);
-      return this.handleActivityDirectusError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -467,7 +467,7 @@ export class ActivityService {
       };
     } catch (error) {
       console.error("獲取月度統計失敗:", error);
-      return this.handleActivityDirectusError(error);
+      return this.handleActivityError(error);
     }
   }
 
@@ -574,7 +574,7 @@ export class ActivityService {
   }
 
   // ========== 錯誤處理 ==========
-  handleActivityDirectusError(error) {
+  handleActivityError(error) {
     return this.base.handleDirectusError(error);
   }
 

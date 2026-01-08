@@ -81,6 +81,7 @@ export class RustAuthService {
         user: user.data,
       };
     } catch (error) {
+      console.error("檢查認證狀態失敗:", error);
       return {
         authenticated: false,
         error: error.message,
@@ -119,6 +120,10 @@ export class RustAuthService {
       console.error("獲取用戶信息失敗:", error);
       return "anonymous";
     }
+  }
+
+  handleAuthError(error) {
+    return this.base.handleRustError(error);
   }
 }
 

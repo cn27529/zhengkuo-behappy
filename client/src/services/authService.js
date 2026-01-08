@@ -129,6 +129,7 @@ export class AuthService {
           data: { user },
         };
       } catch (error) {
+        console.error("驗證 Token 失敗:", error);
         return {
           success: false,
           message: "Token 驗證失敗",
@@ -773,7 +774,7 @@ export class AuthService {
     return new Promise((resolve) => setTimeout(resolve, this.base.mockDelay));
   }
 
-  handleAuthDirectusError(error) {
+  handleAuthError(error) {
     return this.base.handleDirectusError(error);
   }
 

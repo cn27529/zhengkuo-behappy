@@ -249,9 +249,9 @@ pub async fn create_registration(
     let now = chrono::Utc::now().to_rfc3339();
 
     // 確定 user_created 的值
-    let user_created_value = payload.user_created.unwrap_or_else(|| {
-        "system".to_string()
-    });
+    // let user_created_value = payload.user_created.unwrap_or_else(|| {
+    //     "system".to_string()
+    // });
 
     // 🔥 將 JsonValue 轉換為字符串存入資料庫
     let salvation_str = payload.salvation.map(|v| v.to_string());
@@ -262,14 +262,13 @@ pub async fn create_registration(
     let result = sqlx::query(
         r#"
         INSERT INTO registrationDB (
-            user_created,
             state, formId, formName, formSource, 
             salvation, contact, blessing, createdAt, updatedAt
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
-    .bind(&user_created_value)
+    //.bind(&user_created_value)
     .bind(&payload.state)
     .bind(&payload.form_id)
     .bind(&payload.form_name)

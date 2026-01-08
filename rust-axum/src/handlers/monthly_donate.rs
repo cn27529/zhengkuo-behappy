@@ -263,9 +263,9 @@ pub async fn create_monthly_donate(
     let now = chrono::Utc::now().to_rfc3339();
 
     // 確定 user_created 的值
-    let user_created_value = payload.user_created.unwrap_or_else(|| {
-        "system".to_string()
-    });
+    // let user_created_value = payload.user_created.unwrap_or_else(|| {
+    //     "system".to_string()
+    // });
 
     // 🔥 將 JsonValue 轉換為字符串存入資料庫
     let donate_items_str = payload.donate_items.map(|v| v.to_string());
@@ -274,14 +274,13 @@ pub async fn create_monthly_donate(
     let result = sqlx::query(
         r#"
         INSERT INTO monthlyDonateDB (
-            user_created,
             name, registrationId, donateId, donateType, 
             donateItems, memo, createdAt, updatedAt
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
-    .bind(&user_created_value)
+    //.bind(&user_created_value)
     .bind(&payload.name)
     .bind(&payload.registration_id)
     .bind(&payload.donate_id)
