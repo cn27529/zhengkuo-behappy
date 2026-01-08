@@ -86,7 +86,7 @@ export const useMenuStore = defineStore("menu", () => {
       component: "LogViewPage",
       requiredAuth: true,
       order: 8,
-      enabled: false,
+      enabled: true,
     },
     {
       id: 99,
