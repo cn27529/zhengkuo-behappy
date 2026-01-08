@@ -12,14 +12,6 @@ export class ActivityService {
     console.log(`ActivityService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
-  async getServerInfo() {
-    return await this.base.serverInfo();
-  }
-
-  async getHealthCheck() {
-    return await this.base.healthCheck();
-  }
-
   // ========== 使用示例：不同的調用方式 ==========
   // 範例 1: 帶完整 context（會記錄日誌）
   async exampleWithContext() {

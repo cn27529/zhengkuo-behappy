@@ -205,8 +205,6 @@ class ServiceAdapter {
       "completeActivity",
       "cancelActivity",
       "handleActivityDirectusError",
-      "getHealthCheck",
-      "getServerInfo",
     ];
 
     activityMethods.forEach((method) => {
@@ -215,7 +213,15 @@ class ServiceAdapter {
     });
 
     // Auth 方法（getCurrentUser 已在類中直接實現）
-    const authMethods = ["login", "logout", "refreshToken", "validateToken"];
+    const authMethods = [
+      "login",
+      "logout",
+      "refreshToken",
+      "validateToken",
+      "healthCheck",
+      "serverInfo",
+      "serverPing",
+    ];
 
     authMethods.forEach((method) => {
       this[method] = (...args) =>
@@ -236,8 +242,6 @@ class ServiceAdapter {
       "completeRegistration",
       "saveDraft",
       "handleRegistrationDirectusError",
-      "getHealthCheck",
-      "getServerInfo",
     ];
 
     registrationMethods.forEach((method) => {
@@ -262,8 +266,6 @@ class ServiceAdapter {
       "getDonationStats",
       "generateMockData",
       "handleMonthlyDonateDirectusError",
-      "getHealthCheck",
-      "getServerInfo",
     ];
 
     monthlyDonateMethods.forEach((method) => {
@@ -302,8 +304,6 @@ class ServiceAdapter {
       "completeActivity",
       "cancelActivity",
       "handleActivityDirectusError",
-      "getHealthCheck",
-      "getServerInfo",
     ];
 
     methods.forEach((method) => {
@@ -327,8 +327,9 @@ class ServiceAdapter {
       "logout",
       "refreshToken",
       "validateToken",
-      "getHealthCheck",
-      "getServerInfo",
+      "healthCheck",
+      "serverInfo",
+      "serverPing",
     ];
 
     methods.forEach((method) => {
@@ -360,8 +361,6 @@ class ServiceAdapter {
       "completeRegistration",
       "saveDraft",
       "handleRegistrationDirectusError",
-      "getHealthCheck",
-      "getServerInfo",
     ];
 
     methods.forEach((method) => {
@@ -396,8 +395,6 @@ class ServiceAdapter {
       "getDonationStats",
       "generateMockData",
       "handleMonthlyDonateDirectusError",
-      "getHealthCheck",
-      "getServerInfo",
     ];
 
     methods.forEach((method) => {

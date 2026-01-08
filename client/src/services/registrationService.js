@@ -12,14 +12,6 @@ export class RegistrationService {
     console.log(`RegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
-  async getServerInfo() {
-    return await this.base.serverInfo();
-  }
-
-  async getHealthCheck() {
-    return await this.base.healthCheck();
-  }
-
   getIsMock() {
     return this.base.getIsMock();
   }
@@ -134,6 +126,40 @@ export class RegistrationService {
     }
   }
 
+  async deleteRegistration(id) {
+    if (this.base.getIsMock()) {
+      console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法刪除數據",
+      };
+    }
+
+    try {
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const apiUrl = `${this.endpoint}/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: myHeaders,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `Directus 錯誤: ${response.status}`
+        );
+      }
+
+      return {
+        success: true,
+        message: "成功刪除報名表",
+      };
+    } catch (error) {
+      console.error(`刪除報名表 (ID: ${id}) 失敗:`, error);
+      return this.handleRegistrationDirectusError(error);
+    }
+  }
+
   async getRegistrationById(id) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法獲取數據");
@@ -221,40 +247,6 @@ export class RegistrationService {
       return result;
     } catch (error) {
       console.error("❌ 獲取報名表列表失敗:", error);
-      return this.handleRegistrationDirectusError(error);
-    }
-  }
-
-  async deleteRegistration(id) {
-    if (this.base.getIsMock()) {
-      console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
-      return {
-        success: false,
-        message: "⚠️ 當前模式不是 directus，無法刪除數據",
-      };
-    }
-
-    try {
-      const myHeaders = await this.base.getAuthJsonHeaders();
-      const apiUrl = `${this.endpoint}/${id}`;
-      const response = await fetch(apiUrl, {
-        method: "DELETE",
-        headers: myHeaders,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || `Directus 錯誤: ${response.status}`
-        );
-      }
-
-      return {
-        success: true,
-        message: "成功刪除報名表",
-      };
-    } catch (error) {
-      console.error(`刪除報名表 (ID: ${id}) 失敗:`, error);
       return this.handleRegistrationDirectusError(error);
     }
   }

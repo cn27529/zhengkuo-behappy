@@ -7,7 +7,8 @@ export class BaseRustService {
     console.log("🦀 BaseRustService 初始化");
 
     this.isMock = import.meta.env.VITE_MOCK === true;
-    this.rustApiBaseUrl = import.meta.env.VITE_RUST_API_URL || "http://localhost:3000";
+    this.rustApiBaseUrl =
+      import.meta.env.VITE_RUST_API_URL || "http://localhost:3000";
     this.mode = import.meta.env.VITE_RUST_MODE || "rust";
 
     // API 端點
@@ -122,7 +123,13 @@ export class BaseRustService {
    */
   sanitizeLogEntry(logEntry) {
     const sanitized = { ...logEntry };
-    const sensitiveKeys = ["password", "token", "authorization", "cookie", "secret"];
+    const sensitiveKeys = [
+      "password",
+      "token",
+      "authorization",
+      "cookie",
+      "secret",
+    ];
 
     if (sanitized.requestBody) {
       sensitiveKeys.forEach((key) => {
@@ -324,7 +331,7 @@ export class BaseRustService {
         jsonResult = await response.json();
       } catch (error) {
         console.error("JSON 解析失敗:", error);
-        
+
         logEntry.jsonParseError = true;
         logEntry.parseError = error.message;
         await this.saveLogEntry(logEntry);
@@ -449,8 +456,7 @@ export class BaseRustService {
    */
   getRustToken() {
     return (
-      sessionStorage.getItem("auth-token") ||
-      localStorage.getItem("auth-token")
+      sessionStorage.getItem("auth-token") || localStorage.getItem("auth-token")
     );
   }
 
@@ -535,7 +541,18 @@ export class BaseRustService {
       { method: "GET" },
       {
         service: "BaseRustService",
-        operation: "getServerInfo",
+        operation: "serverInfo",
+      }
+    );
+  }
+
+  async serverPing() {
+    return await this.rustFetch(
+      this.endpoints.serverPing,
+      { method: "GET" },
+      {
+        service: "BaseRustService",
+        operation: "serverPing",
       }
     );
   }

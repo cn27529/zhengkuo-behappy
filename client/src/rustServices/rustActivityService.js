@@ -18,7 +18,7 @@ export class RustActivityService {
   async createActivity(activityData, additionalContext = {}) {
     // ✅ 在 try 外面定義，確保 catch 也能訪問
     const startTime = Date.now();
-    
+
     const processedData = {
       ...activityData,
       createdAt: DateUtils.getCurrentISOTime(),
@@ -58,7 +58,7 @@ export class RustActivityService {
    */
   async updateActivity(id, activityData, additionalContext = {}) {
     const startTime = Date.now();
-    
+
     const updateData = {
       ...activityData,
       updatedAt: DateUtils.getCurrentISOTime(),
@@ -143,27 +143,29 @@ export class RustActivityService {
   async getActivityById(id, additionalContext = {}) {
     // ✅ READ 操作通常不需要詳細日誌，但可以選擇性添加
     const shouldLog = additionalContext.forceLog || false;
-    
-    const logContext = shouldLog ? {
-      service: this.serviceName,
-      operation: additionalContext.operation || "getActivityById",
-      method: "GET",
-      startTime: Date.now(),
-      endpoint: `${this.endpoint}/${id}`,
-      id,
-      ...additionalContext,
-    } : {
-      // 最小 context，不會被記錄（因為缺少必要信息）
-      operation: additionalContext.operation || "getActivityById",
-      id,
-    };
+
+    const logContext = shouldLog
+      ? {
+          service: this.serviceName,
+          operation: additionalContext.operation || "getActivityById",
+          method: "GET",
+          startTime: Date.now(),
+          endpoint: `${this.endpoint}/${id}`,
+          id,
+          ...additionalContext,
+        }
+      : {
+          // 最小 context，不會被記錄（因為缺少必要信息）
+          operation: additionalContext.operation || "getActivityById",
+          id,
+        };
 
     try {
       const result = await this.base.rustFetch(
         `${this.endpoint}/${id}`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -220,25 +222,27 @@ export class RustActivityService {
       ? `${this.endpoint}?${queryParams.toString()}`
       : this.endpoint;
 
-    const logContext = shouldLog ? {
-      service: this.serviceName,
-      operation: "getAllActivities",
-      method: "GET",
-      startTime: Date.now(),
-      endpoint: endpoint,
-      queryParams: params,
-      ...additionalContext,
-    } : {
-      service: this.serviceName,
-      operation: "getAllActivities",
-    };
+    const logContext = shouldLog
+      ? {
+          service: this.serviceName,
+          operation: "getAllActivities",
+          method: "GET",
+          startTime: Date.now(),
+          endpoint: endpoint,
+          queryParams: params,
+          ...additionalContext,
+        }
+      : {
+          service: this.serviceName,
+          operation: "getAllActivities",
+        };
 
     try {
       const result = await this.base.rustFetch(
         endpoint,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -266,7 +270,7 @@ export class RustActivityService {
         `${this.endpoint}/by-activity-id/${activityId}`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -292,7 +296,7 @@ export class RustActivityService {
         `${this.endpoint}/by-type/${item_type}`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -318,7 +322,7 @@ export class RustActivityService {
         `${this.endpoint}/by-state/${state}`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -343,7 +347,7 @@ export class RustActivityService {
         `${this.endpoint}/upcoming`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -368,7 +372,7 @@ export class RustActivityService {
         `${this.endpoint}/completed`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -384,9 +388,9 @@ export class RustActivityService {
    */
   async getActivitiesByDateRange(startDate, endDate, additionalContext = {}) {
     const startTime = Date.now();
-    
+
     const requestBody = { startDate, endDate };
-    
+
     const logContext = {
       service: this.serviceName,
       operation: "getActivitiesByDateRange",
@@ -405,7 +409,7 @@ export class RustActivityService {
         {
           method: "POST",
           body: JSON.stringify(requestBody),
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -470,8 +474,18 @@ export class RustActivityService {
     console.log("🧮 本地計算月度統計，活動數量:", activities.length);
 
     const monthNames = [
-      "1月", "2月", "3月", "4月", "5月", "6月",
-      "7月", "8月", "9月", "10月", "11月", "12月",
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月",
     ];
 
     const statsByMonth = {};
@@ -526,9 +540,9 @@ export class RustActivityService {
    */
   async updateParticipants(id, participants, additionalContext = {}) {
     const startTime = Date.now();
-    
+
     const requestBody = { participants };
-    
+
     const logContext = {
       service: this.serviceName,
       operation: "updateParticipants",
@@ -565,7 +579,7 @@ export class RustActivityService {
    */
   async completeActivity(id, additionalContext = {}) {
     const startTime = Date.now();
-    
+
     const logContext = {
       service: this.serviceName,
       operation: "completeActivity",
@@ -599,7 +613,7 @@ export class RustActivityService {
    */
   async cancelActivity(id, additionalContext = {}) {
     const startTime = Date.now();
-    
+
     const logContext = {
       service: this.serviceName,
       operation: "cancelActivity",
@@ -645,7 +659,7 @@ export class RustActivityService {
         `${this.endpoint}/stats?range=${timeRange}`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -661,9 +675,9 @@ export class RustActivityService {
    */
   async batchOperations(operations, additionalContext = {}) {
     const startTime = Date.now();
-    
+
     const requestBody = { operations };
-    
+
     const logContext = {
       service: this.serviceName,
       operation: "batchOperations",
@@ -683,7 +697,7 @@ export class RustActivityService {
         {
           method: "POST",
           body: JSON.stringify(requestBody),
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -699,9 +713,9 @@ export class RustActivityService {
    */
   async searchActivities(query, options = {}, additionalContext = {}) {
     const startTime = Date.now();
-    
+
     const requestBody = { query, ...options };
-    
+
     const logContext = {
       service: this.serviceName,
       operation: "searchActivities",
@@ -721,7 +735,7 @@ export class RustActivityService {
         {
           method: "POST",
           body: JSON.stringify(requestBody),
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -744,10 +758,12 @@ export class RustActivityService {
 
     try {
       const result = await this.base.rustFetch(
-        `${this.endpoint}/export?format=${format}&${new URLSearchParams(params)}`,
+        `${this.endpoint}/export?format=${format}&${new URLSearchParams(
+          params
+        )}`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -772,7 +788,7 @@ export class RustActivityService {
         `${this.endpoint}/stats/types`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -798,7 +814,7 @@ export class RustActivityService {
         `${this.endpoint}/stats/trend/${period}`,
         {
           method: "GET",
-        },
+        }
         // 沒有 context 參數
       );
 
@@ -871,20 +887,6 @@ export class RustActivityService {
       errorCode: "RUST_ERROR",
       details: error.message,
     };
-  }
-
-  /**
-   * 健康檢查
-   */
-  async getHealthCheck() {
-    return await this.base.healthCheck();
-  }
-
-  /**
-   * 獲取服務信息
-   */
-  async getServerInfo() {
-    return await this.base.serverInfo();
   }
 }
 

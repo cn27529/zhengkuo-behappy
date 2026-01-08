@@ -1,9 +1,7 @@
 // src/services/monthlyDonateService.js
 import { baseService } from "./baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import generateGitHash, {
-  generateGitHashBrowser,
-} from "../utils/generateGitHash.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 
 export class MonthlyDonateService {
   // ========== 建構函式 ==========
@@ -12,14 +10,6 @@ export class MonthlyDonateService {
     this.base = baseService;
     this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsMonthlyDonate}`;
     console.log(`MonthlyDonateService 初始化: 當前模式為 ${this.base.mode}`);
-  }
-
-  async getServerInfo() {
-    return await this.base.serverInfo();
-  }
-
-  async getHealthCheck() {
-    return await this.base.healthCheck();
   }
 
   // ========== 核心 CRUD 方法 ==========
@@ -73,7 +63,7 @@ export class MonthlyDonateService {
     const donateId = await generateGitHashBrowser(createISOTime);
     const recordId = crypto.randomUUID(); // 標準且保證唯一
     const processedData = {
-      id: recordId,
+      //id: recordId,
       ...donateData,
       donateId,
       createdAt: createISOTime,
@@ -241,7 +231,7 @@ export class MonthlyDonateService {
    * 新增指定贊助記錄
    */
   async addDonateItem(donateId, itemData) {
-    const donateItemsId = generateGitHash();
+    const donateItemsId = await generateGitHashBrowser();
     const newDonateItem = {
       ...itemData,
       donateItemsId: donateItemsId,
@@ -498,7 +488,7 @@ export class MonthlyDonateService {
       id: -1,
       name: "王小明",
       registrationId: -1,
-      donateId: generateGitHash("mock data"),
+      donateId: crypto.randomUUID(), // 標準且保證唯一
       donateType: "",
       donateItems: [],
       memo: "mock data",

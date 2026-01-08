@@ -3,6 +3,7 @@ import { baseRustService } from "./baseRustService.js";
 
 export class RustAuthService {
   constructor() {
+    this.serviceName = "RustAuthService";
     this.base = baseRustService;
     this.endpoint = this.base.endpoints.auth;
   }
@@ -117,20 +118,6 @@ export class RustAuthService {
         error: error.message,
       };
     }
-  }
-
-  /**
-   * 健康檢查
-   */
-  async getHealthCheck() {
-    return await this.base.healthCheck();
-  }
-
-  /**
-   * 獲取服務信息
-   */
-  async getServerInfo() {
-    return await this.base.serverInfo();
   }
 }
 

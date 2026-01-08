@@ -9,14 +9,6 @@ export class AuthService {
     console.log(`AuthService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
-  async getServerInfo() {
-    return await this.base.serverInfo();
-  }
-
-  async getHealthCheck() {
-    return await this.base.healthCheck();
-  }
-
   // ========== 通用方法 ==========
   async handleDirectusResponse(response) {
     return await this.base.handleDirectusResponse(response);
