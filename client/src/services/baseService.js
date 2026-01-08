@@ -4,6 +4,8 @@ import { indexedDBLogger } from "../utils/indexedDB.js";
 
 export class BaseService {
   constructor() {
+    console.log(`BaseService 初始化: 當前模式為 ${this.mode}`);
+
     this.isMock = import.meta.env.VITE_MOCK === true;
     // 可切換模式: 'mock' 或 'backend'
     this.mode = import.meta.env.VITE_AUTH_MODE || "mock";

@@ -4,7 +4,7 @@ import { indexedDBLogger } from "../utils/indexedDB.js";
 
 export class BaseRustService {
   constructor() {
-    console.log("🦀 BaseRustService 初始化");
+    console.log(`BaseRustService 初始化: 當前模式為 ${this.mode}`);
 
     this.isMock = import.meta.env.VITE_MOCK === true;
     this.rustApiBaseUrl =
@@ -344,7 +344,7 @@ export class BaseRustService {
         hasSuccessProperty: "success" in jsonResult,
         dataType: typeof jsonResult,
         isArray: Array.isArray(jsonResult),
-        data: Array.isArray(jsonResult) ? jsonResult[0] : jsonResult,
+        data: Array.isArray(jsonResult) ? jsonResult[0] : jsonResult.data,
       });
 
       // 適配不同的響應格式

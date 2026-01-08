@@ -12,10 +12,6 @@ export class RegistrationService {
     console.log(`RegistrationService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
-  getIsMock() {
-    return this.base.getIsMock();
-  }
-
   // ========== CRUD 操作 ==========
   async createRegistration(registrationData) {
     const createISOTime = DateUtils.getCurrentISOTime();

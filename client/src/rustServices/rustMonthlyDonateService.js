@@ -6,59 +6,15 @@ import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 export class RustMonthlyDonateService {
   // ========== 建構函式 ==========
   constructor() {
+    this.serviceName = "RustMonthlyDonateService";
     this.base = baseRustService;
     this.endpoint = this.base.endpoints.monthlyDonates || "monthly-donates";
+    console.log(
+      `RustMonthlyDonateService 初始化: 當前模式為 ${this.base.mode}`
+    );
   }
 
   // ========== 核心 CRUD 方法 ==========
-
-  /**
-   * 獲取所有百元贊助記錄
-   */
-  async getAllMonthlyDonates(params = {}, context = {}) {
-    const queryParams = new URLSearchParams();
-
-    // 轉換 Directus 風格的參數到 Rust 風格
-    if (params.sort) {
-      queryParams.append("sort", params.sort);
-    }
-
-    if (params.limit) {
-      queryParams.append("limit", params.limit);
-    }
-
-    if (params.offset) {
-      queryParams.append("offset", params.offset);
-    }
-
-    // 處理篩選條件
-    if (params.filter) {
-      Object.entries(params.filter).forEach(([key, value]) => {
-        if (typeof value === "object") {
-          if (value._eq) {
-            queryParams.append(key, value._eq);
-          }
-        } else {
-          queryParams.append(key, value);
-        }
-      });
-    }
-
-    const endpoint = queryParams.toString()
-      ? `${this.endpoint}?${queryParams.toString()}`
-      : this.endpoint;
-
-    return await this.base.rustFetch(
-      endpoint,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getAllMonthlyDonates",
-        ...context,
-      }
-    );
-  }
 
   /**
    * 創建新的百元贊助人
@@ -131,6 +87,54 @@ export class RustMonthlyDonateService {
       {
         operation: "deleteMonthlyDonate",
         id: recordId,
+        ...context,
+      }
+    );
+  }
+
+  /**
+   * 獲取所有百元贊助記錄
+   */
+  async getAllMonthlyDonates(params = {}, context = {}) {
+    const queryParams = new URLSearchParams();
+
+    // 轉換 Directus 風格的參數到 Rust 風格
+    if (params.sort) {
+      queryParams.append("sort", params.sort);
+    }
+
+    if (params.limit) {
+      queryParams.append("limit", params.limit);
+    }
+
+    if (params.offset) {
+      queryParams.append("offset", params.offset);
+    }
+
+    // 處理篩選條件
+    if (params.filter) {
+      Object.entries(params.filter).forEach(([key, value]) => {
+        if (typeof value === "object") {
+          if (value._eq) {
+            queryParams.append(key, value._eq);
+          }
+        } else {
+          queryParams.append(key, value);
+        }
+      });
+    }
+
+    const endpoint = queryParams.toString()
+      ? `${this.endpoint}?${queryParams.toString()}`
+      : this.endpoint;
+
+    return await this.base.rustFetch(
+      endpoint,
+      {
+        method: "GET",
+      },
+      {
+        operation: "getAllMonthlyDonates",
         ...context,
       }
     );
@@ -406,7 +410,8 @@ export class RustMonthlyDonateService {
    * 獲取當前模式
    */
   getCurrentMode() {
-    return "rust"; // Rust 服務總是 rust 模式
+    //return "rust"; // Rust 服務總是 rust 模式
+    return this.base.mode;
   }
 
   /**

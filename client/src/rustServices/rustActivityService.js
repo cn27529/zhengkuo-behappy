@@ -1,5 +1,6 @@
 // src/rustServices/rustActivityService.js
 import { baseRustService } from "./baseRustService.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
 export class RustActivityService {
@@ -18,10 +19,12 @@ export class RustActivityService {
   async createActivity(activityData, additionalContext = {}) {
     // ✅ 在 try 外面定義，確保 catch 也能訪問
     const startTime = Date.now();
-
+    const createISOTime = DateUtils.getCurrentISOTime();
+    const activityId = await generateGitHashBrowser(createISOTime);
     const processedData = {
+      activityId: activityId,
       ...activityData,
-      createdAt: DateUtils.getCurrentISOTime(),
+      createdAt: createISOTime,
     };
 
     const logContext = {
