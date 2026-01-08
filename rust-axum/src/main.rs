@@ -265,14 +265,11 @@ async fn server_info(Extension(state): Extension<Arc<AppState>>) -> Json<ServerI
     // 計算運行時間
     let uptime = chrono::Utc::now() - state.start_time;
 
-    // 檢查數據庫連接
-    let db_connected = sqlx::query("SELECT 1")
-        .fetch_one(&state.pool)
-        .await
-        .is_ok();
+    // 檢查數據庫連接 - 使用 db.rs 中的函數
+    let db_connected = db::test_connection(&state.pool).await.is_ok();
 
     // 獲取數據庫路徑
-    let database_path = std::env::var("DATABASE_URL")
+    let database_url = std::env::var("DATABASE_URL")
         .unwrap_or_else(|_| "未知".to_string())
         .replace("sqlite:", "");
 
@@ -282,7 +279,7 @@ async fn server_info(Extension(state): Extension<Arc<AppState>>) -> Json<ServerI
         uptime_seconds: uptime.num_seconds(),
         database_connected: db_connected,
         database_type: "SQLite".to_string(),
-        database_path,
+        database_path: database_url,
         current_time: chrono::Utc::now().to_rfc3339(),
         architecture: Architecture {
             auth_backend: "Directus".to_string(),
@@ -299,11 +296,8 @@ async fn server_ping(Extension(state): Extension<Arc<AppState>>) -> Json<PingRes
     let start = std::time::Instant::now();
     let now = chrono::Utc::now();
 
-    // 嘗試 ping 數據庫
-    let db_ping = sqlx::query("SELECT 1")
-        .fetch_one(&state.pool)
-        .await
-        .is_ok();
+    // 嘗試 ping 數據庫 - 使用 db.rs 中的函數
+    let db_ping = db::test_connection(&state.pool).await.is_ok();
 
     let response_time = start.elapsed().as_millis();
 
