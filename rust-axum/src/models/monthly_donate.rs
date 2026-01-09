@@ -101,10 +101,7 @@ pub struct CreateMonthlyDonateRequest {
     pub donate_items: Option<JsonValue>,
     
     #[serde(default)]
-    pub memo: Option<String>,
-    
-    #[serde(default)]
-    pub user_created: Option<String>,
+    pub memo: Option<String>,    
 }
 
 /// 更新每月捐款記錄請求

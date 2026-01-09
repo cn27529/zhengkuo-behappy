@@ -108,10 +108,7 @@ pub struct CreateRegistrationRequest {
     #[serde(default)]
     pub contact: Option<JsonValue>,
     #[serde(default)]
-    pub blessing: Option<JsonValue>,
-    
-    #[serde(default)]
-    pub user_created: Option<String>,
+    pub blessing: Option<JsonValue>,    
 }
 
 /// 更新報名記錄請求
