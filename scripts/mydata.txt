@@ -1,6 +1,4 @@
-如果你不想保留修改（全部不要）
-那就不要做 git stash save，
-直接執行以下三行清空本地狀態：
+如果你不想保留修改（全部不要）直接執行以下三行清空本地狀態：
 git reset --hard
 git clean -fd
 git pull

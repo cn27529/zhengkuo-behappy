@@ -12,7 +12,6 @@
 │   │   ├── authService.js
 │   │   ├── baseService.js
 │   │   ├── monthlyDonateService.js
-│   │   ├── mydataService.js
 │   │   └── registrationService.js
 └── vite.config.js
 ./db
