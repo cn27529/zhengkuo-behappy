@@ -241,7 +241,8 @@ export class AuthService {
           console.log("Directus 返回用戶資訊:", userResult.data);
           userData = userResult.data;
           // Directus 返回的用戶資訊沒有顯示名稱，displayName使用填寫的email
-          userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
+          //userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
+          userData.displayName = `${userResult.data.title}(${userResult.data.first_name}${userResult.data.last_name})`;
         } else {
           console.error("Directus 返回用戶資訊發生錯誤:", ...userResponse);
         }
@@ -437,7 +438,8 @@ export class AuthService {
       const userResult = await userResponse.json();
       console.log("Directus 返回用戶資訊:", userResult.data);
       userData = userResult.data;
-      userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
+      //userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
+      userData.displayName = `${userResult.data.title}(${userResult.data.first_name}${userResult.data.last_name})`;
     } else {
       console.error("Directus 返回用戶資訊發生錯誤:", userResponse.status);
     }
