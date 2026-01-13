@@ -17,15 +17,9 @@ const routes = [
   { path: "/card-design", component: () => import("../views/CardDesign.vue") },
   { path: "/logs", component: () => import("../views/LogViewPage.vue") },
   {
-    path: "/join-activity-record2",
-    title: "參加活動",
-    component: () => import("../views/JoinActivityRecord2.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
     path: "/join-activity-record",
-    title: "參加活動",
-    component: () => import("../views/JoinActivityRecord.vue"),
+    title: "活動參加",
+    component: () => import("../views/JoinActivityRecord3.vue"),
     meta: { requiresAuth: true },
   },
   {
@@ -193,10 +187,10 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/taisui",
-    title: "太歲分析",
-    name: "TaiSui",
-    component: () => import("../views/TaiSui.vue"),
+    path: "/dotlamp",
+    title: "太歲點燈",
+    name: "TaiSuiDotLamp",
+    component: () => import("../views/TaisuiDotLamp.vue"),
     props: (route) => ({
       // 設定預設年份為當前年份，如果 URL 有參數則使用 URL 參數
       year: route.query.year || new Date().getFullYear(),
