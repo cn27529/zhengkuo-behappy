@@ -11,16 +11,22 @@
           <div class="selected-header">
             <h2>登記表：{{ selectedRegistration.formName }}</h2>
             <div class="contact-pill">
-              聯絡人：{{ selectedRegistration.contact.name }} ({{ selectedRegistration.contact.mobile }})
+              聯絡人：{{ selectedRegistration.contact.name }} ({{
+                selectedRegistration.contact.mobile
+              }})
             </div>
           </div>
 
-          <div v-for="(config, key) in activityConfigs" :key="key" class="activity-group">
+          <div
+            v-for="(config, key) in activityConfigs"
+            :key="key"
+            class="activity-group"
+          >
             <label class="group-header">
               <div class="header-left">
-                <input 
-                  type="checkbox" 
-                  :checked="isAllSelected(key)" 
+                <input
+                  type="checkbox"
+                  :checked="isAllSelected(key)"
                   @change="toggleGroup(key)"
                 />
                 <span class="title">{{ config.label }}</span>
@@ -29,19 +35,29 @@
             </label>
 
             <div class="item-list">
-              <div v-for="item in getSourceData(key)" :key="item.id" class="item-row">
+              <div
+                v-for="item in getSourceData(key)"
+                :key="item.id"
+                class="item-row"
+              >
                 <label>
-                  <input 
-                    type="checkbox" 
-                    :value="item" 
+                  <input
+                    type="checkbox"
+                    :value="item"
                     v-model="selections[key]"
                   />
                   <span class="name">{{ item.name || item.surname }}</span>
-                  <span v-if="item.zodiac" class="zodiac">({{ item.zodiac }})</span>
-                  <span v-if="item.notes" class="notes">- {{ item.notes }}</span>
+                  <span v-if="item.zodiac" class="zodiac"
+                    >({{ item.zodiac }})</span
+                  >
+                  <span v-if="item.notes" class="notes"
+                    >- {{ item.notes }}</span
+                  >
                 </label>
               </div>
-              <div v-if="!getSourceData(key).length" class="empty-hint">無相關資料</div>
+              <div v-if="!getSourceData(key).length" class="empty-hint">
+                無相關資料
+              </div>
             </div>
           </div>
         </div>
@@ -57,7 +73,11 @@
           </div>
           <div class="button-group">
             <button class="btn-clear" @click="resetSelections">重置</button>
-            <button class="btn-save" :disabled="totalAmount === 0" @click="handleSave">
+            <button
+              class="btn-save"
+              :disabled="totalAmount === 0"
+              @click="handleSave"
+            >
               💾 保存參加記錄
             </button>
           </div>
@@ -66,22 +86,27 @@
 
       <div class="right-section">
         <div class="search-panel">
-          <input 
-            v-model="searchKeyword" 
-            placeholder="搜尋姓名或電話..." 
+          <input
+            v-model="searchKeyword"
+            placeholder="搜尋姓名或電話..."
             class="search-input"
           />
         </div>
 
         <div class="reg-list">
-          <div 
-            v-for="reg in filteredRegistrations" 
+          <div
+            v-for="reg in filteredRegistrations"
             :key="reg.id"
-            :class="['reg-card', { active: selectedRegistration?.id === reg.id }]"
+            :class="[
+              'reg-card',
+              { active: selectedRegistration?.id === reg.id },
+            ]"
             @click="selectRegistration(reg)"
           >
             <div class="reg-card-title">{{ reg.formName }}</div>
-            <div class="reg-card-desc">{{ reg.contact.name }} | {{ reg.contact.mobile }}</div>
+            <div class="reg-card-desc">
+              {{ reg.contact.name }} | {{ reg.contact.mobile }}
+            </div>
           </div>
         </div>
       </div>
@@ -90,48 +115,52 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from "vue";
+import mockData from "../data/mock_registrations.json";
 
 // 1. 活動配置定義 (未來增加新項目只需在此添加一筆)
 const activityConfigs = {
-  chaodu: { label: '超度/超薦', price: 1000, source: 'salvation.ancestors' },
-  diandeng: { label: '點燈', price: 600, source: 'blessing.persons' },
-  qifu: { label: '祈福', price: 300, source: 'salvation.survivors' },
-  xiaozai: { label: '固定消災', price: 100, source: 'blessing.persons' }
+  chaodu: { label: "超度/超薦", price: 1000, source: "salvation.ancestors" },
+  diandeng: { label: "點燈", price: 600, source: "blessing.persons" },
+  qifu: { label: "祈福", price: 300, source: "salvation.survivors" },
+  xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" },
 };
 
 // 2. 狀態管理
-const searchKeyword = ref('');
+const searchKeyword = ref("");
 const selectedRegistration = ref(null);
 const selections = ref({
   chaodu: [],
   diandeng: [],
   qifu: [],
-  xiaozai: []
+  xiaozai: [],
 });
 
 // 模擬資料 (同前)
-const mockRegistrations = ref([...]); 
+const mockRegistrations = ref(mockData);
 
 // 3. 邏輯處理
 const filteredRegistrations = computed(() => {
   const kw = searchKeyword.value.toLowerCase();
-  return mockRegistrations.value.filter(r => 
-    r.contact.name.includes(kw) || r.contact.mobile.includes(kw) || r.formName.includes(kw)
+  return mockRegistrations.value.filter(
+    (r) =>
+      r.contact.name.includes(kw) ||
+      r.contact.mobile.includes(kw) ||
+      r.formName.includes(kw)
   );
 });
 
 // 根據配置路徑取得對應的人員列表
 const getSourceData = (key) => {
   if (!selectedRegistration.value) return [];
-  const path = activityConfigs[key].source.split('.');
+  const path = activityConfigs[key].source.split(".");
   return path.reduce((obj, i) => obj[i], selectedRegistration.value);
 };
 
 // 計算總金額
 const totalAmount = computed(() => {
   return Object.keys(selections.value).reduce((sum, key) => {
-    return sum + (selections.value[key].length * activityConfigs[key].price);
+    return sum + selections.value[key].length * activityConfigs[key].price;
   }, 0);
 });
 
@@ -155,7 +184,7 @@ const selectRegistration = (reg) => {
 };
 
 const resetSelections = () => {
-  Object.keys(selections.value).forEach(k => selections.value[k] = []);
+  Object.keys(selections.value).forEach((k) => (selections.value[k] = []));
 };
 
 const handleSave = () => {
@@ -164,10 +193,10 @@ const handleSave = () => {
     formName: selectedRegistration.value.formName,
     saveTime: new Date().toISOString(),
     details: selections.value, // 直接儲存選中的物件陣列
-    total: totalAmount.value
+    total: totalAmount.value,
   };
-  console.log('保存完整資料包:', payload);
-  alert('儲存成功！');
+  console.log("保存完整資料包:", payload);
+  alert("儲存成功！");
 };
 </script>
 
@@ -180,8 +209,13 @@ const handleSave = () => {
   margin: 0 auto;
 }
 
-.left-section { flex: 7; position: relative; }
-.right-section { flex: 3; }
+.left-section {
+  flex: 7;
+  position: relative;
+}
+.right-section {
+  flex: 3;
+}
 
 .activity-group {
   background: white;
@@ -209,8 +243,13 @@ const handleSave = () => {
   font-weight: bold;
 }
 
-.item-list { padding: 10px 20px; }
-.item-row { padding: 8px 0; border-bottom: 1px dashed #f0f0f0; }
+.item-list {
+  padding: 10px 20px;
+}
+.item-row {
+  padding: 8px 0;
+  border-bottom: 1px dashed #f0f0f0;
+}
 
 .bottom-sticky-bar {
   position: sticky;
@@ -222,10 +261,14 @@ const handleSave = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.total-amount { font-size: 24px; color: #f1c40f; font-weight: bold; }
+.total-amount {
+  font-size: 24px;
+  color: #f1c40f;
+  font-weight: bold;
+}
 
 .reg-card {
   padding: 16px;
@@ -253,5 +296,8 @@ const handleSave = () => {
   cursor: pointer;
 }
 
-.btn-save:disabled { background: #7f8c8d; cursor: not-allowed; }
+.btn-save:disabled {
+  background: #7f8c8d;
+  cursor: not-allowed;
+}
 </style>
