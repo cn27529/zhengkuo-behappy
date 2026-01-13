@@ -53,6 +53,69 @@ export const useTaiSuiStore = defineStore("taisui", () => {
     "🐷",
   ];
 
+  const dotLampNames = [
+    {
+      notes: ["太歲", "驚天", "劍峰"],
+      numbers: [1, 13, 25, 37, 49, 61, 73, 85, 97],
+      name: "太歲燈",
+    },
+    {
+      notes: ["病符", "凶神"],
+      numbers: [12, 24, 36, 48, 60, 72, 84, 96, 108],
+      name: "元辰燈",
+    },
+    {
+      notes: ["天狗", "八座", "吊客"],
+      numbers: [11, 23, 35, 47, 59, 71, 83, 95, 107],
+      name: "光明燈",
+    },
+    {
+      notes: ["卷舌"],
+      numbers: [10, 22, 34, 46, 58, 70, 82, 94, 106],
+      name: "元辰燈",
+    },
+    {
+      notes: ["白虎", "天殺", "地殺"],
+      numbers: [9, 21, 33, 45, 57, 69, 81, 93, 105],
+      name: "光明燈",
+    },
+    {
+      notes: ["天厄"],
+      numbers: [8, 20, 32, 44, 56, 68, 80, 92, 104],
+      name: "元辰燈",
+    },
+    {
+      notes: ["歲破", "大耗"],
+      numbers: [7, 19, 31, 43, 55, 67, 79, 91, 103],
+      name: "太歲燈",
+    },
+    {
+      notes: ["死符", "小耗"],
+      numbers: [6, 18, 30, 42, 54, 66, 78, 90, 102],
+      name: "元辰燈",
+    },
+    {
+      notes: ["五鬼", "官符"],
+      numbers: [5, 17, 29, 41, 53, 65, 77, 89, 101],
+      name: "光明燈",
+    },
+    {
+      notes: ["勾絞", "羊刄", "空亡"],
+      numbers: [4, 16, 28, 40, 52, 64, 76, 88, 100],
+      name: "元辰燈",
+    },
+    {
+      notes: ["喪門", "地喪"],
+      numbers: [3, 15, 27, 39, 51, 63, 75, 87, 99],
+      name: "光明燈",
+    },
+    {
+      notes: ["天空", "劫殺"],
+      numbers: [2, 14, 26, 38, 50, 62, 74, 86, 98],
+      name: "光明燈",
+    },
+  ];
+
   // Getter
   const currentAnalysis = computed(() => analysisResult.value);
   const currentInputYear = computed(() => inputYear.value);
@@ -312,7 +375,162 @@ ${blessingSentence}
     }));
   };
 
+  // 获取指定年份的点灯表格数据（基于 TaisuiLamp.vue 的逻辑）
+  const getDotLampTableData = (year) => {
+    // 获取当前年份的天干地支信息
+    const { tiangan, dizhi, zodiac, zodiacIcon } = getYearGanzhi(year);
+    const dizhiIndex = dizhis.indexOf(dizhi);
+
+    // 计算某栏位对应的 dotLampNames 索引
+    const getDotLampIndex = (columnIndex) => {
+      // 核心逻辑：从当前年份生肖开始，该生肖对应 dotLampNames[0]，顺序往后排
+      const currentZodiacIndex = dizhiIndex;
+      const offset = (columnIndex - currentZodiacIndex + 12) % 12;
+      return offset;
+    };
+
+    // 获取某列的神煞注释
+    const getNotesForColumn = (columnIndex) => {
+      const dotLampIndex = getDotLampIndex(columnIndex);
+      return dotLampNames[dotLampIndex]?.notes || [];
+    };
+
+    // 获取某列的流年数字
+    const getNumbersForColumn = (columnIndex) => {
+      const dotLampIndex = getDotLampIndex(columnIndex);
+      return dotLampNames[dotLampIndex]?.numbers || [];
+    };
+
+    // 获取某列的灯种名称
+    const getLampNamesForColumn = (columnIndex) => {
+      const dotLampIndex = getDotLampIndex(columnIndex);
+      const name = dotLampNames[dotLampIndex]?.name;
+      return name ? [name] : [];
+    };
+
+    // 获取灯种的 CSS 类名
+    const getLampClass = (lampName) => {
+      if (lampName.includes("太歲燈")) return "lamp-taisui";
+      if (lampName.includes("元辰燈")) return "lamp-yuanchen";
+      if (lampName.includes("光明燈")) return "lamp-guangming";
+      return "";
+    };
+
+    // 检查是否为当前年份对应的列
+    const isCurrentYearColumn = (columnIndex) => {
+      return columnIndex === dizhiIndex;
+    };
+
+    // 提供根據生肖查詢對應燈種的方法
+    const getLampInfoByZodiac = (zodiac) => {
+      // 找到生肖在表格中的索引位置
+      const zodiacIndex = zodiacs.indexOf(zodiac);
+      if (zodiacIndex === -1) return null;
+
+      // 計算該生肖對應的 dotLampNames 索引
+      const dotLampIndex = (zodiacIndex - dizhiIndex + 12) % 12;
+      const dotLampItem = dotLampNames[dotLampIndex];
+
+      if (!dotLampItem) return null;
+
+      return {
+        zodiac: zodiac,
+        zodiacIcon: zodiacIcons[zodiacIndex],
+        lampName: dotLampItem.name,
+        notes: dotLampItem.notes,
+        numbers: dotLampItem.numbers,
+
+        // 完整的解釋信息
+        explanation: `${zodiac}年（屬${zodiacs[zodiacIndex]}）對應點燈信息：
+      - 燈種：${dotLampItem.name}
+      - 神煞：${dotLampItem.notes.join("、")}
+      - 流年數：${dotLampItem.numbers.join("、")}
+      - 適用年齡：${dotLampItem.numbers.map((num) => `${num}歲`).join("、")}
+      
+      建議：${
+        dotLampItem.name === "太歲燈"
+          ? "適用於值太歲、歲破等重大煞氣，提供強力化解與護佑。"
+          : dotLampItem.name === "元辰燈"
+          ? "適用於病符、死符、天厄等健康與運勢煞氣，祈求身心安康。"
+          : "適用於白虎、五鬼、喪門等一般煞氣，普遍化解、照亮前程。"
+      }`,
+      };
+    };
+
+    // 提供查詢所有生肖燈種信息的方法
+    const getAllZodiacLampInfo = () => {
+      return zodiacs.map((zodiac, index) => {
+        const dotLampIndex = (index - dizhiIndex + 12) % 12;
+        const dotLampItem = dotLampNames[dotLampIndex];
+
+        return {
+          zodiac,
+          zodiacIcon: zodiacIcons[index],
+          lampName: dotLampItem?.name || "未知",
+          notes: dotLampItem?.notes || [],
+          numbers: dotLampItem?.numbers || [],
+          isCurrentYear: index === dizhiIndex, // 是否為當前年份的生肖
+          dizhi: dizhis[index],
+        };
+      });
+    };
+
+    return {
+      year,
+      currentYearInfo: {
+        tiangan,
+        dizhi,
+        zodiac,
+        zodiacIcon,
+        dizhiIndex,
+      },
+
+      // 生肖查詢燈種方法
+      getLampInfoByZodiac,
+      getAllZodiacLampInfo,
+
+      // 表格基础数据
+      tableHeader: [...dizhis], // 地支顺序排列
+      zodiacRow: [...zodiacs], // 生肖顺序排列
+
+      // 表格处理方法
+      getNotesForColumn,
+      getNumbersForColumn,
+      getLampNamesForColumn,
+      getLampClass,
+      isCurrentYearColumn,
+
+      // 常量数据（供页面使用）
+      dizhis,
+      zodiacs,
+      dotLampNames,
+      getZodiacIcon,
+    };
+  };
+
+  // 完整的点灯表格分析
+  const analyzeDotLampTable = (year) => {
+    try {
+      if (!year || isNaN(year)) {
+        throw new Error("請輸入有效的年份");
+      }
+
+      if (year < 1900 || year > 2100) {
+        throw new Error("請輸入合理的年份（1900-2100）");
+      }
+
+      return getDotLampTableData(year);
+    } catch (error) {
+      console.error("分析點燈表格錯誤:", error);
+      throw error;
+    }
+  };
+
   return {
+    // 新增点灯表格相关方法
+    getDotLampTableData,
+    analyzeDotLampTable,
+
     // 狀態
     inputYear,
     analysisResult,
