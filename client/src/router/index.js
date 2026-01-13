@@ -17,6 +17,18 @@ const routes = [
   { path: "/card-design", component: () => import("../views/CardDesign.vue") },
   { path: "/logs", component: () => import("../views/LogViewPage.vue") },
   {
+    path: "/join-activity-record2",
+    title: "參加活動",
+    component: () => import("../views/JoinActivityRecord2.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/join-activity-record",
+    title: "參加活動",
+    component: () => import("../views/JoinActivityRecord.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/animated-number",
     component: () => import("../views/AnimatedNumber.vue"),
   },
