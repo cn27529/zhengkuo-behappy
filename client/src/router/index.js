@@ -181,10 +181,10 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/taisui",
-    title: "太歲分析",
-    name: "TaiSui",
-    component: () => import("../views/TaiSui.vue"),
+    path: "/dot-lamp",
+    title: "太歲點燈",
+    name: "TaiSuiDotLamp",
+    component: () => import("../views/TaiSuiDotLamp.vue"),
     props: (route) => ({
       // 設定預設年份為當前年份，如果 URL 有參數則使用 URL 參數
       year: route.query.year || new Date().getFullYear(),
