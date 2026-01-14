@@ -2,7 +2,7 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>太歲點燈對照表</h2>
+      <h2>太歲點燈</h2>
       <p class="subtitle">依據流年天干地支查詢適合的祈福燈種</p>
     </div>
 
@@ -11,7 +11,7 @@
       <div class="form-section">
         <div class="form-group address-row">
           <label for="yearInput">
-            <h3>查詢年份</h3>
+            <h3>西元年</h3>
           </label>
           <input
             type="number"
@@ -32,9 +32,9 @@
 
       <!-- 點燈對照表 -->
       <div v-if="tableData" class="form-section">
-        <h3>點燈對照表</h3>
+        <h3>民國{{ selectedYear-1911 }}年 十二生肖點燈對照表</h3>
         <div class="table-responsive">
-          <table class="diandeng-table">
+          <table class="dotlamp-table">
             <!-- 表頭：地支 -->
             <thead>
               <tr class="header-row">
@@ -163,9 +163,9 @@
               <strong>光明燈</strong
               >：適用於白虎、五鬼、喪門等一般煞氣，普遍化解、照亮前程。
             </li>
-            <li>
+            <li style="display: none;" >
               <strong>流年數</strong
-              >：根據個人生肖對應的流年數字，查找對應的神煞與燈種。
+              >：{{ lampInfoByZodiac }}
             </li>
           </ul>
         </div>
@@ -183,6 +183,7 @@ const route = useRoute();
 const taiSuiStore = useTaiSuiStore();
 const selectedYear = ref(new Date().getFullYear());
 const tableData = ref(null);
+const lampInfoByZodiac = ref(null);
 
 // 加载表格数据
 const loadTableData = async () => {
@@ -198,10 +199,14 @@ const loadTableData = async () => {
     console.log("表格数据加载完成:", tableData.value);
 
     // 获取所有生肖燈種信息
-    const allZodiacLampInfo = taiSuiStore
-      .getDotLampTableData(year)
-      .getAllZodiacLampInfo();
-    console.log(`${year}获取所有生肖燈種信息:`, allZodiacLampInfo);
+    //const allZodiacLampInfo = taiSuiStore.getDotLampTableData(year).getAllZodiacLampInfo();    
+    //console.log(`${year}获取所有生肖燈種信息:`, allZodiacLampInfo);
+    const yearInfo = taiSuiStore.currentYearInfo(year);
+    console.log(`${year}获取年份干支信息:`, yearInfo);
+    lampInfoByZodiac.value = taiSuiStore.getDotLampTableData(year).getLampInfoByZodiac(yearInfo.zodiac);
+    console.log(`${year}获取生肖燈種信息:`, lampInfoByZodiac.value);
+
+    
   } catch (error) {
     console.error("加载表格数据失败:", error);
   }
@@ -270,24 +275,25 @@ onMounted(() => {
   margin-top: 1rem;
 }
 
-.diandeng-table {
+.dotlamp-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.diandeng-table th,
-.diandeng-table td {
+.dotlamp-table th,
+.dotlamp-table td {
   border: 1px solid #ddd;
   padding: 0.75rem;
   text-align: center;
   min-width: 80px;
 }
 
-.diandeng-table thead th {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.dotlamp-table thead th {
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+  color: #000000;
   font-weight: bold;
   font-size: 1.1rem;
   position: sticky;
@@ -306,14 +312,18 @@ onMounted(() => {
 }
 
 .header-row .row-label {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  color: white;
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; */
+  background: #e7f3ff;
+  color: #495057;
   z-index: 15;
 }
 
+/* 高亮列 */
 .highlight-column {
-  background: #ff9e9e !important;
+  /* background: #ff9e9e !important; */
+  background: linear-gradient(135deg, #ff9e9e 0%, #ff6b6b 100%) !important;
   font-weight: bold;
+  color: white !important;
 }
 
 .zodiac-row td {
@@ -442,8 +452,8 @@ onMounted(() => {
     width: auto;
   }
 
-  .diandeng-table th,
-  .diandeng-table td {
+  .dotlamp-table th,
+  .dotlamp-table td {
     min-width: 60px;
     padding: 0.5rem;
     font-size: 0.85rem;

@@ -379,6 +379,7 @@ ${blessingSentence}
   const getDotLampTableData = (year) => {
     // 获取当前年份的天干地支信息
     const { tiangan, dizhi, zodiac, zodiacIcon } = getYearGanzhi(year);
+    
     const dizhiIndex = dizhis.indexOf(dizhi);
 
     // 计算某栏位对应的 dotLampNames 索引
@@ -421,9 +422,31 @@ ${blessingSentence}
       return columnIndex === dizhiIndex;
     };
 
+    
+
+    // 提供查詢所有生肖燈種信息的方法
+    const getAllZodiacLampInfo = () => {
+      return zodiacs.map((zodiac, index) => {
+        const dotLampIndex = (index - dizhiIndex + 12) % 12;
+        const dotLampItem = dotLampNames[dotLampIndex];
+
+        return {
+          zodiac,
+          zodiacIcon: zodiacIcons[index],
+          lampName: dotLampItem?.name || "未知",
+          notes: dotLampItem?.notes || [],
+          numbers: dotLampItem?.numbers || [],
+          isCurrentYear: index === dizhiIndex, // 是否為當前年份的生肖
+          dizhi: dizhis[index],          
+        };
+      });
+    };
+
     // 提供根據生肖查詢對應燈種的方法
     const getLampInfoByZodiac = (zodiac) => {
       // 找到生肖在表格中的索引位置
+      // alert(this.zodiac);
+      // const zodiac = this.zodiac;
       const zodiacIndex = zodiacs.indexOf(zodiac);
       if (zodiacIndex === -1) return null;
 
@@ -457,28 +480,10 @@ ${blessingSentence}
       };
     };
 
-    // 提供查詢所有生肖燈種信息的方法
-    const getAllZodiacLampInfo = () => {
-      return zodiacs.map((zodiac, index) => {
-        const dotLampIndex = (index - dizhiIndex + 12) % 12;
-        const dotLampItem = dotLampNames[dotLampIndex];
-
-        return {
-          zodiac,
-          zodiacIcon: zodiacIcons[index],
-          lampName: dotLampItem?.name || "未知",
-          notes: dotLampItem?.notes || [],
-          numbers: dotLampItem?.numbers || [],
-          isCurrentYear: index === dizhiIndex, // 是否為當前年份的生肖
-          dizhi: dizhis[index],
-        };
-      });
-    };
-
     return {
       year,
       currentYearInfo: {
-        tiangan,
+        tiangan, 
         dizhi,
         zodiac,
         zodiacIcon,
@@ -505,6 +510,7 @@ ${blessingSentence}
       zodiacs,
       dotLampNames,
       getZodiacIcon,
+      
     };
   };
 
@@ -549,5 +555,6 @@ ${blessingSentence}
     resetAnalysis,
     getZodiacIcon,
     getAllZodiacs,
+    currentYearInfo: getYearGanzhi,
   };
 });
