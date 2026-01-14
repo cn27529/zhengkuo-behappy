@@ -3,17 +3,33 @@
   <div class="main-content">
     <div class="page-header">
       <h2>太歲點燈</h2>
-      <p class="subtitle">依據流年天干地支查詢適合的祈福燈種</p>
+      <p class="subtitle">
+        依據流年「天干」、「地支」與「十二生肖」找到適合的祈福燈種
+      </p>
     </div>
 
     <div class="form-content">
       <!-- 年份選擇區域 -->
       <div class="form-section">
         <div class="form-group address-row">
-          <label for="yearInput">
-            <h3>西元年</h3>
-          </label>
+          <!-- <label for="yearInput">
+            <h4>西元</h4>
+          </label> -->
+          <div class="year-buttons">
+            <button
+              type="button"
+              class="btn btn-outline capsule-btn"
+              v-for="year in yearRange"
+              :key="year"
+              :class="['year-btn', { active: selectedYear === year }]"
+              @click="selectYear(year)"
+            >
+              {{ year }}
+            </button>
+          </div>
+
           <input
+            style="display: none"
             type="number"
             id="yearInput"
             v-model="selectedYear"
@@ -21,7 +37,7 @@
             @input="handleYearChange"
             @keyup.enter="loadTableData"
           />
-          <div v-if="tableData" class="year-info">
+          <div v-if="tableData" class="year-info" style="display: none">
             {{ tableData.currentYearInfo.tiangan
             }}{{ tableData.currentYearInfo.dizhi }}
             {{ tableData.currentYearInfo.zodiacIcon }}
@@ -32,7 +48,12 @@
 
       <!-- 點燈對照表 -->
       <div v-if="tableData" class="form-section">
-        <h3>民國{{ selectedYear-1911 }}年 十二生肖點燈對照表</h3>
+        <h3>
+          民國{{ selectedYear - 1911 }}年「{{ tableData.currentYearInfo.tiangan
+          }}{{ tableData.currentYearInfo.dizhi }}
+          {{ tableData.currentYearInfo.zodiacIcon }}
+          {{ tableData.currentYearInfo.zodiac }}」，十二生肖點燈對照表
+        </h3>
         <div class="table-responsive">
           <table class="dotlamp-table">
             <!-- 表頭：地支 -->
@@ -163,9 +184,8 @@
               <strong>光明燈</strong
               >：適用於白虎、五鬼、喪門等一般煞氣，普遍化解、照亮前程。
             </li>
-            <li style="display: none;" >
-              <strong>流年數</strong
-              >：{{ lampInfoByZodiac }}
+            <li style="display: none">
+              <strong>流年數</strong>：{{ lampInfoByZodiac }}
             </li>
           </ul>
         </div>
@@ -175,40 +195,88 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { useTaiSuiStore } from "../stores/taisuiStore.js";
 
 const route = useRoute();
 const taiSuiStore = useTaiSuiStore();
-const selectedYear = ref(new Date().getFullYear());
+const currentSystemYear = new Date().getFullYear();
+const selectedYear = ref(currentSystemYear);
 const tableData = ref(null);
 const lampInfoByZodiac = ref(null);
 
-// 加载表格数据
+// 計算顯示的年範圍 (前3後12，含今年共15年)
+const yearRange = computed(() => {
+  const start = currentSystemYear - 3;
+  const yearRangeArray = Array.from({ length: 12 }, (_, i) => start + i);
+  console.log("年份範圍:", yearRangeArray);
+  return yearRangeArray;
+});
+
+// 選取年份（直接使用 yearRange 常數進行邊界檢查）
+const selectYear = (year) => {
+  // 檢查該年份是否存在於目前生成的 10 年範圍數組中
+  if (!yearRange.value.includes(year)) {
+    console.warn(`年份 ${year} 不在顯示範圍內，已攔截動作。`);
+    return;
+  }
+
+  selectedYear.value = year;
+  loadTableData();
+};
+
+// // 加载表格数据
+// const loadTableData = async () => {
+//   try {
+//     const year = parseInt(selectedYear.value);
+//     if (isNaN(year) || year < 1900 || year > 2100) {
+//       console.warn("年份超出范围");
+//       return;
+//     }
+
+//     // 调用 store 方法获取表格数据
+//     tableData.value = taiSuiStore.getDotLampTableData(year);
+//     console.log("表格数据加载完成:", tableData.value);
+
+//     // 获取所有生肖燈種信息
+//     //const allZodiacLampInfo = taiSuiStore.getDotLampTableData(year).getAllZodiacLampInfo();
+//     //console.log(`${year}获取所有生肖燈種信息:`, allZodiacLampInfo);
+//     const yearInfo = taiSuiStore.currentYearInfo(year);
+//     console.log(`${year}获取年份干支信息:`, yearInfo);
+//     lampInfoByZodiac.value = taiSuiStore
+//       .getDotLampTableData(year)
+//       .getLampInfoByZodiac(yearInfo.zodiac);
+//     console.log(`${year}获取生肖燈種信息:`, lampInfoByZodiac.value);
+//   } catch (error) {
+//     console.error("加载表格数据失败:", error);
+//   }
+// };
+
+// 處理鍵盤事件
+const handleKeyDown = (event) => {
+  const key = event.key;
+  if (["ArrowUp", "ArrowLeft"].includes(key)) {
+    event.preventDefault(); // 防止頁面滾動
+    selectYear(selectedYear.value - 1);
+  } else if (["ArrowDown", "ArrowRight"].includes(key)) {
+    event.preventDefault();
+    selectYear(selectedYear.value + 1);
+  }
+};
+
+// 載入數據 (修改原有的 loadTableData)
 const loadTableData = async () => {
   try {
-    const year = parseInt(selectedYear.value);
-    if (isNaN(year) || year < 1900 || year > 2100) {
-      console.warn("年份超出范围");
-      return;
-    }
-
-    // 调用 store 方法获取表格数据
+    const year = selectedYear.value;
     tableData.value = taiSuiStore.getDotLampTableData(year);
-    console.log("表格数据加载完成:", tableData.value);
 
-    // 获取所有生肖燈種信息
-    //const allZodiacLampInfo = taiSuiStore.getDotLampTableData(year).getAllZodiacLampInfo();    
-    //console.log(`${year}获取所有生肖燈種信息:`, allZodiacLampInfo);
     const yearInfo = taiSuiStore.currentYearInfo(year);
-    console.log(`${year}获取年份干支信息:`, yearInfo);
-    lampInfoByZodiac.value = taiSuiStore.getDotLampTableData(year).getLampInfoByZodiac(yearInfo.zodiac);
-    console.log(`${year}获取生肖燈種信息:`, lampInfoByZodiac.value);
-
-    
+    lampInfoByZodiac.value = taiSuiStore
+      .getDotLampTableData(year)
+      .getLampInfoByZodiac(yearInfo.zodiac);
   } catch (error) {
-    console.error("加载表格数据失败:", error);
+    console.error("加載表格數據失敗:", error);
   }
 };
 
@@ -223,20 +291,63 @@ const handleYearChange = () => {
 
 // 页面加载时初始化
 onMounted(() => {
+  // const yearParam = route.query.year;
+  // if (yearParam) {
+  //   const year = parseInt(yearParam);
+  //   if (!isNaN(year) && year >= 1900 && year <= 2100) {
+  //     selectedYear.value = year;
+  //   }
+  // }
+
+  // // 加载初始数据
+  // loadTableData();
+
+  // 監聽全域鍵盤事件
+  window.addEventListener("keydown", handleKeyDown);
+
   const yearParam = route.query.year;
   if (yearParam) {
     const year = parseInt(yearParam);
-    if (!isNaN(year) && year >= 1900 && year <= 2100) {
-      selectedYear.value = year;
-    }
+    if (!isNaN(year)) selectedYear.value = year;
   }
-
-  // 加载初始数据
   loadTableData();
+});
+
+// 組件卸載時移除監聽，避免記憶體洩漏
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeyDown);
 });
 </script>
 
 <style scoped>
+.year-buttons button {
+  margin-right: 0.5rem;
+}
+
+.year-btn {
+  padding: 0.6rem 1rem;
+  border: 1px solid #d8d8d8;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.year-btn:hover {
+  background: var(--primary-color, #764ba2);
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.year-btn.active {
+  background: var(--primary-color, #764ba2);
+  color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 10px rgba(92, 81, 81, 0.5);
+}
+
 .subtitle {
   color: #666;
   font-size: 0.95rem;
@@ -292,8 +403,12 @@ onMounted(() => {
 
 .dotlamp-table thead th {
   /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
-  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-  color: #000000;
+  background: linear-gradient(
+    135deg,
+    var(--secondary-color) 0%,
+    var(--primary-color) 100%
+  );
+  color: #ffffff;
   font-weight: bold;
   font-size: 1.1rem;
   position: sticky;
