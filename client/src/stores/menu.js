@@ -51,7 +51,7 @@ export const useMenuStore = defineStore("menu", () => {
     {
       id: 5,
       name: "太歲點燈",
-      path: "/dot-lamp",
+      path: "/dotlamp",
       icon: "🐯",
       component: "TaiSuiDotLamp",
       requiredAuth: true,
