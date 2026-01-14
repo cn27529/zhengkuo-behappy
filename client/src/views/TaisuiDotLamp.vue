@@ -28,6 +28,20 @@
             </button>
           </div>
 
+          <ul style="display: none">
+            <li class="li720" v-for="(item60, index) in jiazi60" :key="index">
+              <el-tag type="info"> {{ item60 }} </el-tag>
+              =
+              <el-tag
+                type="success"
+                v-for="(item720, index) in li720[item60]"
+                :key="index"
+              >
+                {{ item720 }}
+              </el-tag>
+            </li>
+          </ul>
+
           <input
             style="display: none"
             type="number"
@@ -205,6 +219,8 @@ const currentSystemYear = new Date().getFullYear();
 const selectedYear = ref(currentSystemYear);
 const tableData = ref(null);
 const lampInfoByZodiac = ref(null);
+const jiazi60 = ref(null);
+const li720 = ref(null);
 
 // 計算顯示的年範圍 (前3後12，含今年共15年)
 const yearRange = computed(() => {
@@ -311,6 +327,15 @@ onMounted(() => {
     if (!isNaN(year)) selectedYear.value = year;
   }
   loadTableData();
+
+  jiazi60.value = taiSuiStore.get60Jiazi();
+  console.log("jiazi60:", jiazi60.value);
+
+  li720.value = taiSuiStore.get720Li();
+
+  // console.log("li720:", JSON.parse(JSON.stringify(li720.value)));
+  // console.log("li720[甲子]:", li720.value["甲子"][0]);
+  // console.log("li720[癸亥]:", li720.value["癸亥"][11]);
 });
 
 // 組件卸載時移除監聽，避免記憶體洩漏
@@ -321,7 +346,7 @@ onUnmounted(() => {
 
 <style scoped>
 .year-buttons button {
-  margin-right: 0.5rem;
+  margin-right: 0.3rem;
 }
 
 .year-btn {
@@ -331,8 +356,7 @@ onUnmounted(() => {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 15px;
 }
 
 .year-btn:hover {

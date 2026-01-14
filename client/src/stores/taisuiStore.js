@@ -121,6 +121,52 @@ export const useTaiSuiStore = defineStore("taisui", () => {
   const currentInputYear = computed(() => inputYear.value);
   const currentUrlYear = computed(() => urlYear.value);
 
+  // 生成六十甲子陣列
+  const get60Jiazi = () => {
+    const jiazi60 = [];
+
+    for (let i = 0; i < 60; i++) {
+      const tianganIndex = i % 10; // 天干索引（0-9 循環）
+      const dizhiIndex = i % 12; // 地支索引（0-11 循環）
+
+      const jiazi = tiangans[tianganIndex] + dizhis[dizhiIndex];
+      jiazi60.push(jiazi);
+    }
+
+    return jiazi60;
+  };
+
+  // 生成 720 曆（六十甲子月建表）
+  const get720Li = () => {
+    const jiazi60 = get60Jiazi();
+    const jiazi60_to_720_values = [];
+    const li720 = {};
+    let valueIndex = 0; // 循環取值的索引
+
+    // 將六十甲子陣列重複 12 次等於 720 個天干地支值
+    dizhis.forEach((dizhi, index) => {
+      jiazi60_to_720_values.push(...jiazi60);
+    });
+
+    // 將六十甲子陣列重複 12 個後，從起始位置開始取 12 個值
+    jiazi60.forEach((jiazi, index) => {
+      const key = jiazi60[index]; // 當前甲子作為 key
+      const values = [];
+
+      // 從起始位置開始取 12 個值（循環取值）
+      dizhis.forEach((dizhi, index) => {
+        values.push(jiazi60_to_720_values[valueIndex]);
+        valueIndex += 1;
+      });
+
+      li720[key] = values;
+    });
+
+    //console.log("li720:", li720);
+
+    return li720;
+  };
+
   // 輸入生肖，根據生肖文字獲取對應的icon圖標，如果找不到則返回問號
   const getZodiacIcon = (zodiacText) => {
     const index = zodiacs.indexOf(zodiacText);
@@ -379,7 +425,7 @@ ${blessingSentence}
   const getDotLampTableData = (year) => {
     // 获取当前年份的天干地支信息
     const { tiangan, dizhi, zodiac, zodiacIcon } = getYearGanzhi(year);
-    
+
     const dizhiIndex = dizhis.indexOf(dizhi);
 
     // 计算某栏位对应的 dotLampNames 索引
@@ -422,8 +468,6 @@ ${blessingSentence}
       return columnIndex === dizhiIndex;
     };
 
-    
-
     // 提供查詢所有生肖燈種信息的方法
     const getAllZodiacLampInfo = () => {
       return zodiacs.map((zodiac, index) => {
@@ -437,7 +481,7 @@ ${blessingSentence}
           notes: dotLampItem?.notes || [],
           numbers: dotLampItem?.numbers || [],
           isCurrentYear: index === dizhiIndex, // 是否為當前年份的生肖
-          dizhi: dizhis[index],          
+          dizhi: dizhis[index],
         };
       });
     };
@@ -483,7 +527,7 @@ ${blessingSentence}
     return {
       year,
       currentYearInfo: {
-        tiangan, 
+        tiangan,
         dizhi,
         zodiac,
         zodiacIcon,
@@ -491,8 +535,8 @@ ${blessingSentence}
       },
 
       // 生肖查詢燈種方法
-      getLampInfoByZodiac,
-      getAllZodiacLampInfo,
+      getLampInfoByZodiac, // 根據生肖獲取對應的燈種信息
+      getAllZodiacLampInfo, // 獲取所有生肖燈種信息
 
       // 表格基础数据
       tableHeader: [...dizhis], // 地支顺序排列
@@ -505,12 +549,12 @@ ${blessingSentence}
       getLampClass,
       isCurrentYearColumn,
 
+      getZodiacIcon, // 根據生肖獲取對應的icon
+
       // 常量数据（供页面使用）
       dizhis,
       zodiacs,
       dotLampNames,
-      getZodiacIcon,
-      
     };
   };
 
@@ -556,5 +600,7 @@ ${blessingSentence}
     getZodiacIcon,
     getAllZodiacs,
     currentYearInfo: getYearGanzhi,
+    get60Jiazi, // 60甲子
+    get720Li, // 720曆
   };
 });
