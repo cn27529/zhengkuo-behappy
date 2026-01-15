@@ -1,48 +1,48 @@
 <template>
   <div class="tiangan-dizhi-clock-container">
     <div class="clock-wrapper">
-      <svg 
-        :width="clockSize" 
-        :height="clockSize" 
-        viewBox="0 0 400 400" 
+      <svg
+        :width="clockSize"
+        :height="clockSize"
+        viewBox="0 0 400 400"
         class="clock-svg"
       >
         <!-- 外圈：60甲子刻度 -->
-        <circle 
-          cx="200" 
-          cy="200" 
-          :r="outerRadius" 
-          fill="none" 
-          stroke="#2c3e50" 
+        <circle
+          cx="200"
+          cy="200"
+          :r="outerRadius"
+          fill="none"
+          stroke="#2c3e50"
           stroke-width="1"
           class="outer-circle"
         />
-        
+
         <!-- 60甲子刻度線 -->
         <g v-for="(item, index) in jiazi60" :key="'jiazi-' + index">
           <path
-            :d="getTickPath(outerRadius, index, 60, 12)"
+            :d="getTickPath(outerRadius, index, 60, 6)"
             :class="[
               'tick',
               'tick-60',
-              { 
+              {
                 'tick-second-highlight': isCurrentSecond(index),
-                'tick-minute-highlight': isCurrentMinute(index)
-              }
+                'tick-minute-highlight': isCurrentMinute(index),
+              },
             ]"
           />
-          
-          <!-- 60甲子文字 -->
+
+          <!-- 60甲子文字 outerRadius - 15（靠近刻度線 5 個單位）-->
           <text
-            :x="getTextPosition(outerRadius - 20, index, 60).x"
-            :y="getTextPosition(outerRadius - 20, index, 60).y"
+            :x="getTextPosition(outerRadius - 15, index, 60).x"
+            :y="getTextPosition(outerRadius - 15, index, 60).y"
             :class="[
               'tick-text',
               'tick-text-60',
-              { 
+              {
                 'text-second-highlight': isCurrentSecond(index),
-                'text-minute-highlight': isCurrentMinute(index)
-              }
+                'text-minute-highlight': isCurrentMinute(index),
+              },
             ]"
             text-anchor="middle"
             dominant-baseline="middle"
@@ -50,37 +50,37 @@
             {{ item }}
           </text>
         </g>
-        
+
         <!-- 中圈：地支刻度 - 24小時 -->
-        <circle 
-          cx="200" 
-          cy="200" 
-          :r="middleRadius" 
-          fill="none" 
-          stroke="#1a252f" 
+        <circle
+          cx="200"
+          cy="200"
+          :r="middleRadius"
+          fill="none"
+          stroke="#1a252f"
           stroke-width="1.5"
           class="middle-circle"
         />
-        
+
         <!-- 地支刻度線 - 24小時版本 -->
         <g v-for="(hourLabel, index) in hourLabels" :key="'hour-' + index">
           <path
-            :d="getTickPath(middleRadius, index, 24, 15)"            
+            :d="getTickPath(middleRadius, index, 24, 8)"
             :class="[
               'tick',
               'tick-24',
-              { 'tick-hour-highlight': isCurrentHour24(index) }
+              { 'tick-hour-highlight': isCurrentHour24(index) },
             ]"
           />
-          
-          <!-- 小時文字 -->
+
+          <!-- 24小時文字 middleRadius - 28（更靠近刻度線 3 個單位）-->
           <text
-            :x="getTextPosition(middleRadius - 25, index, 24).x"
-            :y="getTextPosition(middleRadius - 25, index, 24).y"            
+            :x="getTextPosition(middleRadius - 20, index, 24).x"
+            :y="getTextPosition(middleRadius - 20, index, 24).y"
             :class="[
               'tick-text',
               'tick-text-24',
-              { 'text-hour-highlight': isCurrentHour24(index) }
+              { 'text-hour-highlight': isCurrentHour24(index) },
             ]"
             text-anchor="middle"
             dominant-baseline="middle"
@@ -92,74 +92,75 @@
         <!-- 太極圖 -->
         <g id="taiji" transform="translate(200 200) rotate(180)">
           <!-- 外圓（黑底） -->
-          <circle 
-            cx="0" 
-            cy="0" 
-            :r="taijiRadius" 
-            fill="black" 
-            stroke="black" 
+          <circle
+            cx="0"
+            cy="0"
+            :r="taijiRadius"
+            fill="black"
+            stroke="black"
             stroke-width="2"
           />
-          
+
           <!-- 白色半圓 -->
           <path
             :d="`
               M 0 -${taijiRadius}
               A ${taijiRadius} ${taijiRadius} 0 0 0 0 ${taijiRadius}
-              A ${taijiRadius/2} ${taijiRadius/2} 0 0 1 0 0
-              A ${taijiRadius/2} ${taijiRadius/2} 0 0 0 0 -${taijiRadius}
+              A ${taijiRadius / 2} ${taijiRadius / 2} 0 0 1 0 0
+              A ${taijiRadius / 2} ${taijiRadius / 2} 0 0 0 0 -${taijiRadius}
               Z
             `"
             fill="white"
           />
-          
+
           <!-- 上方黑色小圓 -->
-          <circle 
-            cx="0" 
-            :cy="-taijiRadius/2" 
-            :r="taijiRadius/2" 
+          <circle
+            cx="0"
+            :cy="-taijiRadius / 2"
+            :r="taijiRadius / 2"
             fill="black"
           />
-          
+
           <!-- 下方白色小圓 -->
-          <circle 
-            cx="0" 
-            :cy="taijiRadius/2" 
-            :r="taijiRadius/2" 
+          <circle
+            cx="0"
+            :cy="taijiRadius / 2"
+            :r="taijiRadius / 2"
             fill="white"
           />
-          
+
           <!-- 黑中白點 -->
-          <circle 
-            cx="0" 
-            :cy="-taijiRadius/2" 
-            :r="taijiRadius/6" 
+          <circle
+            cx="0"
+            :cy="-taijiRadius / 2"
+            :r="taijiRadius / 6"
             fill="white"
           />
-          
+
           <!-- 白中黑點 -->
-          <circle 
-            cx="0" 
-            :cy="taijiRadius/2" 
-            :r="taijiRadius/6" 
+          <circle
+            cx="0"
+            :cy="taijiRadius / 2"
+            :r="taijiRadius / 6"
             fill="black"
           />
         </g>
-        
+
         <!-- 中心點 -->
         <circle cx="200" cy="200" r="2" fill="#2c3e50" />
       </svg>
     </div>
-    
+
     <div class="info-legend">
       <div class="time-display">
         <div class="current-time">{{ currentDateTime }}</div>
         <div class="ganzhi-time">{{ currentGanzhiTime }}</div>
         <div class="hour-info">
-          當前時辰：{{ currentDizhi }}時 ({{ currentHourRange }})
+          <!-- 時辰：{{ currentDizhi }}時 ({{ currentHourRange }}) -->
+          時辰：{{ currentHourRange }}
         </div>
       </div>
-      
+
       <div class="legend">
         <div class="legend-item">
           <span class="legend-color hour-color"></span>
@@ -179,14 +180,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useTaiSuiStore } from '../stores/taisuiStore';
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useTaiSuiStore } from "../stores/taisuiStore";
 
 const taisuiStore = useTaiSuiStore();
 
 // 時鐘尺寸
-const clockSize = ref(500);
-const outerRadius = ref(180);
+const clockSize = ref(450);
+const outerRadius = ref(195);
 const middleRadius = ref(120);
 const taijiRadius = ref(50);
 
@@ -197,8 +198,23 @@ const currentMinute = ref(0);
 const currentSecond = ref(0);
 
 // 從 store 獲取數據
-const dizhis = taisuiStore.dizhis || ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
-const jiazi60 = computed(() => taisuiStore.get60Jiazi ? taisuiStore.get60Jiazi() : generateJiazi60());
+const dizhis = taisuiStore.dizhis || [
+  "子",
+  "丑",
+  "寅",
+  "卯",
+  "辰",
+  "巳",
+  "午",
+  "未",
+  "申",
+  "酉",
+  "戌",
+  "亥",
+];
+const jiazi60 = computed(() =>
+  taisuiStore.get60Jiazi ? taisuiStore.get60Jiazi() : generateJiazi60()
+);
 
 // 生成60甲子
 function generateJiazi60() {
@@ -215,18 +231,18 @@ function generateJiazi60() {
 // 生成24小時標籤：地支 + 數字
 const hourLabels = computed(() => {
   const labels = [];
-  
+
   // 地支順序：子丑寅卯辰巳午未申酉戌亥
   // 子時：23-1點，我們要讓"子"在底部（6點鐘方向）
   // 午時：11-13點，在頂部（12點鐘方向）
-  
+
   // 創建24小時標籤
   for (let i = 0; i < 24; i++) {
     // 計算對應的地支索引
     // 傳統：子(23-1)、丑(1-3)、寅(3-5)...午(11-13)
     const dizhiIndex = Math.floor(((i + 1) % 24) / 2);
     const dizhi = dizhis[dizhiIndex];
-    
+
     // 對於偶數小時，顯示地支；奇數小時顯示數字
     if (i % 2 === 0) {
       // 主要小時顯示地支
@@ -236,20 +252,20 @@ const hourLabels = computed(() => {
       labels.push(`${i}`);
     }
   }
-  
+
   return labels;
 });
 
 // 當前時間格式化
 const currentDateTime = computed(() => {
-  return currentTime.value.toLocaleString('zh-TW', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
+  return currentTime.value.toLocaleString("zh-TW", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
   });
 });
 
@@ -271,7 +287,7 @@ const currentGanzhiTime = computed(() => {
   // 計算60甲子分和秒
   const jiaziMinute = jiazi60.value[currentMinute.value];
   const jiaziSecond = jiazi60.value[currentSecond.value];
-  
+
   return `${currentDizhi.value}時 ${jiaziMinute}分 ${jiaziSecond}秒`;
 });
 
@@ -283,7 +299,7 @@ function getTickPath(radius, index, total, length) {
   const y1 = 200 + radius * Math.sin(angle);
   const x2 = 200 + (radius - length) * Math.cos(angle);
   const y2 = 200 + (radius - length) * Math.sin(angle);
-  
+
   return `M ${x1} ${y1} L ${x2} ${y2}`;
 }
 
@@ -292,7 +308,7 @@ function getTextPosition(radius, index, total) {
   const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
   return {
     x: 200 + radius * Math.cos(angle),
-    y: 200 + radius * Math.sin(angle)
+    y: 200 + radius * Math.sin(angle),
   };
 }
 
@@ -347,7 +363,7 @@ onUnmounted(() => {
   justify-content: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  padding: 5px;
   box-sizing: border-box;
 }
 
@@ -355,16 +371,15 @@ onUnmounted(() => {
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  padding: 1px;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.3),
+  padding: 5px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
     inset 0 5px 15px rgba(255, 255, 255, 0.1);
   transform: scale(1.3);
 }
 
 .clock-svg {
   display: block;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 10px 20px rgba(228, 215, 215, 0.5));
 }
 
 /* 外圈和中圈樣式 */
@@ -412,7 +427,7 @@ onUnmounted(() => {
 
 /* 文字樣式 */
 .tick-text {
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'SimHei', sans-serif;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", "SimHei", sans-serif;
   font-weight: bold;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
@@ -467,7 +482,7 @@ onUnmounted(() => {
   bottom: 10px;
   right: 10px;
   background: rgba(0, 0, 0, 0.7);
-  padding: 15px 20px;
+  padding: 15px;
   border-radius: 10px;
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -487,7 +502,7 @@ onUnmounted(() => {
   font-weight: bold;
   color: white;
   margin-bottom: 2px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
@@ -495,7 +510,7 @@ onUnmounted(() => {
   font-size: 15px;
   color: #ffeb3b;
   font-weight: bold;
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   margin-bottom: 8px;
 }
@@ -503,11 +518,11 @@ onUnmounted(() => {
 .hour-info {
   font-size: 12px;
   color: #2ecc71;
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   font-weight: bold;
   background: rgba(46, 204, 113, 0.1);
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 5px;
+  border-radius: 5px;
   border-left: 3px solid #2ecc71;
 }
 
@@ -523,7 +538,7 @@ onUnmounted(() => {
   gap: 10px;
   font-size: 10px;
   color: rgba(255, 255, 255, 0.9);
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
 }
 
 .legend-color {
@@ -549,61 +564,61 @@ onUnmounted(() => {
 /* 響應式設計 */
 @media (max-width: 768px) {
   .clock-wrapper {
-    padding: 15px;
+    padding: 5px;
     margin-bottom: 30px;
     transform: scale(1);
   }
-  
+
   .clock-svg {
     width: 350px;
     height: 350px;
   }
-  
+
   .tick-text-60 {
     font-size: 9px;
   }
-  
+
   .tick-text-24 {
     font-size: 14px;
   }
-  
+
   .tick-text-24:nth-child(odd) {
     font-size: 12px;
   }
-  
+
   .info-legend {
     display: none;
-    padding: 10px;
+    padding: 5px;
     max-width: 350px;
   }
 }
 
 @media (max-width: 480px) {
   .clock-wrapper {
-    padding: 10px;
+    padding: 5px;
     transform: scale(0.9);
   }
-  
+
   .clock-svg {
     width: 280px;
     height: 280px;
   }
-  
+
   .tick-text-60 {
     font-size: 7px;
   }
-  
+
   .tick-text-24 {
     font-size: 12px;
   }
-  
+
   .tick-text-24:nth-child(odd) {
     font-size: 10px;
   }
-  
+
   .info-legend {
     display: none;
-    padding: 15px;
+    padding: 5px;
     max-width: 280px;
   }
 }
