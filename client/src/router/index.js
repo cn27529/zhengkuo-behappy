@@ -16,6 +16,7 @@ const routes = [
   { path: "/mock", component: () => import("../views/MockLogin.vue") },
   { path: "/card-design", component: () => import("../views/CardDesign.vue") },
   { path: "/logs", component: () => import("../views/LogViewPage.vue") },
+  { path: "/td-clock", component: () => import("../views/TianganDizhiClock.vue") },
   {
     path: "/join-activity-record",
     title: "活動參加",

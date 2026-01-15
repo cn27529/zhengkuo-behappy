@@ -99,6 +99,16 @@ export const useMenuStore = defineStore("menu", () => {
       enabled: true,
     },
     {
+      id: 10,
+      name: "天干地支時鐘",
+      path: "/td-clock",
+      icon: "🕰️",
+      component: "TianganDizhiClock",
+      requiredAuth: false,
+      order: 10,
+      enabled: true,
+    },
+    {
       id: 99,
       name: "收据管理",
       path: "/receipts",
