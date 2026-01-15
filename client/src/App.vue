@@ -117,7 +117,7 @@ const showUserInfo = computed(() => {
     showHeader.value &&
     !isPrintRoute.value &&
     route.path !== "/login" &&
-    route.path !== "/logout"
+    route.path !== "/logout"    
   );
 });
 
@@ -146,10 +146,11 @@ const handleMenuClick = (menuItem) => {
 // 计算顶部导航栏、側邊菜單栏、底部的预期可见性（不直接改变 ref，供 updateLayoutVisibility 使用）
 const computeVisibility = () => {
   const isPrint = route.path && route.path.includes("print");
+  const tdClock = route.path && route.path.includes("td-clock");
   return {
-    header: !isPrint, // 顶部导航栏：非打印页面显示
-    sidebar: !isPrint && route.path !== "/login" && route.path !== "/logout", // 側邊菜單栏：非打印页面且非登录/登出页面显示
-    footer: !isPrint, // 底部：非打印页面显示
+    header: !isPrint && !tdClock, // 顶部导航栏：非打印页面显示
+    sidebar: !isPrint && !tdClock && route.path !== "/login" && route.path !== "/logout", // 側邊菜單栏：非打印页面且非登录/登出页面显示
+    footer: !isPrint && !tdClock, // 底部：非打印页面显示
   };
 };
 

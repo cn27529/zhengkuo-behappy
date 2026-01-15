@@ -51,7 +51,7 @@
           </text>
         </g>
         
-        <!-- 中圈：地支刻度 -->
+        <!-- 中圈：地支刻度 - 24小時 -->
         <circle 
           cx="200" 
           cy="200" 
@@ -62,36 +62,34 @@
           class="middle-circle"
         />
         
-        <!-- 地支刻度線 - 使用調整後的地支順序 -->
-        <g v-for="(dizhi, index) in adjustedDizhis" :key="'dizhi-' + index">
+        <!-- 地支刻度線 - 24小時版本 -->
+        <g v-for="(hourLabel, index) in hourLabels" :key="'hour-' + index">
           <path
-            :d="getTickPath(middleRadius, index, 12, 15)"
+            :d="getTickPath(middleRadius, index, 24, 15)"            
             :class="[
               'tick',
-              'tick-12',
-              { 'tick-hour-highlight': isCurrentHour(index) }
+              'tick-24',
+              { 'tick-hour-highlight': isCurrentHour24(index) }
             ]"
           />
           
-          <!-- 地支文字 -->
+          <!-- 小時文字 -->
           <text
-            :x="getTextPosition(middleRadius - 25, index, 12).x"
-            :y="getTextPosition(middleRadius - 25, index, 12).y"
+            :x="getTextPosition(middleRadius - 25, index, 24).x"
+            :y="getTextPosition(middleRadius - 25, index, 24).y"            
             :class="[
               'tick-text',
-              'tick-text-12',
-              { 'text-hour-highlight': isCurrentHour(index) }
+              'tick-text-24',
+              { 'text-hour-highlight': isCurrentHour24(index) }
             ]"
             text-anchor="middle"
             dominant-baseline="middle"
           >
-            {{ dizhi }}
+            {{ hourLabel }}
           </text>
         </g>
 
-        
-        
-        <!-- 太極圖都在這個 <g> 裡 -->
+        <!-- 太極圖 -->
         <g id="taiji" transform="translate(200 200) rotate(180)">
           <!-- 外圓（黑底） -->
           <circle 
@@ -147,8 +145,6 @@
             fill="black"
           />
         </g>
-
-
         
         <!-- 中心點 -->
         <circle cx="200" cy="200" r="2" fill="#2c3e50" />
@@ -159,12 +155,15 @@
       <div class="time-display">
         <div class="current-time">{{ currentDateTime }}</div>
         <div class="ganzhi-time">{{ currentGanzhiTime }}</div>
+        <div class="hour-info">
+          當前時辰：{{ currentDizhi }}時 ({{ currentHourRange }})
+        </div>
       </div>
       
       <div class="legend">
         <div class="legend-item">
           <span class="legend-color hour-color"></span>
-          <span>地支時辰（每2小時）</span>
+          <span>地支24小時（每1小時）</span>
         </div>
         <div class="legend-item">
           <span class="legend-color minute-color"></span>
@@ -201,7 +200,7 @@ const currentSecond = ref(0);
 const dizhis = taisuiStore.dizhis || ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
 const jiazi60 = computed(() => taisuiStore.get60Jiazi ? taisuiStore.get60Jiazi() : generateJiazi60());
 
-// 生成60甲子（如果 store 沒有提供）
+// 生成60甲子
 function generateJiazi60() {
   const tiangans = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
   const jiazi = [];
@@ -213,17 +212,32 @@ function generateJiazi60() {
   return jiazi;
 }
 
-// 調整地支順序，讓"午"在12點鐘方向，"子"在6點鐘方向
-const adjustedDizhis = computed(() => {
+// 生成24小時標籤：地支 + 數字
+const hourLabels = computed(() => {
+  const labels = [];
+  
   // 地支順序：子丑寅卯辰巳午未申酉戌亥
-  // 我們要讓"午"在頂部（12點），"子"在底部（6點）
-  // 將地支順序旋轉6個位置
-  const rotateBy = 6; // "午"原始位置是6，旋轉後到0（頂部）
-  const rotated = [...dizhis];
-  for (let i = 0; i < rotateBy; i++) {
-    rotated.push(rotated.shift());
+  // 子時：23-1點，我們要讓"子"在底部（6點鐘方向）
+  // 午時：11-13點，在頂部（12點鐘方向）
+  
+  // 創建24小時標籤
+  for (let i = 0; i < 24; i++) {
+    // 計算對應的地支索引
+    // 傳統：子(23-1)、丑(1-3)、寅(3-5)...午(11-13)
+    const dizhiIndex = Math.floor(((i + 1) % 24) / 2);
+    const dizhi = dizhis[dizhiIndex];
+    
+    // 對於偶數小時，顯示地支；奇數小時顯示數字
+    if (i % 2 === 0) {
+      // 主要小時顯示地支
+      labels.push(dizhi);
+    } else {
+      // 次要小時顯示數字（小字號）
+      labels.push(`${i}`);
+    }
   }
-  return rotated;
+  
+  return labels;
 });
 
 // 當前時間格式化
@@ -239,17 +253,26 @@ const currentDateTime = computed(() => {
   });
 });
 
+// 計算當前地支和時辰範圍
+const currentDizhi = computed(() => {
+  const hourIndex = Math.floor(((currentHour.value + 1) % 24) / 2);
+  return dizhis[hourIndex];
+});
+
+const currentHourRange = computed(() => {
+  const hourIndex = Math.floor(((currentHour.value + 1) % 24) / 2);
+  const startHour = (hourIndex * 2 - 1 + 24) % 24;
+  const endHour = (startHour + 2) % 24;
+  return `${startHour}:00-${endHour}:00`;
+});
+
 // 計算干支時間
 const currentGanzhiTime = computed(() => {
-  // 計算時辰（地支）
-  const hourIndex = Math.floor(((currentHour.value + 1) % 24) / 2);
-  const dizhiHour = dizhis[hourIndex];
-  
   // 計算60甲子分和秒
   const jiaziMinute = jiazi60.value[currentMinute.value];
   const jiaziSecond = jiazi60.value[currentSecond.value];
   
-  return `${dizhiHour}時 ${jiaziMinute}分 ${jiaziSecond}秒`;
+  return `${currentDizhi.value}時 ${jiaziMinute}分 ${jiaziSecond}秒`;
 });
 
 // 刻度路徑計算
@@ -273,29 +296,19 @@ function getTextPosition(radius, index, total) {
   };
 }
 
-// 高亮判斷 - 修正版
-function isCurrentHour(index) {
-  // 地支對應的時間：子(23-1)、丑(1-3)、寅(3-5)...依此類推
-  const hourIndex = Math.floor(((currentHour.value + 1) % 24) / 2);
-  
-  // 現在時間是11:06，應該是"午"時（11-13點）
-  // 計算在調整後的地支陣列中，"午"應該在哪個位置
-  // 因為我們把"午"旋轉到頂部（index=0），所以需要找到"午"在原始陣列中的位置
-  const currentDizhi = dizhis[hourIndex];
-  
-  // 找到當前時辰在調整後陣列中的位置
-  const adjustedIndex = adjustedDizhis.value.indexOf(currentDizhi);
-  
-  return index === adjustedIndex;
+// 高亮判斷 - 24小時版本
+function isCurrentHour24(index) {
+  // 24小時刻度，每個刻度代表1小時
+  // index 0 = 0點，index 1 = 1點... index 23 = 23點
+  return index === currentHour.value;
 }
 
 // 獲取顯示的地支文字
 function getDisplayDizhi(index) {
-  return adjustedDizhis.value[index];
+  return hourLabels.value[index];
 }
 
 function isCurrentMinute(index) {
-  // 分鐘轉換為60甲子索引
   return index === currentMinute.value;
 }
 
@@ -311,11 +324,6 @@ function updateTime() {
   currentHour.value = currentTime.value.getHours();
   currentMinute.value = currentTime.value.getMinutes();
   currentSecond.value = currentTime.value.getSeconds();
-  
-  // 調試信息
-  console.log('當前時間:', currentHour.value + ':' + currentMinute.value);
-  console.log('當前時辰:', dizhis[Math.floor(((currentHour.value + 1) % 24) / 2)]);
-  console.log('高亮位置:', adjustedDizhis.value.indexOf(dizhis[Math.floor(((currentHour.value + 1) % 24) / 2)]));
 }
 
 // 生命周期
@@ -347,11 +355,11 @@ onUnmounted(() => {
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  padding: 1px; /* 調小內邊距 */
+  padding: 1px;
   box-shadow: 
     0 20px 40px rgba(0, 0, 0, 0.3),
     inset 0 5px 15px rgba(255, 255, 255, 0.1);
-    transform: scale(1.3); /* 縮放到 80% */
+  transform: scale(1.3);
 }
 
 .clock-svg {
@@ -379,8 +387,8 @@ onUnmounted(() => {
   stroke-width: 1.2;
 }
 
-.tick-12 {
-  stroke-width: 2;
+.tick-24 {
+  stroke-width: 1.5;
 }
 
 /* 高亮效果 */
@@ -402,7 +410,7 @@ onUnmounted(() => {
   filter: drop-shadow(0 0 8px #2ecc71);
 }
 
-/* 文字樣式 - 調小字體 */
+/* 文字樣式 */
 .tick-text {
   font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'SimHei', sans-serif;
   font-weight: bold;
@@ -411,15 +419,21 @@ onUnmounted(() => {
 }
 
 .tick-text-60 {
-  font-size: 7px; /* 調小字體 */
+  font-size: 7px;
   fill: #ecf0f1;
   opacity: 0.8;
 }
 
-.tick-text-12 {
-  font-size: 14px; /* 調小字體 */
+.tick-text-24 {
+  font-size: 12px;
   fill: #ecf0f1;
-  font-weight: 900;
+  font-weight: bold;
+}
+
+/* 奇數小時（數字）的字體小一點 */
+.tick-text-24:nth-child(odd) {
+  font-size: 10px;
+  opacity: 0.7;
 }
 
 /* 文字高亮效果 */
@@ -441,7 +455,7 @@ onUnmounted(() => {
 
 .text-hour-highlight {
   fill: #2ecc71 !important;
-  font-size: 22px !important;
+  font-size: 18px !important;
   font-weight: 900 !important;
   opacity: 1 !important;
   filter: drop-shadow(0 0 8px #2ecc71);
@@ -469,7 +483,7 @@ onUnmounted(() => {
 }
 
 .current-time {
-  font-size: 10px; /* 調小字體 */
+  font-size: 10px;
   font-weight: bold;
   color: white;
   margin-bottom: 2px;
@@ -478,11 +492,23 @@ onUnmounted(() => {
 }
 
 .ganzhi-time {
-  font-size: 15px; /* 調小字體 */
+  font-size: 15px;
   color: #ffeb3b;
   font-weight: bold;
   font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  margin-bottom: 8px;
+}
+
+.hour-info {
+  font-size: 12px;
+  color: #2ecc71;
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  font-weight: bold;
+  background: rgba(46, 204, 113, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-left: 3px solid #2ecc71;
 }
 
 .legend {
@@ -495,15 +521,14 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 010px; /* 調小字體 */
+  font-size: 10px;
   color: rgba(255, 255, 255, 0.9);
   font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-
 }
 
 .legend-color {
-  width: 10px; /* 調小尺寸 */
-  height: 10px; /* 調小尺寸 */
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -526,6 +551,7 @@ onUnmounted(() => {
   .clock-wrapper {
     padding: 15px;
     margin-bottom: 30px;
+    transform: scale(1);
   }
   
   .clock-svg {
@@ -537,8 +563,12 @@ onUnmounted(() => {
     font-size: 9px;
   }
   
-  .tick-text-12 {
-    font-size: 16px;
+  .tick-text-24 {
+    font-size: 14px;
+  }
+  
+  .tick-text-24:nth-child(odd) {
+    font-size: 12px;
   }
   
   .info-legend {
@@ -546,23 +576,12 @@ onUnmounted(() => {
     padding: 10px;
     max-width: 350px;
   }
-  
-  .current-time {
-    font-size: 1.4rem;
-  }
-  
-  .ganzhi-time {
-    font-size: 1.1rem;
-  }
-  
-  .legend-item {
-    font-size: 0.9rem;
-  }
 }
 
 @media (max-width: 480px) {
   .clock-wrapper {
     padding: 10px;
+    transform: scale(0.9);
   }
   
   .clock-svg {
@@ -574,31 +593,18 @@ onUnmounted(() => {
     font-size: 7px;
   }
   
-  .tick-text-12 {
-    font-size: 14px;
+  .tick-text-24 {
+    font-size: 12px;
+  }
+  
+  .tick-text-24:nth-child(odd) {
+    font-size: 10px;
   }
   
   .info-legend {
     display: none;
     padding: 15px;
     max-width: 280px;
-  }
-  
-  .current-time {
-    font-size: 10px;
-  }
-  
-  .ganzhi-time {
-    font-size: 10px;
-  }
-  
-  .legend-item {
-    font-size: 5px;
-  }
-  
-  .legend-color {
-    width: 18px;
-    height: 18px;
   }
 }
 </style>
