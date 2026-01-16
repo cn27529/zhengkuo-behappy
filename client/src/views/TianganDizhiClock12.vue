@@ -7,7 +7,7 @@
         viewBox="0 0 400 400"
         class="clock-svg"
       >
-        <!-- 外圈：60甲子刻度 -->
+        <!-- 外圈：60甲子圏 -->
         <circle
           cx="200"
           cy="200"
@@ -27,15 +27,15 @@
               'tick-60',
               {
                 'tick-second-highlight': isCurrentSecond(index),
-                'tick-minute': isCurrentMinute(index),
+                'tick-minute-highlight': isCurrentMinute(index),
               },
             ]"
           />
 
           <!-- 60甲子文字 -->
           <text
-            :x="getTextPosition(outerRadius - 22, index, 60).x"
-            :y="getTextPosition(outerRadius - 22, index, 60).y"
+            :x="getTextPosition(outerRadius - 24, index, 60).x"
+            :y="getTextPosition(outerRadius - 24, index, 60).y"
             :class="[
               'tick-text',
               'tick-text-60',
@@ -71,8 +71,8 @@
 
           <!-- 地支文字 -->
           <text
-            :x="getTextPosition(middleRadius - 25, index, 12).x"
-            :y="getTextPosition(middleRadius - 25, index, 12).y"
+            :x="getTextPosition(middleRadius - 24, index, 12).x"
+            :y="getTextPosition(middleRadius - 24, index, 12).y"
             :class="[
               'tick-text',
               'tick-text-12',
@@ -110,11 +110,11 @@
               { 'tick-hour-highlight': isCurrentHour24(index) },
             ]"
           />
-          <!-- 只有在 index 是奇數時顯示文字 -->
+          <!-- 只有在 index 是奇數時顯示文字 xy=  -->
           <text
             v-if="index % 2 === 1"
-            :x="getTextPosition(middleRadius24 - 10, index, 24).x"
-            :y="getTextPosition(middleRadius24 - 10, index, 24).y"
+            :x="getTextPosition(middleRadius24 - 15, index, 24).x"
+            :y="getTextPosition(middleRadius24 - 15, index, 24).y"
             :class="[
               'tick-text',
               'tick-text-24',
@@ -122,9 +122,9 @@
             ]"
             text-anchor="middle"
             dominant-baseline="middle"
-          >
-            🕛
+          >&nbsp;
           </text>
+          
         </g>
 
         <!-- 太極圖都在這個 <g> 裡 -->
@@ -453,7 +453,7 @@ onUnmounted(() => {
   min-height: 100vh;
   background: linear-gradient(180deg, #696969 0%, #000000 100%);
   padding: 20px;
-  box-sizing: border-box;
+  box-sizing: border-box;  
 }
 
 .clock-wrapper {
@@ -461,9 +461,11 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   padding: 1px; /* 調小內邊距 */
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+  box-shadow: 0 0px 30px #000000,
     inset 0 5px 15px rgba(255, 255, 255, 0.1);
+  /* box-shadow: 0 1px 5px #ffffff; */
   transform: scale(1.3); /* 縮放到 80% */
+  
 }
 
 .clock-svg {
@@ -522,8 +524,9 @@ onUnmounted(() => {
 }
 
 .tick-text-60 {
-  font-size: 7px; /* 調小字體 */
-  fill: #ecf0f1;
+  font-size: 6px; /* 調小字體 */
+  /* fill: #ecf0f1; */
+  fill: #a0a0a0;
   opacity: 0.8;
 }
 
@@ -574,17 +577,18 @@ onUnmounted(() => {
 /* 信息與圖例區域 */
 .info-legend {
   position: fixed;
-  bottom: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.7);
+  bottom: 20px;
+  right: 20px;
+  background-color: #000000;
   padding: 15px 20px;
   border-radius: 10px;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);  
   max-width: 300px;
   z-index: 100;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 5px #ffffff;
   transition: all 0.3s ease;
+
 }
 
 .time-display {
@@ -631,21 +635,21 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 12px; /* 調小字體 */
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px; /* 調小字體 */
+  color: #ffffff;
   font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
 }
 
 .legend-color {
-  width: 12px; /* 調小尺寸 */
-  height: 12px; /* 調小尺寸 */
+  width: 15px; /* 調小尺寸 */
+  height: 15px; /* 調小尺寸 */
   border-radius: 50%;
   flex-shrink: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .hour-color {
-  background: #2ecc71;
+  background: var(--tick-hour-color);
 }
 
 .minute-color {
@@ -669,7 +673,7 @@ onUnmounted(() => {
   }
 
   .tick-text-60 {
-    font-size: 9px;
+    font-size: 7px;    
   }
 
   .tick-text-12 {
@@ -706,7 +710,7 @@ onUnmounted(() => {
   }
 
   .tick-text-60 {
-    font-size: 7px;
+    font-size: 7px;    
   }
 
   .tick-text-12 {
