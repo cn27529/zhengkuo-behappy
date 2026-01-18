@@ -51,7 +51,7 @@
           </text>
         </g>
 
-        <!-- 中圈：地支刻度 - 12小時 -->
+        <!-- 中圈：12地支刻度 - 12小時 -->
         <circle
           cx="200"
           cy="200"
@@ -62,7 +62,7 @@
           class="middle-circle"
         />
 
-        <!-- 地支刻度線 - 使用調整後的地支順序 -->
+        <!-- 12地支刻度線 - 使用調整後的地支順序 -->
         <g v-for="(dizhi, index) in adjustedDizhis" :key="'dizhi-' + index">
           <path
             :d="getTickPath(middleRadius, index, 12, 10)"
@@ -85,7 +85,7 @@
           </text>
         </g>
 
-        <!-- 24小時刻圈 -->
+        <!-- 24小時圈 -->
         <circle
           cx="200"
           cy="200"
@@ -96,7 +96,7 @@
           class="middle-circle"
         />
 
-        <!-- 24小時刻度線線段 -->
+        <!-- 24小時刻度 -->
         <g
           transform="rotate(180 200 200)"
           v-for="(hour24Label, index) in 24"
@@ -122,13 +122,38 @@
             ]"
             text-anchor="middle"
             dominant-baseline="middle"
-          >&nbsp;
+          >
+            &nbsp;
           </text>
-          
+        </g>
+
+        <!-- 96刻圈 -->
+        <g transform="rotate(180 200 200)">
+          <circle
+            cx="200"
+            cy="200"
+            :r="keRadius96"
+            fill="none"
+            stroke="#1a252f"
+            stroke-width="0.5"
+            class="ke-circle"
+          ></circle>
+
+          <!-- 刻鐘刻度：每個時辰8刻，12時辰共96刻 -->
+          <g v-for="(ke96Label, index) in 96" :key="'ke-' + index">
+            <path
+              :d="getTickPath(keRadius96, index, 96, 5)"
+              :class="[
+                'tick',
+                'tick-ke',
+                { 'tick-ke-highlight': isCurrentKe96(index) },
+              ]"
+            />
+          </g>
         </g>
 
         <!-- 太極圖都在這個 <g> 裡 -->
-        <g id="taiji" transform="translate(200 200) rotate(180)">
+        <g id="taiji" transform="translate(200 200) rotate(0)">
           <!-- 外圓（黑底） -->
           <circle
             cx="0"
@@ -137,6 +162,7 @@
             fill="black"
             stroke="black"
             stroke-width="0"
+            class="taiji-circle"
           />
 
           <!-- 白色半圓 -->
@@ -151,36 +177,48 @@
             fill="white"
           />
 
-          <!-- 黑色小圓 -->
-          <circle
-            cx="0"
-            :cy="-taijiRadius / 2"
-            :r="taijiRadius / 2"
-            fill="black"
-          />
-
           <!-- 白色小圓 -->
           <circle
             cx="0"
-            :cy="taijiRadius / 2"
+            :cy="-taijiRadius / 2"
             :r="taijiRadius / 2"
             fill="white"
           />
 
-          <!-- 黑中白點 -->
+          <!-- 黑色小圓 -->
+          <circle
+            cx="0"
+            :cy="taijiRadius / 2"
+            :r="taijiRadius / 2"
+            fill="black"
+          />
+
+          <!-- 黑點 -->
           <circle
             cx="0"
             :cy="-taijiRadius / 2"
             :r="taijiRadius / 8"
-            fill="white"
+            fill="black"
           />
 
-          <!-- 白中黑點 -->
+          <!-- 白點 -->
           <circle
             cx="0"
             :cy="taijiRadius / 2"
             :r="taijiRadius / 8"
-            fill="black"
+            fill="white"
+          />
+
+          <!-- 添加旋轉動畫 -->
+          <animateTransform
+            attributeName="transform"
+            attributeType="XML"
+            type="rotate"
+            from="360 0 0"
+            to="0 0 0"
+            dur="0s"
+            repeatCount="indefinite"
+            additive="sum"
           />
         </g>
 
@@ -222,10 +260,25 @@ import { useTaiSuiStore } from "../stores/taisuiStore";
 const taisuiStore = useTaiSuiStore();
 
 // 時鐘尺寸
-const clockSize = ref(480);
-const outerRadius = ref(190);
-const middleRadius = ref(120);
+const clockSize = ref(600);
+const outerRadius = ref(170); //
+const middleRadius = ref(120); // 12地支
 const middleRadius24 = ref(120); // 24小時時鐘
+// 刻鐘相關的數據和方法
+const keRadius96 = ref(120); // 96刻鐘圈半徑（介於地支圈和24小時圈之間）
+
+// 刻鐘名稱
+const keNames = [
+  "初刻",
+  "二刻",
+  "三刻",
+  "四刻",
+  "五刻",
+  "六刻",
+  "七刻",
+  "末刻",
+];
+
 const taijiRadius = ref(50);
 
 // 時間狀態
@@ -233,6 +286,7 @@ const currentTime = ref(new Date());
 const currentHour = ref(0);
 const currentMinute = ref(0);
 const currentSecond = ref(0);
+const currentKe = ref(0);
 
 // 從 store 獲取數據
 const dizhis = taisuiStore.dizhis || [
@@ -250,7 +304,7 @@ const dizhis = taisuiStore.dizhis || [
   "亥",
 ];
 const jiazi60 = computed(() =>
-  taisuiStore.get60Jiazi ? taisuiStore.get60Jiazi() : generateJiazi60()
+  taisuiStore.get60Jiazi ? taisuiStore.get60Jiazi() : generateJiazi60(),
 );
 
 // 生成60甲子（如果 store 沒有提供）
@@ -363,6 +417,27 @@ function getTextPosition(radius, index, total) {
   };
 }
 
+// // 高亮判斷 - 簡化版的計算96刻
+function isCurrentKe96(index) {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  // 計算當前總分鐘數（從0點開始）
+  const totalMinutes = currentHour * 60 + currentMinute;
+  // 計算對應的刻數（每15分鐘一刻）
+  // 一天有 1440分鐘 ÷ 15 = 96刻
+  const currentKe = Math.floor(totalMinutes / 15);
+  return index === currentKe;
+}
+
+// // 高亮判斷 - 直接用總分鐘數計算96刻
+function isCurrentKeSimple(index) {
+  const now = new Date();
+  const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+  const keIndex = Math.floor(minutesSinceMidnight / 15);
+  return index === keIndex;
+}
+
 // 高亮判斷 - 24小時版本
 function isCurrentHour24(index) {
   // 24小時刻度，每個刻度代表1小時
@@ -421,13 +496,13 @@ function updateTime() {
   console.log("當前時間:", currentHour.value + ":" + currentMinute.value);
   console.log(
     "當前時辰:",
-    dizhis[Math.floor(((currentHour.value + 1) % 24) / 2)]
+    dizhis[Math.floor(((currentHour.value + 1) % 24) / 2)],
   );
   console.log(
     "高亮位置:",
     adjustedDizhis.value.indexOf(
-      dizhis[Math.floor(((currentHour.value + 1) % 24) / 2)]
-    )
+      dizhis[Math.floor(((currentHour.value + 1) % 24) / 2)],
+    ),
   );
 }
 
@@ -451,21 +526,52 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(180deg, #696969 0%, #000000 100%);
-  padding: 20px;
-  box-sizing: border-box;  
+  /* background-color: #696969; */
+  background: linear-gradient(90deg, #696969 0%, #000000 80%);
+  /* padding: 0px; */
+  box-sizing: border-box;
 }
 
 .clock-wrapper {
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.1);
+  /* background: rgba(255, 255, 255, 0.1); */
   border-radius: 50%;
   padding: 1px; /* 調小內邊距 */
-  box-shadow: 0 0px 30px #000000,
-    inset 0 5px 15px rgba(255, 255, 255, 0.1);
+  /* box-shadow: 0 0px 30px #000000, inset 0 5px 15px #696969; */
   /* box-shadow: 0 1px 5px #ffffff; */
-  transform: scale(1.3); /* 縮放到 80% */
-  
+  transform: scale(1.15); /* 縮放到 80% */
+}
+
+.taiji-circle {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 12px #969696);
+}
+
+.taiji-animate {
+  animation: taiji-rotate 60s linear infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+@keyframes taiji-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 可選：添加陰陽魚交互動畫 */
+.taiji-animate:hover {
+  animation-duration: 20s;
+}
+
+/* 可選：白天/夜晚速度不同 */
+@media (prefers-color-scheme: dark) {
+  .taiji-animate {
+    animation-duration: 120s; /* 夜晚旋轉慢 */
+  }
 }
 
 .clock-svg {
@@ -475,6 +581,10 @@ onUnmounted(() => {
 
 /* 外圈和中圈樣式 */
 .outer-circle {
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+.ke-circle {
   stroke: rgba(255, 255, 255, 0.2);
 }
 
@@ -507,6 +617,12 @@ onUnmounted(() => {
   stroke: var(--tick-minute-color) !important;
   stroke-width: 10 !important;
   filter: drop-shadow(0 0 6px #3498db);
+}
+
+.tick-ke-highlight {
+  stroke: var(--tick-hour-color) !important;
+  stroke-width: 2 !important;
+  filter: drop-shadow(0 0 8px #2ecc71);
 }
 
 .tick-hour-highlight {
@@ -583,12 +699,11 @@ onUnmounted(() => {
   padding: 15px 20px;
   border-radius: 10px;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);  
+  border: 1px solid rgba(255, 255, 255, 0.15);
   max-width: 300px;
   z-index: 100;
   box-shadow: 0 1px 5px #ffffff;
   transition: all 0.3s ease;
-
 }
 
 .time-display {
@@ -673,7 +788,7 @@ onUnmounted(() => {
   }
 
   .tick-text-60 {
-    font-size: 7px;    
+    font-size: 7px;
   }
 
   .tick-text-12 {
@@ -710,7 +825,7 @@ onUnmounted(() => {
   }
 
   .tick-text-60 {
-    font-size: 7px;    
+    font-size: 7px;
   }
 
   .tick-text-12 {
