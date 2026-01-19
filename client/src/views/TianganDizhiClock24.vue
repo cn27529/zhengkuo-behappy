@@ -98,7 +98,8 @@
             :r="taijiRadius"
             fill="black"
             stroke="black"
-            stroke-width="2"
+            stroke-width="0"
+            class="taiji-circle"
           />
 
           <!-- 白色半圓 -->
@@ -113,37 +114,38 @@
             fill="white"
           />
 
-          <!-- 上方黑色小圓 -->
+          <!-- 白色小圓 -->
           <circle
             cx="0"
             :cy="-taijiRadius / 2"
             :r="taijiRadius / 2"
-            fill="black"
+            fill="white"
           />
 
-          <!-- 下方白色小圓 -->
+          <!-- 黑色小圓 -->
           <circle
             cx="0"
             :cy="taijiRadius / 2"
             :r="taijiRadius / 2"
-            fill="white"
+            fill="black"
           />
 
-          <!-- 黑中白點 -->
+          <!-- 黑點 -->
           <circle
             cx="0"
             :cy="-taijiRadius / 2"
-            :r="taijiRadius / 6"
-            fill="white"
+            :r="taijiRadius / 8"
+            fill="black"
           />
 
-          <!-- 白中黑點 -->
+          <!-- 白點 -->
           <circle
             cx="0"
             :cy="taijiRadius / 2"
-            :r="taijiRadius / 6"
-            fill="black"
+            :r="taijiRadius / 8"
+            fill="white"
           />
+          
         </g>
 
         <!-- 中心點 -->

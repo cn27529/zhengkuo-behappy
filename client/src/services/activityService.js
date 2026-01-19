@@ -11,51 +11,7 @@ export class ActivityService {
     this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsActivity}`;
     console.log(`ActivityService 初始化: 當前模式為 ${this.base.mode}`);
   }
-
-  // ========== 使用示例：不同的調用方式 ==========
-  // 範例 1: 帶完整 context（會記錄日誌）
-  async exampleWithContext() {
-    const startTime = Date.now();
-    const response = await fetch(url, { method: "GET" });
-
-    const result = await this.base.handleDirectusResponse(
-      response,
-      "操作成功",
-      {
-        service: "ExampleService",
-        operation: "getData",
-        method: "GET",
-        startTime: startTime,
-        duration: Date.now() - startTime,
-      }
-    );
-  }
-
-  // 範例 2: 不帶 context（不會記錄日誌）
-  async exampleWithoutContext() {
-    const response = await fetch(url, { method: "GET" });
-
-    const result = await baseService.handleDirectusResponse(
-      response,
-      "操作成功"
-      // 沒有 context 參數
-    );
-  }
-
-  // 範例 3: 帶部分 context（不會記錄日誌，因為缺少必要信息）
-  async exampleWithPartialContext() {
-    const response = await fetch(url, { method: "GET" });
-
-    const result = await baseService.handleDirectusResponse(
-      response,
-      "操作成功",
-      {
-        method: "GET",
-        // 缺少 service 和 operation
-      }
-    );
-  }
-
+  
   // ========== CRUD 操作 ==========
 
   /**

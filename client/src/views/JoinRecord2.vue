@@ -1,4 +1,4 @@
-<!-- src/views/ActivityRecord.vue -->
+<!-- src/views/JoinRecord.vue -->
 <template>
   <div class="main-content">
     <div class="page-header">
@@ -345,128 +345,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useJoinRecordStore } from "../stores/joinRecordStore.js";
+import mockDatas from "../data/mock_registrations.json";
 
-// 模擬數據
-const mockRegistrations = ref([
-  {
-    state: "submitted",
-    createdAt: "2025-11-22T08:30:00.000Z",
-    updatedAt: "2025-01-15T09:45:00.000Z",
-    formName: "2025祈福登記表-001",
-    formSource: "",
-    formId: "a1b2c3d",
-    id: 1,
-    contact: {
-      name: "王大明",
-      phone: "02-12345678",
-      mobile: "0912-345-678",
-      relationship: "本家",
-      otherRelationship: "",
-    },
-    blessing: {
-      address: "台北市中正區中山南路1號",
-      persons: [
-        {
-          id: 1,
-          name: "王大明",
-          zodiac: "龍",
-          notes: "",
-          isHouseholdHead: true,
-        },
-        {
-          id: 2,
-          name: "李小華",
-          zodiac: "蛇",
-          notes: "妻子",
-          isHouseholdHead: false,
-        },
-      ],
-    },
-    salvation: {
-      address: "台北市中正區中山南路1號",
-      ancestors: [
-        {
-          id: 1,
-          surname: "王府",
-          notes: "歷代祖先",
-        },
-      ],
-      survivors: [
-        {
-          id: 1,
-          name: "王大明",
-          zodiac: "龍",
-          notes: "",
-        },
-        {
-          id: 2,
-          name: "李小華",
-          zodiac: "蛇",
-          notes: "",
-        },
-      ],
-    },
-  },
-  {
-    state: "submitted",
-    createdAt: "2025-01-16T10:15:00.000Z",
-    updatedAt: "2025-01-16T11:20:00.000Z",
-    formName: "2025祈福登記表-002",
-    formSource: "朝山法會",
-    formId: "e4f5g6h",
-    id: 2,
-    contact: {
-      name: "陳美玲",
-      phone: "",
-      mobile: "0923-456-789",
-      relationship: "娘家",
-      otherRelationship: "",
-    },
-    blessing: {
-      address: "新北市板橋區文化路二段100號",
-      persons: [
-        {
-          id: 1,
-          name: "陳美玲",
-          zodiac: "兔",
-          notes: "",
-          isHouseholdHead: true,
-        },
-        {
-          id: 2,
-          name: "陳志豪",
-          zodiac: "虎",
-          notes: "弟弟",
-          isHouseholdHead: false,
-        },
-      ],
-    },
-    salvation: {
-      address: "新北市板橋區文化路二段100號",
-      ancestors: [
-        {
-          id: 1,
-          surname: "陳氏",
-          notes: "",
-        },
-      ],
-      survivors: [
-        {
-          id: 1,
-          name: "陳美玲",
-          zodiac: "兔",
-          notes: "",
-        },
-        {
-          id: 2,
-          name: "陳志豪",
-          zodiac: "虎",
-          notes: "",
-        },
-      ],
-    },
-  },
-]);
+const joinRecordStore = useJoinRecordStore();
 
 // 狀態管理
 const searchKeyword = ref("");
@@ -498,6 +380,15 @@ const activities = ref({
     price: 100,
   },
 });
+
+// 模擬資料 (同前)
+const mockRegistrations = ref(mockDatas);
+
+const getMockRegistrations = async () => {
+  const mockData = await joinRecordStore.loadMockData();
+  mockRegistrations.value = mockData;
+  return mockData;
+};
 
 // 計算篩選後的登記表
 const filteredRegistrations = computed(() => {
@@ -655,8 +546,8 @@ const formatDate = (dateString) => {
 };
 
 // 組件掛載
-onMounted(() => {
-  console.log("活動參加記錄頁面已載入");
+onMounted(async () => {
+  console.log("活動參加記錄頁面已載入");  
 });
 </script>
 

@@ -68,7 +68,7 @@
 
         <div class="bottom-sticky-bar" v-if="selectedRegistration">
           <div class="summary-info">
-            <span class="total-label">總計金額：</span>
+            <span class="total-label">金額統計：</span>
             <span class="total-amount">${{ totalAmount }}</span>
           </div>
           <div class="button-group">

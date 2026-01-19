@@ -8,7 +8,7 @@ import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配�
 //import { registrationService } from "../services/registrationService.js"; // 移除舊的導入
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import mockDatas from "../data/mock_registrations.json";
+import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 
 export const useRegistrationStore = defineStore("registration", () => {
@@ -997,7 +997,7 @@ export const useRegistrationStore = defineStore("registration", () => {
   // 載入 Mock 數據
   const loadMockData = async (propsData) => {
     try {
-      if (!mockDatas || mockDatas.length === 0) {
+      if (!mockRegistrations || mockRegistrations.length === 0) {
         console.error("Mock 數據為空或未找到");
         return false;
       }
@@ -1005,8 +1005,8 @@ export const useRegistrationStore = defineStore("registration", () => {
       let mockData = null;
 
       // 隨機選擇一筆數據
-      const randomIndex = Math.floor(Math.random() * mockDatas.length);
-      mockData = mockDatas[randomIndex];
+      const randomIndex = Math.floor(Math.random() * mockRegistrations.length);
+      mockData = mockRegistrations[randomIndex];
 
       //console.log("📡 從 Mock 載入表單數據", mockData);
 
@@ -1018,7 +1018,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       ) {
         if (serviceAdapter.getIsMock()) {
           // mock模式嘗試找到對應的數據
-          mockData = mockDatas.find((item) => item.formId === propsData.formId);
+          mockData = mockRegistrations.find((item) => item.formId === propsData.formId);
         }
         mockData.formId = propsData.formId;
         mockData.id = propsData.id;

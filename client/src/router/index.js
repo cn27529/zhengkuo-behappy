@@ -21,9 +21,9 @@ const routes = [
     component: () => import("../views/TianganDizhiClock12.vue"),
   },
   {
-    path: "/join-activity-record",
+    path: "/join-record",
     title: "活動參加",
-    component: () => import("../views/JoinActivityRecord3.vue"),
+    component: () => import("../views/JoinRecord2.vue"),
     meta: { requiresAuth: true },
   },
   {

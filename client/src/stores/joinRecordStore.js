@@ -1,10 +1,10 @@
 // src/stores/joinActivityRecordStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { joinActivityRecordService } from "../services/joinActivityRecordService";
+import { joinRecordService } from "../services/joinRecordService.js";
 import mockDatas from "../data/mock_registrations.json";
 
-export const useJoinActivityRecordStore = defineStore(
+export const useJoinRecordStore = defineStore(
   "joinActivityRecord",
   () => {
     // --- State (等同於 ref) ---
@@ -19,6 +19,22 @@ export const useJoinActivityRecordStore = defineStore(
       xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" },
       pudu: { label: "中元普渡", price: 1200, source: "blessing.persons" },
     });
+
+    const loadMockData = async () => {
+        try {
+          if (!mockDatas || mockDatas.length === 0) {
+            console.error("Mock 數據為空或未找到");
+            return false;
+          }
+          let mockData = null;
+          const randomIndex = Math.floor(Math.random() * mockDatas.length);
+          mockData = mockDatas[randomIndex];
+          return mockData;
+        } catch (error) {
+          console.error("載入 Mock 數據失敗:", error);
+          return null;
+        }
+      };
 
     const selectedReg = ref(null);
     const isLoading = ref(false);
@@ -77,11 +93,14 @@ export const useJoinActivityRecordStore = defineStore(
           createdAt: new Date().toISOString(),
         };
 
-        const result = await joinActivityRecordService.saveRecord(payload);
+        const result = await joinRecordService.saveRecord(payload);
         if (result.success) {
           console.log("儲存成功");
           return true;
         }
+
+        return false;
+
       } catch (error) {
         console.error("儲存過程出錯");
         return false;
@@ -104,6 +123,7 @@ export const useJoinActivityRecordStore = defineStore(
       resetSelections,
       toggleGroup,
       submitRecord,
+      loadMockData,
     };
   }
 );
