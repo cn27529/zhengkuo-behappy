@@ -1,4 +1,4 @@
-// src/stores/joinActivityRecordStore.js
+// src/stores/joinRecordStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { joinRecordService } from "../services/joinRecordService.js";

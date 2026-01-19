@@ -173,12 +173,8 @@
                   />
                   <span>{{ person.name }}</span>
                   <span class="zodiac">({{ person.zodiac }})</span>
-                  <span v-if="person.notes" class="notes">{{
-                    person.notes
-                  }}</span>
-                  <span v-if="person.isHouseholdHead" class="household-head"
-                    >戶長</span
-                  >
+                  <span v-if="person.notes" class="notes">{{ person.notes }}</span>
+                  <span v-if="person.isHouseholdHead" class="household-head">戶長</span>
                 </label>
               </div>
             </div>
@@ -228,9 +224,7 @@
                   />
                   <span>{{ survivor.name }}</span>
                   <span class="zodiac">({{ survivor.zodiac }})</span>
-                  <span v-if="survivor.notes" class="notes">{{
-                    survivor.notes
-                  }}</span>
+                  <span v-if="survivor.notes" class="notes">{{ survivor.notes }}</span>
                 </label>
               </div>
             </div>
@@ -282,12 +276,8 @@
                   />
                   <span>{{ person.name }}</span>
                   <span class="zodiac">({{ person.zodiac }})</span>
-                  <span v-if="person.notes" class="notes">{{
-                    person.notes
-                  }}</span>
-                  <span v-if="person.isHouseholdHead" class="household-head"
-                    >戶長</span
-                  >
+                  <span v-if="person.notes" class="notes">{{ person.notes }}</span>
+                  <span v-if="person.isHouseholdHead" class="household-head">戶長</span>
                 </label>
               </div>
             </div>
@@ -373,9 +363,9 @@
         <div class="search-section">
           <h3>查詢祈福登記表</h3>
           <div class="search-input-group">
-            <input
-              type="text"
-              v-model="searchKeyword"
+            <input 
+              type="text" 
+              v-model="searchKeyword" 
               placeholder="輸入姓名、表單名稱或電話"
             />
           </div>
@@ -390,8 +380,8 @@
             </p>
           </div>
           <div class="registration-list">
-            <div
-              v-for="reg in filteredRegistrations"
+            <div 
+              v-for="reg in filteredRegistrations" 
               :key="reg.id"
               class="registration-item"
               :class="{
@@ -417,8 +407,8 @@
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
           </div>
           <div class="saved-records-list">
-            <div
-              v-for="(record, index) in savedRecords"
+            <div 
+              v-for="(record, index) in savedRecords" 
               :key="index"
               class="saved-record-item"
             >
@@ -493,7 +483,7 @@ const filteredRegistrations = computed(() => {
   if (!searchKeyword.value) {
     return mockRegistrations.value;
   }
-
+  
   const keyword = searchKeyword.value.toLowerCase();
   return mockRegistrations.value.filter((reg) => {
     return (
@@ -1033,7 +1023,7 @@ onMounted(() => {
     flex-direction: column;
     padding-bottom: 220px;
   }
-
+  
   .left-panel,
   .right-panel {
     flex: 1 1 100%;
@@ -1059,7 +1049,7 @@ onMounted(() => {
     flex-direction: column;
     gap: 0.5rem;
   }
-
+  
   .activity-title {
     font-size: 1rem;
   }
@@ -1081,7 +1071,7 @@ onMounted(() => {
   .total-final {
     font-size: 1rem;
   }
-
+  
   .amount {
     font-size: 1.2rem;
   }
