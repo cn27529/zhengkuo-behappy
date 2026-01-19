@@ -72,7 +72,7 @@
             <span class="total-amount">${{ totalAmount }}</span>
           </div>
           <div class="button-group">
-            <button class="btn-clear" @click="resetSelections">重置</button>
+            <button class="btn-clear" @click="handleReset">重置</button>
             <button
               class="btn-save"
               :disabled="totalAmount === 0"
@@ -101,7 +101,7 @@
               'reg-card',
               { active: selectedRegistration?.id === reg.id },
             ]"
-            @click="selectRegistration(reg)"
+            @click="handleSelectRegistration(reg)"
           >
             <div class="reg-card-title">{{ reg.formName }}</div>
             <div class="reg-card-desc">
@@ -128,7 +128,9 @@ const activityConfigs = {
 
 // 2. 狀態管理
 const searchKeyword = ref("");
+// 選中的登記表
 const selectedRegistration = ref(null);
+// 存儲選中狀態的物件
 const selections = ref({
   chaodu: [],
   diandeng: [],
@@ -146,7 +148,7 @@ const filteredRegistrations = computed(() => {
     (r) =>
       r.contact.name.includes(kw) ||
       r.contact.mobile.includes(kw) ||
-      r.formName.includes(kw)
+      r.formName.includes(kw),
   );
 });
 
@@ -178,12 +180,12 @@ const toggleGroup = (key) => {
   }
 };
 
-const selectRegistration = (reg) => {
+const handleSelectRegistration = (reg) => {
   selectedRegistration.value = reg;
-  resetSelections();
+  handleReset();
 };
 
-const resetSelections = () => {
+const handleReset = () => {
   Object.keys(selections.value).forEach((k) => (selections.value[k] = []));
 };
 

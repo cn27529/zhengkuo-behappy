@@ -59,6 +59,14 @@
     <div class="results-section" v-if="searchResults.length > 0">
       <div class="results-header">
         <h3>查詢結果 (共 {{ totalItems }} 筆)</h3>
+        <el-button
+          type="primary"
+          @click="handleNewRegistration"
+          :icon="Plus"
+          style="display: none"
+        >
+          新增登記
+        </el-button>
       </div>
 
       <!-- 查詢列表 -->
@@ -221,6 +229,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
+import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { authService } from "../services/authService";
@@ -424,6 +433,10 @@ const handleCardDesign = (item) => {
   }
 };
 
+const handleNewRegistration = () => {
+  router.push("/registration");
+};
+
 const getStatusText = (state) => {
   const statusMap = {
     creating: "建立中",
@@ -455,6 +468,20 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+  min-width: 100%;
+}
+
+.results-header h3 {
+  margin: 0;
+  color: #333;
+}
+
 .search-input-group .el-input {
   flex: 1;
   /* min-width: 300px; */
@@ -621,6 +648,16 @@ onMounted(() => {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
+  .results-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .results-header .el-button {
+    width: 100%;
+  }
+
   .search-input-group .el-button {
     width: 100%;
   }

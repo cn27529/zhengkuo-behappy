@@ -9,63 +9,119 @@
       <!-- 左側區域 70% -->
       <div class="left-panel">
         <!-- 已選擇的祈福登記表 -->
-        <div class="form-section" v-if="selectedRegistration">
-          <h3>已選擇登記表：{{ selectedRegistration.formName }}</h3>
+        <div class="form-section" v-if="joinRecordStore.selectedRegistration">
+          <h3>
+            <!-- 已選擇登記表：{{ joinRecordStore.selectedRegistration.formName }} -->
+          </h3>
           <div class="selected-info">
             <span
               ><strong>聯絡人：</strong
-              >{{ selectedRegistration.contact.name }}</span
+              >{{ joinRecordStore.selectedRegistration.contact.name }}</span
             >
             <span
               ><strong>電話：</strong
-              >{{ selectedRegistration.contact.mobile }}</span
+              >{{ joinRecordStore.selectedRegistration.contact.mobile }}</span
             >
             <span
               ><strong>關係：</strong
-              >{{ selectedRegistration.contact.relationship }}</span
+              >{{
+                joinRecordStore.selectedRegistration.contact.relationship
+              }}</span
             >
           </div>
         </div>
 
-        <div class="form-section" v-if="!selectedRegistration">
+        <div class="form-section" v-if="!joinRecordStore.selectedRegistration">
           <p class="no-selection">請從右側選擇祈福登記表</p>
         </div>
 
-        <!-- 活動項目選擇區 -->
-        <div class="form-section" v-if="selectedRegistration">
-          <h2>活動項目選擇</h2>
+        <!-- 活動項目選擇區 - 全部可見 -->
+        <div class="form-section" v-if="joinRecordStore.selectedRegistration">
+          <h2>活動參加項目選擇</h2>
 
           <!-- 超度/超薦 -->
-          <div class="activity-section">
-            <div class="activity-header">
+          <div
+            class="activity-section"
+            v-if="
+              joinRecordStore.selectedRegistration.salvation.ancestors.length >
+              0
+            "
+          >
+            <div
+              class="activity-header clickable"
+              @click="toggleActivity('chaodu')"
+              :title="isAllSelected('chaodu') ? '點擊取消全選' : '點擊全選'"
+            >
               <label class="checkbox-label">
                 <input
+                  style="display: none"
                   type="checkbox"
-                  v-model="activities.chaodu.enabled"
-                  @change="updateSelections"
+                  :checked="isAllSelected('chaodu')"
+                  :indeterminate.prop="isIndeterminate('chaodu')"
+                  @click.stop="toggleActivity('chaodu')"
                 />
-                <span class="activity-title">超度/超薦</span>
-                <span class="activity-price">每位 $1,000</span>
+                <span class="activity-title">{{
+                  joinRecordStore.activityConfigs.chaodu.label
+                }}</span>
+                <span class="activity-price"
+                  >每位 ${{
+                    joinRecordStore.activityConfigs.chaodu.price
+                  }}</span
+                >
+                <span
+                  class="selected-count"
+                  v-if="joinRecordStore.selections.chaodu.length > 0"
+                >
+                  (已選 {{ joinRecordStore.selections.chaodu.length }} 位)
+                </span>
               </label>
             </div>
-
-            <div v-if="activities.chaodu.enabled" class="person-list">
+            {{ joinRecordStore.selectedRegistration.salvation.address }}
+            <div class="person-list">
               <div
-                v-for="ancestor in selectedRegistration.salvation.ancestors"
+                v-for="ancestor in getSourceData('chaodu')"
                 :key="'ancestor-' + ancestor.id"
                 class="person-item"
               >
                 <label class="checkbox-label">
                   <input
                     type="checkbox"
-                    :value="ancestor.id"
-                    v-model="activities.chaodu.selectedIds"
-                    @change="calculateTotal"
+                    :value="ancestor"
+                    v-model="joinRecordStore.selections.chaodu"
                   />
                   <span>{{ ancestor.surname }}</span>
-                  <span v-if="ancestor.notes" class="notes">{{
-                    ancestor.notes
+
+                  氏歷代祖先
+                  <span v-if="ancestor.notes"
+                    >備註
+                    <el-tag class="person-tag" type="info">{{
+                      ancestor.notes
+                    }}</el-tag></span
+                  >
+                </label>
+              </div>
+            </div>
+            <!-- 陽上人 -->
+            <div class="person-list">
+              <div
+                v-for="person in getSourceData('selections')"
+                :key="'survivors-' + person.id"
+                class="person-item"
+              >
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    :value="person"
+                    v-model="joinRecordStore.selections.survivors"
+                  />
+                  <span>陽上人 {{ person.name }}</span>
+                  <span class="zodiac">({{ person.zodiac }})</span>
+                  <span v-if="person.notes" class="notes">{{
+                    person.notes
                   }}</span>
+                  <span v-if="person.isHouseholdHead" class="household-head"
+                    >戶長</span
+                  >
                 </label>
               </div>
             </div>
@@ -73,30 +129,47 @@
 
           <!-- 點燈 -->
           <div class="activity-section">
-            <div class="activity-header">
+            <div
+              class="activity-header clickable"
+              @click="toggleActivity('diandeng')"
+              :title="isAllSelected('diandeng') ? '點擊取消全選' : '點擊全選'"
+            >
               <label class="checkbox-label">
                 <input
+                  style="display: none"
                   type="checkbox"
-                  v-model="activities.diandeng.enabled"
-                  @change="updateSelections"
+                  :checked="isAllSelected('diandeng')"
+                  :indeterminate.prop="isIndeterminate('diandeng')"
+                  @click.stop="toggleActivity('diandeng')"
                 />
-                <span class="activity-title">點燈</span>
-                <span class="activity-price">每位 $600</span>
+                <span class="activity-title">{{
+                  joinRecordStore.activityConfigs.diandeng.label
+                }}</span>
+                <span class="activity-price"
+                  >每位 ${{
+                    joinRecordStore.activityConfigs.diandeng.price
+                  }}</span
+                >
+                <span
+                  class="selected-count"
+                  v-if="joinRecordStore.selections.diandeng.length > 0"
+                >
+                  (已選 {{ joinRecordStore.selections.diandeng.length }} 位)
+                </span>
               </label>
             </div>
 
-            <div v-if="activities.diandeng.enabled" class="person-list">
+            <div class="person-list">
               <div
-                v-for="person in selectedRegistration.blessing.persons"
+                v-for="person in getSourceData('diandeng')"
                 :key="'blessing-' + person.id"
                 class="person-item"
               >
                 <label class="checkbox-label">
                   <input
                     type="checkbox"
-                    :value="person.id"
-                    v-model="activities.diandeng.selectedIds"
-                    @change="calculateTotal"
+                    :value="person"
+                    v-model="joinRecordStore.selections.diandeng"
                   />
                   <span>{{ person.name }}</span>
                   <span class="zodiac">({{ person.zodiac }})</span>
@@ -113,30 +186,45 @@
 
           <!-- 祈福 -->
           <div class="activity-section">
-            <div class="activity-header">
+            <div
+              class="activity-header clickable"
+              @click="toggleActivity('qifu')"
+              :title="isAllSelected('qifu') ? '點擊取消全選' : '點擊全選'"
+            >
               <label class="checkbox-label">
                 <input
+                  style="display: none"
                   type="checkbox"
-                  v-model="activities.qifu.enabled"
-                  @change="updateSelections"
+                  :checked="isAllSelected('qifu')"
+                  :indeterminate.prop="isIndeterminate('qifu')"
+                  @click.stop="toggleActivity('qifu')"
                 />
-                <span class="activity-title">祈福</span>
-                <span class="activity-price">每位 $300</span>
+                <span class="activity-title">{{
+                  joinRecordStore.activityConfigs.qifu.label
+                }}</span>
+                <span class="activity-price"
+                  >每位 ${{ joinRecordStore.activityConfigs.qifu.price }}</span
+                >
+                <span
+                  class="selected-count"
+                  v-if="joinRecordStore.selections.qifu.length > 0"
+                >
+                  (已選 {{ joinRecordStore.selections.qifu.length }} 位)
+                </span>
               </label>
             </div>
 
-            <div v-if="activities.qifu.enabled" class="person-list">
+            <div class="person-list">
               <div
-                v-for="survivor in selectedRegistration.salvation.survivors"
+                v-for="survivor in getSourceData('qifu')"
                 :key="'survivor-' + survivor.id"
                 class="person-item"
               >
                 <label class="checkbox-label">
                   <input
                     type="checkbox"
-                    :value="survivor.id"
-                    v-model="activities.qifu.selectedIds"
-                    @change="calculateTotal"
+                    :value="survivor"
+                    v-model="joinRecordStore.selections.qifu"
                   />
                   <span>{{ survivor.name }}</span>
                   <span class="zodiac">({{ survivor.zodiac }})</span>
@@ -150,30 +238,102 @@
 
           <!-- 固定消災 -->
           <div class="activity-section">
-            <div class="activity-header">
+            <div
+              class="activity-header clickable"
+              @click="toggleActivity('xiaozai')"
+              :title="isAllSelected('xiaozai') ? '點擊取消全選' : '點擊全選'"
+            >
               <label class="checkbox-label">
                 <input
+                  style="display: none"
                   type="checkbox"
-                  v-model="activities.gudingxiaozai.enabled"
-                  @change="updateSelections"
+                  :checked="isAllSelected('xiaozai')"
+                  :indeterminate.prop="isIndeterminate('xiaozai')"
+                  @click.stop="toggleActivity('xiaozai')"
                 />
-                <span class="activity-title">固定消災</span>
-                <span class="activity-price">每位 $100</span>
+                <span class="activity-title">{{
+                  joinRecordStore.activityConfigs.xiaozai.label
+                }}</span>
+                <span class="activity-price"
+                  >每位 ${{
+                    joinRecordStore.activityConfigs.xiaozai.price
+                  }}</span
+                >
+                <span
+                  class="selected-count"
+                  v-if="joinRecordStore.selections.xiaozai.length > 0"
+                >
+                  (已選 {{ joinRecordStore.selections.xiaozai.length }} 位)
+                </span>
               </label>
             </div>
 
-            <div v-if="activities.gudingxiaozai.enabled" class="person-list">
+            <div class="person-list">
               <div
-                v-for="person in selectedRegistration.blessing.persons"
+                v-for="person in getSourceData('xiaozai')"
                 :key="'fixed-' + person.id"
                 class="person-item"
               >
                 <label class="checkbox-label">
                   <input
                     type="checkbox"
-                    :value="person.id"
-                    v-model="activities.gudingxiaozai.selectedIds"
-                    @change="calculateTotal"
+                    :value="person"
+                    v-model="joinRecordStore.selections.xiaozai"
+                  />
+                  <span>{{ person.name }}</span>
+                  <span class="zodiac">({{ person.zodiac }})</span>
+                  <span v-if="person.notes" class="notes">{{
+                    person.notes
+                  }}</span>
+                  <span v-if="person.isHouseholdHead" class="household-head"
+                    >戶長</span
+                  >
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 中元普渡 -->
+          <div class="activity-section" style="display: none">
+            <div
+              class="activity-header clickable"
+              @click="toggleActivity('pudu')"
+              :title="isAllSelected('pudu') ? '點擊取消全選' : '點擊全選'"
+            >
+              <label class="checkbox-label">
+                <input
+                  style="display: none"
+                  type="checkbox"
+                  :checked="isAllSelected('pudu')"
+                  :indeterminate.prop="isIndeterminate('pudu')"
+                  @click.stop="toggleActivity('pudu')"
+                />
+                <span class="activity-title">{{
+                  joinRecordStore.activityConfigs.pudu.label
+                }}</span>
+                <span class="activity-price"
+                  >每位 ${{ joinRecordStore.activityConfigs.pudu.price }}</span
+                >
+                <span
+                  class="selected-count"
+                  v-if="joinRecordStore.selections.pudu.length > 0"
+                >
+                  (已選 {{ joinRecordStore.selections.pudu.length }} 位)
+                </span>
+              </label>
+            </div>
+
+            <div class="person-list">
+              <div
+                v-for="person in getSourceData('pudu')"
+                :key="'pudu-' + person.id"
+                class="person-item"
+              >
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    :value="person"
+                    v-model="joinRecordStore.selections.pudu"
                   />
                   <span>{{ person.name }}</span>
                   <span class="zodiac">({{ person.zodiac }})</span>
@@ -189,83 +349,20 @@
           </div>
         </div>
 
-        <!-- 金額統計 -->
-        <div class="form-section total-section" v-if="selectedRegistration">
-          <h2>金額統計</h2>
-          <div class="total-breakdown">
-            <div
-              class="total-item"
-              v-if="
-                activities.chaodu.enabled &&
-                activities.chaodu.selectedIds.length > 0
-              "
-            >
-              <span>超度/超薦：</span>
-              <span
-                >{{ activities.chaodu.selectedIds.length }} 位 × $1,000 = ${{
-                  activities.chaodu.selectedIds.length * 1000
-                }}</span
-              >
-            </div>
-            <div
-              class="total-item"
-              v-if="
-                activities.diandeng.enabled &&
-                activities.diandeng.selectedIds.length > 0
-              "
-            >
-              <span>點燈：</span>
-              <span
-                >{{ activities.diandeng.selectedIds.length }} 位 × $600 = ${{
-                  activities.diandeng.selectedIds.length * 600
-                }}</span
-              >
-            </div>
-            <div
-              class="total-item"
-              v-if="
-                activities.qifu.enabled &&
-                activities.qifu.selectedIds.length > 0
-              "
-            >
-              <span>祈福：</span>
-              <span
-                >{{ activities.qifu.selectedIds.length }} 位 × $300 = ${{
-                  activities.qifu.selectedIds.length * 300
-                }}</span
-              >
-            </div>
-            <div
-              class="total-item"
-              v-if="
-                activities.gudingxiaozai.enabled &&
-                activities.gudingxiaozai.selectedIds.length > 0
-              "
-            >
-              <span>固定消災：</span>
-              <span
-                >{{ activities.gudingxiaozai.selectedIds.length }} 位 × $100 =
-                ${{ activities.gudingxiaozai.selectedIds.length * 100 }}</span
-              >
-            </div>
-            <div class="total-final">
-              <span>總金額：</span>
-              <span class="amount">${{ totalAmount }}</span>
-            </div>
-          </div>
-        </div>
-
         <!-- 操作按鈕 -->
-        <div class="form-actions" v-if="selectedRegistration">
+        <div class="form-actions" v-if="joinRecordStore.selectedRegistration">
+          <button type="button" class="btn btn-secondary" @click="handleReset">
+            重置選擇
+          </button>
           <button
             type="button"
-            class="btn btn-secondary"
-            @click="resetSelections"
+            class="btn btn-primary"
+            @click="handleSave"
+            :disabled="
+              joinRecordStore.isLoading || joinRecordStore.totalAmount === 0
+            "
           >
-            重置
-          </button>
-          <button type="button" class="btn btn-primary" @click="saveRecord">
-            保存參加記錄
+            {{ joinRecordStore.isLoading ? "保存中..." : "保存參加記錄" }}
           </button>
         </div>
       </div>
@@ -280,18 +377,17 @@
               type="text"
               v-model="searchKeyword"
               placeholder="輸入姓名、表單名稱或電話"
-              @input="searchRegistrations"
             />
           </div>
-          <p class="search-hint">
-            共 {{ filteredRegistrations.length }} 筆登記表
-          </p>
         </div>
 
         <!-- 登記表列表 -->
         <div class="results-section">
           <div class="results-header">
             <h3>登記表列表</h3>
+            <p class="search-hint">
+              共 {{ filteredRegistrations.length }} 筆登記表
+            </p>
           </div>
           <div class="registration-list">
             <div
@@ -300,9 +396,10 @@
               class="registration-item"
               :class="{
                 active:
-                  selectedRegistration && selectedRegistration.id === reg.id,
+                  joinRecordStore.selectedRegistration &&
+                  joinRecordStore.selectedRegistration.id === reg.id,
               }"
-              @click="selectRegistration(reg)"
+              @click="handleSelectRegistration(reg)"
             >
               <div class="reg-name">{{ reg.formName }}</div>
               <div class="reg-contact">{{ reg.contact.name }}</div>
@@ -336,6 +433,38 @@
       </div>
     </div>
 
+    <!-- 金額統計 - 現在可以使用多種 CSS class 來控制位置 -->
+    <div
+      class="total-float total-position-bottom-center"
+      v-if="
+        joinRecordStore.selectedRegistration && joinRecordStore.totalAmount > 0
+      "
+    >
+      <div class="total-header">
+        <h3>金額統計</h3>
+      </div>
+      <div class="total-breakdown">
+        <div
+          class="total-item"
+          v-for="(config, key) in joinRecordStore.activityConfigs"
+          :key="key"
+          v-show="joinRecordStore.selections[key].length > 0"
+        >
+          <span>{{ config.label }}：</span>
+          <span
+            >{{ joinRecordStore.selections[key].length }} 位 × ${{
+              config.price
+            }}
+            = ${{ joinRecordStore.selections[key].length * config.price }}</span
+          >
+        </div>
+        <div class="total-final">
+          <span>總金額：</span>
+          <span class="amount">${{ joinRecordStore.totalAmount }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- 成功提示 -->
     <div v-if="showSuccess" class="success-message">
       {{ successMessage }}
@@ -352,43 +481,12 @@ const joinRecordStore = useJoinRecordStore();
 
 // 狀態管理
 const searchKeyword = ref("");
-const selectedRegistration = ref(null);
 const showSuccess = ref(false);
 const successMessage = ref("");
 const savedRecords = ref([]);
 
-// 活動項目狀態
-const activities = ref({
-  chaodu: {
-    enabled: false,
-    selectedIds: [],
-    price: 1000,
-  },
-  diandeng: {
-    enabled: false,
-    selectedIds: [],
-    price: 600,
-  },
-  qifu: {
-    enabled: false,
-    selectedIds: [],
-    price: 300,
-  },
-  gudingxiaozai: {
-    enabled: false,
-    selectedIds: [],
-    price: 100,
-  },
-});
-
-// 模擬資料 (同前)
+// 模擬資料
 const mockRegistrations = ref(mockDatas);
-
-const getMockRegistrations = async () => {
-  const mockData = await joinRecordStore.loadMockData();
-  mockRegistrations.value = mockData;
-  return mockData;
-};
 
 // 計算篩選後的登記表
 const filteredRegistrations = computed(() => {
@@ -399,138 +497,110 @@ const filteredRegistrations = computed(() => {
   const keyword = searchKeyword.value.toLowerCase();
   return mockRegistrations.value.filter((reg) => {
     return (
+      reg.formSource.toLowerCase().includes(keyword) ||
       reg.formName.toLowerCase().includes(keyword) ||
       reg.contact.name.toLowerCase().includes(keyword) ||
       reg.contact.mobile.includes(keyword) ||
-      reg.contact.phone.includes(keyword)
+      (reg.contact.phone && reg.contact.phone.includes(keyword)) ||
+      reg.contact.relationship.toLowerCase().includes(keyword) ||
+      // 消災地址
+      reg.blessing.address.toLowerCase().includes(keyword) ||
+      reg.blessing.persons.some(
+        (person) =>
+          person.name.toLowerCase().includes(keyword) ||
+          person.zodiac.toLowerCase().includes(keyword) ||
+          person.notes.toLowerCase().includes(keyword),
+      ) ||
+      // 超度地址
+      reg.salvation.address.toLowerCase().includes(keyword) ||
+      reg.salvation.survivors.some(
+        (survivor) =>
+          survivor.name.toLowerCase().includes(keyword) ||
+          survivor.zodiac.toLowerCase().includes(keyword) ||
+          survivor.notes.toLowerCase().includes(keyword),
+      )
     );
   });
 });
 
-// 計算總金額
-const totalAmount = computed(() => {
-  let total = 0;
+// 獲取資料來源
+const getSourceData = (activityKey) => {
+  if (!joinRecordStore.selectedRegistration) return [];
 
-  if (activities.value.chaodu.enabled) {
-    total += activities.value.chaodu.selectedIds.length * 1000;
-  }
-  if (activities.value.diandeng.enabled) {
-    total += activities.value.diandeng.selectedIds.length * 600;
-  }
-  if (activities.value.qifu.enabled) {
-    total += activities.value.qifu.selectedIds.length * 300;
-  }
-  if (activities.value.gudingxiaozai.enabled) {
-    total += activities.value.gudingxiaozai.selectedIds.length * 100;
-  }
+  const sourcePath = joinRecordStore.activityConfigs[activityKey].source;
+  const [mainKey, subKey] = sourcePath.split(".");
 
-  return total;
-});
+  return joinRecordStore.selectedRegistration[mainKey]?.[subKey] || [];
+};
 
-// 搜尋登記表
-const searchRegistrations = () => {
-  // 搜尋功能已由 computed 處理
+// 檢查是否全選
+const isAllSelected = (activityKey) => {
+  const sourceData = getSourceData(activityKey);
+  if (sourceData.length === 0) return false;
+  return joinRecordStore.selections[activityKey].length === sourceData.length;
+};
+
+// 檢查是否部分選中
+const isIndeterminate = (activityKey) => {
+  const count = joinRecordStore.selections[activityKey].length;
+  const total = getSourceData(activityKey).length;
+  return count > 0 && count < total;
+};
+
+// 切換活動全選
+const toggleActivity = (activityKey) => {
+  const sourceData = getSourceData(activityKey);
+  joinRecordStore.toggleGroup(activityKey, sourceData);
 };
 
 // 選擇登記表
-const selectRegistration = (reg) => {
-  selectedRegistration.value = reg;
-  resetSelections();
-};
-
-// 更新選擇項目
-const updateSelections = () => {
-  // 當取消勾選活動時，清空該活動的選擇
-  if (!activities.value.chaodu.enabled) {
-    activities.value.chaodu.selectedIds = [];
-  }
-  if (!activities.value.diandeng.enabled) {
-    activities.value.diandeng.selectedIds = [];
-  }
-  if (!activities.value.qifu.enabled) {
-    activities.value.qifu.selectedIds = [];
-  }
-  if (!activities.value.gudingxiaozai.enabled) {
-    activities.value.gudingxiaozai.selectedIds = [];
-  }
-};
-
-// 計算總金額（觸發重新計算）
-const calculateTotal = () => {
-  // 由 computed 自動處理
+const handleSelectRegistration = (reg) => {
+  joinRecordStore.selectRegistration(reg);
 };
 
 // 重置選擇
-const resetSelections = () => {
-  activities.value = {
-    chaodu: { enabled: false, selectedIds: [], price: 1000 },
-    diandeng: { enabled: false, selectedIds: [], price: 600 },
-    qifu: { enabled: false, selectedIds: [], price: 300 },
-    gudingxiaozai: { enabled: false, selectedIds: [], price: 100 },
-  };
+const handleReset = () => {
+  if (confirm("確定要重置所有選擇嗎？")) {
+    joinRecordStore.resetSelections();
+  }
 };
 
-// 保存參加記錄
-const saveRecord = () => {
-  if (!selectedRegistration.value) {
+// 保存記錄
+const handleSave = async () => {
+  if (!joinRecordStore.selectedRegistration) {
     alert("請選擇祈福登記表");
     return;
   }
 
-  if (totalAmount.value === 0) {
+  if (joinRecordStore.totalAmount === 0) {
     alert("請至少選擇一個活動項目");
     return;
   }
 
-  // 建立參加記錄
-  const record = {
-    registrationId: selectedRegistration.value.id,
-    formName: selectedRegistration.value.formName,
-    contact: selectedRegistration.value.contact,
-    activities: {
-      chaodu: {
-        enabled: activities.value.chaodu.enabled,
-        selectedIds: [...activities.value.chaodu.selectedIds],
-        count: activities.value.chaodu.selectedIds.length,
-        amount: activities.value.chaodu.selectedIds.length * 1000,
-      },
-      diandeng: {
-        enabled: activities.value.diandeng.enabled,
-        selectedIds: [...activities.value.diandeng.selectedIds],
-        count: activities.value.diandeng.selectedIds.length,
-        amount: activities.value.diandeng.selectedIds.length * 600,
-      },
-      qifu: {
-        enabled: activities.value.qifu.enabled,
-        selectedIds: [...activities.value.qifu.selectedIds],
-        count: activities.value.qifu.selectedIds.length,
-        amount: activities.value.qifu.selectedIds.length * 300,
-      },
-      gudingxiaozai: {
-        enabled: activities.value.gudingxiaozai.enabled,
-        selectedIds: [...activities.value.gudingxiaozai.selectedIds],
-        count: activities.value.gudingxiaozai.selectedIds.length,
-        amount: activities.value.gudingxiaozai.selectedIds.length * 100,
-      },
-    },
-    totalAmount: totalAmount.value,
-    savedAt: new Date().toISOString(),
-  };
+  const success = await joinRecordStore.submitRecord();
 
-  // 保存到記錄列表
-  savedRecords.value.unshift(record);
+  if (success) {
+    // 建立簡化記錄用於顯示
+    const record = {
+      formName: joinRecordStore.selectedRegistration.formName,
+      totalAmount: joinRecordStore.totalAmount,
+      savedAt: new Date().toISOString(),
+    };
 
-  // 顯示成功訊息
-  successMessage.value = "參加記錄已保存！";
-  showSuccess.value = true;
-  setTimeout(() => {
-    showSuccess.value = false;
-  }, 3000);
+    savedRecords.value.unshift(record);
 
-  // 重置選擇
-  resetSelections();
+    // 顯示成功訊息
+    successMessage.value = "參加記錄已保存！";
+    showSuccess.value = true;
+    setTimeout(() => {
+      showSuccess.value = false;
+    }, 3000);
 
-  console.log("已保存參加記錄：", record);
+    // 重置選擇
+    joinRecordStore.resetSelections();
+  } else {
+    alert("保存失敗，請稍後再試");
+  }
 };
 
 // 格式化日期
@@ -546,16 +616,32 @@ const formatDate = (dateString) => {
 };
 
 // 組件掛載
-onMounted(async () => {
-  console.log("活動參加記錄頁面已載入");  
+onMounted(() => {
+  console.log("活動參加記錄頁面已載入");
+  console.log("Store 狀態:", joinRecordStore);
 });
 </script>
 
 <style scoped>
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+  min-width: 100%;
+}
+
+.results-header h3 {
+  margin: 0;
+  color: #333;
+}
+
 .activity-record-container {
   display: flex;
   gap: 1.5rem;
   min-height: calc(100vh - 200px);
+  padding-bottom: 200px; /* 為浮動金額統計留空間 */
 }
 
 .left-panel {
@@ -603,6 +689,18 @@ onMounted(async () => {
   margin-bottom: 0.75rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s;
+}
+
+.activity-header.clickable {
+  cursor: pointer;
+  padding: 0.5rem;
+  margin: -0.5rem -0.5rem 0.75rem -0.5rem;
+  border-radius: 4px;
+}
+
+.activity-header.clickable:hover {
+  background: rgba(139, 69, 19, 0.05);
 }
 
 .activity-title {
@@ -615,6 +713,13 @@ onMounted(async () => {
 .activity-price {
   color: #666;
   font-size: 0.9rem;
+}
+
+.selected-count {
+  color: var(--success-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
 }
 
 .checkbox-label {
@@ -669,24 +774,133 @@ onMounted(async () => {
   margin-left: 0.5rem;
 }
 
-/* 金額統計 */
-.total-section {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+/* 浮動金額統計 - 基礎樣式 */
+.total-float {
+  position: fixed;
+  width: 350px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: white;
   border: 2px solid var(--primary-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  bottom: 20px;
+}
+
+/* 方法一：使用不同的 CSS class */
+
+/* 左下方位置 */
+.total-position-bottom-left {
+  left: 20px;
+  right: auto;
+}
+
+/* 中間正下方位置 */
+.total-position-bottom-center {
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
+}
+
+/* 右下方位置 */
+.total-position-bottom-right {
+  right: 20px;
+  left: auto;
+}
+
+/* 方法二：使用 data-attribute (更推薦) */
+
+/* 使用 data-position 屬性來控制位置 */
+.total-float[data-position="bottom-left"] {
+  left: 20px;
+  right: auto;
+}
+
+.total-float[data-position="bottom-center"] {
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
+}
+
+.total-float[data-position="bottom-right"] {
+  right: 20px;
+  left: auto;
+}
+
+/* 方法三：使用 CSS 變數 (最彈性) */
+
+/* 在一個全域的 CSS 檔案中，您可以這樣設定：*/
+:root {
+  --total-float-position: bottom-right; /* 預設左下 */
+}
+
+.total-float {
+  position: fixed;
+  width: 350px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: white;
+  border: 2px solid var(--primary-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  bottom: 20px;
+}
+
+/* 位置控制：  */
+.total-float.bottom-left {
+  left: 20px;
+  right: auto;
+}
+
+.total-float.bottom-center {
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
+}
+
+.total-float.bottom-right {
+  right: 20px;
+  left: auto;
+}
+
+.total-header {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px 8px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.total-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: white;
+  border: none;
+  padding: 0;
 }
 
 .total-breakdown {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  padding: 1rem;
 }
 
 .total-item {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem;
-  background: white;
+  background: #f8f9fa;
   border-radius: 4px;
+  font-size: 0.9rem;
 }
 
 .total-final {
@@ -696,18 +910,18 @@ onMounted(async () => {
   background: var(--primary-color);
   color: white;
   border-radius: 6px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
   margin-top: 0.5rem;
 }
 
 .amount {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
 /* 登記表列表 */
 .registration-list {
-  max-height: 400px;
+  max-height: 1100px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -805,13 +1019,38 @@ onMounted(async () => {
 
 /* 響應式設計 */
 @media (max-width: 1024px) {
+  .results-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .results-header .el-button {
+    width: 100%;
+  }
+
   .activity-record-container {
     flex-direction: column;
+    padding-bottom: 220px;
   }
 
   .left-panel,
   .right-panel {
     flex: 1 1 100%;
+  }
+
+  .total-float {
+    width: calc(100% - 40px);
+  }
+
+  /* 響應式時都置中顯示比較好 */
+  .total-float,
+  .total-position-bottom-left,
+  .total-position-bottom-center,
+  .total-position-bottom-right {
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
   }
 }
 
@@ -823,6 +1062,20 @@ onMounted(async () => {
 
   .activity-title {
     font-size: 1rem;
+  }
+
+  .total-float {
+    width: calc(100% - 20px);
+    bottom: 10px;
+  }
+
+  .total-float,
+  .total-position-bottom-left,
+  .total-position-bottom-center,
+  .total-position-bottom-right {
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
   }
 
   .total-final {

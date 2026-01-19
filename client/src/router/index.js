@@ -155,7 +155,7 @@ const routes = [
       const pageState = pageStateStore.getPageState("registration");
       if (pageState.action === "create") {
         console.log(
-          "🚪 進入 RegistrationEdit 路由，頁面狀態是action=create，所以狀態與頁面不匹配，重新導航"
+          "🚪 進入 RegistrationEdit 路由，頁面狀態是action=create，所以狀態與頁面不匹配，重新導航",
         );
         next({
           path: "/registration-list",
@@ -237,7 +237,7 @@ router.beforeEach((to, from, next) => {
 
   // 明確檢查 matched records 中是否有 requiresAuth === true
   const requiresAuth = to.matched.some(
-    (record) => record.meta && record.meta.requiresAuth === true
+    (record) => record.meta && record.meta.requiresAuth === true,
   );
 
   console.log("路由守衛(目前檢查的路由):", {
