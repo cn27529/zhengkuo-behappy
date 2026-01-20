@@ -1,0 +1,293 @@
+[
+  {
+    "id": 1,
+    "registrationId": 1,
+    "activityId": "w4x5y6z",
+    "registeredAt": "2025-01-16T09:00:00.000Z",
+    "registeredBy": "王大明",
+    "state": "confirmed",
+    "items": [
+      {
+        "type": "chaodu",
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "subtotal": 1000,
+        "source": "salvation.ancestors",
+        "sourceData": [
+          {
+            "id": 1,
+            "surname": "王府",
+            "notes": "歷代祖先"
+          }
+        ]
+      },
+      {
+        "type": "survivors",
+        "label": "陽上人",
+        "price": 300,
+        "quantity": 2,
+        "subtotal": 600,
+        "source": "salvation.survivors",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "王大明",
+            "zodiac": "龍",
+            "notes": "二哥"
+          },
+          {
+            "id": 2,
+            "name": "李小芬",
+            "zodiac": "蛇",
+            "notes": "大姐"
+          }
+        ]
+      },
+      {
+        "type": "qifu",
+        "label": "祈福",
+        "price": 300,
+        "quantity": 2,
+        "subtotal": 600,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "王大明",
+            "zodiac": "龍",
+            "notes": "二哥",
+            "isHouseholdHead": true
+          },
+          {
+            "id": 2,
+            "name": "李小芬",
+            "zodiac": "蛇",
+            "notes": "大姐",
+            "isHouseholdHead": false
+          }
+        ]
+      }
+    ],
+    "totalAmount": 2200,
+    "discountAmount": 200,
+    "finalAmount": 2000,
+    "paidAmount": 2000,
+    "needReceipt": true,
+    "receiptNumber": "R2025010001",
+    "receiptIssued": true,
+    "receiptIssuedAt": "2025-01-16T10:00:00.000Z",
+    "receiptIssuedBy": "櫃台小姐",
+    "accountingState": "reconciled",
+    "accountingDate": "2025-01-16T15:00:00.000Z",
+    "accountingBy": "會計王小姐",
+    "accountingNotes": "老信徒折扣200元",
+    "paymentState": "paid",
+    "paymentMethod": "transfer",
+    "paymentDate": "2025-01-16T09:30:00.000Z",
+    "paymentNotes": "銀行轉帳，後五碼12345",
+    "notes": "祈福與超度都參加",
+    "createdAt": "2025-01-16T09:00:00.000Z",
+    "createdBy": "admin",
+    "updatedAt": "2025-01-16T15:00:00.000Z",
+    "updatedUser": "accounting"
+  },
+  {
+    "id": 2,
+    "registrationId": 2,
+    "activityId": "m7n8o9p",
+    "registeredAt": "2024-08-10T11:00:00.000Z",
+    "registeredBy": "陳美玲",
+    "state": "completed",
+    "items": [
+      {
+        "type": "pudu",
+        "label": "中元普渡",
+        "price": 1200,
+        "quantity": 2,
+        "subtotal": 2400,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "陳美玲",
+            "zodiac": "兔",
+            "notes": "",
+            "isHouseholdHead": true
+          },
+          {
+            "id": 2,
+            "name": "陳志豪",
+            "zodiac": "虎",
+            "notes": "弟弟",
+            "isHouseholdHead": false
+          }
+        ]
+      },
+      {
+        "type": "chaodu",
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "subtotal": 1000,
+        "source": "salvation.ancestors",
+        "sourceData": [
+          {
+            "id": 1,
+            "surname": "陳氏",
+            "notes": ""
+          }
+        ]
+      }
+    ],
+    "totalAmount": 3400,
+    "discountAmount": 0,
+    "finalAmount": 3400,
+    "paidAmount": 3400,
+    "needReceipt": false,
+    "receiptNumber": "",
+    "receiptIssued": false,
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "reconciled",
+    "accountingDate": "2024-08-15T10:00:00.000Z",
+    "accountingBy": "會計王小姐",
+    "accountingNotes": "",
+    "paymentState": "paid",
+    "paymentMethod": "cash",
+    "paymentDate": "2024-08-10T11:15:00.000Z",
+    "paymentNotes": "",
+    "notes": "中元普渡法會",
+    "createdAt": "2024-08-10T11:00:00.000Z",
+    "createdBy": "admin",
+    "updatedAt": "2024-08-15T10:00:00.000Z",
+    "updatedUser": "accounting"
+  },
+  {
+    "id": 3,
+    "registrationId": 4,
+    "activityId": "w4x5y6z",
+    "registeredAt": "2025-01-18T10:00:00.000Z",
+    "registeredBy": "黃雅雯",
+    "state": "pending",
+    "items": [
+      {
+        "type": "xiaozai",
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "subtotal": 300,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "黃雅雯",
+            "zodiac": "馬",
+            "notes": "",
+            "isHouseholdHead": true
+          },
+          {
+            "id": 2,
+            "name": "劉建國",
+            "zodiac": "羊",
+            "notes": "先生",
+            "isHouseholdHead": false
+          },
+          {
+            "id": 3,
+            "name": "劉小妹",
+            "zodiac": "猴",
+            "notes": "女兒",
+            "isHouseholdHead": false
+          }
+        ]
+      }
+    ],
+    "totalAmount": 300,
+    "discountAmount": 0,
+    "finalAmount": 300,
+    "paidAmount": 0,
+    "needReceipt": true,
+    "receiptNumber": "",
+    "receiptIssued": false,
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "unpaid",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "待繳費確認",
+    "createdAt": "2025-01-18T10:00:00.000Z",
+    "createdBy": "admin",
+    "updatedAt": "2025-01-18T10:00:00.000Z",
+    "updatedUser": "admin"
+  },
+  {
+    "id": 4,
+    "registrationId": 3,
+    "activityId": "w4x5y6z",
+    "registeredAt": "2025-01-17T14:30:00.000Z",
+    "registeredBy": "林志明",
+    "state": "confirmed",
+    "items": [
+      {
+        "type": "diandeng",
+        "label": "點燈",
+        "price": 600,
+        "quantity": 1,
+        "subtotal": 600,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "林志明",
+            "zodiac": "鼠",
+            "notes": "",
+            "isHouseholdHead": true
+          }
+        ]
+      },
+      {
+        "type": "chaodu",
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "subtotal": 1000,
+        "source": "salvation.ancestors",
+        "sourceData": [
+          {
+            "id": 1,
+            "surname": "林門",
+            "notes": "祖先牌位"
+          }
+        ]
+      }
+    ],
+    "totalAmount": 1600,
+    "discountAmount": 0,
+    "finalAmount": 1600,
+    "paidAmount": 1600,
+    "needReceipt": true,
+    "receiptNumber": "R2025010002",
+    "receiptIssued": true,
+    "receiptIssuedAt": "2025-01-17T15:00:00.000Z",
+    "receiptIssuedBy": "櫃台小姐",
+    "accountingState": "reconciled",
+    "accountingDate": "2025-01-17T17:00:00.000Z",
+    "accountingBy": "會計王小姐",
+    "accountingNotes": "",
+    "paymentState": "paid",
+    "paymentMethod": "cash",
+    "paymentDate": "2025-01-17T14:45:00.000Z",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2025-01-17T14:30:00.000Z",
+    "createdBy": "admin",
+    "updatedAt": "2025-01-17T17:00:00.000Z",
+    "updatedUser": "accounting"
+  }
+]
