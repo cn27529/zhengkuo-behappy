@@ -76,7 +76,7 @@
             <button
               class="btn-save"
               :disabled="totalAmount === 0"
-              @click="handleSave"
+              @click="handleSaveParticipationRecord"
             >
               💾 保存參加記錄
             </button>
@@ -190,7 +190,7 @@ const handleReset = () => {
   Object.keys(selections.value).forEach((k) => (selections.value[k] = []));
 };
 
-const handleSave = () => {
+const handleSaveParticipationRecord = () => {
   const payload = {
     registrationId: selectedRegistration.value.id,
     formName: selectedRegistration.value.formName,

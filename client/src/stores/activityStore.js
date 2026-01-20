@@ -8,6 +8,10 @@ import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDatas from "../data/mock_activities.json";
 
+/**
+ * 活動的 Pinia store，管理活動的狀態與操作。
+ * @module stores/activityStore
+ */
 export const useActivityStore = defineStore("activity", () => {
   // ========== 狀態 ==========
   const allActivities = ref([]);
@@ -67,7 +71,7 @@ export const useActivityStore = defineStore("activity", () => {
   const totalParticipants = computed(() => {
     return activities1Year.value.reduce(
       (sum, activity) => sum + (activity.participants || 0),
-      0
+      0,
     );
   });
 
@@ -125,7 +129,7 @@ export const useActivityStore = defineStore("activity", () => {
     // 類型篩選
     if (selectedItemTypes.value.length > 0) {
       filtered = filtered.filter((activity) =>
-        selectedItemTypes.value.includes(activity.item_type)
+        selectedItemTypes.value.includes(activity.item_type),
       );
     }
 
@@ -137,7 +141,7 @@ export const useActivityStore = defineStore("activity", () => {
           activity.name.toLowerCase().includes(keyword) ||
           activity.description?.toLowerCase().includes(keyword) ||
           activity.location.toLowerCase().includes(keyword) ||
-          activity.createdUser?.toLowerCase().includes(keyword)
+          activity.createdUser?.toLowerCase().includes(keyword),
       );
     }
 
@@ -153,7 +157,7 @@ export const useActivityStore = defineStore("activity", () => {
     // 類型篩選
     if (selectedItemTypes.value.length > 0) {
       filtered = filtered.filter((activity) =>
-        selectedItemTypes.value.includes(activity.item_type)
+        selectedItemTypes.value.includes(activity.item_type),
       );
     }
 
@@ -165,7 +169,7 @@ export const useActivityStore = defineStore("activity", () => {
           activity.name.toLowerCase().includes(keyword) ||
           activity.description?.toLowerCase().includes(keyword) ||
           activity.location.toLowerCase().includes(keyword) ||
-          activity.createdUser?.toLowerCase().includes(keyword)
+          activity.createdUser?.toLowerCase().includes(keyword),
       );
     }
 
@@ -480,7 +484,7 @@ export const useActivityStore = defineStore("activity", () => {
 
       const result = await serviceAdapter.updateParticipants(
         activityId,
-        newParticipants
+        newParticipants,
       );
 
       if (result.success) {
@@ -532,7 +536,7 @@ export const useActivityStore = defineStore("activity", () => {
 
       const result = await serviceAdapter.updateActivity(
         activityId,
-        activityData
+        activityData,
       );
 
       if (result.success) {
@@ -728,7 +732,7 @@ export const useActivityStore = defineStore("activity", () => {
 
     try {
       const localActivity = allActivities.value.find(
-        (a) => a.activityId === activityId
+        (a) => a.activityId === activityId,
       );
       if (localActivity) {
         return {
@@ -779,7 +783,7 @@ export const useActivityStore = defineStore("activity", () => {
     try {
       if (serviceAdapter.getIsMock()) {
         const filtered = allActivities.value.filter(
-          (a) => a.type === item_type || a.item_type === item_type
+          (a) => a.type === item_type || a.item_type === item_type,
         );
         console.warn("⚠️ 當前模式不為 Directus，使用本地獲取活動");
         return {
@@ -796,7 +800,7 @@ export const useActivityStore = defineStore("activity", () => {
       } else {
         error.value = result.message;
         const filtered = allActivities.value.filter(
-          (a) => a.type === item_type || a.item_type === item_type
+          (a) => a.type === item_type || a.item_type === item_type,
         );
         return {
           success: true,

@@ -1,6 +1,4 @@
-// src/stores/registration.js
-// 本檔為報名表單的 Pinia store，管理整個祈福登記表的狀態與操作。
-// 🔄 重構重點：實現 registrationForm 和 formArray[currentFormIndex] 的雙向實時同步
+// src/stores/registrationStore.js
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
@@ -11,6 +9,8 @@ import { DateUtils } from "../utils/dateUtils.js";
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 
+// 祈福登記表單的 Pinia store，管理整個祈福登記表的狀態與操作。
+// 🔄 重構重點：實現 registrationForm 和 formArray[currentFormIndex] 的雙向實時同步
 export const useRegistrationStore = defineStore("registration", () => {
   const configStore = useConfigStore();
 
@@ -127,14 +127,14 @@ export const useRegistrationStore = defineStore("registration", () => {
         ) {
           // 進行深拷貝，避免引用問題
           formArray.value[currentFormIndex.value] = JSON.parse(
-            JSON.stringify(newValue)
+            JSON.stringify(newValue),
           );
           console.log(
-            `[v0] Sync: registrationForm → formArray[${currentFormIndex.value}]`
+            `[v0] Sync: registrationForm → formArray[${currentFormIndex.value}]`,
           );
         }
       },
-      { deep: true } // 🔑 關鍵：deep: true 監聽所有深層屬性變化（包括嵌套物件和陣列）
+      { deep: true }, // 🔑 關鍵：deep: true 監聽所有深層屬性變化（包括嵌套物件和陣列）
     );
   };
 
@@ -212,7 +212,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 將新表單預設填入聯絡人資料
       newForm.state = "editing";
       newForm.contact = JSON.parse(
-        JSON.stringify(registrationForm.value.contact)
+        JSON.stringify(registrationForm.value.contact),
       );
       // 將新表單推入陣列
       formArray.value.push(newForm);
@@ -283,7 +283,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
     if (formArray.value.length > 0 && currentFormIndex.value >= 0) {
       formArray.value[currentFormIndex.value] = JSON.parse(
-        JSON.stringify(registrationForm.value)
+        JSON.stringify(registrationForm.value),
       );
     }
 
@@ -332,14 +332,14 @@ export const useRegistrationStore = defineStore("registration", () => {
   });
 
   const currentFormSummary = computed(
-    () => getFormSummaries.value[currentFormIndex.value]
+    () => getFormSummaries.value[currentFormIndex.value],
   );
 
   const registrationForm = ref(getInitialFormData());
 
   const currentHouseholdHeadsCount = computed(() => {
     return registrationForm.value.blessing.persons.filter(
-      (person) => person.isHouseholdHead
+      (person) => person.isHouseholdHead,
     ).length;
   });
 
@@ -509,7 +509,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
     if (filledBlessingPersons > 0 && blessingAddrFilled) {
       const hasIncompletePerson = allBlessingPersons.some(
-        (p) => !p.zodiac || !p.zodiac.trim()
+        (p) => !p.zodiac || !p.zodiac.trim(),
       );
       if (hasIncompletePerson) {
         details.valid = false;
@@ -523,7 +523,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
     if (allBlessingPersons.length >= 2) {
       const hasIncompletePerson = allBlessingPersons.some(
-        (p) => !p.name || !p.name.trim()
+        (p) => !p.name || !p.name.trim(),
       );
       if (hasIncompletePerson) {
         details.valid = false;
@@ -538,7 +538,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     const allAncestors = registrationForm.value.salvation.ancestors || [];
     if (allAncestors.length >= 2) {
       const hasIncompleteAncestor = allAncestors.some(
-        (a) => !a.surname || !a.surname.trim()
+        (a) => !a.surname || !a.surname.trim(),
       );
       if (hasIncompleteAncestor) {
         details.valid = false;
@@ -555,7 +555,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     const allSurvivors = registrationForm.value.salvation.survivors || [];
     if (allSurvivors.length >= 2) {
       const hasIncompleteSurvivor = allSurvivors.some(
-        (s) => !s.name || !s.name.trim()
+        (s) => !s.name || !s.name.trim(),
       );
       if (hasIncompleteSurvivor) {
         details.valid = false;
@@ -640,7 +640,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   const removeBlessingPerson = (id) => {
     const index = registrationForm.value.blessing.persons.findIndex(
-      (p) => p.id === id
+      (p) => p.id === id,
     );
     if (index !== -1) {
       registrationForm.value.blessing.persons.splice(index, 1);
@@ -649,7 +649,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   const toggleHouseholdHead = (id) => {
     const person = registrationForm.value.blessing.persons.find(
-      (p) => p.id === id
+      (p) => p.id === id,
     );
     if (person) {
       if (person.isHouseholdHead) {
@@ -669,7 +669,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     const newId =
       Math.max(
         ...registrationForm.value.salvation.ancestors.map((a) => a.id),
-        0
+        0,
       ) + 1;
     registrationForm.value.salvation.ancestors.push({
       id: newId,
@@ -680,7 +680,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   const removeAncestor = (id) => {
     const index = registrationForm.value.salvation.ancestors.findIndex(
-      (a) => a.id === id
+      (a) => a.id === id,
     );
     if (index !== -1) {
       registrationForm.value.salvation.ancestors.splice(index, 1);
@@ -697,7 +697,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     const newId =
       Math.max(
         ...registrationForm.value.salvation.survivors.map((s) => s.id),
-        0
+        0,
       ) + 1;
     registrationForm.value.salvation.survivors.push({
       id: newId,
@@ -709,7 +709,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
   const removeSurvivor = (id) => {
     const index = registrationForm.value.salvation.survivors.findIndex(
-      (s) => s.id === id
+      (s) => s.id === id,
     );
     if (index !== -1) {
       registrationForm.value.salvation.survivors.splice(index, 1);
@@ -725,7 +725,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     const exists = registrationForm.value.salvation.survivors.some(
-      (s) => s.name && s.name.trim() === name
+      (s) => s.name && s.name.trim() === name,
     );
     if (exists) {
       setActionMessage("warning", "此人已在陽上人名單中");
@@ -740,7 +740,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     const newId =
       Math.max(
         ...registrationForm.value.salvation.survivors.map((s) => s.id),
-        0
+        0,
       ) + 1;
     registrationForm.value.salvation.survivors.push({
       id: newId,
@@ -761,7 +761,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     const exists = registrationForm.value.blessing.persons.some(
-      (p) => p.name && p.name.trim() === name
+      (p) => p.name && p.name.trim() === name,
     );
     if (exists) {
       setActionMessage("warning", "聯絡人已在消災人員名單中");
@@ -797,7 +797,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     }
 
     const exists = registrationForm.value.salvation.survivors.some(
-      (s) => s.name && s.name.trim() === name
+      (s) => s.name && s.name.trim() === name,
     );
     if (exists) {
       setActionMessage("warning", "聯絡人已在陽上人名單中");
@@ -807,7 +807,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     const newId =
       Math.max(
         ...registrationForm.value.salvation.survivors.map((s) => s.id),
-        0
+        0,
       ) + 1;
     registrationForm.value.salvation.survivors.push({
       id: newId,
@@ -882,7 +882,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       console.log("🚀 開始提交並創建報名表單...");
       // 創建報名表單
       const result = await serviceAdapter.createRegistration(
-        registrationForm.value
+        registrationForm.value,
       );
 
       if (result.success) {
@@ -945,7 +945,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 直接重用 initializeFormArray 的逻辑
       if (formArray.value.length === 0) {
         formArray.value.push(
-          JSON.parse(JSON.stringify(registrationForm.value))
+          JSON.parse(JSON.stringify(registrationForm.value)),
         );
       } else {
         // 替换当前表單为初始状态
@@ -966,7 +966,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         }
 
         formArray.value[currentFormIndex.value] = JSON.parse(
-          JSON.stringify(initialForm)
+          JSON.stringify(initialForm),
         );
         loadFormToRegistration(initialForm);
       }
@@ -1018,7 +1018,9 @@ export const useRegistrationStore = defineStore("registration", () => {
       ) {
         if (serviceAdapter.getIsMock()) {
           // mock模式嘗試找到對應的數據
-          mockData = mockRegistrations.find((item) => item.formId === propsData.formId);
+          mockData = mockRegistrations.find(
+            (item) => item.formId === propsData.formId,
+          );
         }
         mockData.formId = propsData.formId;
         mockData.id = propsData.id;
@@ -1074,7 +1076,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       // 觸發響應式更新
       formArray.value[currentFormIndex.value] = JSON.parse(
-        JSON.stringify(currentMock)
+        JSON.stringify(currentMock),
       );
 
       console.log("Mock 數據載入完成，當前表單:", currentMock);
@@ -1101,7 +1103,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 不是 directus 模式下，載入 Mock 數據
       if (serviceAdapter.getIsMock()) {
         console.warn(
-          "表單載入成功！⚠️ 當前模式不是 directus，無法從服務器加載表單"
+          "表單載入成功！⚠️ 當前模式不是 directus，無法從服務器加載表單",
         );
         loadMockData(propsData);
         setupFormSync();
@@ -1125,7 +1127,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
         // 更新到store觸發響應式更新
         formArray.value[currentFormIndex.value] = JSON.parse(
-          JSON.stringify(formData)
+          JSON.stringify(formData),
         );
         currentFormIndex.value = 0;
 
@@ -1137,7 +1139,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         console.log(
           `✅ 表單載入成功（${
             propsData.action === "edit" ? "編輯" : "查看"
-          }模式）`
+          }模式）`,
         );
         return true;
       } else {
@@ -1202,7 +1204,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       // 更新报名的表單
       const result = await serviceAdapter.updateRegistration(
         id,
-        registrationForm.value
+        registrationForm.value,
       );
 
       if (result.success) {
@@ -1211,7 +1213,7 @@ export const useRegistrationStore = defineStore("registration", () => {
         // 更新本地數據
         if (formArray.value.length > 0 && currentFormIndex.value >= 0) {
           formArray.value[currentFormIndex.value] = JSON.parse(
-            JSON.stringify(registrationForm.value)
+            JSON.stringify(registrationForm.value),
           );
         }
 

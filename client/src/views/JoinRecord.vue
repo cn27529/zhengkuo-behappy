@@ -220,7 +220,7 @@
             :disabled="!selectedRegistration || totalAmount === 0"
             @click="saveParticipationRecord"
           >
-            💾 儲存參加記錄
+            💾 保存參加記錄
           </button>
           <button class="clear-btn" @click="clearSelection">🗑️ 清除選擇</button>
         </div>
@@ -439,14 +439,14 @@ const ancestorsTotal = computed(() => selectedAncestors.value.length * 1000);
 const blessingTotal = computed(() => selectedBlessing.value.length * 600);
 const survivorsTotal = computed(() => selectedSurvivors.value.length * 300);
 const fixedBlessingTotal = computed(
-  () => selectedFixedBlessing.value.length * 100
+  () => selectedFixedBlessing.value.length * 100,
 );
 const totalAmount = computed(
   () =>
     ancestorsTotal.value +
     blessingTotal.value +
     survivorsTotal.value +
-    fixedBlessingTotal.value
+    fixedBlessingTotal.value,
 );
 
 // 搜尋過濾
@@ -467,7 +467,7 @@ const filteredRegistrations = computed(() => {
         reg.contact.mobile?.toLowerCase().includes(query) ||
         reg.contact.phone?.toLowerCase().includes(query) ||
         reg.formName.toLowerCase().includes(query) ||
-        reg.formSource?.toLowerCase().includes(query)
+        reg.formSource?.toLowerCase().includes(query),
     );
   }
 
@@ -540,7 +540,7 @@ const performSearch = () => {
   console.log("搜尋:", searchKeyword.value);
 };
 
-// 儲存參加記錄
+// 保存參加記錄
 const saveParticipationRecord = () => {
   const record = {
     registrationId: selectedRegistration.value.id,
@@ -563,7 +563,7 @@ const saveParticipationRecord = () => {
   };
 
   // 這裡可以替換為實際的 API 呼叫或 store 儲存
-  console.log("儲存參加記錄:", record);
+  console.log("保存參加記錄:", record);
   alert(`參加記錄已儲存！\n總金額：NT$ ${totalAmount.value}`);
 
   // 儲存後可選擇清空或保持狀態

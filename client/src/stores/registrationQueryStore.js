@@ -1,5 +1,4 @@
 // src/stores/registrationQueryStore.js
-// 本檔為查詢表單的 Pinia store，管理查詢表單的狀態與操作。
 import { defineStore } from "pinia";
 import { ref, computed, h } from "vue";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
@@ -8,7 +7,8 @@ import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
 
-export const useQueryStore = defineStore("query", () => {
+// 祈福登記查詢表單的 Pinia store，管理查詢表單的狀態與操作。
+export const useQueryStore = defineStore("registrationQuery", () => {
   const configStore = useConfigStore();
   const authStore = useAuthStore();
 
@@ -248,7 +248,7 @@ export const useQueryStore = defineStore("query", () => {
 
       console.log(
         `第 ${index} 筆資料匹配結果:`,
-        matchFound ? "✅ 匹配" : "❌ 不匹配"
+        matchFound ? "✅ 匹配" : "❌ 不匹配",
       );
       return matchFound;
     });

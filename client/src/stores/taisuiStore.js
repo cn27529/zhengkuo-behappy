@@ -2,6 +2,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
+// 太歲點燈的 Pinia store，管理太歲點燈的狀態與操作
 export const useTaiSuiStore = defineStore("taisui", () => {
   // 狀態
   const inputYear = ref(new Date().getFullYear());
@@ -518,8 +519,8 @@ ${blessingSentence}
         dotLampItem.name === "太歲燈"
           ? "適用於值太歲、歲破等重大煞氣，提供強力化解與護佑。"
           : dotLampItem.name === "元辰燈"
-          ? "適用於病符、死符、天厄等健康與運勢煞氣，祈求身心安康。"
-          : "適用於白虎、五鬼、喪門等一般煞氣，普遍化解、照亮前程。"
+            ? "適用於病符、死符、天厄等健康與運勢煞氣，祈求身心安康。"
+            : "適用於白虎、五鬼、喪門等一般煞氣，普遍化解、照亮前程。"
       }`,
       };
     };

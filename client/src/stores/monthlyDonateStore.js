@@ -8,6 +8,7 @@ import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配�
 //import { monthlyDonateService } from "../services/monthlyDonateService.js"; // 移除舊的導入
 import { authService } from "../services/authService.js";
 
+// 月度贊助的 Pinia store，管理月度贊助的狀態與操作。
 export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   // ========== 狀態 ==========
   const allDonates = ref([]);
@@ -318,7 +319,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
     // 標準模式：過去X個月 + 當前月 + 未來Y個月
     console.log(
-      `標準模式: 過去${pastMonths}個月 + 當前月 + 未來${futureMonths}個月`
+      `標準模式: 過去${pastMonths}個月 + 當前月 + 未來${futureMonths}個月`,
     );
     return generateStandardMonthRange(pastMonths, futureMonths);
   });
@@ -379,7 +380,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     console.log(`生成的月份範圍: ${months.length}個月`);
     if (months.length > 0) {
       console.log(
-        `開始: ${months[0].display}, 結束: ${months[months.length - 1].display}`
+        `開始: ${months[0].display}, 結束: ${months[months.length - 1].display}`,
       );
     }
 
@@ -599,7 +600,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       filtered = filtered.filter(
         (donate) =>
           donate.name.toLowerCase().includes(keyword) ||
-          donate.memo?.toLowerCase().includes(keyword)
+          donate.memo?.toLowerCase().includes(keyword),
       );
     }
 
@@ -642,7 +643,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         summary.length > 0
           ? Math.round(
               summary.reduce((sum, donate) => sum + donate.totalAmount, 0) /
-                summary.length
+                summary.length,
             )
           : 0,
       // ✅ 新增：月份範圍統計
@@ -682,7 +683,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
           const stat = statsMap.get(month.yearMonth);
           stat.totalAmount += donate.months[month.yearMonth].reduce(
             (sum, item) => sum + item.price,
-            0
+            0,
           );
           stat.donatorCount++;
         }
@@ -927,7 +928,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         donateItems: [
           {
             donateItemsId: await generateGitHashBrowser(
-              createISOTime + donateData.name
+              createISOTime + donateData.name,
             ),
             price: donateData.amount,
             months: donateData.selectedMonths || [],
@@ -988,7 +989,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     try {
       // 查找要刪除的贊助記錄
       const exDonateIndex = allDonates.value.findIndex(
-        (d) => d.id === donateId || d.donateId === donateId
+        (d) => d.id === donateId || d.donateId === donateId,
       );
 
       if (exDonateIndex === -1) {
@@ -1020,7 +1021,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       // Directus 模式：調用 API
       const result = await serviceAdapter.deleteMonthlyDonate(
-        exDonate.id // 使用數據庫中的 ID
+        exDonate.id, // 使用數據庫中的 ID
       );
 
       if (result.success) {
@@ -1061,7 +1062,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       // 查找現有的贊助記錄
       const exDonateIndex = allDonates.value.findIndex(
-        (d) => d.id === donateId || d.donateId === donateId
+        (d) => d.id === donateId || d.donateId === donateId,
       );
 
       if (exDonateIndex === -1) {
@@ -1071,7 +1072,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       const exDonate = allDonates.value[exDonateIndex];
 
       const newDonateItemsId = await generateGitHashBrowser(
-        createISOTime + exDonate.name
+        createISOTime + exDonate.name,
       );
 
       const newDonateItem = {
@@ -1093,7 +1094,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
         console.log(
           `✅ Mock 模式：新增贊助項目給 ${exDonate.name}:`,
-          newDonateItem
+          newDonateItem,
         );
 
         console.warn("⚠️ 當前模式不為 Directus，成功創建數據");
@@ -1115,7 +1116,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       // 更新贊助記錄備註
       const result = await serviceAdapter.updateMonthlyDonate(
         exDonate.id,
-        exDonate
+        exDonate,
       );
       if (result.success) {
         //更新store資料
@@ -1143,7 +1144,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
     try {
       const exDonateIndex = allDonates.value.findIndex(
-        (d) => d.id === donateId || d.donateId === donateId
+        (d) => d.id === donateId || d.donateId === donateId,
       );
       if (exDonateIndex === -1) {
         throw new Error(`找不到 donateId 為 ${donateId} 的贊助記錄`);
@@ -1151,7 +1152,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       const exDonate = allDonates.value[exDonateIndex];
       const itemIndex = exDonate.donateItems.findIndex(
-        (item) => item.donateItemsId === itemId
+        (item) => item.donateItemsId === itemId,
       );
 
       if (itemIndex === -1) {
@@ -1188,7 +1189,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
           ...itemData,
           updatedAt: updateISOTime,
           updatedUser: getCurrentUser(),
-        }
+        },
       );
 
       if (result.success) {
@@ -1230,7 +1231,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
     try {
       const exDonateIndex = allDonates.value.findIndex(
-        (d) => d.id === donateId || d.donateId === donateId
+        (d) => d.id === donateId || d.donateId === donateId,
       );
       if (exDonateIndex === -1) {
         throw new Error(`找不到 donateId 為 ${donateId} 的贊助記錄`);
@@ -1238,7 +1239,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
       const exDonate = allDonates.value[exDonateIndex];
       const itemIndex = exDonate.donateItems.findIndex(
-        (item) => item.donateItemsId === itemId
+        (item) => item.donateItemsId === itemId,
       );
 
       if (itemIndex === -1) {
@@ -1267,7 +1268,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       // Directus 模式：調用 API
       const result = await serviceAdapter.deleteDonateItem(
         exDonate.id, // 使用數據庫中的 ID
-        itemId
+        itemId,
       );
 
       if (result.success) {
@@ -1336,7 +1337,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     // 使用 flatMap 扁平化提取所有月份，並用 Set 去重
     const months = [
       ...new Set(
-        donate.donateItems?.flatMap((item) => item.months || []) || []
+        donate.donateItems?.flatMap((item) => item.months || []) || [],
       ),
     ];
 
@@ -1381,7 +1382,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       donate.donateItems.reduce((monthSet, item) => {
         item.months?.forEach((month) => monthSet.add(month));
         return monthSet;
-      }, new Set())
+      }, new Set()),
     );
   };
 

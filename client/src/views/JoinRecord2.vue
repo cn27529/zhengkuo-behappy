@@ -42,33 +42,35 @@
           <!-- 超度/超薦 -->
           <div
             class="activity-section"
-            v-if="joinRecordStore.selectedRegistration.salvation.ancestors.length > 0">
+            v-if="
+              joinRecordStore.selectedRegistration.salvation.ancestors.length >
+              0
+            "
+          >
             <div
               class="activity-header clickable"
               @click="toggleActivity('chaodu')"
               :title="isAllSelected('chaodu') ? '點擊取消全選' : '點擊全選'"
             >
               <input
-                  style="display: none"
-                  type="checkbox"
-                  :checked="isAllSelected('chaodu')"
-                  :indeterminate.prop="isIndeterminate('chaodu')"
-                  @click.stop="toggleActivity('chaodu')"
-                />
-                <span class="activity-title">{{
-                  joinRecordStore.activityConfigs.chaodu.label
-                }}</span>
-                <span class="activity-price"
-                  >每位 ${{
-                    joinRecordStore.activityConfigs.chaodu.price
-                  }}</span
-                >
-                <span
-                  class="selected-count"
-                  v-if="joinRecordStore.selections.chaodu.length > 0"
-                >
-                  (已選 {{ joinRecordStore.selections.chaodu.length }} 位)
-                </span>     
+                style="display: none"
+                type="checkbox"
+                :checked="isAllSelected('chaodu')"
+                :indeterminate.prop="isIndeterminate('chaodu')"
+                @click.stop="toggleActivity('chaodu')"
+              />
+              <span class="activity-title">{{
+                joinRecordStore.activityConfigs.chaodu.label
+              }}</span>
+              <span class="activity-price"
+                >每位 ${{ joinRecordStore.activityConfigs.chaodu.price }}</span
+              >
+              <span
+                class="selected-count"
+                v-if="joinRecordStore.selections.chaodu.length > 0"
+              >
+                (已選 {{ joinRecordStore.selections.chaodu.length }} 位)
+              </span>
             </div>
             {{ joinRecordStore.selectedRegistration.salvation.address }}
             <div class="person-list">
@@ -110,46 +112,50 @@
                   />
                   <span>陽上人 {{ person.name }}</span>
                   <span class="zodiac">({{ person.zodiac }})</span>
-                  
+
                   <span v-if="person.notes" class="notes">{{
                     person.notes
                   }}</span>
                   <span v-if="person.isHouseholdHead" class="household-head"
-                    >戶長</span>
-
+                    >戶長</span
+                  >
                 </label>
               </div>
             </div>
           </div>
 
           <!-- 祈福 -->
-          <div class="activity-section"
-            v-if="joinRecordStore.selectedRegistration.salvation.ancestors.length > 0">
-          
+          <div
+            class="activity-section"
+            v-if="
+              joinRecordStore.selectedRegistration.salvation.ancestors.length >
+              0
+            "
+          >
             <div
               class="activity-header clickable"
               @click="toggleActivity('qifu')"
               :title="isAllSelected('qifu') ? '點擊取消全選' : '點擊全選'"
             >
               <input
-                  style="display: none"
-                  type="checkbox"
-                  :checked="isAllSelected('qifu')"
-                  :indeterminate.prop="isIndeterminate('qifu')"
-                  @click.stop="toggleActivity('qifu')"
-                />
-                <span class="activity-title">{{
-                  joinRecordStore.activityConfigs.qifu.label
-                }}</span>
-                <span class="activity-price"
-                  >每位 ${{ joinRecordStore.activityConfigs.qifu.price }}</span
-                >
-                <span
-                  class="selected-count"
-                  v-if="joinRecordStore.selections.qifu.length > 0"
-                >
-                  (已選 {{ joinRecordStore.selections.qifu.length }} 位)
-                </span>
+                style="display: none"
+                type="checkbox"
+                :checked="isAllSelected('qifu')"
+                :indeterminate.prop="isIndeterminate('qifu')"
+                @click.stop="toggleActivity('qifu')"
+              />
+              <span class="activity-title">{{
+                joinRecordStore.activityConfigs.qifu.label
+              }}</span>
+              <span class="activity-price"
+                >每位 ${{ joinRecordStore.activityConfigs.qifu.price }}</span
+              >
+              <span
+                class="selected-count"
+                v-if="joinRecordStore.selections.qifu.length > 0"
+              >
+                (已選 {{ joinRecordStore.selections.qifu.length }} 位)
+              </span>
             </div>
 
             <div class="person-list">
@@ -185,26 +191,26 @@
               :title="isAllSelected('diandeng') ? '點擊取消全選' : '點擊全選'"
             >
               <input
-                  style="display: none"
-                  type="checkbox"
-                  :checked="isAllSelected('diandeng')"
-                  :indeterminate.prop="isIndeterminate('diandeng')"
-                  @click.stop="toggleActivity('diandeng')"
-                />
-                <span class="activity-title">{{
-                  joinRecordStore.activityConfigs.diandeng.label
-                }}</span>
-                <span class="activity-price"
-                  >每位 ${{
-                    joinRecordStore.activityConfigs.diandeng.price
-                  }}</span
-                >
-                <span
-                  class="selected-count"
-                  v-if="joinRecordStore.selections.diandeng.length > 0"
-                >
-                  (已選 {{ joinRecordStore.selections.diandeng.length }} 位)
-                </span>
+                style="display: none"
+                type="checkbox"
+                :checked="isAllSelected('diandeng')"
+                :indeterminate.prop="isIndeterminate('diandeng')"
+                @click.stop="toggleActivity('diandeng')"
+              />
+              <span class="activity-title">{{
+                joinRecordStore.activityConfigs.diandeng.label
+              }}</span>
+              <span class="activity-price"
+                >每位 ${{
+                  joinRecordStore.activityConfigs.diandeng.price
+                }}</span
+              >
+              <span
+                class="selected-count"
+                v-if="joinRecordStore.selections.diandeng.length > 0"
+              >
+                (已選 {{ joinRecordStore.selections.diandeng.length }} 位)
+              </span>
             </div>
 
             <div class="person-list">
@@ -231,7 +237,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- 固定消災 -->
           <div class="activity-section">
             <div
@@ -240,26 +246,24 @@
               :title="isAllSelected('xiaozai') ? '點擊取消全選' : '點擊全選'"
             >
               <input
-                  style="display: none"
-                  type="checkbox"
-                  :checked="isAllSelected('xiaozai')"
-                  :indeterminate.prop="isIndeterminate('xiaozai')"
-                  @click.stop="toggleActivity('xiaozai')"
-                />
-                <span class="activity-title">{{
-                  joinRecordStore.activityConfigs.xiaozai.label
-                }}</span>
-                <span class="activity-price"
-                  >每位 ${{
-                    joinRecordStore.activityConfigs.xiaozai.price
-                  }}</span
-                >
-                <span
-                  class="selected-count"
-                  v-if="joinRecordStore.selections.xiaozai.length > 0"
-                >
-                  (已選 {{ joinRecordStore.selections.xiaozai.length }} 位)
-                </span>
+                style="display: none"
+                type="checkbox"
+                :checked="isAllSelected('xiaozai')"
+                :indeterminate.prop="isIndeterminate('xiaozai')"
+                @click.stop="toggleActivity('xiaozai')"
+              />
+              <span class="activity-title">{{
+                joinRecordStore.activityConfigs.xiaozai.label
+              }}</span>
+              <span class="activity-price"
+                >每位 ${{ joinRecordStore.activityConfigs.xiaozai.price }}</span
+              >
+              <span
+                class="selected-count"
+                v-if="joinRecordStore.selections.xiaozai.length > 0"
+              >
+                (已選 {{ joinRecordStore.selections.xiaozai.length }} 位)
+              </span>
             </div>
 
             <div class="person-list">
@@ -351,7 +355,7 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="handleSave"
+            @click="handleSaveParticipationRecord"
             :disabled="
               joinRecordStore.isLoading || joinRecordStore.totalAmount === 0
             "
@@ -397,13 +401,15 @@
             >
               <span class="reg-contact">{{ reg.contact.name }}</span>
               <span class="reg-phone">{{ reg.contact.mobile }}</span>
-              <div class="data-summary" style="display: none;">
-                  <span
-                    >祖先：{{ reg.salvation?.ancestors?.length || 0 }} 位</span
-                  >
-                  <span>消災：{{ reg.blessing?.persons?.length || 0 }} 位</span>
-                  <span>陽上：{{ reg.salvation?.survivors?.length || 0 }} 位</span>
-                </div>
+              <div class="data-summary" style="display: none">
+                <span
+                  >祖先：{{ reg.salvation?.ancestors?.length || 0 }} 位</span
+                >
+                <span>消災：{{ reg.blessing?.persons?.length || 0 }} 位</span>
+                <span
+                  >陽上：{{ reg.salvation?.survivors?.length || 0 }} 位</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -563,7 +569,7 @@ const handleReset = () => {
 };
 
 // 保存記錄
-const handleSave = async () => {
+const handleSaveParticipationRecord = async () => {
   if (!joinRecordStore.selectedRegistration) {
     alert("請選擇祈福登記表");
     return;
@@ -953,7 +959,7 @@ onMounted(() => {
   border-top: 1px solid #eee;
 }
 
-.data-summary span {  
+.data-summary span {
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.9em;

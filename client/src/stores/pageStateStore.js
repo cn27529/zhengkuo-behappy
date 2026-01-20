@@ -1,8 +1,9 @@
-// 頁面狀態保存，取代網址URL的暴露，防止使用者由URL直接更改參數據，使得URL簡潔
+// src/stores/pageStateStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
+// 頁面狀態保存，取代網址URL的暴露，防止使用者由URL直接更改參數據，使得URL簡潔
 export const usePageStateStore = defineStore("pageState", () => {
   // 页面状态存储
   const pageStates = ref({});
@@ -25,7 +26,7 @@ export const usePageStateStore = defineStore("pageState", () => {
       try {
         sessionStorage.setItem(
           `pageState_${pageName}`,
-          JSON.stringify(stateData)
+          JSON.stringify(stateData),
         );
       } catch (error) {
         console.warn("sessionStorage 操作失敗:", error);

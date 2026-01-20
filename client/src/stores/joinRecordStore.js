@@ -1,17 +1,21 @@
-// src/stores/joinActivityRecordStore.js
+// src/stores/joinRecordStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { joinRecordService } from "../services/joinRecordService.js";
 import { authService } from "../services/authService.js";
 import mockDatas from "../data/mock_registrations.json";
 
-export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
-  // 獲取用戶信息
-  const getCurrentUser = () => {
-    return authService.getCurrentUser();
-  };
-
+/**
+ * 參與記錄的 Pinia store，管理參與記錄的狀態與操作。
+ * @module stores/joinRecordStore
+ */
+export const useJoinRecordStore = defineStore("joinRecord", () => {
   // --- State (等同於 ref) ---
+
+  /**
+   * 活動類型
+   * key: 活動類型
+   */
   const activityConfigs = ref({
     chaodu: {
       label: "超度/超薦",
@@ -25,7 +29,10 @@ export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
     pudu: { label: "中元普渡", price: 1200, source: "blessing.persons" }, //消災人員
   });
 
-  // 存儲選中狀態的物件
+  /*
+   * 存儲選中狀態的物件
+   * key: 活動類型
+   */
   const selections = ref({
     chaodu: [], //祖先
     survivors: [], //陽上人
@@ -35,31 +42,51 @@ export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
     pudu: [], //消災人員
   });
 
+  /*
+   * 獲取資料來源
+   * registration: 註冊資料
+   * source: 資料來源
+   */
   const getSourceData = (registration, source) => {
     const [section, field] = source.split(".");
     return registration[section][field] || [];
   };
 
-  // 建立參與記錄的項目
+  /*
+   * 建立參與記錄的項目
+   * type: 活動類型
+   * sourceData: 資料來源
+   */
   const createParticipationItem = (type, sourceData) => {
     const config = activityConfigs[type];
     return {
       type,
-      label: config.label,
-      price: config.price,
-      quantity: sourceData.length,
-      subtotal: config.price * sourceData.length,
-      source: config.source,
-      sourceData: sourceData,
+      label: config.label, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普渡
+      price: config.price, // 金額
+      quantity: sourceData.length, // 數量
+      subtotal: config.price * sourceData.length, // 小計
+      source: config.source, // 資料來源：registration
+      sourceData: sourceData, // 當下選擇的：registration
     };
   };
 
-  // 計算總金額
+  /**
+   * 計算總金額
+   * @param {} items
+   * @returns
+   */
   const calculateTotalAmount = (items) => {
+    // 計算總金額
     return items.reduce((sum, item) => sum + item.subtotal, 0);
   };
 
-  // 建立完整的參與記錄
+  /**
+   * 建立完整的參與記錄
+   * @param {*} registration
+   * @param {*} activity
+   * @param {*} selectedItems
+   * @returns
+   */
   const createParticipationRecord = (registration, activity, selectedItems) => {
     const items = selectedItems.map((item) => {
       const sourceData = getSourceData(
@@ -72,33 +99,35 @@ export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
       );
     });
 
+    // 計算總金額
     const totalAmount = calculateTotalAmount(items);
 
+    // 建立完整的參與記錄
     return {
-      registrationId: registration.id,
-      activityId: activity.activityId,
+      registrationId: registration.id, // registration.id
+      activityId: activity.activityId, // activity.activityId
       registeredAt: new Date().toISOString(),
       registeredBy: registration.contact.name,
-      state: "pending",
-      items,
-      totalAmount,
-      discountAmount: 0,
-      finalAmount: totalAmount,
-      paidAmount: 0,
-      needReceipt: false,
-      receiptNumber: "",
-      receiptIssued: false,
-      receiptIssuedAt: "",
-      receiptIssuedBy: "",
-      accountingState: "pending",
-      accountingDate: "",
-      accountingBy: "",
-      accountingNotes: "",
-      paymentState: "unpaid",
-      paymentMethod: "",
-      paymentDate: "",
-      paymentNotes: "",
-      notes: "",
+      state: "confirmed", // confirmed=已確認，unconfirmed=未確認，canceled=已取消
+      items, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普渡。資料來源：createParticipationItem
+      totalAmount, // 總金額
+      discountAmount: 0, // 折扣金額
+      finalAmount: totalAmount, // 最終金額
+      paidAmount: 0, // 付款金額
+      needReceipt: false, // 需要收據
+      receiptNumber: "", // 收據號碼
+      receiptIssued: false, // 收據已開立
+      receiptIssuedAt: "", // 收據開立日期
+      receiptIssuedBy: "", // 收據開立者
+      accountingState: "pending", // pending=未沖帳,reconciled=已沖帳
+      accountingDate: "", // 沖帳日期
+      accountingBy: "", // 沖帳者
+      accountingNotes: "", // 沖帳備註
+      paymentState: "unpaid", // paid=已付款，partial=部分付款，unpaid=未付款，waived=免付
+      paymentMethod: "", // cash=現金，transfer=轉帳
+      paymentDate: "", // 付款日期
+      paymentNotes: "", // 付款備註
+      notes: "", // 備註
       createdAt: new Date().toISOString(),
       createdBy: getCurrentUser(),
       updatedAt: new Date().toISOString(),
@@ -106,27 +135,38 @@ export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
     };
   };
 
-  // 生成收據號碼
+  /**
+   * 生成收據號碼
+   * @returns
+   */
   const generateReceiptNumber = () => {
     const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  // 這裡需要從資料庫取得當月的流水號
-  const counter = String(getMonthlyCounter()).padStart(4, '0');
-  return `R${year}${month}${counter}`;
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    // 這裡需要從資料庫取得當月的流水號
+    const counter = String(getMonthlyCounter()).padStart(4, "0");
+    return `R${year}${month}${counter}`;
   };
 
-  // 開立收據
+  /**
+   * 開立收據
+   * @param {*} record
+   */
   const issueReceipt = (record) => {
-     record.receiptNumber = generateReceiptNumber();
-  record.receiptIssued = true;
-  record.receiptIssuedAt = new Date().toISOString();
-  record.receiptIssuedBy = getCurrentUser();
-  record.updatedAt = new Date().toISOString();
-  record.updatedUser = getCurrentUser();
+    record.receiptNumber = generateReceiptNumber();
+    record.receiptIssued = true;
+    record.receiptIssuedAt = new Date().toISOString();
+    record.receiptIssuedBy = getCurrentUser();
+    record.updatedAt = new Date().toISOString();
+    record.updatedUser = getCurrentUser();
   };
 
-  // 會計沖帳
+  /**
+   * 會計沖帳
+   * @param {*} record
+   * @param {*} accountingBy
+   * @param {*} notes
+   */
   const reconcileAccounting = (record, accountingBy, notes = "") => {
     record.accountingState = "reconciled";
     record.accountingDate = new Date().toISOString();
@@ -136,7 +176,13 @@ export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
     record.updatedUser = accountingBy;
   };
 
-  // 記錄付款
+  /**
+   * 記錄付款
+   * @param {*} record
+   * @param {*} method
+   * @param {*} amount
+   * @param {*} notes
+   */
   const recordPayment = (record, method, amount, notes = "") => {
     record.paidAmount += amount;
     record.paymentMethod = method;
@@ -154,24 +200,31 @@ export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
     record.updatedUser = getCurrentUser();
   };
 
-  // 取得項目摘要（用於顯示）
-const getItemsSummary = (items) => {
-  return items.map(item => 
-    `${item.label} x${item.quantity}`
-  ).join('、');
-}
+  /**
+   * 取得項目摘要（用於顯示）
+   * @param {*} items
+   * @returns
+   */
+  const getItemsSummary = (items) => {
+    return items.map((item) => `${item.label} x${item.quantity}`).join("、");
+  };
 
-// 取得項目詳細清單（用於收據）
-const getItemsDetail = (items) => {
-  return items.map(item => ({
-    name: item.label,
-    unitPrice: item.price,
-    quantity: item.quantity,
-    subtotal: item.subtotal,
-    persons: item.sourceData.map(d => d.name || d.surname).join('、')
-  }));
-}
+  /**
+   * 取得項目詳細清單（用於收據）
+   * @param {*} items
+   * @returns
+   */
+  const getItemsDetail = (items) => {
+    return items.map((item) => ({
+      name: item.label,
+      unitPrice: item.price,
+      quantity: item.quantity,
+      subtotal: item.subtotal,
+      persons: item.sourceData.map((d) => d.name || d.surname).join("、"),
+    }));
+  };
 
+  // 載入 Mock 數據
   const loadMockData = async () => {
     try {
       if (!mockDatas || mockDatas.length === 0) {
@@ -251,6 +304,11 @@ const getItemsDetail = (items) => {
     }
   };
 
+  // 獲取用戶信息
+  const getCurrentUser = () => {
+    return authService.getCurrentUser();
+  };
+
   // 暴露給元件使用的變數與方法
   return {
     // State
@@ -266,5 +324,15 @@ const getItemsDetail = (items) => {
     toggleGroup,
     submitRecord,
     loadMockData,
+    // 獲取用戶信息
+    getCurrentUser,
+    // 其他方法
+    getItemsSummary, // 取得項目摘要
+    getItemsDetail, // 取得項目詳細清單
+    recordPayment, // 記錄付款
+    issueReceipt, // 開立收據
+    createParticipationRecord, // 建立完整的參與記錄
+    reconcileAccounting, // 會計沖帳
+    getSourceData, // 獲取資料來源
   };
 });
