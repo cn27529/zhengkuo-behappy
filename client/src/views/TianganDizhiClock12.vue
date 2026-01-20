@@ -611,12 +611,13 @@ onUnmounted(() => {
 .tick-second-highlight {
   stroke: var(--tick-second-color) !important;
   stroke-width: 10 !important;
+  filter: drop-shadow(0 0 8px #e74c3c);
 }
 
 .tick-minute-highlight {
   stroke: var(--tick-minute-color) !important;
   stroke-width: 10 !important;
-  filter: drop-shadow(0 0 6px #3498db);
+  filter: drop-shadow(0 0 8px #3498db);
 }
 
 .tick-ke-highlight {
