@@ -159,7 +159,7 @@
           >
             <el-table-column label="圖標" width="60" align="center">
               <template #default="{ row }">
-                <el-tooltip :content="row.donateId" placement="top">
+                <el-tooltip :content="row.id" placement="top">
                   <div class="donate-icon">
                     {{ row.icon }}
                   </div>
@@ -704,7 +704,7 @@ const extendedFutureMonths = ref(24); // 擴展2年
 const donationMonthColumns = computed(() => {
   return monthlyDonateStore.generateStandardMonthRange(
     0,
-    isExtendedMode.value ? extendedFutureMonths.value : 12
+    isExtendedMode.value ? extendedFutureMonths.value : 12,
   );
 });
 
@@ -720,7 +720,7 @@ const toggleExtendedMode = async () => {
           confirmButtonText: "確定",
           cancelButtonText: "取消",
           type: "warning",
-        }
+        },
       );
     } catch (cancel) {
       // 用戶取消操作
@@ -738,7 +738,7 @@ const toggleExtendedMode = async () => {
   // 提示用戶
   if (isExtendedMode.value) {
     ElMessage.success(
-      `已擴展顯示未來${extendedFutureMonths.value}個月，請重新選擇月份`
+      `已擴展顯示未來${extendedFutureMonths.value}個月，請重新選擇月份`,
     );
   } else {
     ElMessage.info("已恢復標準月份範圍，請重新選擇月份");
@@ -772,7 +772,7 @@ const handleMonthSelectForNewDonator = () => {
 // 方法：為新增贊助人選擇所有月份
 const selectAllMonthsForNewDonator = () => {
   newDonator.selectedMonths = monthColumns.value.map(
-    (month) => month.yearMonth
+    (month) => month.yearMonth,
   );
   handleMonthSelectForNewDonator();
 };
@@ -814,7 +814,7 @@ const donatorRules = {
       validator: (rule, value, callback) => {
         if (value === 0 || value % monthlyUnitPrice.value !== 0) {
           callback(
-            new Error(`金額必須是 ${monthlyUnitPrice.value} 的倍數且大於 0`)
+            new Error(`金額必須是 ${monthlyUnitPrice.value} 的倍數且大於 0`),
           );
         } else {
           callback();
@@ -883,7 +883,7 @@ const availableMonthsForDonator = computed(() => {
 
     // 過濾出可用的月份
     const result = monthColumns.value.filter(
-      (month) => !occupiedMonths.includes(month.yearMonth)
+      (month) => !occupiedMonths.includes(month.yearMonth),
     );
 
     console.log("- 可用月份:", result.length);
@@ -919,7 +919,7 @@ const initialize = async () => {
     }
 
     ElMessage.success(
-      `贊助數據加載成功 (共 ${allDonates.value.length} 筆記錄)`
+      `贊助數據加載成功 (共 ${allDonates.value.length} 筆記錄)`,
     );
     console.log("✅ allDonates 初始化完成");
   } catch (err) {
@@ -1051,7 +1051,7 @@ const handleDeleteDonator = async (donator) => {
         dangerouslyUseHTMLString: false,
         distinguishCancelAndClose: true,
         confirmButtonClass: "el-button--danger",
-      }
+      },
     );
 
     // 顯示加載狀態
@@ -1120,7 +1120,7 @@ const handleConfirmDeleteDonator = async (donator) => {
         inputPattern: /.+/,
         inputErrorMessage: "請輸入贊助人姓名",
         inputPlaceholder: donator.name,
-      }
+      },
     );
 
     if (inputName !== donator.name) {
@@ -1251,7 +1251,7 @@ const handleAddDonateItem = async () => {
     // 新增贊助項目
     const result = await monthlyDonateStore.addDonateItem(
       selectedDonator.value.donateId,
-      donateData
+      donateData,
     );
 
     if (result.success) {
@@ -1276,18 +1276,18 @@ const deleteDonateItem = async (donator, item) => {
         confirmButtonText: "確定",
         cancelButtonText: "取消",
         type: "error",
-      }
+      },
     );
 
     // 找到要刪除的贊助項目
     const donate = allDonates.value.find((d) =>
       //d.name === donator.name &&
-      d.donateItems.some((i) => i.donateItemsId === item.donateItemsId)
+      d.donateItems.some((i) => i.donateItemsId === item.donateItemsId),
     );
 
     const result = await monthlyDonateStore.deleteDonateItem(
       donate.donateId,
-      item.donateItemsId
+      item.donateItemsId,
     );
 
     if (result.success) {
@@ -1295,7 +1295,7 @@ const deleteDonateItem = async (donator, item) => {
 
       // 重新整理詳情視窗 - 從 computed 屬性中找到更新後的贊助人
       const updatedDonator = donateSummary.value.find(
-        (d) => d.donateId === donator.donateId
+        (d) => d.donateId === donator.donateId,
       );
 
       if (updatedDonator) {

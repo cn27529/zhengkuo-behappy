@@ -189,7 +189,7 @@
                 align="center"
               >
                 <template #default="{ row }">
-                  <el-tooltip :content="row.activityId" placement="top">
+                  <el-tooltip :content="row.id" placement="top">
                     <div class="results-icon">
                       {{ row.icon }}
                     </div>
@@ -759,7 +759,7 @@ const completedActivities = computed(() => activityStore.completedActivities);
 const totalParticipants = computed(() => activityStore.totalParticipants);
 
 const availableActivityItemTypes = computed(
-  () => activityStore.allActivityItemTypes
+  () => activityStore.allActivityItemTypes,
 );
 
 // 根據選中的tab和篩選條件過濾活動
@@ -769,7 +769,7 @@ const upcomingFiltered = computed(() => {
   // 類型篩選
   if (selectedItemTypes.value.length > 0) {
     filtered = filtered.filter((activity) =>
-      selectedItemTypes.value.includes(activity.item_type)
+      selectedItemTypes.value.includes(activity.item_type),
     );
   }
 
@@ -781,7 +781,7 @@ const upcomingFiltered = computed(() => {
         activity.name.toLowerCase().includes(keyword) ||
         activity.description?.toLowerCase().includes(keyword) ||
         activity.location.toLowerCase().includes(keyword) ||
-        activity.createdUser?.toLowerCase().includes(keyword)
+        activity.createdUser?.toLowerCase().includes(keyword),
     );
   }
 
@@ -794,7 +794,7 @@ const completedFiltered = computed(() => {
   // 類型篩選
   if (selectedItemTypes.value.length > 0) {
     filtered = filtered.filter((activity) =>
-      selectedItemTypes.value.includes(activity.item_type)
+      selectedItemTypes.value.includes(activity.item_type),
     );
   }
 
@@ -806,7 +806,7 @@ const completedFiltered = computed(() => {
         activity.name.toLowerCase().includes(keyword) ||
         activity.description?.toLowerCase().includes(keyword) ||
         activity.location.toLowerCase().includes(keyword) ||
-        activity.createdUser?.toLowerCase().includes(keyword)
+        activity.createdUser?.toLowerCase().includes(keyword),
     );
   }
 
@@ -962,7 +962,7 @@ const deleteActivity = async (activity) => {
         confirmButtonText: "確定",
         cancelButtonText: "取消",
         type: "error",
-      }
+      },
     );
 
     const result = await activityStore.deleteActivity(activity.id);
@@ -1083,7 +1083,7 @@ const handleEditActivity = async () => {
 
     const result = await activityStore.updateActivity(
       editingActivity.value.id,
-      activityData
+      activityData,
     );
 
     if (result.success) {
@@ -1108,7 +1108,7 @@ const submitParticipantsUpdate = async () => {
   try {
     const result = await activityStore.updateActivityParticipants(
       selectedActivity.value.id,
-      parseInt(newParticipants.value)
+      parseInt(newParticipants.value),
     );
 
     if (result.success) {

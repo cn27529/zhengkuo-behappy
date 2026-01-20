@@ -82,7 +82,7 @@
         <el-table-column label="圖標" min-width="50" align="center">
           <template #default="{ row }">
             <div>
-              <el-tooltip :content="row.formId" placement="top">
+              <el-tooltip :content="row.id" placement="top">
                 <span class="form-icon">👤</span>
               </el-tooltip>
               <div class="form-name"></div>
