@@ -233,8 +233,8 @@
           <div class="search-box">
             <input
               type="text"
-              v-model="searchQuery"
-              placeholder="輸入姓名、電話、表單名稱..."
+              v-model="searchKeyword"
+              placeholder="搜尋姓名、手機、市話、地址"
               class="search-input"
             />
             <button class="search-btn" @click="performSearch">🔍 搜尋</button>
@@ -419,7 +419,7 @@ const mockData = [
 // 響應式資料
 const registrations = ref(mockData);
 const selectedRegistration = ref(null);
-const searchQuery = ref("");
+const searchKeyword = ref("");
 const showOnlySubmitted = ref(true);
 
 // 選擇的項目
@@ -459,8 +459,8 @@ const filteredRegistrations = computed(() => {
   }
 
   // 關鍵字搜尋
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
+  if (searchKeyword.value.trim()) {
+    const query = searchKeyword.value.toLowerCase();
     filtered = filtered.filter(
       (reg) =>
         reg.contact.name.toLowerCase().includes(query) ||
@@ -537,7 +537,7 @@ const clearSelection = () => {
 // 搜尋功能
 const performSearch = () => {
   // 搜尋邏輯已在 computed 中實現
-  console.log("搜尋:", searchQuery.value);
+  console.log("搜尋:", searchKeyword.value);
 };
 
 // 儲存參加記錄

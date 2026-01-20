@@ -365,12 +365,12 @@
       <div class="right-panel">
         <!-- 查詢區 -->
         <div class="search-section">
-          <h3>查詢祈福登記表</h3>
+          <h3>查詢祈福登記資料</h3>
           <div class="search-input-group">
             <input
               type="text"
               v-model="searchKeyword"
-              placeholder="輸入姓名、表單名稱或電話"
+              placeholder="搜尋姓名、手機、市話、地址"
             />
           </div>
         </div>

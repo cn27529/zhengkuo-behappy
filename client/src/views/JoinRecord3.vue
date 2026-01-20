@@ -85,10 +85,11 @@
       </div>
 
       <div class="right-section">
+        <h3>查詢祈福登記資料</h3>
         <div class="search-panel">
           <input
             v-model="searchKeyword"
-            placeholder="搜尋姓名或電話..."
+            placeholder="搜尋姓名、手機、市話、地址"
             class="search-input"
           />
         </div>
