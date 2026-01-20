@@ -42,18 +42,13 @@
           <!-- 超度/超薦 -->
           <div
             class="activity-section"
-            v-if="
-              joinRecordStore.selectedRegistration.salvation.ancestors.length >
-              0
-            "
-          >
+            v-if="joinRecordStore.selectedRegistration.salvation.ancestors.length > 0">
             <div
               class="activity-header clickable"
               @click="toggleActivity('chaodu')"
               :title="isAllSelected('chaodu') ? '點擊取消全選' : '點擊全選'"
             >
-              <label class="checkbox-label">
-                <input
+              <input
                   style="display: none"
                   type="checkbox"
                   :checked="isAllSelected('chaodu')"
@@ -73,8 +68,7 @@
                   v-if="joinRecordStore.selections.chaodu.length > 0"
                 >
                   (已選 {{ joinRecordStore.selections.chaodu.length }} 位)
-                </span>
-              </label>
+                </span>     
             </div>
             {{ joinRecordStore.selectedRegistration.salvation.address }}
             <div class="person-list">
@@ -104,7 +98,7 @@
             <!-- 陽上人 -->
             <div class="person-list">
               <div
-                v-for="person in getSourceData('selections')"
+                v-for="person in getSourceData('survivors')"
                 :key="'survivors-' + person.id"
                 class="person-item"
               >
@@ -116,10 +110,66 @@
                   />
                   <span>陽上人 {{ person.name }}</span>
                   <span class="zodiac">({{ person.zodiac }})</span>
+                  
                   <span v-if="person.notes" class="notes">{{
                     person.notes
                   }}</span>
                   <span v-if="person.isHouseholdHead" class="household-head"
+                    >戶長</span>
+
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 祈福 -->
+          <div class="activity-section"
+            v-if="joinRecordStore.selectedRegistration.salvation.ancestors.length > 0">
+          
+            <div
+              class="activity-header clickable"
+              @click="toggleActivity('qifu')"
+              :title="isAllSelected('qifu') ? '點擊取消全選' : '點擊全選'"
+            >
+              <input
+                  style="display: none"
+                  type="checkbox"
+                  :checked="isAllSelected('qifu')"
+                  :indeterminate.prop="isIndeterminate('qifu')"
+                  @click.stop="toggleActivity('qifu')"
+                />
+                <span class="activity-title">{{
+                  joinRecordStore.activityConfigs.qifu.label
+                }}</span>
+                <span class="activity-price"
+                  >每位 ${{ joinRecordStore.activityConfigs.qifu.price }}</span
+                >
+                <span
+                  class="selected-count"
+                  v-if="joinRecordStore.selections.qifu.length > 0"
+                >
+                  (已選 {{ joinRecordStore.selections.qifu.length }} 位)
+                </span>
+            </div>
+
+            <div class="person-list">
+              <div
+                v-for="survivor in getSourceData('qifu')"
+                :key="'survivor-' + survivor.id"
+                class="person-item"
+              >
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    :value="survivor"
+                    v-model="joinRecordStore.selections.qifu"
+                  />
+                  <span>{{ survivor.name }}</span>
+                  <span class="zodiac">({{ survivor.zodiac }})</span>
+                  <span v-if="survivor.notes" class="notes">{{
+                    survivor.notes
+                  }}</span>
+                  <span v-if="survivor.isHouseholdHead" class="household-head"
                     >戶長</span
                   >
                 </label>
@@ -134,8 +184,7 @@
               @click="toggleActivity('diandeng')"
               :title="isAllSelected('diandeng') ? '點擊取消全選' : '點擊全選'"
             >
-              <label class="checkbox-label">
-                <input
+              <input
                   style="display: none"
                   type="checkbox"
                   :checked="isAllSelected('diandeng')"
@@ -156,7 +205,6 @@
                 >
                   (已選 {{ joinRecordStore.selections.diandeng.length }} 位)
                 </span>
-              </label>
             </div>
 
             <div class="person-list">
@@ -173,63 +221,17 @@
                   />
                   <span>{{ person.name }}</span>
                   <span class="zodiac">({{ person.zodiac }})</span>
-                  <span v-if="person.notes" class="notes">{{ person.notes }}</span>
-                  <span v-if="person.isHouseholdHead" class="household-head">戶長</span>
+                  <span v-if="person.notes" class="notes">{{
+                    person.notes
+                  }}</span>
+                  <span v-if="person.isHouseholdHead" class="household-head"
+                    >戶長</span
+                  >
                 </label>
               </div>
             </div>
           </div>
-
-          <!-- 祈福 -->
-          <div class="activity-section">
-            <div
-              class="activity-header clickable"
-              @click="toggleActivity('qifu')"
-              :title="isAllSelected('qifu') ? '點擊取消全選' : '點擊全選'"
-            >
-              <label class="checkbox-label">
-                <input
-                  style="display: none"
-                  type="checkbox"
-                  :checked="isAllSelected('qifu')"
-                  :indeterminate.prop="isIndeterminate('qifu')"
-                  @click.stop="toggleActivity('qifu')"
-                />
-                <span class="activity-title">{{
-                  joinRecordStore.activityConfigs.qifu.label
-                }}</span>
-                <span class="activity-price"
-                  >每位 ${{ joinRecordStore.activityConfigs.qifu.price }}</span
-                >
-                <span
-                  class="selected-count"
-                  v-if="joinRecordStore.selections.qifu.length > 0"
-                >
-                  (已選 {{ joinRecordStore.selections.qifu.length }} 位)
-                </span>
-              </label>
-            </div>
-
-            <div class="person-list">
-              <div
-                v-for="survivor in getSourceData('qifu')"
-                :key="'survivor-' + survivor.id"
-                class="person-item"
-              >
-                <label class="checkbox-label">
-                  <input
-                    type="checkbox"
-                    :value="survivor"
-                    v-model="joinRecordStore.selections.qifu"
-                  />
-                  <span>{{ survivor.name }}</span>
-                  <span class="zodiac">({{ survivor.zodiac }})</span>
-                  <span v-if="survivor.notes" class="notes">{{ survivor.notes }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
+          
           <!-- 固定消災 -->
           <div class="activity-section">
             <div
@@ -237,8 +239,7 @@
               @click="toggleActivity('xiaozai')"
               :title="isAllSelected('xiaozai') ? '點擊取消全選' : '點擊全選'"
             >
-              <label class="checkbox-label">
-                <input
+              <input
                   style="display: none"
                   type="checkbox"
                   :checked="isAllSelected('xiaozai')"
@@ -259,7 +260,6 @@
                 >
                   (已選 {{ joinRecordStore.selections.xiaozai.length }} 位)
                 </span>
-              </label>
             </div>
 
             <div class="person-list">
@@ -276,8 +276,12 @@
                   />
                   <span>{{ person.name }}</span>
                   <span class="zodiac">({{ person.zodiac }})</span>
-                  <span v-if="person.notes" class="notes">{{ person.notes }}</span>
-                  <span v-if="person.isHouseholdHead" class="household-head">戶長</span>
+                  <span v-if="person.notes" class="notes">{{
+                    person.notes
+                  }}</span>
+                  <span v-if="person.isHouseholdHead" class="household-head"
+                    >戶長</span
+                  >
                 </label>
               </div>
             </div>
@@ -363,9 +367,9 @@
         <div class="search-section">
           <h3>查詢祈福登記表</h3>
           <div class="search-input-group">
-            <input 
-              type="text" 
-              v-model="searchKeyword" 
+            <input
+              type="text"
+              v-model="searchKeyword"
               placeholder="輸入姓名、表單名稱或電話"
             />
           </div>
@@ -380,8 +384,8 @@
             </p>
           </div>
           <div class="registration-list">
-            <div 
-              v-for="reg in filteredRegistrations" 
+            <div
+              v-for="reg in filteredRegistrations"
               :key="reg.id"
               class="registration-item"
               :class="{
@@ -391,12 +395,15 @@
               }"
               @click="handleSelectRegistration(reg)"
             >
-              <div class="reg-name">{{ reg.formName }}</div>
-              <div class="reg-contact">{{ reg.contact.name }}</div>
-              <div class="reg-phone">{{ reg.contact.mobile }}</div>
-              <div class="reg-source" v-if="reg.formSource">
-                {{ reg.formSource }}
-              </div>
+              <span class="reg-contact">{{ reg.contact.name }}</span>
+              <span class="reg-phone">{{ reg.contact.mobile }}</span>
+              <div class="data-summary" style="display: none;">
+                  <span
+                    >祖先：{{ reg.salvation?.ancestors?.length || 0 }} 位</span
+                  >
+                  <span>消災：{{ reg.blessing?.persons?.length || 0 }} 位</span>
+                  <span>陽上：{{ reg.salvation?.survivors?.length || 0 }} 位</span>
+                </div>
             </div>
           </div>
         </div>
@@ -407,8 +414,8 @@
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
           </div>
           <div class="saved-records-list">
-            <div 
-              v-for="(record, index) in savedRecords" 
+            <div
+              v-for="(record, index) in savedRecords"
               :key="index"
               class="saved-record-item"
             >
@@ -483,7 +490,7 @@ const filteredRegistrations = computed(() => {
   if (!searchKeyword.value) {
     return mockRegistrations.value;
   }
-  
+
   const keyword = searchKeyword.value.toLowerCase();
   return mockRegistrations.value.filter((reg) => {
     return (
@@ -938,6 +945,20 @@ onMounted(() => {
   border-color: var(--primary-color);
 }
 
+.data-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.data-summary span {  
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
 .reg-name {
   font-weight: 600;
   margin-bottom: 0.25rem;
@@ -946,11 +967,13 @@ onMounted(() => {
 .reg-contact {
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
+  margin-right: 0.5rem;
 }
 
 .reg-phone {
   font-size: 0.85rem;
   color: #666;
+  margin-right: 0.5rem;
 }
 
 .registration-item.active .reg-phone {
@@ -1023,7 +1046,7 @@ onMounted(() => {
     flex-direction: column;
     padding-bottom: 220px;
   }
-  
+
   .left-panel,
   .right-panel {
     flex: 1 1 100%;
@@ -1049,7 +1072,7 @@ onMounted(() => {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .activity-title {
     font-size: 1rem;
   }
@@ -1071,7 +1094,7 @@ onMounted(() => {
   .total-final {
     font-size: 1rem;
   }
-  
+
   .amount {
     font-size: 1.2rem;
   }

@@ -1,4 +1,4 @@
-// src/stores/joinRecordStore.js
+// src/stores/joinActivityRecordStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { joinRecordService } from "../services/joinRecordService.js";
@@ -10,13 +10,24 @@ export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
     chaodu: {
       label: "超度/超薦",
       price: 1000,
-      source: "salvation.ancestors",
+      source: "salvation.ancestors", //祖先
     },
-    diandeng: { label: "點燈", price: 600, source: "blessing.persons" },
-    qifu: { label: "祈福", price: 300, source: "salvation.survivors" },
-    xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" },
-    pudu: { label: "中元普渡", price: 1200, source: "blessing.persons" },
-    selections: { label: "陽上人", price: 300, source: "salvation.survivors" },
+    survivors: { label: "陽上人", price: 300, source: "salvation.survivors" }, //陽上人
+    diandeng: { label: "點燈", price: 600, source: "blessing.persons" }, //消災人員
+    qifu: { label: "祈福", price: 300, source: "blessing.persons" }, //消災人員
+    xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" }, //消災人員
+    pudu: { label: "中元普渡", price: 1200, source: "blessing.persons" },  //消災人員
+  });
+
+  
+  // 存儲選中狀態的物件
+  const selections = ref({
+    chaodu: [], //祖先
+    survivors: [], //陽上人
+    diandeng: [], //消災人員
+    qifu: [], //消災人員
+    xiaozai: [], //消災人員
+    pudu: [], //消災人員    
   });
 
   const loadMockData = async () => {
@@ -38,15 +49,6 @@ export const useJoinRecordStore = defineStore("joinActivityRecord", () => {
   const selectedRegistration = ref(null);
   const isLoading = ref(false);
 
-  // 存儲選中狀態的物件
-  const selections = ref({
-    chaodu: [],
-    diandeng: [],
-    qifu: [],
-    xiaozai: [],
-    pudu: [],
-    survivors: [],
-  });
 
   // --- Getters (等同於 computed) ---
   const totalAmount = computed(() => {

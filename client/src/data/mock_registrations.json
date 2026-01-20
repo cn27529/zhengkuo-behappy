@@ -55,26 +55,26 @@
             "otherRelationship": ""
         },
         "blessing": {
-            "address": "台北市中正區中山南路1號",
+            "address": "台北市中正區消災路1號",
             "persons": [
                 {
                     "id": 1,
                     "name": "王大明",
                     "zodiac": "龍",
-                    "notes": "",
+                    "notes": "二哥",
                     "isHouseholdHead": true
                 },
                 {
                     "id": 2,
                     "name": "李小華",
                     "zodiac": "蛇",
-                    "notes": "妻子",
+                    "notes": "大姐",
                     "isHouseholdHead": false
                 }
             ]
         },
         "salvation": {
-            "address": "台北市中正區中山南路1號",
+            "address": "台北市中正區超度路99號",
             "ancestors": [
                 {
                     "id": 1,
@@ -87,13 +87,13 @@
                     "id": 1,
                     "name": "王大明",
                     "zodiac": "龍",
-                    "notes": ""
+                    "notes": "二哥"
                 },
                 {
                     "id": 2,
                     "name": "李小華",
                     "zodiac": "蛇",
-                    "notes": ""
+                    "notes": "大姐"
                 }
             ]
         }

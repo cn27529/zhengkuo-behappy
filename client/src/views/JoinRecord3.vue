@@ -272,6 +272,11 @@ const handleSave = () => {
   font-weight: bold;
 }
 
+.reg-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 .reg-card {
   padding: 16px;
   background: white;
