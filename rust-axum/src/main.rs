@@ -180,6 +180,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /api/server/ping            - 服務器 Ping");
     tracing::info!("  GET    /sql-viewer                 - SQL 數據庫查看器");
     tracing::info!("");
+    tracing::info!("  GET    /api/activities             - 活動列表");
+    tracing::info!("  GET    /api/registrations          - 祈福登記列表");
+    tracing::info!("  GET    /api/monthly-donates        - 每月捐款列表");
+    tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
@@ -220,7 +224,7 @@ async fn root_handler() -> Json<Value> {
             "registrations": "/api/registrations",
             "monthly_donates": "/api/monthly-donates",
             "db_test": "/db-test",
-            "sql_viewer": "/__sql"
+            "sql_viewer": "/sql-viewer"
         },
         "architecture": {
             "auth_backend": "Directus (login, users, permissions)",
