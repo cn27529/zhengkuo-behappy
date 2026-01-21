@@ -374,7 +374,7 @@
             <input
               type="text"
               v-model="searchKeyword"
-              placeholder="搜尋姓名、手機、市話、地址"
+              placeholder="搜尋姓名、手機、電話、地址"
             />
           </div>
         </div>

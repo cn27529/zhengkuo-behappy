@@ -640,7 +640,7 @@
 <script setup>
 import { h, ref, computed, onMounted, reactive, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, Edit, View, Search } from "@element-plus/icons-vue";
+import { Refresh, Plus, Edit, Check, Delete, View, Search } from "@element-plus/icons-vue";
 import { useMonthlyDonateStore } from "../stores/monthlyDonateStore.js";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";

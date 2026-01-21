@@ -16,7 +16,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="表單名、聯絡人、手機、電話、消災人員、地址、陽上人"
+              placeholder="搜尋姓名、手機、電話、地址"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -29,6 +29,7 @@
               @click="handleSearch"
               :loading="isLoading"
               size="large"
+              :icon="Search"
             >
               {{ isLoading ? "查詢中..." : "查詢" }}
             </el-button>
@@ -36,6 +37,14 @@
             <el-button @click="handleClear" :disabled="isLoading" size="large">
               清空
             </el-button>
+            <el-button
+          type="primary"
+          @click="handleNewRegistration"
+          :icon="Plus"
+          size="large"
+        >
+          祈福登記
+        </el-button>
           </div>
           <p class="search-hint">💡 提示:搜尋關鍵字,系統會自動匹配相關欄位</p>
         </div>
@@ -59,14 +68,6 @@
     <div class="results-section" v-if="searchResults.length > 0">
       <div class="results-header">
         <h3>查詢結果 (共 {{ totalItems }} 筆)</h3>
-        <el-button
-          type="primary"
-          @click="handleNewRegistration"
-          :icon="Plus"
-          style="display: none"
-        >
-          新增登記
-        </el-button>
       </div>
 
       <!-- 查詢列表 -->
@@ -85,7 +86,7 @@
               <el-tooltip :content="row.id" placement="top">
                 <span class="form-icon">👤</span>
               </el-tooltip>
-              <div class="form-name"></div>
+              <div class="form-name"></div>              
             </div>
           </template>
         </el-table-column>
@@ -155,7 +156,7 @@
               >
             </el-tooltip>
             <el-tooltip content="卡片設計" placement="top">
-              <el-button type="info" circle @click="handleCardDesign(row)"
+              <el-button circle @click="handleCardDesign(row)"
                 >💳</el-button
               >
             </el-tooltip>
@@ -229,7 +230,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
+import { Refresh, Plus, Edit, Check, Delete, View, Search, User } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { authService } from "../services/authService";

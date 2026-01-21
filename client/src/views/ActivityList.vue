@@ -42,6 +42,7 @@
               @click="handleSearch"
               :loading="loading"
               size="large"
+              :icon="Search"
             >
               {{ loading ? "查詢中..." : "查詢" }}
             </el-button>
@@ -692,7 +693,7 @@
 <script setup>
 import { ref, computed, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Plus, Edit, Check, Delete } from "@element-plus/icons-vue";
+import { Refresh, Plus, Edit, Check, Delete, View, Search } from "@element-plus/icons-vue";
 import { useActivityStore } from "../stores/activityStore.js";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";

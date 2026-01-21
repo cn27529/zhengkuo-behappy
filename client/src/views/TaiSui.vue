@@ -32,6 +32,7 @@
               class="btn btn-primary btn-sm"
               @click="analyzeCurrentYear"
               :disabled="isLoading"
+              :icon="Search"
             >
               {{ isLoading ? "分析中..." : "查詢" }}
             </button>
@@ -172,6 +173,7 @@
 
 <script setup>
 import { onMounted, watch, ref, nextTick } from "vue";
+import { Refresh, Plus, Edit, Check, Delete, View, Search } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTaiSuiStore } from "../stores/taisuiStore.js";
 

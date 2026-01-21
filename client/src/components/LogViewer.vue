@@ -52,6 +52,7 @@
             @click="searchLogs"
             :loading="loading"
             size="large"
+            :icon="Search"
           >
             {{ loading ? "查詢中..." : "查詢" }}
           </el-button>
@@ -343,7 +344,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Refresh, Delete } from "@element-plus/icons-vue";
+import { Refresh, Plus, Edit, Check, Delete, View, Search } from "@element-plus/icons-vue";
 import { indexedDBLogger } from "../utils/indexedDB.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
