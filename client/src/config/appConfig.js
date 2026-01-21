@@ -1,5 +1,5 @@
 export const appConfig = {
-  title: "祈福登記系統",
+  title: "ZK Web Portal - 祈福登記系統",
 };
 
 export default appConfig;
