@@ -19,6 +19,7 @@ npm run dev:full
 tree -L 3 -I "node_modules|.git|dist|docs|.md" ./client > client-tree.txt
 tree -L 2 -I "node_modules|.git|dist|docs|.md" ./server > server-tree.txt
 tree -L 3 -I "target|.lock|docs|.md" ./rust-axum > rust-axum-tree.txt
+tree -L 5 -I "node_modules|target|public|requitements|results|.lock|.git|dist|docs|.md" ./ > zk-tree.txt
 
 ## 上版
 

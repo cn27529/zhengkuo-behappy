@@ -1,0 +1,186 @@
+./
+├── README.md
+├── client
+│   ├── index.html
+│   ├── package.json
+│   ├── src
+│   │   ├── App.vue
+│   │   ├── adapters
+│   │   │   └── serviceAdapter.js
+│   │   ├── components
+│   │   │   ├── AnimatedNumber.vue
+│   │   │   ├── ContactForm.vue
+│   │   │   ├── DevTools.vue
+│   │   │   ├── EnvTest.vue
+│   │   │   ├── IconSelector.vue
+│   │   │   ├── LogViewer.vue
+│   │   │   ├── Login2FAForm.vue
+│   │   │   ├── LoginForm.vue
+│   │   │   └── SupabaseLoginForm.vue
+│   │   ├── config
+│   │   │   ├── appConfig.js
+│   │   │   ├── serviceConfig.js
+│   │   │   └── supabase.js
+│   │   ├── data
+│   │   │   ├── auth_user.json
+│   │   │   ├── card-template-001.jpg
+│   │   │   ├── card-template-zk01.png
+│   │   │   ├── card-template-zk01a.png
+│   │   │   ├── card-template-zk01b.png
+│   │   │   ├── card-template-zk02.png
+│   │   │   ├── card-template-zk02a.png
+│   │   │   ├── card-template-zk02b.png
+│   │   │   ├── card-template-zk03a.png
+│   │   │   ├── mock2.json
+│   │   │   ├── mock_activities.json
+│   │   │   ├── mock_logs.json
+│   │   │   ├── mock_monthlyDonates.json
+│   │   │   ├── mock_participation_records.json
+│   │   │   ├── mock_registrations.json
+│   │   │   ├── mock_registrations_2data.json
+│   │   │   └── submit-success.json
+│   │   ├── main.js
+│   │   ├── router
+│   │   │   └── index.js
+│   │   ├── rustServices
+│   │   │   ├── baseRustService.js
+│   │   │   ├── rustActivityService.js
+│   │   │   ├── rustAuthService.js
+│   │   │   ├── rustMonthlyDonateService.js
+│   │   │   └── rustRegistrationService.js
+│   │   ├── services
+│   │   │   ├── activityService.js
+│   │   │   ├── authService.js
+│   │   │   ├── baseService.js
+│   │   │   ├── joinRecordService.js
+│   │   │   ├── monthlyDonateService.js
+│   │   │   ├── mydataService.js
+│   │   │   └── registrationService.js
+│   │   ├── stores
+│   │   │   ├── activityStore.js
+│   │   │   ├── authStore.js
+│   │   │   ├── cardStore.js
+│   │   │   ├── configStore.js
+│   │   │   ├── joinRecordStore.js
+│   │   │   ├── menu.js
+│   │   │   ├── monthlyDonateStore.js
+│   │   │   ├── pageStateStore.js
+│   │   │   ├── registrationQueryStore.js
+│   │   │   ├── registrationStore.js
+│   │   │   ├── supabase-auth.js
+│   │   │   └── taisuiStore.js
+│   │   ├── style.css
+│   │   ├── utils
+│   │   │   ├── dateUtils.js
+│   │   │   ├── generateGitHash.js
+│   │   │   ├── generateGitHashAsync.js
+│   │   │   ├── indexedDB.js
+│   │   │   └── mockDataHelper.js
+│   │   └── views
+│   │       ├── ActivityList.vue
+│   │       ├── AnimatedNumber.vue
+│   │       ├── CardDesign.vue
+│   │       ├── Contact.vue
+│   │       ├── Dashboard.vue
+│   │       ├── ElDialog.vue
+│   │       ├── Empty.vue
+│   │       ├── Env.vue
+│   │       ├── HashCode.vue
+│   │       ├── JoinRecord.vue
+│   │       ├── JoinRecord2.vue
+│   │       ├── JoinRecord3.vue
+│   │       ├── LogViewPage.vue
+│   │       ├── Login.vue
+│   │       ├── Logout.vue
+│   │       ├── MockLogin.vue
+│   │       ├── MonthlyDonate.vue
+│   │       ├── MydataForm.vue
+│   │       ├── MydataList.vue
+│   │       ├── NewTab.vue
+│   │       ├── Placeholder.vue
+│   │       ├── Registration copy.vue
+│   │       ├── Registration.vue
+│   │       ├── RegistrationEdit.vue
+│   │       ├── RegistrationList.vue
+│   │       ├── RegistrationPrint.vue
+│   │       ├── SupabaseLogin.vue
+│   │       ├── TaiSui.vue
+│   │       ├── TaisuiDotLamp.vue
+│   │       ├── TestPage.vue
+│   │       ├── TianganDizhiClock12.vue
+│   │       └── TianganDizhiClock24.vue
+│   ├── stats.html
+│   └── vite.config.js
+├── client-tree.txt
+├── db
+│   └── data.db
+├── docker
+│   ├── README.md
+│   ├── docker-compose.yml
+│   ├── extensions
+│   ├── logs
+│   └── uploads
+├── netlify.toml
+├── package.json
+├── rust-axum
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   ├── README.md
+│   ├── data.db
+│   ├── migrations
+│   │   ├── mydata.sql
+│   │   ├── sqlite_activityDB_table.sql
+│   │   ├── sqlite_monthlyDonateDB_table.sql
+│   │   └── sqlite_registrationDB_table.sql
+│   ├── package.json
+│   └── src
+│       ├── db.rs
+│       ├── handlers
+│       │   ├── activity.rs
+│       │   ├── mod.rs
+│       │   ├── monthly_donate.rs
+│       │   └── registration.rs
+│       ├── main.rs
+│       ├── middleware
+│       │   └── mod.rs
+│       ├── models
+│       │   ├── activity.rs
+│       │   ├── api_response.rs
+│       │   ├── mod.rs
+│       │   ├── monthly_donate.rs
+│       │   └── registration.rs
+│       ├── routes
+│       │   ├── activity.rs
+│       │   ├── mod.rs
+│       │   ├── monthly_donate.rs
+│       │   └── registration.rs
+│       └── utils
+│           └── mod.rs
+├── rust-axum-tree.txt
+├── scripts
+│   ├── curl.txt
+│   ├── deepseek.txt
+│   ├── mydata.txt
+│   ├── testGitHash.js
+│   ├── testMydata.js
+│   ├── test_mydata.sh
+│   ├── test_rust_activity_api.sh
+│   ├── test_rust_directus.md
+│   ├── test_rust_registration_api.sh
+│   ├── test_rust_registration_api_mockdata.sh
+│   └── test_rust_registration_with_user_created.sh
+├── server
+│   ├── Directus user setup.md
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── data.db
+│   ├── extensions
+│   ├── package-lock.json
+│   ├── package-windows.json
+│   ├── package.json
+│   └── uploads
+│       └── test.txt
+├── server-tree.txt
+└── zk-tree.txt
+
+30 directories, 154 files
