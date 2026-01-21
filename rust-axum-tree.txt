@@ -1,34 +1,36 @@
-./client
-├── src
-│   ├── App.vue
-│   ├── main.js
-│   ├── rustServices
-│   │   ├── baseRustService.js
-│   │   ├── rustActivityService.js
-│   │   ├── rustAuthService.js
-│   │   └── rustServiceFactory.js
-│   ├── services
-│   │   ├── activityService.js
-│   │   ├── authService.js
-│   │   ├── baseService.js
-│   │   ├── monthlyDonateService.js
-│   │   └── registrationService.js
-└── vite.config.js
-./db
-├── data.db
 ./rust-axum
+├── Cargo.lock
 ├── Cargo.toml
 ├── README.md
+├── data.db
+├── migrations
+│   ├── mydata.sql
+│   ├── sqlite_activityDB_table.sql
+│   ├── sqlite_monthlyDonateDB_table.sql
+│   └── sqlite_registrationDB_table.sql
+├── package.json
 └── src
     ├── db.rs
     ├── handlers
-    │   └── mod.rs
+    │   ├── activity.rs
+    │   ├── mod.rs
+    │   ├── monthly_donate.rs
+    │   └── registration.rs
     ├── main.rs
     ├── middleware
     │   └── mod.rs
     ├── models
-    │   └── mod.rs
+    │   ├── activity.rs
+    │   ├── api_response.rs
+    │   ├── mod.rs
+    │   ├── monthly_donate.rs
+    │   └── registration.rs
     ├── routes
-    │   └── mod.rs
+    │   ├── activity.rs
+    │   ├── mod.rs
+    │   ├── monthly_donate.rs
+    │   └── registration.rs
     └── utils
         └── mod.rs
+
+8 directories, 26 files

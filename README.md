@@ -16,9 +16,9 @@ npm run dev:full
 
 ## look tree
 
-tree -L 3 -I "node_modules|.git|dist" ./client > client-tree.txt
-tree -L 2 -I "node_modules|.git|dist" ./server > server-tree.txt
-tree -L 3 -I "target|.lock" ./rust-axum > rust-axum-tree.txt
+tree -L 3 -I "node_modules|.git|dist|docs|.md" ./client > client-tree.txt
+tree -L 2 -I "node_modules|.git|dist|docs|.md" ./server > server-tree.txt
+tree -L 3 -I "target|.lock|docs|.md" ./rust-axum > rust-axum-tree.txt
 
 ## 上版
 
@@ -42,6 +42,7 @@ git reset --hard 9ac12b1
 git push origin zk-client-netlify --force
 
 # axum-admin
+
 https://github.com/orchid-admin/axum-admin/tree/main
 https://github.com/lingdu1234/axum_admin?tab=readme-ov-file
 https://docs.rs/axum-login/latest/axum_login/
