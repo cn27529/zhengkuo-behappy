@@ -6,7 +6,7 @@ import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配�
 // import { activityService } from "../services/activityService.js"; // 移除舊的導入
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import mockDatas from "../data/mock_activities.json";
+import mockData from "../data/mock_activities.json";
 
 /**
  * 活動的 Pinia store，管理活動的狀態與操作。
@@ -332,13 +332,13 @@ export const useActivityStore = defineStore("activity", () => {
   // 獲得 Mock 數據
   const loadMockData = async () => {
     try {
-      if (!mockDatas || mockDatas.length === 0) {
+      if (!mockData || mockData.length === 0) {
         console.error("Mock 數據為空或未找到");
         return false;
       }
       let mockData = null;
-      const randomIndex = Math.floor(Math.random() * mockDatas.length);
-      mockData = mockDatas[randomIndex];
+      const randomIndex = Math.floor(Math.random() * mockData.length);
+      mockData = mockData[randomIndex];
       return mockData;
     } catch (error) {
       console.error("載入 Mock 數據失敗:", error);
@@ -356,7 +356,7 @@ export const useActivityStore = defineStore("activity", () => {
     try {
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
-        const processedActivities = mockDatas.map((activity) => ({
+        const processedActivities = mockData.map((activity) => ({
           ...activity,
           type: activity.item_type || "其他",
         }));
@@ -378,7 +378,7 @@ export const useActivityStore = defineStore("activity", () => {
       } else {
         error.value = result.message;
         console.error("❌ 獲取活動數據失敗:", result.message);
-        const processedActivities = mockDatas.map((activity) => ({
+        const processedActivities = mockData.map((activity) => ({
           ...activity,
           type: activity.item_type || "其他",
         }));
@@ -388,7 +388,7 @@ export const useActivityStore = defineStore("activity", () => {
     } catch (err) {
       error.value = err.message;
       console.error("❌ 獲取活動數據異常:", err);
-      const processedActivities = mockDatas.map((activity) => ({
+      const processedActivities = mockData.map((activity) => ({
         ...activity,
         type: activity.item_type || "其他",
       }));

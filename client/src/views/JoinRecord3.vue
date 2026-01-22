@@ -123,7 +123,7 @@ import mockData from "../data/mock_registrations.json";
 const activityConfigs = {
   chaodu: { label: "超度/超薦", price: 1000, source: "salvation.ancestors" },
   diandeng: { label: "點燈", price: 600, source: "blessing.persons" },
-  qifu: { label: "祈福", price: 300, source: "salvation.survivors" },
+  qifu: { label: "消災祈福", price: 300, source: "salvation.survivors" },
   xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" },
 };
 

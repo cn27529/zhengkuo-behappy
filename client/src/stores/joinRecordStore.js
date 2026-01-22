@@ -3,14 +3,15 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { joinRecordService } from "../services/joinRecordService.js";
 import { authService } from "../services/authService.js";
-import mockDatas from "../data/mock_registrations.json";
+import mockData from "../data/mock_registrations.json";
 
 /**
  * 參與記錄的 Pinia store，管理參與記錄的狀態與操作。
  * @module stores/joinRecordStore
  */
 export const useJoinRecordStore = defineStore("joinRecord", () => {
-  // --- State (等同於 ref) ---
+  
+  
 
   /**
    * 活動類型
@@ -24,7 +25,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     },
     survivors: { label: "陽上人", price: 300, source: "salvation.survivors" }, //陽上人
     diandeng: { label: "點燈", price: 600, source: "blessing.persons" }, //消災人員
-    qifu: { label: "祈福", price: 300, source: "blessing.persons" }, //消災人員
+    qifu: { label: "消災祈福", price: 300, source: "blessing.persons" }, //消災人員
     xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" }, //消災人員
     pudu: { label: "中元普渡", price: 1200, source: "blessing.persons" }, //消災人員
   });
@@ -224,16 +225,18 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     }));
   };
 
+  const mockRegistrations = ref(mockData || []);
+  
   // 載入 Mock 數據
   const loadMockData = async () => {
     try {
-      if (!mockDatas || mockDatas.length === 0) {
+      if (!mockData || mockData.length === 0) {
         console.error("Mock 數據為空或未找到");
         return false;
       }
       let mockData = null;
-      const randomIndex = Math.floor(Math.random() * mockDatas.length);
-      mockData = mockDatas[randomIndex];
+      const randomIndex = Math.floor(Math.random() * mockData.length);
+      mockData = mockData[randomIndex];
       return mockData;
     } catch (error) {
       console.error("載入 Mock 數據失敗:", error);
@@ -316,6 +319,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     selectedRegistration,
     selections,
     isLoading,
+    mockRegistrations,
     // Getters
     totalAmount,
     // Actions

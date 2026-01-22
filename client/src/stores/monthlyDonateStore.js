@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import mockDatas from "../data/mock_monthlyDonates.json";
+import mockData from "../data/mock_monthlyDonates.json";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
 //import { monthlyDonateService } from "../services/monthlyDonateService.js"; // 移除舊的導入
 import { authService } from "../services/authService.js";
@@ -866,6 +866,23 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     return authService.getCurrentUser();
   };
 
+  // 載入 Mock 數據
+  const loadMockData = async () => {
+    try {
+      if (!mockData || mockData.length === 0) {
+        console.error("Mock 數據為空或未找到");
+        return false;
+      }
+      let mockData = null;
+      const randomIndex = Math.floor(Math.random() * mockData.length);
+      mockData = mockData[randomIndex];
+      return mockData;
+    } catch (error) {
+      console.error("載入 Mock 數據失敗:", error);
+      return null;
+    }
+  };
+
   /**
    * 從服務器或 Mock 數據獲取贊助列表
    */
@@ -876,10 +893,10 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     try {
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 贊助數據");
-        allDonates.value = mockDatas;
+        allDonates.value = mockData;
         return {
           success: true,
-          data: mockDatas,
+          data: mockData,
           message: "成功加載 Mock 贊助數據",
         };
       }
@@ -893,13 +910,13 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         return result;
       } else {
         error.value = result.message;
-        allDonates.value = mockDatas;
+        allDonates.value = mockData;
         return result;
       }
     } catch (err) {
       error.value = err.message;
       console.error("❌ 獲取贊助數據異常:", err);
-      allDonates.value = mockDatas;
+      allDonates.value = mockData;
       throw err;
     } finally {
       loading.value = false;
@@ -1471,6 +1488,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
 
     // Actions
     testMonthGeneration, // ✅ 新增
+    loadMockData,
     getAllDonates,
     submitDonator,
     deleteDonator,
