@@ -102,7 +102,7 @@
     "items": [
       {
         "type": "pudu",
-        "label": "中元普渡",
+        "label": "中元普度",
         "price": 1200,
         "quantity": 2,
         "subtotal": 2400,
@@ -157,7 +157,7 @@
     "paymentMethod": "cash",
     "paymentDate": "2024-08-10T11:15:00.000Z",
     "paymentNotes": "",
-    "notes": "中元普渡法會",
+    "notes": "中元普度法會",
     "createdAt": "2024-08-10T11:00:00.000Z",
     "createdBy": "admin",
     "updatedAt": "2024-08-15T10:00:00.000Z",

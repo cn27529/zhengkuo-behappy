@@ -10,9 +10,9 @@
       <div class="left-panel">
         <!-- 已選擇的祈福登記表 -->
         <div class="form-section" v-if="joinRecordStore.selectedRegistration">
-          <h3>
-            <!-- 已選擇登記表：{{ joinRecordStore.selectedRegistration.formName }} -->
-          </h3>
+          <h6>
+            已選擇登記表：{{ joinRecordStore.selectedRegistration.formName }}
+          </h6>
           <div class="selected-info">
             <span
               ><strong>聯絡人：</strong
@@ -40,9 +40,9 @@
           <h3>活動參加項目選擇</h3>
 
           <div class="activities-grid">
-
             <!-- 超度/超薦 -->
-            <div class="activity-section"
+            <div
+              class="activity-section"
               v-if="
                 joinRecordStore.selectedRegistration.salvation.ancestors
                   .length > 0
@@ -298,44 +298,39 @@
               </div>
             </div>
 
-            <!-- 中元普渡 -->
-            <div class="activity-section" >
+            <!-- 中元普度 -->
+            <div class="activity-section">
               <div
                 class="activity-header clickable"
                 @click="toggleActivity('pudu')"
                 :title="isAllSelected('pudu') ? '點擊取消全選' : '點擊全選'"
               >
-                <label class="checkbox-label">
-                  <input
-                    style="display: none"
-                    type="checkbox"
-                    :checked="isAllSelected('pudu')"
-                    :indeterminate.prop="isIndeterminate('pudu')"
-                    @click.stop="toggleActivity('pudu')"
-                  />
-                  <span class="activity-title">{{
-                    joinRecordStore.activityConfigs.pudu.label
-                  }}</span>
+                <input
+                  style="display: none"
+                  type="checkbox"
+                  :checked="isAllSelected('pudu')"
+                  :indeterminate.prop="isIndeterminate('pudu')"
+                  @click.stop="toggleActivity('pudu')"
+                />
+                <span class="activity-title">{{
+                  joinRecordStore.activityConfigs.pudu.label
+                }}</span>
+                <span
+                  class="selected-count"
+                  v-if="joinRecordStore.selections.pudu.length > 0"
+                >
+                  (已選 {{ joinRecordStore.selections.pudu.length }} 位)
+                </span>
 
-                  <span
-                    class="selected-count"
-                    v-if="joinRecordStore.selections.pudu.length > 0"
-                  >
-                    (已選 {{ joinRecordStore.selections.pudu.length }} 位)
-                  </span>
-
-                  <span class="price-tag"
-                    >每位 ${{
-                      joinRecordStore.activityConfigs.pudu.price
-                    }}</span
-                  >
-                </label>
+                <span class="price-tag"
+                  >每位 ${{ joinRecordStore.activityConfigs.pudu.price }}</span
+                >
               </div>
 
               <div class="person-list">
                 <div
                   v-for="person in getSourceData('pudu')"
-                  :key="'pudu-' + person.id"
+                  :key="'fixed-' + person.id"
                   class="person-item"
                 >
                   <label class="checkbox-label">
@@ -356,6 +351,8 @@
                 </div>
               </div>
             </div>
+
+            <!-- 其他 -->
           </div>
         </div>
 
@@ -504,7 +501,8 @@ const savedRecords = ref([]);
 // 模擬資料
 const mockRegistrations = ref([]);
 
-const handleLoadMockData = () => {
+// 載入模擬資料
+const loadMockData = () => {
   try {
     const mockData = joinRecordStore.mockRegistrations;
     if (mockData) {
@@ -646,7 +644,7 @@ const formatDate = (dateString) => {
 onMounted(() => {
   console.log("活動參加記錄頁面已載入");
   console.log("Store 狀態:", joinRecordStore);
-  handleLoadMockData();
+  loadMockData();
 });
 </script>
 
@@ -667,7 +665,7 @@ onMounted(() => {
 
 .activity-record-container {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.2rem;
   min-height: calc(100vh - 200px);
   padding-bottom: 200px; /* 為浮動金額統計留空間 */
 }
@@ -973,7 +971,7 @@ onMounted(() => {
 
 /* 登記表列表 */
 .registration-list {
-  max-height: 1100px;
+  max-height: 600px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

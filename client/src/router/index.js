@@ -23,7 +23,7 @@ const routes = [
   {
     path: "/join-record",
     title: "活動參加",
-    component: () => import("../views/JoinRecord2.vue"),
+    component: () => import("../views/JoinRecord.vue"),
     meta: { requiresAuth: true },
   },
   {

@@ -10,9 +10,6 @@ import mockData from "../data/mock_registrations.json";
  * @module stores/joinRecordStore
  */
 export const useJoinRecordStore = defineStore("joinRecord", () => {
-  
-  
-
   /**
    * 活動類型
    * key: 活動類型
@@ -23,11 +20,11 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       price: 1000,
       source: "salvation.ancestors", //祖先
     },
-    survivors: { label: "陽上人", price: 300, source: "salvation.survivors" }, //陽上人
+    survivors: { label: "陽上人", price: 0, source: "salvation.survivors" }, //陽上人
     diandeng: { label: "點燈", price: 600, source: "blessing.persons" }, //消災人員
     qifu: { label: "消災祈福", price: 300, source: "blessing.persons" }, //消災人員
     xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" }, //消災人員
-    pudu: { label: "中元普渡", price: 1200, source: "blessing.persons" }, //消災人員
+    pudu: { label: "中元普度", price: 1200, source: "blessing.persons" }, //消災人員
   });
 
   /*
@@ -62,7 +59,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     const config = activityConfigs[type];
     return {
       type,
-      label: config.label, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普渡
+      label: config.label, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普度
       price: config.price, // 金額
       quantity: sourceData.length, // 數量
       subtotal: config.price * sourceData.length, // 小計
@@ -110,7 +107,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       registeredAt: new Date().toISOString(),
       registeredBy: registration.contact.name,
       state: "confirmed", // confirmed=已確認，unconfirmed=未確認，canceled=已取消
-      items, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普渡。資料來源：createParticipationItem
+      items, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普度。資料來源：createParticipationItem
       totalAmount, // 總金額
       discountAmount: 0, // 折扣金額
       finalAmount: totalAmount, // 最終金額
@@ -226,7 +223,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   };
 
   const mockRegistrations = ref(mockData || []);
-  
+
   // 載入 Mock 數據
   const loadMockData = async () => {
     try {
