@@ -19,13 +19,31 @@
               >{{ joinRecordStore.selectedRegistration.contact.name }}</span
             >
             <span
-              ><strong>電話：</strong
-              >{{ joinRecordStore.selectedRegistration.contact.mobile }}</span
+              ><strong style="display: none;" >手機/電話：</strong
+              >{{ joinRecordStore.selectedRegistration.contact.mobile || joinRecordStore.selectedRegistration.contact.phone }}</span
             >
             <span
               ><strong>關係：</strong
               >{{
                 joinRecordStore.selectedRegistration.contact.relationship
+              }}</span
+            >
+            <span
+              ><strong>祖先：</strong
+              >{{
+                joinRecordStore.selectedRegistration.salvation.ancestors.length
+              }}</span
+            >
+            <span
+              ><strong>陽上人：</strong
+              >{{
+                joinRecordStore.selectedRegistration.salvation.survivors.length
+              }}</span
+            >
+            <span
+              ><strong>消災祈福：</strong
+              >{{
+                joinRecordStore.selectedRegistration.blessing.persons.length
               }}</span
             >
           </div>
@@ -160,7 +178,7 @@
                   >每位 ${{ joinRecordStore.activityConfigs.qifu.price }}</span
                 >
               </div>
-
+              <div class="address">{{ joinRecordStore.selectedRegistration.blessing.address }}</div>
               <div class="person-list">
                 <div
                   v-for="survivor in getSourceData('qifu')"
@@ -272,7 +290,7 @@
                   }}</span
                 >
               </div>
-
+              <div class="address">{{ joinRecordStore.selectedRegistration.blessing.address }}</div>
               <div class="person-list">
                 <div
                   v-for="person in getSourceData('xiaozai')"
@@ -299,7 +317,7 @@
             </div>
 
             <!-- 中元普度 -->
-            <div class="activity-section">
+            <div class="activity-section" style="display: none;">
               <div
                 class="activity-header clickable"
                 @click="toggleActivity('pudu')"
@@ -409,7 +427,7 @@
               @click="handleSelectRegistration(reg)"
             >
               <span class="reg-contact">{{ reg.contact.name }}</span>
-              <span class="reg-phone">{{ reg.contact.mobile }}</span>
+              <span class="reg-phone">{{ reg.contact.mobile || reg.contact.phone }}</span>
               <div class="data-summary" style="display: none">
                 <span
                   >祖先：{{ reg.salvation?.ancestors?.length || 0 }} 位</span
@@ -435,7 +453,7 @@
               class="saved-record-item"
             >
               <div class="record-header">
-                <span class="record-name">{{ record.formName }}</span>
+                <span class="record-name">{{ record.contactName }}</span>
                 <span class="record-amount">${{ record.totalAmount }}</span>
               </div>
               <div class="record-time">{{ formatDate(record.savedAt) }}</div>
@@ -607,7 +625,7 @@ const handleSaveParticipationRecord = async () => {
   if (success) {
     // 建立簡化記錄用於顯示
     const record = {
-      formName: joinRecordStore.selectedRegistration.formName,
+      contactName: joinRecordStore.selectedRegistration.contact.name,
       totalAmount: joinRecordStore.totalAmount,
       savedAt: new Date().toISOString(),
     };
@@ -649,6 +667,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
+.form-section, .search-section, .results-section {
+  margin-bottom: 5px;
+}
+
+.search-section, .results-section {
+  margin-bottom: 11px;
+}
+
 .results-header {
   display: flex;
   justify-content: space-between;
@@ -971,7 +998,7 @@ onMounted(() => {
 
 /* 登記表列表 */
 .registration-list {
-  max-height: 600px;
+  max-height: 400px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
