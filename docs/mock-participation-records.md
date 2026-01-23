@@ -46,13 +46,21 @@
 
 ```json
 {
-  "type": "chaodu",                          // 項目類型代碼
-  "label": "超度/超薦",                       // 項目顯示名稱
-  "price": 1000,                            // 單價
+  "type": "diandeng",                        // 項目類型代碼
+  "label": "點燈",                           // 項目顯示名稱
+  "price": 600,                            // 統一單價
   "quantity": 1,                            // 數量
-  "subtotal": 1000,                         // 小計金額
-  "source": "salvation.ancestors",          // 資料來源
-  "sourceData": [...]                       // 具體選擇的人員/祖先資料
+  "subtotal": 600,                         // 小計金額
+  "source": "blessing.persons",            // 資料來源
+  "sourceData": [                          // 具體選擇的人員資料
+    {
+      "id": 1,
+      "name": "林志明",
+      "zodiac": "鼠", 
+      "lampType": "guangming",             // 該人員選擇的燈種
+      "lampTypeLabel": "光明燈"            // 燈種名稱
+    }
+  ]
 }
 ```
 

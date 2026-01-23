@@ -19,8 +19,11 @@
               >{{ joinRecordStore.selectedRegistration.contact.name }}</span
             >
             <span
-              ><strong style="display: none;" >手機/電話：</strong
-              >{{ joinRecordStore.selectedRegistration.contact.mobile || joinRecordStore.selectedRegistration.contact.phone }}</span
+              ><strong style="display: none">手機/電話：</strong
+              >{{
+                joinRecordStore.selectedRegistration.contact.mobile ||
+                joinRecordStore.selectedRegistration.contact.phone
+              }}</span
             >
             <span
               ><strong>關係：</strong
@@ -178,7 +181,9 @@
                   >每位 ${{ joinRecordStore.activityConfigs.qifu.price }}</span
                 >
               </div>
-              <div class="address">{{ joinRecordStore.selectedRegistration.blessing.address }}</div>
+              <div class="address">
+                {{ joinRecordStore.selectedRegistration.blessing.address }}
+              </div>
               <div class="person-list">
                 <div
                   v-for="survivor in getSourceData('qifu')"
@@ -256,6 +261,33 @@
                       >戶長</span
                     >
                   </label>
+
+                  <!-- 個人燈種選擇 -->
+                  <div
+                    class="person-lamp-type"
+                    v-if="joinRecordStore.selections.diandeng.includes(person)"
+                  >
+                    <span class="lamp-type-label">燈種：</span>
+                    <select
+                      :value="joinRecordStore.getPersonLampType(person.id)"
+                      @change="
+                        joinRecordStore.setPersonLampType(
+                          person.id,
+                          $event.target.value,
+                        )
+                      "
+                      class="lamp-type-select"
+                    >
+                      <option
+                        v-for="(lampType, key) in joinRecordStore
+                          .activityConfigs.diandeng.lampTypes"
+                        :key="key"
+                        :value="key"
+                      >
+                        {{ lampType.label }}
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -290,7 +322,9 @@
                   }}</span
                 >
               </div>
-              <div class="address">{{ joinRecordStore.selectedRegistration.blessing.address }}</div>
+              <div class="address">
+                {{ joinRecordStore.selectedRegistration.blessing.address }}
+              </div>
               <div class="person-list">
                 <div
                   v-for="person in getSourceData('xiaozai')"
@@ -317,7 +351,7 @@
             </div>
 
             <!-- 中元普度 -->
-            <div class="activity-section" style="display: none;">
+            <div class="activity-section" style="display: none">
               <div
                 class="activity-header clickable"
                 @click="toggleActivity('pudu')"
@@ -427,7 +461,9 @@
               @click="handleSelectRegistration(reg)"
             >
               <span class="reg-contact">{{ reg.contact.name }}</span>
-              <span class="reg-phone">{{ reg.contact.mobile || reg.contact.phone }}</span>
+              <span class="reg-phone">{{
+                reg.contact.mobile || reg.contact.phone
+              }}</span>
               <div class="data-summary" style="display: none">
                 <span
                   >祖先：{{ reg.salvation?.ancestors?.length || 0 }} 位</span
@@ -482,12 +518,12 @@
           v-show="joinRecordStore.selections[key].length > 0"
         >
           <span>{{ config.label }}：</span>
-          <span
-            >{{ joinRecordStore.selections[key].length }} 位 × ${{
+          <span>
+            {{ joinRecordStore.selections[key].length }} 位 × ${{
               config.price
             }}
-            = ${{ joinRecordStore.selections[key].length * config.price }}</span
-          >
+            = ${{ joinRecordStore.selections[key].length * config.price }}
+          </span>
         </div>
         <div class="total-final">
           <span>總金額：</span>
@@ -496,15 +532,13 @@
       </div>
     </div>
 
-    <!-- 成功提示 -->
-    <div v-if="showSuccess" class="success-message">
-      {{ successMessage }}
-    </div>
+    <!-- 成功提示已移除，改用 ElMessage -->
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { useJoinRecordStore } from "../stores/joinRecordStore.js";
 //import mockData from "../data/mock_registrations.json";
 
@@ -512,8 +546,6 @@ const joinRecordStore = useJoinRecordStore();
 
 // 狀態管理
 const searchKeyword = ref("");
-const showSuccess = ref(false);
-const successMessage = ref("");
 const savedRecords = ref([]);
 
 // 模擬資料
@@ -525,9 +557,13 @@ const loadMockData = () => {
     const mockData = joinRecordStore.mockRegistrations;
     if (mockData) {
       mockRegistrations.value = mockData;
+      ElMessage.success("模擬資料載入成功");
+    } else {
+      ElMessage.warning("未找到模擬資料");
     }
   } catch (error) {
     console.error("載入模擬資料失敗:", error);
+    ElMessage.error("載入模擬資料失敗");
   }
 };
 
@@ -602,47 +638,64 @@ const handleSelectRegistration = (reg) => {
 };
 
 // 重置選擇
-const handleReset = () => {
-  if (confirm("確定要重置所有選擇嗎？")) {
+const handleReset = async () => {
+  try {
+    await ElMessageBox.confirm("確定要重置所有選擇嗎？", "確認操作", {
+      confirmButtonText: "確定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
     joinRecordStore.resetSelections();
+    ElMessage.success("選擇已重置");
+  } catch (err) {
+    if (err !== "cancel") {
+      ElMessage.info("已取消重置操作");
+    }
   }
 };
 
 // 保存記錄
 const handleSaveParticipationRecord = async () => {
   if (!joinRecordStore.selectedRegistration) {
-    alert("請選擇祈福登記表");
+    ElMessage.warning("請選擇祈福登記表");
     return;
   }
 
   if (joinRecordStore.totalAmount === 0) {
-    alert("請至少選擇一個活動項目");
+    ElMessage.warning("請至少選擇一個活動項目");
     return;
   }
 
-  const success = await joinRecordStore.submitRecord();
+  try {
+    const success = await joinRecordStore.submitRecord();
 
-  if (success) {
-    // 建立簡化記錄用於顯示
-    const record = {
-      contactName: joinRecordStore.selectedRegistration.contact.name,
-      totalAmount: joinRecordStore.totalAmount,
-      savedAt: new Date().toISOString(),
-    };
+    if (success) {
+      // 建立簡化記錄用於顯示
+      const record = {
+        contactName: joinRecordStore.selectedRegistration.contact.name,
+        totalAmount: joinRecordStore.totalAmount,
+        savedAt: new Date().toISOString(),
+      };
 
-    savedRecords.value.unshift(record);
+      savedRecords.value.unshift(record);
 
-    // 顯示成功訊息
-    successMessage.value = "參加記錄已保存！";
-    showSuccess.value = true;
-    setTimeout(() => {
-      showSuccess.value = false;
-    }, 3000);
+      // 顯示成功訊息
+      ElMessage.success({
+        message: "參加記錄已保存！",
+        duration: 3000,
+      });
 
-    // 重置選擇
-    joinRecordStore.resetSelections();
-  } else {
-    alert("保存失敗，請稍後再試");
+      // 重置選擇
+      joinRecordStore.resetSelections();
+    } else {
+      ElMessage.error("保存失敗，請稍後再試");
+    }
+  } catch (error) {
+    console.error("保存記錄失敗:", error);
+    ElMessage.error({
+      message: error.message || "保存過程中發生錯誤",
+      duration: 5000,
+    });
   }
 };
 
@@ -667,12 +720,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
-.form-section, .search-section, .results-section {
+.form-section,
+.search-section,
+.results-section {
   margin-bottom: 5px;
 }
 
-.search-section, .results-section {
+.search-section,
+.results-section {
   margin-bottom: 11px;
 }
 
@@ -809,6 +864,76 @@ onMounted(() => {
 .checkbox-label input[type="checkbox"] {
   width: auto;
   cursor: pointer;
+}
+
+/* 個人燈種選擇 */
+.person-lamp-type {
+  margin-top: 0.5rem;
+  margin-left: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lamp-type-label {
+  font-size: 0.5rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.lamp-type-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.5rem;
+  background: white;
+  cursor: pointer;
+}
+
+.lamp-type-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.diandeng-person-detail {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.25rem 0;
+}
+
+/* 個人燈種選擇 */
+.person-lamp-type {
+  margin-top: 0.5rem;
+  margin-left: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lamp-type-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.lamp-type-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+}
+
+.lamp-type-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.diandeng-person-detail {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.25rem 0;
 }
 
 /* 人員列表 */
@@ -1164,6 +1289,19 @@ onMounted(() => {
 
   .activity-title {
     font-size: 1rem;
+  }
+
+  /* 個人燈種選擇在手機版的樣式調整 */
+  .person-lamp-type {
+    margin-left: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .lamp-type-select {
+    width: 100%;
+    max-width: 200px;
   }
 
   .total-float {

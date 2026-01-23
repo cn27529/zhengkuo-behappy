@@ -21,7 +21,16 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       source: "salvation.ancestors", //祖先
     },
     survivors: { label: "陽上人", price: 0, source: "salvation.survivors" }, //陽上人
-    diandeng: { label: "點燈", price: 600, source: "blessing.persons" }, //消災人員
+    diandeng: {
+      label: "點燈",
+      price: 600,
+      source: "blessing.persons", //消災人員
+      lampTypes: {
+        guangming: { label: "光明燈", price: 600 },
+        taisui: { label: "太歲燈", price: 800 },
+        yuanchen: { label: "元辰燈", price: 1000 },
+      },
+    },
     qifu: { label: "消災祈福", price: 300, source: "blessing.persons" }, //消災人員
     xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" }, //消災人員
     pudu: { label: "中元普度", price: 1200, source: "blessing.persons" }, //消災人員
@@ -40,6 +49,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     pudu: [], //消災人員
   });
 
+  // 每個人員的燈種選擇 { personId: lampType }
+  const personLampTypes = ref({});
+
   /*
    * 獲取資料來源
    * registration: 註冊資料
@@ -56,15 +68,30 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
    * sourceData: 資料來源
    */
   const createParticipationItem = (type, sourceData) => {
-    const config = activityConfigs[type];
+    const config = activityConfigs.value[type];
+    let price = config.price;
+    let label = config.label;
+
+    // 如果是點燈且有選擇燈種，使用燈種價格和標籤
+    if (type === "diandeng" && lampTypeSelection.value) {
+      const lampType = config.lampTypes[lampTypeSelection.value];
+      price = lampType.price;
+      label = `${config.label}(${lampType.label})`;
+    }
+
     return {
       type,
-      label: config.label, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普度
-      price: config.price, // 金額
+      label, // 超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度
+      price, // 金額
       quantity: sourceData.length, // 數量
-      subtotal: config.price * sourceData.length, // 小計
+      subtotal: price * sourceData.length, // 小計
       source: config.source, // 資料來源：registration
       sourceData: sourceData, // 當下選擇的：registration
+      ...(type === "diandeng" &&
+        lampTypeSelection.value && {
+          lampType: lampTypeSelection.value,
+          lampTypeLabel: config.lampTypes[lampTypeSelection.value].label,
+        }),
     };
   };
 
@@ -259,12 +286,23 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     Object.keys(selections.value).forEach((key) => {
       selections.value[key] = [];
     });
+    personLampTypes.value = {};
   };
 
   // 選擇某一筆登記表
   const selectRegistration = (reg) => {
     selectedRegistration.value = reg;
     resetSelections();
+  };
+
+  // 設置人員燈種選擇
+  const setPersonLampType = (personId, lampType) => {
+    personLampTypes.value[personId] = lampType;
+  };
+
+  // 獲取人員燈種
+  const getPersonLampType = (personId) => {
+    return personLampTypes.value[personId] || "guangming";
   };
 
   // 處理全選切換
@@ -284,7 +322,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     try {
       const payload = {
         registrationId: selectedRegistration.value.id,
+        activityId: selectedRegistration.value.activityId,
         items: selections.value,
+        personLampTypes: personLampTypes.value, // 每個人的燈種選擇
         total: totalAmount.value,
         createdAt: new Date().toISOString(),
       };
@@ -315,6 +355,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     activityConfigs,
     selectedRegistration,
     selections,
+    personLampTypes,
     isLoading,
     mockRegistrations,
     // Getters
@@ -323,6 +364,8 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     selectRegistration,
     resetSelections,
     toggleGroup,
+    setPersonLampType,
+    getPersonLampType,
     submitRecord,
     loadMockData,
     // 獲取用戶信息
