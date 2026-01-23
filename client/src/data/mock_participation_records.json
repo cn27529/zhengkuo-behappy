@@ -2,7 +2,7 @@
   {
     "id": 1,
     "registrationId": 1,
-    "activityId": "w4x5y6z",
+    "activityId": 6,
     "registeredAt": "2025-01-16T09:00:00.000Z",
     "registeredBy": "王大明",
     "state": "confirmed",
@@ -95,7 +95,7 @@
   {
     "id": 2,
     "registrationId": 2,
-    "activityId": "m7n8o9p",
+    "activityId": 1,
     "registeredAt": "2024-08-10T11:00:00.000Z",
     "registeredBy": "陳美玲",
     "state": "completed",
@@ -166,7 +166,7 @@
   {
     "id": 3,
     "registrationId": 4,
-    "activityId": "w4x5y6z",
+    "activityId": 6,
     "registeredAt": "2025-01-18T10:00:00.000Z",
     "registeredBy": "黃雅雯",
     "state": "pending",
@@ -229,7 +229,7 @@
   {
     "id": 4,
     "registrationId": 3,
-    "activityId": "w4x5y6z",
+    "activityId": 1,
     "registeredAt": "2025-01-17T14:30:00.000Z",
     "registeredBy": "林志明",
     "state": "confirmed",
