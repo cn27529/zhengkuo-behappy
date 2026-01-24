@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import mockData from "../data/mock_monthlyDonates.json";
+import mockDonateData from "../data/mock_monthlyDonates.json";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
 //import { monthlyDonateService } from "../services/monthlyDonateService.js"; // 移除舊的導入
 import { authService } from "../services/authService.js";
@@ -12,7 +12,7 @@ import { authService } from "../services/authService.js";
 export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
   // ========== 狀態 ==========
   const allDonates = ref([]);
-  const loading = ref(false);
+  const isLoading = ref(false);
   const error = ref(null);
 
   // 搜尋與分頁狀態
@@ -866,37 +866,20 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     return authService.getCurrentUser();
   };
 
-  // 載入 Mock 數據
-  const loadMockData = async () => {
-    try {
-      if (!mockData || mockData.length === 0) {
-        console.error("Mock 數據為空或未找到");
-        return false;
-      }
-      let mockData = null;
-      const randomIndex = Math.floor(Math.random() * mockData.length);
-      mockData = mockData[randomIndex];
-      return mockData;
-    } catch (error) {
-      console.error("載入 Mock 數據失敗:", error);
-      return null;
-    }
-  };
-
   /**
    * 從服務器或 Mock 數據獲取贊助列表
    */
   const getAllDonates = async (params = {}) => {
-    loading.value = true;
+    isLoading.value = true;
     error.value = null;
 
     try {
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 贊助數據");
-        allDonates.value = mockData;
+        allDonates.value = mockDonateData;
         return {
           success: true,
-          data: mockData,
+          data: mockDonateData,
           message: "成功加載 Mock 贊助數據",
         };
       }
@@ -910,16 +893,16 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
         return result;
       } else {
         error.value = result.message;
-        allDonates.value = mockData;
+        allDonates.value = mockDonateData;
         return result;
       }
     } catch (err) {
       error.value = err.message;
       console.error("❌ 獲取贊助數據異常:", err);
-      allDonates.value = mockData;
+      allDonates.value = mockDonateData;
       throw err;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
@@ -927,7 +910,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
    * 新增贊助人（包含贊助項目）
    */
   const submitDonator = async (donateData) => {
-    loading.value = true;
+    isLoading.value = true;
     error.value = null;
 
     try {
@@ -991,7 +974,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       console.error("❌ 創建贊助異常:", err);
       throw err;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
@@ -1000,7 +983,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
    * @param {string|number} donateId - 贊助記錄的 donateId 或 id
    */
   const deleteDonator = async (donateId) => {
-    loading.value = true;
+    isLoading.value = true;
     error.value = null;
 
     try {
@@ -1061,7 +1044,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       console.error("❌ 刪除贊助人異常:", err);
       throw err;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
@@ -1069,7 +1052,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
    * 新增贊助項目（給現有贊助記錄）
    */
   const addDonateItem = async (donateId, itemData) => {
-    loading.value = true;
+    isLoading.value = true;
     error.value = null;
 
     //console.log("📦 添加新贊助項目:", {donateId, itemData});
@@ -1148,7 +1131,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       console.error("❌ 新增贊助項目異常:", err);
       throw err;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
@@ -1156,7 +1139,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
    * 更新贊助項目
    */
   const updateDonateItem = async (donateId, itemId, itemData) => {
-    loading.value = true;
+    isLoading.value = true;
     error.value = null;
 
     try {
@@ -1233,7 +1216,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       console.error("❌ 更新贊助項目異常:", err);
       throw err;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
@@ -1243,7 +1226,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
    * @param {number} itemId 贊助項目的 ID
    */
   const deleteDonateItem = async (donateId, itemId) => {
-    loading.value = true;
+    isLoading.value = true;
     error.value = null;
 
     try {
@@ -1312,7 +1295,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       console.error("❌ 刪除贊助項目異常:", err);
       throw err;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
@@ -1442,11 +1425,29 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
     error.value = null;
   };
 
+  // 載入 Mock 數據
+  const loadMockData = async () => {
+    try {
+      if (!mockDonateData || mockDonateData.length === 0) {
+        console.error("Mock 數據為空或未找到");
+        return false;
+      }
+      let myMockData = null;
+      // 隨機選擇一筆
+      const randomIndex = Math.floor(Math.random() * mockDonateData.length);
+      myMockData = mockDonateData[randomIndex];
+      return myMockData;
+    } catch (error) {
+      console.error("載入 Mock 數據失敗:", error);
+      return null;
+    }
+  };
+
   // ========== 返回 Store 接口 ==========
   return {
     // 狀態
     allDonates,
-    loading,
+    loading: isLoading,
     error,
     searchQuery,
     selectedTab,

@@ -8,10 +8,10 @@
     <div class="activity-record-container">
       <!-- 左側區域 70% -->
       <div class="left-panel">
-        <!-- 已選擇的祈福登記表 -->
+        <!-- 已選擇的祈福登記 -->
         <div class="form-section" v-if="joinRecordStore.selectedRegistration">
           <h6>
-            已選擇登記表：{{ joinRecordStore.selectedRegistration.formName }}
+            已選擇祈福登記：{{ joinRecordStore.selectedRegistration.formName }}
           </h6>
           <div class="selected-info">
             <span
@@ -43,7 +43,7 @@
         </div>
 
         <div class="form-section" v-if="!joinRecordStore.selectedRegistration">
-          <p class="no-selection">請從右側選擇祈福登記表</p>
+          <p class="no-selection">請從右側選擇祈福登記</p>
         </div>
 
         <!-- 活動項目選擇區 - 全部可見 -->
@@ -100,10 +100,9 @@
                       v-model="joinRecordStore.selections.chaodu"
                     />
                     <span>{{ ancestor.surname }}</span>
-
                     氏歷代祖先
-                    <span v-if="ancestor.notes"
-                      >備註
+                    <span v-if="ancestor.notes">
+                      <!-- 備註 -->
                       <el-tag class="person-tag" type="info">{{
                         ancestor.notes
                       }}</el-tag></span
@@ -430,12 +429,12 @@
           </div>
         </div>
 
-        <!-- 登記表列表 -->
+        <!-- 祈福登記 -->
         <div class="results-section">
           <div class="results-header">
-            <h3>登記表列表</h3>
+            <h3>祈福登記列表</h3>
             <p class="search-hint">
-              共 {{ filteredRegistrations.length }} 筆登記表
+              <!-- 共 {{ filteredRegistrations.length }} 筆祈福登記 -->
             </p>
           </div>
           <div class="registration-list">
@@ -541,22 +540,27 @@ const joinRecordStore = useJoinRecordStore();
 const searchKeyword = ref("");
 const savedRecords = ref([]);
 
-// 獲取所有登記表資料
-const allRegistrations = ref([]);
+const allRegistrations = ref([]); // 獲取所有祈福登記資料
+const allJoinRecords = ref([]); // 獲取所有參加記錄
 
-// 載入報名資料
+// 載入祈福登記資料
 const loadRegistrationData = async () => {
   try {
     const registrations = await joinRecordStore.loadRegistrationData();
     allRegistrations.value = registrations;
-    ElMessage.success(`載入報名資料成功：${registrations.length} 筆`);
+    ElMessage.success(`載入祈福登記資料成功：${registrations.length} 筆`);
+
+    // // 載入參加記錄
+    // allJoinRecords.value = await joinRecordStore.getAllJoinRecords();
+    // ElMessage.success(`載入參加記錄成功：${allJoinRecords.value.length} 筆`);
+    // console.log("參加記錄", allJoinRecords.value);
   } catch (error) {
-    console.error("載入報名資料失敗:", error);
-    ElMessage.error("載入報名資料失敗");
+    console.error("載入祈福登記資料失敗:", error);
+    ElMessage.error("載入祈福登記資料失敗", error);
   }
 };
 
-// 計算篩選後的登記表
+// 計算篩選後的祈福登記
 const filteredRegistrations = computed(() => {
   if (!searchKeyword.value) {
     return allRegistrations.value;
@@ -621,7 +625,7 @@ const toggleActivity = (activityKey) => {
   joinRecordStore.toggleGroup(activityKey, sourceData);
 };
 
-// 選擇登記表
+// 選擇祈福登記
 const handleSelectRegistration = (reg) => {
   joinRecordStore.selectRegistration(reg);
 };
@@ -646,7 +650,7 @@ const handleReset = async () => {
 // 提交參加記錄
 const handleSubmitRecord = async () => {
   if (!joinRecordStore.selectedRegistration) {
-    ElMessage.warning("請選擇祈福登記表");
+    ElMessage.warning("請選擇祈福登記");
     return;
   }
 
@@ -1110,7 +1114,7 @@ onMounted(async () => {
   font-size: 1.3rem;
 }
 
-/* 登記表列表 */
+/* 祈福登記列表 */
 .registration-list {
   max-height: 400px;
   overflow-y: auto;

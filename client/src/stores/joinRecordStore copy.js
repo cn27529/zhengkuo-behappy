@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { joinRecordService } from "../services/joinRecordService.js";
 import { authService } from "../services/authService.js";
-import mockData from "../data/mock_registrations.json";
+import mockRecordData from "../data/mock_registrations.json";
 import { registrationService } from "../services/registrationService.js";
 
 /**
@@ -250,11 +250,66 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     }));
   };
 
-  const allRegistrations = ref([]); // 所有祈福登記
-  const selectedRegistration = ref(null); // 選擇的祈福登記
+  const mockRegistrations = ref([]);
+  const selectedRegistration = ref(null);
   const isLoading = ref(false);
   const error = ref(null);
-  const allJoinRecords = ref([]); // 所有參加記錄
+  const allRegistrations = ref([]);
+  const allJoinRecords = ref([]);
+
+  // 載入真實資料
+  const loadRegistrationData = async (params) => {
+    try {
+      isLoading.value = true;
+      const registrations = await getAllRegistrations(params);
+      allRegistrations.value = registrations;
+      console.log("載入報名資料成功:", registrations.length, "筆");
+      return registrations;
+    } catch (error) {
+      console.error("載入報名資料失敗:", error);
+      // 失敗時使用 Mock 資料
+      allRegistrations.value = mockData || [];
+      return mockData || [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const getAllRegistrations = async (params) => {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      if (registrationService.base.getIsMock()) {
+        console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 資料");
+        allRegistrations.value = mockData;
+        return {
+          success: true,
+          data: mockData,
+          message: "成功加載 Mock 資料",
+        };
+      }
+
+      // TODO: 未來串接 API
+      console.log("📄 從服務器獲取報名資料...");
+      const result = await registrationService.getAllRegistrations(params);
+      if (result.success) {
+        allRegistrations.value = result.data || [];
+        console.log(`✅ 成功獲取 ${allRegistrations.value.length} 個報名記錄`);
+        return result;
+      } else {
+        error.value = result.message;
+        allRegistrations.value = mockData;
+        return result;
+      }
+    } catch (err) {
+      error.value = err.message;
+      console.error("取得所有報名資料失敗:", err);
+      allRegistrations.value = mockData;
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
   const getAllJoinRecords = async (params) => {
     isLoading.value = true;
@@ -275,8 +330,8 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       const result = await joinRecordService.getAllParticipationRecords(params);
       if (result.success) {
         allJoinRecords.value = result.data || [];
-        console.log(`✅ 成功獲取 ${allJoinRecords.value.length} 筆參加記錄`);
-        return result.data;
+        console.log(`✅ 成功獲取 ${allJoinRecords.value.length} 個報名記錄`);
+        return result;
       } else {
         error.value = result.message;
         allJoinRecords.value = mockData;
@@ -287,43 +342,6 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       console.error("取得所有參加記錄資料失敗:", err);
       allJoinRecords.value = mockData;
       throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  // 獲取所有祈福登記資料
-  const getAllRegistrations = async () => {
-    try {
-      isLoading.value = true;
-      const result = await registrationService.getAllRegistrations();
-      if (result.success) {
-        return result.data;
-      } else {
-        console.warn("獲取報名資料失敗，使用 Mock 資料");
-        return mockData;
-      }
-    } catch (error) {
-      console.error("取得所有報名資料失敗:", error);
-      return mockData; // 失敗時回退到 Mock 資料
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  // 載入祈福登記資料
-  const loadRegistrationData = async () => {
-    try {
-      isLoading.value = true;
-      const registrations = await getAllRegistrations();
-      allRegistrations.value = registrations;
-      console.log("載入報名資料成功:", registrations.length, "筆");
-      return registrations;
-    } catch (error) {
-      console.error("載入報名資料失敗:", error);
-      // 失敗時使用 Mock 資料
-      allRegistrations.value = mockData || [];
-      return mockData || [];
     } finally {
       isLoading.value = false;
     }
@@ -347,7 +365,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     personLampTypes.value = {};
   };
 
-  // 選擇某一筆祈福登記
+  // 選擇某一筆登記表
   const selectRegistration = (reg) => {
     console.log("選擇登記表:", reg);
     selectedRegistration.value = reg;
@@ -405,9 +423,56 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     }
   };
 
+  const initialize = async () => {
+    console.log("🚀 初始化參加記錄 Store...");
+
+    try {
+      const result = await getAllJoinRecords();
+
+      console.log("📊 初始化結果:", {
+        success: result.success,
+        allJoinRecordsLength: allJoinRecords.value?.length,
+        allJoinRecordsIsArray: Array.isArray(allJoinRecords.value),
+        allJoinRecordsValue: allJoinRecords.value,
+        //donateSummaryLength: donateSummary.value?.length,
+      });
+
+      if (!allJoinRecords.value || !Array.isArray(allJoinRecords.value)) {
+        console.error("❌ allJoinRecords.value 不是有效的數組");
+        throw new Error("數據初始化失敗");
+      }
+
+      console.log("✅ 參加記錄 Store 初始化完成");
+      console.log("📦 全部參加記錄數據:", allJoinRecords.value);
+
+      return result;
+    } catch (err) {
+      console.error("❌ Store 初始化失敗:", err);
+      throw err;
+    }
+  };
+
   // 獲取用戶信息
   const getCurrentUser = () => {
     return authService.getCurrentUser();
+  };
+
+  // 載入 Mock 數據
+  const loadMockData = async () => {
+    try {
+      if (!mockRecordData || mockRecordData.length === 0) {
+        console.error("Mock 數據為空或未找到");
+        return false;
+      }
+      let myMockData = null;
+      // 隨機選擇一筆
+      const randomIndex = Math.floor(Math.random() * mockRecordData.length);
+      myMockData = mockRecordData[randomIndex];
+      return myMockData;
+    } catch (error) {
+      console.error("載入 Mock 數據失敗:", error);
+      return null;
+    }
   };
 
   // 暴露給元件使用的變數與方法
@@ -418,7 +483,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     selections,
     personLampTypes,
     isLoading,
-    allRegistrations,
+    mockRegistrations,
 
     // Getters
     totalAmount,
@@ -428,12 +493,13 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     toggleGroup,
     setPersonLampType,
     getPersonLampType,
-    submitRecord,
+    loadMockData,
     loadRegistrationData, // 載入祈福登記資料
     getAllRegistrations, // 獲取所有祈福登記
     getAllJoinRecords, // 獲取所有參加記錄
-    // 獲取用戶信息
-    getCurrentUser,
+    submitRecord,
+    initialize,
+    getCurrentUser, // 獲取用戶信息
     // 其他方法
     getItemsSummary, // 取得項目摘要
     getItemsDetail, // 取得項目詳細清單
