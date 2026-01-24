@@ -7,7 +7,7 @@ import mockData from "../data/mock_registrations.json";
 import { registrationService } from "../services/registrationService.js";
 
 /**
- * 參與記錄的 Pinia store，管理參與記錄的狀態與操作。
+ * 參加記錄的 Pinia store，管理參加記錄的狀態與操作。
  * @module stores/joinRecordStore
  */
 export const useJoinRecordStore = defineStore("joinRecord", () => {
@@ -256,6 +256,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const error = ref(null);
   const allJoinRecords = ref([]); // 所有參加記錄
 
+  // 取得所有參加記錄
   const getAllJoinRecords = async (params) => {
     isLoading.value = true;
     error.value = null;
@@ -292,7 +293,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     }
   };
 
-  // 獲取所有祈福登記資料
+  // 獲取所有祈福登記
   const getAllRegistrations = async () => {
     try {
       isLoading.value = true;
