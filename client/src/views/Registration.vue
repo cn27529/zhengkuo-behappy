@@ -41,7 +41,7 @@
             @click="handleSwitchForm(index)"
           >
             <span class="tab-number">表單{{ index + 1 }}</span>
-            <span style="display: " class="tab-status" :class="form.state">{{
+            <span style="display:" class="tab-status" :class="form.state">{{
               getStatusText(form.state)
             }}</span>
             <button
@@ -422,7 +422,7 @@
             v-if="
               registrationForm.blessing.persons &&
               registrationForm.blessing.persons.some(
-                (p) => p.name && p.name.trim() !== ''
+                (p) => p.name && p.name.trim() !== '',
               )
             "
             class="import-section"
@@ -599,20 +599,20 @@ const registrationForm = computed(() => registrationStore.registrationForm);
 const formConfig = computed(() => configStore.formConfig);
 const validationDetails = computed(() => registrationStore.validationDetails);
 const availableBlessingPersons = computed(
-  () => registrationStore.availableBlessingPersons
+  () => registrationStore.availableBlessingPersons,
 );
 const currentHouseholdHeadsCount = computed(
-  () => registrationStore.currentHouseholdHeadsCount
+  () => registrationStore.currentHouseholdHeadsCount,
 );
 const householdHeadWarning = computed(
-  () => registrationStore.householdHeadWarning
+  () => registrationStore.householdHeadWarning,
 );
 const currentAncestorsCount = computed(
-  () => registrationStore.currentAncestorsCount
+  () => registrationStore.currentAncestorsCount,
 );
 const ancestorsWarning = computed(() => registrationStore.ancestorsWarning);
 const currentSurvivorsCount = computed(
-  () => registrationStore.currentSurvivorsCount
+  () => registrationStore.currentSurvivorsCount,
 );
 const survivorsWarning = computed(() => registrationStore.survivorsWarning);
 const availableSurvivors = computed(() => registrationStore.availableSurvivors);
@@ -690,7 +690,7 @@ const handleDeleteForm = (index) => {
       confirmButtonText: "確定刪除",
       cancelButtonText: "取消",
       type: "warning",
-    }
+    },
   )
     .then(() => {
       console.log("執行刪除，索引:", index);
@@ -866,7 +866,7 @@ const handleResetForm = () => {
       confirmButtonText: "確定清空",
       cancelButtonText: "取消",
       type: "warning",
-    }
+    },
   )
     .then(async () => {
       console.log("🔄 使用者觸發重置表單");

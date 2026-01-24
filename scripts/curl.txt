@@ -8,12 +8,14 @@ curl -s "http://localhost:8055/items/mydata?fields=id,formName,state,contact.nam
 curl -s "http://localhost:8055/items/mydata?fields=*,contact.*" | jq '.'
 
 
-Registration DB
+# 祈福登記 - registrationDB
 curl -s "http://localhost:8055/items/registrationDB" | jq '.'
-Activity DB
+# 法會活動 - activityDB
 curl -s "http://localhost:8055/items/activityDB" | jq '.'
-MonthlyDonate DB
+# 每月贊助 - monthlyDonateDB
 curl -s "http://localhost:8055/items/monthlyDonateDB" | jq '.'
+# 參加記錄 - participationRecordDB
+curl -s "http://localhost:8055/items/participationRecordDB" | jq '.'
 
 # 使用 curl 測試 OPTIONS 請求
 curl -X OPTIONS http://localhost:3000/api/activities \
@@ -22,9 +24,11 @@ curl -X OPTIONS http://localhost:3000/api/activities \
   -H "Access-Control-Request-Headers: content-type" \
   -v
 
-
+# 祈福登記
 curl -s "http://localhost:3000/api/activities?fields=*,contact.*" | jq '.'
-
+# 法會活動
 curl -s "http://localhost:3000/api/registrations?fields=*,contact.*" | jq '.'
-
+# 每月贊助
 curl -s "http://localhost:3000/api/monthly-donates?fields=*,contact.*" | jq '.'
+# 參加記錄
+curl -s "http://localhost:3000/api/participation-records?fields=*,contact.*" | jq '.'

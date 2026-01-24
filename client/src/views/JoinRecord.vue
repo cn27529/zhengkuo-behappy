@@ -26,29 +26,19 @@
               }}</span
             >
             <span
-              ><strong>關係：</strong
-              >{{
-                joinRecordStore.selectedRegistration.contact.relationship
-              }}</span
-            >
-            <span
-              ><strong>祖先：</strong
-              >{{
-                joinRecordStore.selectedRegistration.salvation.ancestors.length
-              }}</span
-            >
-            <span
-              ><strong>陽上人：</strong
-              >{{
-                joinRecordStore.selectedRegistration.salvation.survivors.length
-              }}</span
-            >
-            <span
-              ><strong>消災祈福：</strong
-              >{{
-                joinRecordStore.selectedRegistration.blessing.persons.length
-              }}</span
-            >
+              ><strong>關係：</strong>
+              {{ joinRecordStore.selectedRegistration.contact.relationship }}
+              <span
+                class="price-tag"
+                v-if="
+                  joinRecordStore.selectedRegistration.contact.otherRelationship
+                "
+              >
+                {{
+                  joinRecordStore.selectedRegistration.contact.otherRelationship
+                }}
+              </span>
+            </span>
           </div>
         </div>
 
@@ -416,12 +406,12 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="handleSaveParticipationRecord"
+            @click="handleSubmitRecord"
             :disabled="
               joinRecordStore.isLoading || joinRecordStore.totalAmount === 0
             "
           >
-            {{ joinRecordStore.isLoading ? "保存中..." : "保存參加記錄" }}
+            {{ joinRecordStore.isLoading ? "提交中..." : "提交參加記錄" }}
           </button>
         </div>
       </div>
@@ -464,6 +454,9 @@
               <span class="reg-phone">{{
                 reg.contact.mobile || reg.contact.phone
               }}</span>
+
+              <span>{{ reg.contact.relationship }}</span>
+
               <div class="data-summary" style="display: none">
                 <span
                   >祖先：{{ reg.salvation?.ancestors?.length || 0 }} 位</span
@@ -548,33 +541,29 @@ const joinRecordStore = useJoinRecordStore();
 const searchKeyword = ref("");
 const savedRecords = ref([]);
 
-// 模擬資料
-const mockRegistrations = ref([]);
+// 獲取所有登記表資料
+const allRegistrations = ref([]);
 
-// 載入模擬資料
-const loadMockData = () => {
+// 載入報名資料
+const loadRegistrationData = async () => {
   try {
-    const mockData = joinRecordStore.mockRegistrations;
-    if (mockData) {
-      mockRegistrations.value = mockData;
-      ElMessage.success("模擬資料載入成功");
-    } else {
-      ElMessage.warning("未找到模擬資料");
-    }
+    const registrations = await joinRecordStore.loadRegistrationData();
+    allRegistrations.value = registrations;
+    ElMessage.success(`載入報名資料成功：${registrations.length} 筆`);
   } catch (error) {
-    console.error("載入模擬資料失敗:", error);
-    ElMessage.error("載入模擬資料失敗");
+    console.error("載入報名資料失敗:", error);
+    ElMessage.error("載入報名資料失敗");
   }
 };
 
 // 計算篩選後的登記表
 const filteredRegistrations = computed(() => {
   if (!searchKeyword.value) {
-    return mockRegistrations.value;
+    return allRegistrations.value;
   }
 
   const keyword = searchKeyword.value.toLowerCase();
-  return mockRegistrations.value.filter((reg) => {
+  return allRegistrations.value.filter((reg) => {
     return (
       reg.formSource.toLowerCase().includes(keyword) ||
       reg.formName.toLowerCase().includes(keyword) ||
@@ -654,8 +643,8 @@ const handleReset = async () => {
   }
 };
 
-// 保存記錄
-const handleSaveParticipationRecord = async () => {
+// 提交參加記錄
+const handleSubmitRecord = async () => {
   if (!joinRecordStore.selectedRegistration) {
     ElMessage.warning("請選擇祈福登記表");
     return;
@@ -712,10 +701,10 @@ const formatDate = (dateString) => {
 };
 
 // 組件掛載
-onMounted(() => {
+onMounted(async () => {
   console.log("活動參加記錄頁面已載入");
   console.log("Store 狀態:", joinRecordStore);
-  loadMockData();
+  await loadRegistrationData(); // 載入真實報名資料
 });
 </script>
 
@@ -1235,8 +1224,21 @@ onMounted(() => {
   color: #666;
 }
 
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e9ecef;
+}
+
 /* 響應式設計 */
 @media (max-width: 1024px) {
+  .form-actions {
+    flex-direction: column;
+  }
+
   .results-header {
     flex-direction: column;
     gap: 1rem;

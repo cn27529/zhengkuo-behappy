@@ -30,6 +30,7 @@ export class BaseService {
       serverInfo: "/server/info", // 伺服器資訊端點
       itemsActivity: "/items/activityDB", // 新增 activityDB 端點
       itemsJoinRecord: "/items/joinRecordDB", // 新增 joinRecordDB 端點
+      itemsParticipationRecord: "/items/participationRecordDB", // 新增 participationRecordDB 端點
       itemsMonthlyDonate: "/items/monthlyDonateDB", // 新增 monthlyDonateDB 端點
     };
 
@@ -141,7 +142,7 @@ export class BaseService {
 
       const success = navigator.sendBeacon?.(
         import.meta.env.VITE_REMOTE_LOG_URL,
-        blob
+        blob,
       );
 
       if (!success) {
@@ -169,7 +170,7 @@ export class BaseService {
 
     console.groupCollapsed(
       `%c${logEntry.endpoint} - ${logEntry.status}`,
-      style
+      style,
     );
     console.log("上下文:", logEntry.context);
     console.log("耗時:", logEntry.duration, "ms");
@@ -230,7 +231,7 @@ export class BaseService {
 
         console.error(
           `HTTP Directus 錯誤 ${response.status}: ${response.statusText}`,
-          errorText
+          errorText,
         );
 
         // 記錄錯誤日誌

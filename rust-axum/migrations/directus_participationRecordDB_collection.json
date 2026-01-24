@@ -1,0 +1,409 @@
+{
+  "collection": "participationRecordDB",
+  "meta": {
+    "collection": "participationRecordDB",
+    "icon": "receipt",
+    "note": "參加記錄管理",
+    "display_template": "{{registeredBy}} - {{finalAmount}}元",
+    "hidden": false,
+    "singleton": false,
+    "translations": [
+      {
+        "language": "zh-TW",
+        "translation": "參加記錄"
+      }
+    ],
+    "archive_field": null,
+    "archive_app_filter": true,
+    "archive_value": null,
+    "unarchive_value": null,
+    "sort_field": "id",
+    "accountability": "all",
+    "color": "#6644FF",
+    "item_duplication_fields": null,
+    "sort": 1,
+    "group": null,
+    "collapse": "open"
+  },
+  "schema": {
+    "name": "participationRecordDB",
+    "comment": null
+  },
+  "fields": [
+    {
+      "field": "id",
+      "type": "integer",
+      "meta": {
+        "hidden": true,
+        "interface": "input",
+        "readonly": true,
+        "width": "half"
+      },
+      "schema": {
+        "name": "id",
+        "table": "participationRecordDB",
+        "data_type": "integer",
+        "default_value": null,
+        "max_length": null,
+        "numeric_precision": null,
+        "numeric_scale": null,
+        "is_nullable": false,
+        "is_unique": false,
+        "is_primary_key": true,
+        "has_auto_increment": true,
+        "foreign_key_column": null,
+        "foreign_key_table": null,
+        "comment": ""
+      }
+    },
+    {
+      "field": "registrationId",
+      "type": "integer",
+      "meta": {
+        "interface": "input",
+        "display": "raw",
+        "width": "half",
+        "required": true,
+        "note": "關聯祈福登記表ID"
+      },
+      "schema": {
+        "name": "registrationId",
+        "table": "participationRecordDB",
+        "data_type": "integer",
+        "is_nullable": false
+      }
+    },
+    {
+      "field": "activityId",
+      "type": "string",
+      "meta": {
+        "interface": "input",
+        "display": "raw",
+        "width": "half",
+        "required": true,
+        "note": "活動ID"
+      },
+      "schema": {
+        "name": "activityId",
+        "table": "participationRecordDB",
+        "data_type": "varchar",
+        "max_length": 50,
+        "is_nullable": false
+      }
+    },
+    {
+      "field": "state",
+      "type": "string",
+      "meta": {
+        "interface": "select-dropdown",
+        "display": "labels",
+        "width": "half",
+        "options": {
+          "choices": [
+            {
+              "text": "已確認",
+              "value": "confirmed"
+            },
+            {
+              "text": "待處理",
+              "value": "pending"
+            },
+            {
+              "text": "已取消",
+              "value": "canceled"
+            }
+          ]
+        },
+        "note": "記錄狀態"
+      },
+      "schema": {
+        "name": "state",
+        "table": "participationRecordDB",
+        "data_type": "varchar",
+        "max_length": 20,
+        "default_value": "confirmed"
+      }
+    },
+    {
+      "field": "items",
+      "type": "json",
+      "meta": {
+        "interface": "input-code",
+        "display": "raw",
+        "width": "full",
+        "required": true,
+        "options": {
+          "language": "json"
+        },
+        "note": "參加項目詳細資料"
+      },
+      "schema": {
+        "name": "items",
+        "table": "participationRecordDB",
+        "data_type": "json",
+        "is_nullable": false
+      }
+    },
+    {
+      "field": "totalAmount",
+      "type": "decimal",
+      "meta": {
+        "interface": "input",
+        "display": "formatted-value",
+        "width": "half",
+        "required": true,
+        "options": {
+          "format": "currency"
+        },
+        "note": "總金額"
+      },
+      "schema": {
+        "name": "totalAmount",
+        "table": "participationRecordDB",
+        "data_type": "decimal",
+        "numeric_precision": 10,
+        "numeric_scale": 2,
+        "is_nullable": false
+      }
+    },
+    {
+      "field": "discountAmount",
+      "type": "decimal",
+      "meta": {
+        "interface": "input",
+        "display": "formatted-value",
+        "width": "half",
+        "options": {
+          "format": "currency"
+        },
+        "note": "折扣金額"
+      },
+      "schema": {
+        "name": "discountAmount",
+        "table": "participationRecordDB",
+        "data_type": "decimal",
+        "numeric_precision": 10,
+        "numeric_scale": 2,
+        "default_value": 0
+      }
+    },
+    {
+      "field": "finalAmount",
+      "type": "decimal",
+      "meta": {
+        "interface": "input",
+        "display": "formatted-value",
+        "width": "half",
+        "required": true,
+        "options": {
+          "format": "currency"
+        },
+        "note": "最終金額"
+      },
+      "schema": {
+        "name": "finalAmount",
+        "table": "participationRecordDB",
+        "data_type": "decimal",
+        "numeric_precision": 10,
+        "numeric_scale": 2,
+        "is_nullable": false
+      }
+    },
+    {
+      "field": "paidAmount",
+      "type": "decimal",
+      "meta": {
+        "interface": "input",
+        "display": "formatted-value",
+        "width": "half",
+        "options": {
+          "format": "currency"
+        },
+        "note": "已付金額"
+      },
+      "schema": {
+        "name": "paidAmount",
+        "table": "participationRecordDB",
+        "data_type": "decimal",
+        "numeric_precision": 10,
+        "numeric_scale": 2,
+        "default_value": 0
+      }
+    },
+    {
+      "field": "paymentState",
+      "type": "string",
+      "meta": {
+        "interface": "select-dropdown",
+        "display": "labels",
+        "width": "half",
+        "options": {
+          "choices": [
+            {
+              "text": "已付款",
+              "value": "paid"
+            },
+            {
+              "text": "部分付款",
+              "value": "partial"
+            },
+            {
+              "text": "未付款",
+              "value": "unpaid"
+            },
+            {
+              "text": "免付",
+              "value": "waived"
+            }
+          ]
+        },
+        "note": "付款狀態"
+      },
+      "schema": {
+        "name": "paymentState",
+        "table": "participationRecordDB",
+        "data_type": "varchar",
+        "max_length": 20,
+        "default_value": "unpaid"
+      }
+    },
+    {
+      "field": "paymentMethod",
+      "type": "string",
+      "meta": {
+        "interface": "select-dropdown",
+        "display": "raw",
+        "width": "half",
+        "options": {
+          "choices": [
+            {
+              "text": "現金",
+              "value": "cash"
+            },
+            {
+              "text": "轉帳",
+              "value": "transfer"
+            }
+          ]
+        },
+        "note": "付款方式"
+      },
+      "schema": {
+        "name": "paymentMethod",
+        "table": "participationRecordDB",
+        "data_type": "varchar",
+        "max_length": 20
+      }
+    },
+    {
+      "field": "needReceipt",
+      "type": "boolean",
+      "meta": {
+        "interface": "boolean",
+        "display": "boolean",
+        "width": "half",
+        "note": "需要收據"
+      },
+      "schema": {
+        "name": "needReceipt",
+        "table": "participationRecordDB",
+        "data_type": "boolean",
+        "default_value": false
+      }
+    },
+    {
+      "field": "receiptNumber",
+      "type": "string",
+      "meta": {
+        "interface": "input",
+        "display": "raw",
+        "width": "half",
+        "note": "收據號碼"
+      },
+      "schema": {
+        "name": "receiptNumber",
+        "table": "participationRecordDB",
+        "data_type": "varchar",
+        "max_length": 50
+      }
+    },
+    {
+      "field": "accountingState",
+      "type": "string",
+      "meta": {
+        "interface": "select-dropdown",
+        "display": "labels",
+        "width": "half",
+        "options": {
+          "choices": [
+            {
+              "text": "待沖帳",
+              "value": "pending"
+            },
+            {
+              "text": "已沖帳",
+              "value": "reconciled"
+            }
+          ]
+        },
+        "note": "會計狀態"
+      },
+      "schema": {
+        "name": "accountingState",
+        "table": "participationRecordDB",
+        "data_type": "varchar",
+        "max_length": 20,
+        "default_value": "pending"
+      }
+    },
+    {
+      "field": "notes",
+      "type": "text",
+      "meta": {
+        "interface": "input-multiline",
+        "display": "raw",
+        "width": "full",
+        "note": "備註"
+      },
+      "schema": {
+        "name": "notes",
+        "table": "participationRecordDB",
+        "data_type": "text"
+      }
+    },
+    {
+      "field": "createdAt",
+      "type": "string",
+      "meta": {
+        "interface": "input",
+        "display": "datetime",
+        "width": "half",
+        "readonly": true,
+        "note": "建立時間"
+      },
+      "schema": {
+        "name": "createdAt",
+        "table": "participationRecordDB",
+        "data_type": "varchar",
+        "max_length": 255
+      }
+    },
+    {
+      "field": "updatedAt",
+      "type": "string",
+      "meta": {
+        "interface": "input",
+        "display": "datetime",
+        "width": "half",
+        "readonly": true,
+        "note": "更新時間"
+      },
+      "schema": {
+        "name": "updatedAt",
+        "table": "participationRecordDB",
+        "data_type": "varchar",
+        "max_length": 255
+      }
+    }
+  ]
+}

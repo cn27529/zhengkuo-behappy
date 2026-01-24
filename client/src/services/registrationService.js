@@ -78,7 +78,7 @@ export class RegistrationService {
 
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功創建報名表"
+        "成功創建報名表",
       );
       return result;
     } catch (error) {
@@ -113,7 +113,7 @@ export class RegistrationService {
 
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功更新報名表"
+        "成功更新報名表",
       );
       return result;
     } catch (error) {
@@ -142,7 +142,7 @@ export class RegistrationService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Directus 錯誤: ${response.status}`
+          errorData.message || `Directus 錯誤: ${response.status}`,
         );
       }
 
@@ -175,7 +175,7 @@ export class RegistrationService {
 
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功獲取報名表"
+        "成功獲取報名表",
       );
       return result;
     } catch (error) {
@@ -238,7 +238,7 @@ export class RegistrationService {
 
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功獲取報名表列表"
+        "成功獲取報名表列表",
       );
       return result;
     } catch (error) {

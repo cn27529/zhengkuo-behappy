@@ -167,6 +167,29 @@ export const useQueryStore = defineStore("registrationQuery", () => {
           console.log("✅ 匹配聯絡人姓名");
           matchFound = true;
         }
+        // 匹配資料表屬性
+        if (
+          item.contact.relationship &&
+          item.contact.relationship.toLowerCase().includes(query)
+        ) {
+          console.log("✅ 匹配聯絡人關係");
+          matchFound = true;
+        }
+        if (
+          item.contact.relationship &&
+          item.contact.relationship.toLowerCase().includes(query)
+        ) {
+          console.log("✅ 匹配聯絡人關係");
+          matchFound = true;
+        }
+        if (
+          item.contact.otherRelationship &&
+          item.contact.otherRelationship.toLowerCase().includes(query)
+        ) {
+          console.log("✅ 匹配聯絡人關係其它");
+          matchFound = true;
+        }
+
         if (
           item.contact.mobile &&
           item.contact.mobile.toLowerCase().includes(query)

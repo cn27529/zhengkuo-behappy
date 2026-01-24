@@ -4,6 +4,7 @@ import { ref, computed } from "vue";
 import { joinRecordService } from "../services/joinRecordService.js";
 import { authService } from "../services/authService.js";
 import mockData from "../data/mock_registrations.json";
+import { registrationService } from "../services/registrationService.js";
 
 /**
  * 參與記錄的 Pinia store，管理參與記錄的狀態與操作。
@@ -249,27 +250,45 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     }));
   };
 
-  const mockRegistrations = ref(mockData || []);
+  const mockRegistrations = ref([]);
+  const selectedRegistration = ref(null);
+  const isLoading = ref(false);
 
-  // 載入 Mock 數據
-  const loadMockData = async () => {
+  const getAllRegistrations = async () => {
     try {
-      if (!mockData || mockData.length === 0) {
-        console.error("Mock 數據為空或未找到");
-        return false;
+      isLoading.value = true;
+      const result = await registrationService.getAllRegistrations();
+      if (result.success) {
+        return result.data;
+      } else {
+        console.warn("獲取報名資料失敗，使用 Mock 資料");
+        return mockData;
       }
-      let mockData = null;
-      const randomIndex = Math.floor(Math.random() * mockData.length);
-      mockData = mockData[randomIndex];
-      return mockData;
     } catch (error) {
-      console.error("載入 Mock 數據失敗:", error);
-      return null;
+      console.error("取得所有報名資料失敗:", error);
+      return mockData; // 失敗時回退到 Mock 資料
+    } finally {
+      isLoading.value = false;
     }
   };
 
-  const selectedRegistration = ref(null);
-  const isLoading = ref(false);
+  // 載入真實資料
+  const loadRegistrationData = async () => {
+    try {
+      isLoading.value = true;
+      const registrations = await getAllRegistrations();
+      mockRegistrations.value = registrations;
+      console.log("載入報名資料成功:", registrations.length, "筆");
+      return registrations;
+    } catch (error) {
+      console.error("載入報名資料失敗:", error);
+      // 失敗時使用 Mock 資料
+      mockRegistrations.value = mockData || [];
+      return mockData || [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
   // --- Getters (等同於 computed) ---
   const totalAmount = computed(() => {
@@ -291,6 +310,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
   // 選擇某一筆登記表
   const selectRegistration = (reg) => {
+    console.log("選擇登記表:", reg);
     selectedRegistration.value = reg;
     resetSelections();
   };
@@ -329,6 +349,8 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         createdAt: new Date().toISOString(),
       };
 
+      console.log("submitRecord:", payload);
+
       const result = await joinRecordService.saveRecord(payload);
       if (result.success) {
         console.log("儲存成功");
@@ -358,6 +380,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     personLampTypes,
     isLoading,
     mockRegistrations,
+
     // Getters
     totalAmount,
     // Actions
@@ -367,7 +390,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     setPersonLampType,
     getPersonLampType,
     submitRecord,
-    loadMockData,
+    loadRegistrationData,
     // 獲取用戶信息
     getCurrentUser,
     // 其他方法
@@ -378,5 +401,6 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     createParticipationRecord, // 建立完整的參與記錄
     reconcileAccounting, // 會計沖帳
     getSourceData, // 獲取資料來源
+    getAllRegistrations, // 獲取所有報名表
   };
 });
