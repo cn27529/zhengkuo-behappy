@@ -7,12 +7,14 @@
 ## 系統需求
 
 ### 最低硬體需求
+
 - **CPU**: 2 核心
 - **記憶體**: 4GB RAM
 - **儲存空間**: 10GB 可用空間
 - **網路**: 穩定的網際網路連接
 
 ### 軟體需求
+
 - **Node.js**: 18.x 或更高版本
 - **Rust**: 1.70+ (用於 Rust 後端)
 - **Docker**: 20.x+ (可選，用於容器化部署)
@@ -46,9 +48,10 @@ cd ..
 ### 2. 環境配置
 
 #### 前端環境配置
+
 ```bash
 # client/.env.development
-VITE_API_BASE_URL=http://localhost:3001
+VITE_API_BASE_URL=http://localhost:3000
 VITE_DIRECTUS_URL=http://localhost:8055
 VITE_APP_MODE=development
 VITE_ENABLE_MOCK=true
@@ -63,17 +66,19 @@ VITE_ENABLE_MOCK=false
 ```
 
 #### Rust 後端環境配置
+
 ```bash
 # rust-axum/.env
 DATABASE_URL=sqlite:../db/data.db
 RUST_LOG=debug
 SERVER_HOST=0.0.0.0
-SERVER_PORT=3001
+SERVER_PORT=3000
 CORS_ORIGIN=http://localhost:5173
 JWT_SECRET=your-jwt-secret-key
 ```
 
 #### Directus 後端環境配置
+
 ```bash
 # server/.env
 ADMIN_EMAIL=admin@example.com
@@ -108,12 +113,14 @@ sqlite3 ../db/data.db < migrations/sqlite_monthlyDonateDB_table.sql
 ### 4. 啟動開發服務
 
 #### 方式一：全棧啟動 (推薦)
+
 ```bash
 # 在根目錄執行，同時啟動所有服務
 npm run dev:full
 ```
 
 #### 方式二：分別啟動
+
 ```bash
 # 終端 1: 前端開發服務器
 cd client
@@ -131,8 +138,9 @@ npm run dev
 ### 5. 驗證部署
 
 訪問以下 URL 確認服務正常：
+
 - **前端應用**: http://localhost:5173
-- **Rust API**: http://localhost:3001/health
+- **Rust API**: http://localhost:3000/health
 - **Directus 管理**: http://localhost:8055
 
 ---
@@ -156,6 +164,7 @@ docker-compose logs -f
 ### 2. 自定義 Docker 映像
 
 #### 前端 Dockerfile
+
 ```dockerfile
 # client/Dockerfile
 FROM node:18-alpine
@@ -176,6 +185,7 @@ CMD ["nginx", "-g", "daemon off;"]
 ```
 
 #### Rust 後端 Dockerfile
+
 ```dockerfile
 # rust-axum/Dockerfile
 FROM rust:1.70 as builder
@@ -191,7 +201,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/target/release/rust-axum /usr/local/bin/rust-axum
-EXPOSE 3001
+EXPOSE 3000
 CMD ["rust-axum"]
 ```
 
@@ -208,7 +218,7 @@ docker build -t zhengkuo-rust:latest .
 
 # 運行容器
 docker run -d -p 5173:80 zhengkuo-client:latest
-docker run -d -p 3001:3001 zhengkuo-rust:latest
+docker run -d -p 3000:3000 zhengkuo-rust:latest
 ```
 
 ---
@@ -218,6 +228,7 @@ docker run -d -p 3001:3001 zhengkuo-rust:latest
 ### 1. 前端部署 (Netlify)
 
 #### 自動部署設定
+
 ```bash
 # netlify.toml
 [build]
@@ -239,6 +250,7 @@ docker run -d -p 3001:3001 zhengkuo-rust:latest
 ```
 
 #### 手動部署流程
+
 ```bash
 # 1. 切換到部署分支
 git checkout zk-client-netlify
@@ -253,6 +265,7 @@ git push origin zk-client-netlify --force
 ### 2. 後端部署 (VPS/雲端服務器)
 
 #### 系統準備
+
 ```bash
 # 更新系統
 sudo apt update && sudo apt upgrade -y
@@ -270,6 +283,7 @@ source ~/.cargo/env
 ```
 
 #### 應用部署
+
 ```bash
 # 創建應用目錄
 sudo mkdir -p /opt/zhengkuo-behappy
@@ -286,6 +300,7 @@ cd ../rust-axum && cargo build --release
 ```
 
 #### Nginx 配置
+
 ```nginx
 # /etc/nginx/sites-available/zhengkuo-behappy
 server {
@@ -300,7 +315,7 @@ server {
 
     # API 代理
     location /api/ {
-        proxy_pass http://localhost:3001;
+        proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -324,6 +339,7 @@ server {
 ```
 
 #### 啟用站點
+
 ```bash
 # 啟用站點
 sudo ln -s /etc/nginx/sites-available/zhengkuo-behappy /etc/nginx/sites-enabled/
@@ -337,6 +353,7 @@ sudo certbot --nginx -d your-domain.com
 ### 3. 系統服務配置
 
 #### Rust 後端服務
+
 ```ini
 # /etc/systemd/system/zhengkuo-rust.service
 [Unit]
@@ -358,6 +375,7 @@ WantedBy=multi-user.target
 ```
 
 #### Directus 服務 (可選)
+
 ```ini
 # /etc/systemd/system/zhengkuo-directus.service
 [Unit]
@@ -378,6 +396,7 @@ WantedBy=multi-user.target
 ```
 
 #### 啟動服務
+
 ```bash
 # 重載 systemd 配置
 sudo systemctl daemon-reload
@@ -400,6 +419,7 @@ sudo journalctl -u zhengkuo-rust -f
 ### 1. 備份策略
 
 #### 自動備份腳本
+
 ```bash
 #!/bin/bash
 # scripts/backup-db.sh
@@ -424,6 +444,7 @@ echo "Database backup completed: data_$DATE.db.gz"
 ```
 
 #### 設定定時備份
+
 ```bash
 # 添加到 crontab
 crontab -e
@@ -452,6 +473,7 @@ sqlite3 /path/to/new/data.db "PRAGMA integrity_check;"
 ### 1. 日誌管理
 
 #### 日誌輪轉配置
+
 ```bash
 # /etc/logrotate.d/zhengkuo-behappy
 /opt/zhengkuo-behappy/logs/*.log {
@@ -471,12 +493,13 @@ sqlite3 /path/to/new/data.db "PRAGMA integrity_check;"
 ### 2. 效能監控
 
 #### 系統監控腳本
+
 ```bash
 #!/bin/bash
 # scripts/health-check.sh
 
 # 檢查 API 健康狀態
-curl -f http://localhost:3001/health || echo "API health check failed"
+curl -f http://localhost:3000/health || echo "API health check failed"
 
 # 檢查資料庫連接
 sqlite3 /opt/zhengkuo-behappy/db/data.db "SELECT 1;" || echo "Database check failed"
@@ -491,6 +514,7 @@ free -m | awk 'NR==2{printf "Memory usage: %.2f%%\n", $3*100/$2}'
 ### 3. 自動更新
 
 #### 更新腳本
+
 ```bash
 #!/bin/bash
 # scripts/deploy-update.sh
@@ -521,18 +545,20 @@ echo "Deployment completed successfully"
 ### 常見問題
 
 #### 1. 前端無法連接後端
+
 ```bash
 # 檢查後端服務狀態
 sudo systemctl status zhengkuo-rust
 
 # 檢查端口是否開放
-netstat -tlnp | grep :3001
+netstat -tlnp | grep :3000
 
 # 檢查防火牆設定
 sudo ufw status
 ```
 
 #### 2. 資料庫連接失敗
+
 ```bash
 # 檢查資料庫文件權限
 ls -la /opt/zhengkuo-behappy/db/data.db
@@ -543,6 +569,7 @@ sudo chmod 664 /opt/zhengkuo-behappy/db/data.db
 ```
 
 #### 3. Nginx 配置錯誤
+
 ```bash
 # 測試 Nginx 配置
 sudo nginx -t
@@ -554,6 +581,7 @@ sudo tail -f /var/log/nginx/error.log
 ### 緊急恢復程序
 
 #### 1. 服務恢復
+
 ```bash
 # 停止所有服務
 sudo systemctl stop zhengkuo-rust
@@ -568,6 +596,7 @@ sudo systemctl start nginx
 ```
 
 #### 2. 回滾部署
+
 ```bash
 cd /opt/zhengkuo-behappy
 
@@ -584,6 +613,7 @@ sudo systemctl restart zhengkuo-rust
 ## 安全性配置
 
 ### 1. 防火牆設定
+
 ```bash
 # 啟用 UFW
 sudo ufw enable
@@ -594,17 +624,19 @@ sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 
 # 限制內部端口
-sudo ufw deny 3001
+sudo ufw deny 3000
 sudo ufw deny 8055
 ```
 
 ### 2. SSL/TLS 配置
+
 ```bash
 # 自動更新 SSL 憑證
 echo "0 12 * * * /usr/bin/certbot renew --quiet" | sudo crontab -
 ```
 
 ### 3. 資料庫安全
+
 ```bash
 # 設定資料庫文件權限
 sudo chmod 600 /opt/zhengkuo-behappy/db/data.db
@@ -616,16 +648,19 @@ sudo chown www-data:www-data /opt/zhengkuo-behappy/db/data.db
 ## 效能優化
 
 ### 1. 前端優化
+
 - 啟用 Gzip 壓縮
 - 設定適當的快取標頭
 - 使用 CDN 加速靜態資源
 
 ### 2. 後端優化
+
 - 資料庫連接池配置
 - 適當的索引設計
 - API 回應快取
 
 ### 3. 系統優化
+
 - 調整系統參數
 - 監控資源使用情況
 - 定期清理日誌文件
@@ -635,12 +670,14 @@ sudo chown www-data:www-data /opt/zhengkuo-behappy/db/data.db
 ## 聯繫支援
 
 如遇到部署問題，請：
+
 1. 查看相關日誌文件
 2. 執行健康檢查腳本
 3. 參考故障排除指南
 4. 聯繫開發團隊
 
 **重要文件位置：**
+
 - 應用日誌: `/opt/zhengkuo-behappy/logs/`
 - 系統日誌: `/var/log/`
 - 配置文件: `/opt/zhengkuo-behappy/`

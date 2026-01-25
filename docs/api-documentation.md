@@ -595,13 +595,13 @@ Authorization: Bearer <token>
 
 ```bash
 # 健康檢查
-curl -X GET http://localhost:3001/health
+curl -X GET http://localhost:3000/health
 
 # 獲取所有報名記錄
-curl -X GET http://localhost:3001/api/registrations
+curl -X GET http://localhost:3000/api/registrations
 
 # 創建報名記錄
-curl -X POST http://localhost:3001/api/registrations \
+curl -X POST http://localhost:3000/api/registrations \
   -H "Content-Type: application/json" \
   -d '{"formName": "測試報名", "state": "draft", ...}'
 ```
