@@ -6,7 +6,8 @@ import { DateUtils } from "../utils/dateUtils.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
 import { authService } from "../services/authService.js";
-import mockData from "../data/mock_registrations.json";
+import mockRegistrationData from "../data/mock_registrations.json";
+import mockJoinRecordData from "../data/mock_participation_records.json";
 
 /**
  * 參加記錄的 Pinia store，管理參加記錄的狀態與操作。
@@ -259,6 +260,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const isLoading = ref(false);
   const error = ref(null);
   const allJoinRecords = ref([]); // 所有參加記錄
+  const savedRecords = ref([]); // 獲取已保存的參加記錄
 
   // 取得所有參加記錄
   const getAllJoinRecords = async (params) => {
@@ -267,10 +269,10 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     try {
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 資料");
-        allJoinRecords.value = mockData;
+        allJoinRecords.value = mockJoinRecordData;
         return {
           success: true,
-          data: mockData,
+          data: mockJoinRecordData,
           message: "成功加載 Mock 資料",
         };
       }
@@ -284,13 +286,13 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         return result.data;
       } else {
         error.value = result.message;
-        allJoinRecords.value = mockData;
+        allJoinRecords.value = mockJoinRecordData;
         return result;
       }
     } catch (err) {
       error.value = err.message;
       console.error("取得所有參加記錄資料失敗:", err);
-      allJoinRecords.value = mockData;
+      allJoinRecords.value = mockJoinRecordData;
       throw err;
     } finally {
       isLoading.value = false;
@@ -301,16 +303,23 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const getAllRegistrations = async () => {
     try {
       isLoading.value = true;
+
+      if (serviceAdapter.getIsMock()) {
+        console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 資料");
+        return mockRegistrationData;
+      }
+
       const result = await serviceAdapter.getAllRegistrations();
       if (result.success) {
+        console.log(`✅ 成功獲取 ${result.data.length} 筆祈福登記資料`);
         return result.data;
       } else {
-        console.warn("獲取報名資料失敗，使用 Mock 資料");
-        return mockData;
+        console.warn("獲取祈福登記資料失敗，使用 Mock 資料");
+        return mockRegistrationData;
       }
     } catch (error) {
-      console.error("取得所有報名資料失敗:", error);
-      return mockData; // 失敗時回退到 Mock 資料
+      console.error("取得所有祈福登記資料失敗:", error);
+      return mockRegistrationData; // 失敗時回退到 Mock 資料
     } finally {
       isLoading.value = false;
     }
@@ -318,17 +327,14 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
   // 載入祈福登記資料
   const loadRegistrationData = async () => {
+    console.log("載入祈福登記資料...");
     try {
       isLoading.value = true;
       const registrations = await getAllRegistrations();
       allRegistrations.value = registrations;
-      console.log("載入報名資料成功:", registrations.length, "筆");
       return registrations;
     } catch (error) {
-      console.error("載入報名資料失敗:", error);
-      // 失敗時使用 Mock 資料
-      allRegistrations.value = mockData || [];
-      return mockData || [];
+      console.error("載入祈福登記資料失敗:", error);
     } finally {
       isLoading.value = false;
     }
@@ -353,7 +359,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   };
 
   // 選擇某一筆祈福登記
-  const selectRegistration = (reg) => {
+  const setRegistration = (reg) => {
     console.log("選擇登記表:", reg);
     selectedRegistration.value = reg;
     resetSelections();
@@ -378,11 +384,18 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     }
   };
 
+  // 設置群組選擇狀態
+  const setGroupSelection = (key, data) => {
+    selections.value[key] = [...data];
+  };
+
   // 送出存檔
   const submitRecord = async () => {
-    if (!selectedRegistration.value) return;
-
     isLoading.value = true;
+    error.value = null;
+
+    if (!selectedRegistration.value) return;
+    const createISOTime = DateUtils.getCurrentISOTime();
     try {
       // 獲取當前用戶信息
 
@@ -392,22 +405,55 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         items: selections.value,
         personLampTypes: personLampTypes.value, // 每個人的燈種選擇
         total: totalAmount.value,
-        user_created: getCurrentUser(),
-        createdAt: new Date().toISOString(),
+        createdUser: getCurrentUser(),
+        createdAt: createISOTime,
       };
-
       console.log("submitRecord:", payload);
 
-      const result = await joinRecordService.saveRecord(payload);
-      if (result.success) {
-        console.log("儲存成功");
-        return true;
+      if (serviceAdapter.getIsMock()) {
+        // 頁面顯示用----------------------
+        const forUI = {
+          contactName:
+            selectedRegistration.value?.contact?.name || "未知聯絡人",
+          totalAmount: totalAmount.value,
+          savedAt: createISOTime,
+        };
+        savedRecords.value.unshift(forUI);
+        // 頁面顯示用----------------------
+
+        console.warn("⚠️ 當前模式不是 directus，無法創建數據");
+        return {
+          success: true,
+          data: payload,
+          message: "參加記錄創建成功！⚠️ 當前模式不是 directus，無法創建數據",
+        };
       }
 
-      return false;
-    } catch (error) {
-      console.error("儲存過程出錯");
-      return false;
+      // TODO: 未來串接 API
+      const result = await joinRecordService.saveRecord(payload);
+      if (result.success) {
+        console.log("✅ 成功創建參加記錄:", result.data);
+
+        // 頁面顯示用----------------------
+        const forUI = {
+          contactName:
+            selectedRegistration.value?.contact?.name || "未知聯絡人",
+          totalAmount: totalAmount.value,
+          savedAt: createISOTime,
+        };
+        savedRecords.value.unshift(forUI);
+        // 頁面顯示用----------------------
+
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 創建參加記錄失敗:", result.message);
+        return result;
+      }
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 創建參加記錄異常:", err);
+      throw err;
     } finally {
       isLoading.value = false;
     }
@@ -427,13 +473,16 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     personLampTypes,
     isLoading,
     allRegistrations,
+    allJoinRecords,
+    savedRecords,
 
     // Getters
     totalAmount,
     // Actions
-    selectRegistration,
+    setRegistration,
     resetSelections,
     toggleGroup,
+    setGroupSelection,
     setPersonLampType,
     getPersonLampType,
     submitRecord,

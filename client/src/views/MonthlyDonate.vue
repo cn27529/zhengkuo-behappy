@@ -416,7 +416,7 @@
           <el-tooltip content="新增贊助人" placement="top">
             <el-button
               type="primary"
-              @click="handleAddDonator"
+              @click="handleSubmitDonator"
               :loading="submitting"
               :disabled="newDonator.selectedMonths.length === 0"
             >
@@ -640,13 +640,20 @@
 <script setup>
 import { h, ref, computed, onMounted, reactive, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Refresh, Plus, Edit, Check, Delete, View, Search } from "@element-plus/icons-vue";
+import {
+  Refresh,
+  Plus,
+  Edit,
+  Check,
+  Delete,
+  View,
+  Search,
+} from "@element-plus/icons-vue";
 import { useMonthlyDonateStore } from "../stores/monthlyDonateStore.js";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import IconSelector from "../components/IconSelector.vue";
 import { storeToRefs } from "pinia";
-//import { baseService } from "../services/baseService.js";
 
 const monthlyDonateStore = useMonthlyDonateStore();
 
@@ -657,7 +664,7 @@ const showAddDonatorModal = ref(false);
 const showAddDonateItemModal = ref(false);
 const showDonatorDetailModal = ref(false);
 const submitting = ref(false);
-const isDev = ref(false);
+const isDev = computed(() => authService.getCurrentDev());
 
 // 從 store 取得狀態
 const {
@@ -1170,7 +1177,7 @@ const closeModal = () => {
 };
 
 // 新增贊助人
-const handleAddDonator = async () => {
+const handleSubmitDonator = async () => {
   submitting.value = true;
 
   try {
@@ -1366,7 +1373,6 @@ watch(monthlyUnitPrice, (newValue) => {
 onMounted(() => {
   console.log("✅ MonthlyDonateList 組件已載入");
   initialize();
-  isDev.value = authService.getCurrentDev();
 });
 </script>
 

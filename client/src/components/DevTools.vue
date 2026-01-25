@@ -1,6 +1,6 @@
 <!-- src/components/DevTools.vue -->
 <template>
-  <div v-if="isDevelopment" class="dev-tools">
+  <div v-if="isDev" class="dev-tools">
     <div class="dev-panel">
       <h4>🔧 開發工具</h4>
       <div class="control-group">
@@ -36,7 +36,7 @@
 import { ref, computed, onMounted } from "vue";
 import { authService } from "../services/authService.js";
 
-const isDevelopment = computed(() => import.meta.env.VITE_DEV === "true");
+const isDev = computed(() => import.meta.env.VITE_DEV || false);
 const envMode = import.meta.env.VITE_MODE || "development";
 const appVersion = import.meta.env.VITE_APP_VERSION || "unknown";
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";

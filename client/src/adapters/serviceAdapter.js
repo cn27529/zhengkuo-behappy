@@ -44,7 +44,16 @@ async function loadRustServices() {
 
 class ServiceAdapter {
   constructor() {
-    this.isMock = import.meta.env.VITE_MOCK === true;
+    // 注意：環境變數都是字符串！"false" 是 truthy，必須用 === "true" 判斷
+    /*
+    * 環境變數在 JavaScript 中都是字符串，這是個常見的陷阱：
+      - VITE_MOCK=true → "true" (truthy)
+      - VITE_MOCK=false → "false" (也是 truthy！)
+      - VITE_MOCK= → undefined (falsy)
+      所以必須用 === "true" 來正確判斷。
+    */
+    this.isDev = import.meta.env.VITE_DEV === "true";
+    this.isMock = import.meta.env.VITE_MOCK === "true";
     this.backend = import.meta.env.VITE_BACKEND_TYPE || "directus";
     this.autoFallback = import.meta.env.VITE_AUTO_FALLBACK === "true";
     this.fallbackBackend = "directus";
@@ -87,17 +96,22 @@ class ServiceAdapter {
     }
   }
 
+  // 獲取是否為模擬模式
   getIsMock() {
     return this.isMock;
   }
 
-  /**
-   * 模式管理
-   */
+  // 獲取是否為開發模式
+  getCurrentDev() {
+    return this.isDev;
+  }
+
+  // 獲取當前後端
   getCurrentMode() {
     return this.backend;
   }
 
+  // 切換後端
   setMode(mode) {
     return this.switchBackend(mode);
   }
@@ -177,7 +191,7 @@ class ServiceAdapter {
 
         if (attempt < maxRetries) {
           await new Promise((resolve) =>
-            setTimeout(resolve, 1000 * (attempt + 1))
+            setTimeout(resolve, 1000 * (attempt + 1)),
           );
         }
       }

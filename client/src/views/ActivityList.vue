@@ -693,7 +693,15 @@
 <script setup>
 import { ref, computed, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Refresh, Plus, Edit, Check, Delete, View, Search } from "@element-plus/icons-vue";
+import {
+  Refresh,
+  Plus,
+  Edit,
+  Check,
+  Delete,
+  View,
+  Search,
+} from "@element-plus/icons-vue";
 import { useActivityStore } from "../stores/activityStore.js";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
@@ -709,7 +717,7 @@ const showAddModal = ref(false);
 const showEditModal = ref(false);
 const showParticipantsModal = ref(false);
 const submitting = ref(false);
-const isDev = ref(false);
+const isDev = computed(() => authService.getCurrentDev());
 
 // 查詢條件, 分頁
 // 修改後 (從 store 取得，會保留)
@@ -1157,7 +1165,6 @@ const handleLoadMockData = async () => {
 onMounted(() => {
   console.log("✅ ActivityList 組件已載入");
   initialize();
-  isDev.value = authService.getCurrentDev();
 });
 </script>
 

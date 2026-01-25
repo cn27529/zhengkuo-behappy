@@ -391,7 +391,7 @@ export class BaseService {
       return {
         success: true,
         online: true,
-        message: `${this.mode} 模式連接正常`,
+        message: `${this.mode} Mock模式連接正常`,
       };
     }
 
