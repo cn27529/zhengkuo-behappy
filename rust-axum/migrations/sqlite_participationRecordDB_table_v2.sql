@@ -4,8 +4,8 @@ CREATE TABLE "participationRecordDB" (
     `date_created` datetime NULL,
     `user_updated` char(36) NULL,
     `date_updated` datetime NULL,
-    `registrationId` integer null default '-1',
-    `activityId` integer null default '-1',
+    `registrationId` integer null default '-1', # 報名 ID，registrationDB.id
+    `activityId` integer null default '-1', # 活動 ID，activityDB.id
     `state` varchar(255) null,
     `items` json null default '[]',
     `totalAmount` integer null default '0',

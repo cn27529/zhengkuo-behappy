@@ -56,7 +56,7 @@ export class RustActivityService {
           method: "POST",
           body: JSON.stringify(processedData),
         },
-        logContext // ✅ 傳入完整的 context
+        logContext, // ✅ 傳入完整的 context
       );
 
       return result;
@@ -97,7 +97,7 @@ export class RustActivityService {
           method: "PATCH",
           body: JSON.stringify(updateData),
         },
-        logContext
+        logContext,
       );
 
       return result;
@@ -140,7 +140,7 @@ export class RustActivityService {
         {
           method: "DELETE",
         },
-        logContext
+        logContext,
       );
 
       return result;
@@ -178,7 +178,7 @@ export class RustActivityService {
         `${this.endpoint}/${id}`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -255,7 +255,7 @@ export class RustActivityService {
         endpoint,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -283,7 +283,7 @@ export class RustActivityService {
         `${this.endpoint}/by-activity-id/${activityId}`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -309,7 +309,7 @@ export class RustActivityService {
         `${this.endpoint}/by-type/${item_type}`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -335,7 +335,7 @@ export class RustActivityService {
         `${this.endpoint}/by-state/${state}`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -360,7 +360,7 @@ export class RustActivityService {
         `${this.endpoint}/upcoming`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -385,7 +385,7 @@ export class RustActivityService {
         `${this.endpoint}/completed`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -422,7 +422,7 @@ export class RustActivityService {
         {
           method: "POST",
           body: JSON.stringify(requestBody),
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -448,7 +448,7 @@ export class RustActivityService {
         {
           ...additionalContext,
           operation: "getAllActivitiesForStats",
-        }
+        },
       );
 
       if (!activitiesResult.success) {
@@ -577,7 +577,7 @@ export class RustActivityService {
           method: "PATCH",
           body: JSON.stringify(requestBody),
         },
-        logContext
+        logContext,
       );
 
       return result;
@@ -611,7 +611,7 @@ export class RustActivityService {
         {
           method: "PATCH",
         },
-        logContext
+        logContext,
       );
 
       return result;
@@ -645,7 +645,7 @@ export class RustActivityService {
         {
           method: "PATCH",
         },
-        logContext
+        logContext,
       );
 
       return result;
@@ -672,7 +672,7 @@ export class RustActivityService {
         `${this.endpoint}/stats?range=${timeRange}`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -710,7 +710,7 @@ export class RustActivityService {
         {
           method: "POST",
           body: JSON.stringify(requestBody),
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -748,7 +748,7 @@ export class RustActivityService {
         {
           method: "POST",
           body: JSON.stringify(requestBody),
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -772,11 +772,11 @@ export class RustActivityService {
     try {
       const result = await this.base.rustFetch(
         `${this.endpoint}/export?format=${format}&${new URLSearchParams(
-          params
+          params,
         )}`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -801,7 +801,7 @@ export class RustActivityService {
         `${this.endpoint}/stats/types`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 
@@ -827,7 +827,7 @@ export class RustActivityService {
         `${this.endpoint}/stats/trend/${period}`,
         {
           method: "GET",
-        }
+        },
         // 沒有 context 參數
       );
 

@@ -141,6 +141,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let activity_routes = routes::activity::create_routes();
     let registration_routes = routes::registration::create_routes();
     let monthly_donate_routes = routes::monthly_donate::create_routes();
+    let participation_record_routes = routes::participation_record::create_routes();
     
     // ✅ 創建 SqliteProvider(DatabaseProvider 的實現)
     let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
@@ -155,7 +156,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/server/ping", get(server_ping))
         .merge(activity_routes)
         .merge(registration_routes)
-        .merge(monthly_donate_routes)        
+        .merge(monthly_donate_routes)
+        .merge(participation_record_routes)        
         // Add the SQL viewer at /sql-viewer
         .merge(sql_viewer_router)
         .layer(cors)
@@ -183,6 +185,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /api/activities             - 活動列表");
     tracing::info!("  GET    /api/registrations          - 祈福登記列表");
     tracing::info!("  GET    /api/monthly-donates        - 每月捐款列表");
+    tracing::info!("  GET    /api/participation-records  - 參與記錄列表");
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");
 
@@ -223,6 +226,7 @@ async fn root_handler() -> Json<Value> {
             "activities": "/api/activities",
             "registrations": "/api/registrations",
             "monthly_donates": "/api/monthly-donates",
+            "participation_records": "/api/participation-records",
             "db_test": "/db-test",
             "sql_viewer": "/sql-viewer"
         },

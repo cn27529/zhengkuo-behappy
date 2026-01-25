@@ -32,6 +32,16 @@ export class JoinRecordService {
       };
     }
 
+    const startTime = Date.now();
+    const logContext = {
+      service: this.serviceName,
+      operation: "createParticipationRecord",
+      method: "POST",
+      startTime: startTime,
+      endpoint: this.endpoint,
+      requestBody: processedData,
+    };
+
     try {
       const myHeaders = await this.base.getAuthJsonHeaders();
       const response = await fetch(this.endpoint, {
@@ -40,9 +50,11 @@ export class JoinRecordService {
         body: JSON.stringify(processedData),
       });
 
+      const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
         "成功創建參加記錄",
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -63,22 +75,33 @@ export class JoinRecordService {
       };
     }
 
-    try {
-      const queryParams = new URLSearchParams({
-        sort: "-createdAt",
-        ...params,
-      }).toString();
+    const startTime = Date.now();
+    const queryParams = new URLSearchParams({
+      sort: "-createdAt",
+      ...params,
+    }).toString();
+    const apiUrl = `${this.endpoint}?${queryParams}`;
 
-      const apiUrl = `${this.endpoint}?${queryParams}`;
+    const logContext = {
+      service: this.serviceName,
+      operation: "getAllParticipationRecords",
+      method: "GET",
+      startTime: startTime,
+      endpoint: apiUrl,
+    };
+
+    try {
       const myHeaders = await this.base.getAuthJsonHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
       });
 
+      const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
         "成功獲取參加記錄",
+        //{ ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -99,17 +122,28 @@ export class JoinRecordService {
       };
     }
 
+    const startTime = Date.now();
+    const apiUrl = `${this.endpoint}/${recordId}`;
+    const logContext = {
+      service: this.serviceName,
+      operation: "getParticipationRecordById",
+      method: "GET",
+      startTime: startTime,
+      endpoint: apiUrl,
+    };
+
     try {
       const myHeaders = await this.base.getAuthJsonHeaders();
-      const apiUrl = `${this.endpoint}/${recordId}`;
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
       });
 
+      const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
         "成功獲取參加記錄",
+        //{ ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -130,26 +164,138 @@ export class JoinRecordService {
       };
     }
 
-    try {
-      const queryParams = new URLSearchParams({
-        "filter[registrationId][_eq]": registrationId,
-        sort: "-createdAt",
-      }).toString();
+    const startTime = Date.now();
+    const queryParams = new URLSearchParams({
+      "filter[registrationId][_eq]": registrationId,
+      sort: "-createdAt",
+    }).toString();
+    const apiUrl = `${this.endpoint}?${queryParams}`;
 
-      const apiUrl = `${this.endpoint}?${queryParams}`;
+    const logContext = {
+      service: this.serviceName,
+      operation: "getParticipationRecordsByRegistrationId",
+      method: "GET",
+      startTime: startTime,
+      endpoint: apiUrl,
+    };
+
+    try {
       const myHeaders = await this.base.getAuthJsonHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: myHeaders,
       });
 
+      const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
         "成功獲取參加記錄列表",
+        //{ ...logContext, duration },
       );
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
+      return this.handleParticipationRecordError(error);
+    }
+  }
+
+  /**
+   * 更新參加記錄
+   */
+  async updateParticipationRecord(recordId, recordData) {
+    if (this.base.getIsMock()) {
+      console.warn("⚠️ 當前模式不是 directus，無法更新數據");
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法更新數據",
+      };
+    }
+
+    const updateData = {
+      ...recordData,
+      updatedAt: DateUtils.getCurrentISOTime(),
+    };
+
+    const startTime = Date.now();
+    const logContext = {
+      service: this.serviceName,
+      operation: "updateParticipationRecord",
+      method: "PATCH",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/${recordId}`,
+      requestBody: updateData,
+    };
+
+    try {
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const apiUrl = `${this.endpoint}/${recordId}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(updateData),
+      });
+
+      const duration = Date.now() - startTime;
+      const result = await this.base.handleDirectusResponse(
+        response,
+        "成功更新參加記錄",
+        { ...logContext, duration },
+      );
+      return result;
+    } catch (error) {
+      console.error(`❌ 更新參加記錄失敗 (ID: ${recordId})`, error);
+      return this.handleParticipationRecordError(error);
+    }
+  }
+
+  /**
+   * 刪除參加記錄
+   */
+  async deleteParticipationRecord(recordId) {
+    if (this.base.getIsMock()) {
+      console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
+      return {
+        success: false,
+        message: "⚠️ 當前模式不是 directus，無法刪除數據",
+      };
+    }
+
+    const currentRecord = await this.getParticipationRecordById(recordId);
+    if (!currentRecord) {
+      return {
+        success: false,
+        message: `找不到 ID 為 ${recordId} 的參加記錄`,
+        data: null,
+      };
+    }
+
+    const startTime = Date.now();
+    const logContext = {
+      service: this.serviceName,
+      operation: "deleteParticipationRecord",
+      method: "DELETE",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/${recordId}`,
+      requestBody: currentRecord,
+    };
+
+    try {
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const apiUrl = `${this.endpoint}/${recordId}`;
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: myHeaders,
+      });
+
+      const duration = Date.now() - startTime;
+      const result = await this.base.handleDirectusResponse(
+        response,
+        "成功刪除參加記錄",
+        { ...logContext, duration },
+      );
+      return result;
+    } catch (error) {
+      console.error(`❌ 刪除參加記錄失敗 (ID: ${recordId})`, error);
       return this.handleParticipationRecordError(error);
     }
   }
