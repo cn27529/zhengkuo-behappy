@@ -10,7 +10,7 @@ export class RustMonthlyDonateService {
     this.base = baseRustService;
     this.endpoint = this.base.endpoints.monthlyDonates || "monthly-donates";
     console.log(
-      `RustMonthlyDonateService 初始化: 當前模式為 ${this.base.mode}`
+      `RustMonthlyDonateService 初始化: 當前模式為 ${this.base.mode}`,
     );
   }
 
@@ -59,7 +59,7 @@ export class RustMonthlyDonateService {
           method: "POST",
           body: JSON.stringify(processedData),
         },
-        logContext // ✅ 傳入完整的 context
+        logContext, // ✅ 傳入完整的 context
       );
 
       return result;
@@ -75,6 +75,7 @@ export class RustMonthlyDonateService {
     const updateData = {
       ...donateData,
       updatedAt: DateUtils.getCurrentISOTime(),
+      user_updated: context.user_updated || "system",
     };
 
     return await this.base.rustFetch(
@@ -84,10 +85,11 @@ export class RustMonthlyDonateService {
         body: JSON.stringify(updateData),
       },
       {
+        service: this.serviceName,
         operation: "updateMonthlyDonate",
         id: recordId,
         ...context,
-      }
+      },
     );
   }
 
@@ -101,10 +103,11 @@ export class RustMonthlyDonateService {
         method: "DELETE",
       },
       {
+        service: this.serviceName,
         operation: "deleteMonthlyDonate",
         id: recordId,
         ...context,
-      }
+      },
     );
   }
 
@@ -152,7 +155,7 @@ export class RustMonthlyDonateService {
       {
         operation: "getAllMonthlyDonates",
         ...context,
-      }
+      },
     );
   }
 
@@ -166,10 +169,11 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "getMonthlyDonateById",
         id: recordId,
         ...context,
-      }
+      },
     );
   }
 
@@ -183,10 +187,11 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "getMonthlyDonateByDonateId",
         donateId,
         ...context,
-      }
+      },
     );
   }
 
@@ -200,10 +205,11 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "getMonthlyDonateByRegistrationId",
         registrationId,
         ...context,
-      }
+      },
     );
   }
 
@@ -217,10 +223,11 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "getMonthlyDonatesByDonateType",
         donateType,
         ...context,
-      }
+      },
     );
   }
 
@@ -237,10 +244,11 @@ export class RustMonthlyDonateService {
         body: JSON.stringify(itemData),
       },
       {
+        service: this.serviceName,
         operation: "addDonateItem",
         donateId,
         ...context,
-      }
+      },
     );
   }
 
@@ -255,11 +263,12 @@ export class RustMonthlyDonateService {
         body: JSON.stringify(itemData),
       },
       {
+        service: this.serviceName,
         operation: "updateDonateItem",
         recordId,
         donateItemsId,
         ...context,
-      }
+      },
     );
   }
 
@@ -273,11 +282,12 @@ export class RustMonthlyDonateService {
         method: "DELETE",
       },
       {
+        service: this.serviceName,
         operation: "deleteDonateItem",
         recordId,
         itemsId,
         ...context,
-      }
+      },
     );
   }
 
@@ -291,9 +301,10 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "getMonthlyDonateStats",
         ...context,
-      }
+      },
     );
   }
 
@@ -307,9 +318,10 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "getDonationStats",
         ...context,
-      }
+      },
     );
   }
 
@@ -345,10 +357,11 @@ export class RustMonthlyDonateService {
         body: JSON.stringify({ operations }),
       },
       {
+        //service: this.serviceName,
         operation: "batchOperations",
         count: operations.length,
         ...context,
-      }
+      },
     );
   }
 
@@ -363,10 +376,11 @@ export class RustMonthlyDonateService {
         body: JSON.stringify({ query, ...options }),
       },
       {
+        //service: this.serviceName,
         operation: "searchMonthlyDonates",
         query,
         ...context,
-      }
+      },
     );
   }
 
@@ -380,10 +394,11 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "exportMonthlyDonates",
         format,
         ...context,
-      }
+      },
     );
   }
 
@@ -397,9 +412,10 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "getDonationTypeStats",
         ...context,
-      }
+      },
     );
   }
 
@@ -413,10 +429,11 @@ export class RustMonthlyDonateService {
         method: "GET",
       },
       {
+        //service: this.serviceName,
         operation: "getDonationTrend",
         period,
         ...context,
-      }
+      },
     );
   }
 

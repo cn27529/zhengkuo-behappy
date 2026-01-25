@@ -2,8 +2,8 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
-import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
-// import { activityService } from "../services/activityService.js"; // 移除舊的導入
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
+import { activityService } from "../services/activityService.js"; // CUD用
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockData from "../data/mock_activities.json";
@@ -438,7 +438,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.createActivity(newActivity);
+      const result = await activityService.createActivity(newActivity);
 
       if (result.success) {
         allActivities.value.push(result.data);
@@ -482,7 +482,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.updateParticipants(
+      const result = await activityService.updateParticipants(
         activityId,
         newParticipants,
       );
@@ -534,7 +534,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.updateActivity(
+      const result = await activityService.updateActivity(
         activityId,
         activityData,
       );
@@ -582,7 +582,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.deleteActivity(activityId);
+      const result = await activityService.deleteActivity(activityId);
 
       if (result.success) {
         allActivities.value.splice(index, 1);
@@ -626,7 +626,7 @@ export const useActivityStore = defineStore("activity", () => {
         };
       }
 
-      const result = await serviceAdapter.completeActivity(activityId);
+      const result = await activityService.completeActivity(activityId);
 
       if (result.success) {
         activity.state = "completed";

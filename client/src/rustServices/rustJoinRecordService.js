@@ -1,14 +1,16 @@
-// src/services/joinRecordService.js
-import { baseService } from "./baseService.js";
-import { generateGitHashBrowser } from "../utils/generateGitHash.js";
+// src/rustServices/rustJoinRecordService.js
+import { baseRustService } from "./baseRustService.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 
-export class JoinRecordService {
+export class RustJoinRecordService {
+  // ========== 建構函式 ==========
   constructor() {
-    this.serviceName = "JoinRecordService";
-    this.base = baseService;
-    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsParticipationRecord}`;
-    console.log(`JoinRecordService 初始化: 當前模式為 ${this.base.mode}`);
+    this.serviceName = "RustJoinRecordService";
+    this.base = baseRustService;
+    this.endpoint =
+      this.base.endpoints.participationRecords || "participation-records";
+    console.log(`RustJoinRecordService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
   // ========== 核心 CRUD 方法 ==========
@@ -16,15 +18,25 @@ export class JoinRecordService {
   /**
    * 創建參加記錄
    */
-  async createParticipationRecord(recordData) {
+  async createParticipationRecord(recordData, additionalContext = {}) {
+    const createISOTime = DateUtils.getCurrentISOTime();
     const processedData = {
       ...recordData,
-      createdAt: DateUtils.getCurrentISOTime(),
+      createdAt: createISOTime,
       updatedAt: null,
     };
 
+    const logContext = {
+      service: this.serviceName,
+      operation: "createParticipationRecord",
+      method: "POST",
+      endpoint: this.endpoint,
+      requestBody: processedData,
+      ...additionalContext,
+    };
+
     if (this.base.getIsMock()) {
-      console.warn("⚠️ 當前模式不為 Directus，參加記錄創建成功");
+      console.warn("⚠️ 當前模式不為 Rust，參加記錄創建成功");
       return {
         success: true,
         data: processedData,
@@ -32,29 +44,15 @@ export class JoinRecordService {
       };
     }
 
-    const startTime = Date.now();
-    const logContext = {
-      service: this.serviceName,
-      operation: "createParticipationRecord",
-      method: "POST",
-      startTime: startTime,
-      endpoint: this.endpoint,
-      requestBody: processedData,
-    };
-
     try {
-      const myHeaders = await this.base.getAuthJsonHeaders();
-      const response = await fetch(this.endpoint, {
-        method: "POST",
-        headers: myHeaders,
-        body: JSON.stringify(processedData),
-      });
-
-      const duration = Date.now() - startTime;
-      const result = await this.base.handleDirectusResponse(
-        response,
-        "成功創建參加記錄",
-        { ...logContext, duration },
+      console.log("🦀 [Rust] 創建參加記錄:", processedData);
+      const result = await this.base.rustFetch(
+        this.endpoint,
+        {
+          method: "POST",
+          body: JSON.stringify(processedData),
+        },
+        logContext,
       );
       return result;
     } catch (error) {
@@ -66,7 +64,7 @@ export class JoinRecordService {
   /**
    * 獲取所有參加記錄
    */
-  async getAllParticipationRecords(params = {}) {
+  async getAllParticipationRecords(params = {}, context = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -75,33 +73,22 @@ export class JoinRecordService {
       };
     }
 
-    const startTime = Date.now();
     const queryParams = new URLSearchParams({
       sort: "-createdAt",
       ...params,
     }).toString();
     const apiUrl = `${this.endpoint}?${queryParams}`;
 
-    const logContext = {
-      //service: this.serviceName,
-      operation: "getAllParticipationRecords",
-      method: "GET",
-      startTime: startTime,
-      endpoint: apiUrl,
-    };
-
     try {
-      const myHeaders = await this.base.getAuthJsonHeaders();
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: myHeaders,
-      });
-
-      const duration = Date.now() - startTime;
-      const result = await this.base.handleDirectusResponse(
-        response,
-        "成功獲取參加記錄",
-        { ...logContext, duration },
+      const result = await this.base.rustFetch(
+        apiUrl,
+        { method: "GET" },
+        {
+          //service: this.serviceName,
+          operation: "getAllParticipationRecords",
+          params,
+          ...context,
+        },
       );
       return result;
     } catch (error) {
@@ -113,7 +100,7 @@ export class JoinRecordService {
   /**
    * 根據 ID 獲取參加記錄
    */
-  async getParticipationRecordById(recordId) {
+  async getParticipationRecordById(recordId, context = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -122,28 +109,16 @@ export class JoinRecordService {
       };
     }
 
-    const startTime = Date.now();
-    const apiUrl = `${this.endpoint}/${recordId}`;
-    const logContext = {
-      //service: this.serviceName,
-      operation: "getParticipationRecordById",
-      method: "GET",
-      startTime: startTime,
-      endpoint: apiUrl,
-    };
-
     try {
-      const myHeaders = await this.base.getAuthJsonHeaders();
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: myHeaders,
-      });
-
-      const duration = Date.now() - startTime;
-      const result = await this.base.handleDirectusResponse(
-        response,
-        "成功獲取參加記錄",
-        { ...logContext, duration },
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${recordId}`,
+        { method: "GET" },
+        {
+          //service: this.serviceName,
+          operation: "getParticipationRecordById",
+          id: recordId,
+          ...context,
+        },
       );
       return result;
     } catch (error) {
@@ -155,7 +130,7 @@ export class JoinRecordService {
   /**
    * 根據 registrationId 獲取參加記錄
    */
-  async getParticipationRecordsByRegistrationId(registrationId) {
+  async getParticipationRecordsByRegistrationId(registrationId, context = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -164,33 +139,46 @@ export class JoinRecordService {
       };
     }
 
-    const startTime = Date.now();
-    const queryParams = new URLSearchParams({
-      "filter[registrationId][_eq]": registrationId,
-      sort: "-createdAt",
-    }).toString();
-    const apiUrl = `${this.endpoint}?${queryParams}`;
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/by-registration/${registrationId}`,
+        { method: "GET" },
+        {
+          //service: this.serviceName,
+          operation: "getParticipationRecordsByRegistrationId",
+          registrationId,
+          ...context,
+        },
+      );
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取參加記錄失敗:", error);
+      return this.handleParticipationRecordError(error);
+    }
+  }
 
-    const logContext = {
-      //service: this.serviceName,
-      operation: "getParticipationRecordsByRegistrationId",
-      method: "GET",
-      startTime: startTime,
-      endpoint: apiUrl,
-    };
+  /**
+   * 根據 activityId 獲取參加記錄
+   */
+  async getParticipationRecordsByActivityId(activityId, context = {}) {
+    if (this.base.getIsMock()) {
+      return {
+        success: true,
+        data: [],
+        message: "Mock 模式：返回參加記錄列表",
+      };
+    }
 
     try {
-      const myHeaders = await this.base.getAuthJsonHeaders();
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: myHeaders,
-      });
-
-      const duration = Date.now() - startTime;
-      const result = await this.base.handleDirectusResponse(
-        response,
-        "成功獲取參加記錄列表",
-        { ...logContext, duration },
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/by-activity/${activityId}`,
+        { method: "GET" },
+        {
+          //service: this.serviceName,
+          operation: "getParticipationRecordsByActivityId",
+          activityId,
+          ...context,
+        },
       );
       return result;
     } catch (error) {
@@ -202,44 +190,35 @@ export class JoinRecordService {
   /**
    * 更新參加記錄
    */
-  async updateParticipationRecord(recordId, recordData) {
+  async updateParticipationRecord(recordId, recordData, context = {}) {
     if (this.base.getIsMock()) {
-      console.warn("⚠️ 當前模式不是 directus，無法更新數據");
+      console.warn("⚠️ 當前模式不是 rust，無法更新數據");
       return {
         success: false,
-        message: "⚠️ 當前模式不是 directus，無法更新數據",
+        message: "⚠️ 當前模式不是 rust，無法更新數據",
       };
     }
 
     const updateData = {
       ...recordData,
       updatedAt: DateUtils.getCurrentISOTime(),
-    };
-
-    const startTime = Date.now();
-    const logContext = {
-      service: this.serviceName,
-      operation: "updateParticipationRecord",
-      method: "PATCH",
-      startTime: startTime,
-      endpoint: `${this.endpoint}/${recordId}`,
-      requestBody: updateData,
+      user_updated: context.user_updated || "system",
     };
 
     try {
-      const myHeaders = await this.base.getAuthJsonHeaders();
-      const apiUrl = `${this.endpoint}/${recordId}`;
-      const response = await fetch(apiUrl, {
-        method: "PATCH",
-        headers: myHeaders,
-        body: JSON.stringify(updateData),
-      });
-
-      const duration = Date.now() - startTime;
-      const result = await this.base.handleDirectusResponse(
-        response,
-        "成功更新參加記錄",
-        { ...logContext, duration },
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${recordId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(updateData),
+        },
+        {
+          service: this.serviceName,
+          operation: "updateParticipationRecord",
+          id: recordId,
+          requestBody: updateData,
+          ...context,
+        },
       );
       return result;
     } catch (error) {
@@ -251,47 +230,25 @@ export class JoinRecordService {
   /**
    * 刪除參加記錄
    */
-  async deleteParticipationRecord(recordId) {
+  async deleteParticipationRecord(recordId, context = {}) {
     if (this.base.getIsMock()) {
-      console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
+      console.warn("⚠️ 當前模式不是 rust，無法刪除數據");
       return {
         success: false,
-        message: "⚠️ 當前模式不是 directus，無法刪除數據",
+        message: "⚠️ 當前模式不是 rust，無法刪除數據",
       };
     }
-
-    const currentRecord = await this.getParticipationRecordById(recordId);
-    if (!currentRecord) {
-      return {
-        success: false,
-        message: `找不到 ID 為 ${recordId} 的參加記錄`,
-        data: null,
-      };
-    }
-
-    const startTime = Date.now();
-    const logContext = {
-      service: this.serviceName,
-      operation: "deleteParticipationRecord",
-      method: "DELETE",
-      startTime: startTime,
-      endpoint: `${this.endpoint}/${recordId}`,
-      requestBody: currentRecord,
-    };
 
     try {
-      const myHeaders = await this.base.getAuthJsonHeaders();
-      const apiUrl = `${this.endpoint}/${recordId}`;
-      const response = await fetch(apiUrl, {
-        method: "DELETE",
-        headers: myHeaders,
-      });
-
-      const duration = Date.now() - startTime;
-      const result = await this.base.handleDirectusResponse(
-        response,
-        "成功刪除參加記錄",
-        { ...logContext, duration },
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${recordId}`,
+        { method: "DELETE" },
+        {
+          service: this.serviceName,
+          operation: "deleteParticipationRecord",
+          id: recordId,
+          ...context,
+        },
       );
       return result;
     } catch (error) {
@@ -303,9 +260,9 @@ export class JoinRecordService {
   /**
    * 儲存記錄 (原有方法保持兼容)
    */
-  async saveRecord(payload) {
+  async saveRecord(payload, context = {}) {
     try {
-      console.log("Service 傳送資料:", payload);
+      console.log("🦀 [Rust] Service 傳送資料:", payload);
 
       // 構建 items 陣列
       const items = [];
@@ -359,16 +316,18 @@ export class JoinRecordService {
         registrationId: payload.registrationId || -1,
         activityId: payload.activityId || -1,
         state: "confirmed",
-        items: items, // 直接傳遞陣列，讓 Directus 處理 JSON 序列化
+        items: items, // 直接傳遞陣列，讓 Rust 處理 JSON 序列化
         totalAmount: payload.total || 0,
         finalAmount: payload.total || 0,
         notes: payload.notes || "",
       };
 
-      const result = await this.createParticipationRecord(recordData);
+      const result = await this.createParticipationRecord(recordData, {
+        ...context,
+      });
       return result;
     } catch (error) {
-      console.error("儲存失敗", error);
+      console.error("🦀 [Rust] 儲存失敗", error);
       throw error;
     }
   }
@@ -400,8 +359,9 @@ export class JoinRecordService {
     return lampTypes[lampType] || "光明燈";
   }
 
-  // ========== 輔助方法 ==========
-
+  /**
+   * 生成 Mock 資料
+   */
   generateMockData() {
     return {
       id: -1,
@@ -416,27 +376,52 @@ export class JoinRecordService {
     };
   }
 
+  // ========== Rust 特有功能 ==========
+
+  /**
+   * 批量操作（Rust 特有功能）
+   */
+  async batchOperations(operations, context = {}) {
+    return await this.base.rustFetch(
+      `${this.endpoint}/batch`,
+      {
+        method: "POST",
+        body: JSON.stringify({ operations }),
+      },
+      {
+        //service: this.serviceName,
+        operation: "batchOperations",
+        count: operations.length,
+        ...context,
+      },
+    );
+  }
+
   // ========== 錯誤處理 ==========
+
+  /**
+   * Rust 特定的錯誤處理
+   */
   handleParticipationRecordError(error) {
-    return this.base.handleDirectusError(error);
+    return this.base.handleRustError(error);
   }
 
   // ========== 模式管理 ==========
+
+  /**
+   * 獲取當前模式
+   */
   getCurrentMode() {
-    if (sessionStorage.getItem("auth-mode") !== null) {
-      this.base.mode = sessionStorage.getItem("auth-mode");
-    }
     return this.base.mode;
   }
 
+  /**
+   * 設置模式（在 Rust 服務中無效，但保持接口兼容）
+   */
   setMode(mode) {
-    if (["mock", "backend", "directus"].includes(mode)) {
-      this.base.mode = mode;
-      console.log(`✅ 切換到 ${mode} 模式`);
-    } else {
-      console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
-    }
+    console.warn(`⚠️🦀 [Rust] 服務不支持切換模式，當前固定為 rust 模式`);
+    return "rust";
   }
 }
 
-export const joinRecordService = new JoinRecordService();
+export const rustJoinRecordService = new RustJoinRecordService();

@@ -2,8 +2,8 @@
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
-import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
-//import { registrationService } from "../services/registrationService.js"; // 移除舊的導入
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
+import { registrationService } from "../services/registrationService.js"; // CUD用
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockRegistrations from "../data/mock_registrations.json";
@@ -881,7 +881,7 @@ export const useRegistrationStore = defineStore("registration", () => {
 
       console.log("🚀 開始提交並創建報名表單...");
       // 創建報名表單
-      const result = await serviceAdapter.createRegistration(
+      const result = await registrationService.createRegistration(
         registrationForm.value,
       );
 
@@ -1202,7 +1202,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       console.log(`🔄 開始更新表單: formId=${formId}, id=${id}`);
 
       // 更新报名的表單
-      const result = await serviceAdapter.updateRegistration(
+      const result = await registrationService.updateRegistration(
         id,
         registrationForm.value,
       );

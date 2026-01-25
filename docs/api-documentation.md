@@ -2,19 +2,40 @@
 
 ## 概述
 
-本系統提供雙後端 API 支援：
-- **Rust Axum API** (主要) - `http://localhost:3001`
-- **Directus API** (備用) - `http://localhost:8055`
+本系統採用「實用主義優先」的 API 設計理念，提供雙軌並行的後端支援：
+
+### 🚄 雙軌 API 架構
+
+#### 性能軌：Rust Axum API (讀取專用)
+
+- **端點**: `http://localhost:3000`
+- **職責**: 高性能數據查詢 (Read Operations)
+- **優勢**: 極速響應、零開銷、內存安全
+- **適用**: 列表查詢、搜索、統計、報表
+
+#### 管理軌：Directus API (寫入與管理)
+
+- **端點**: `http://localhost:8055`
+- **職責**: 數據寫入與系統管理 (CUD + Auth + Admin)
+- **優勢**: 完整認證、審計日誌、管理界面
+- **適用**: 新增、修改、刪除、用戶管理
+
+**一石二鳥效果：**
+
+- 🐦 獲得管理便利性 (Directus 的完整功能)
+- 🐦 獲得查詢高性能 (Rust 的極速響應)
 
 所有 API 回應都遵循統一的格式規範。
 
 ## 通用 API 規範
 
 ### 請求格式
+
 - **Content-Type**: `application/json`
 - **認證**: Bearer Token (部分端點需要)
 
 ### 回應格式
+
 ```json
 {
   "success": true,
@@ -29,6 +50,7 @@
 ```
 
 ### 錯誤回應
+
 ```json
 {
   "success": false,
@@ -38,6 +60,7 @@
 ```
 
 ### HTTP 狀態碼
+
 - `200` - 成功
 - `201` - 創建成功
 - `400` - 請求錯誤
@@ -53,9 +76,11 @@
 ### 健康檢查
 
 #### GET `/health`
+
 檢查系統健康狀態
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -70,9 +95,11 @@
 ```
 
 #### GET `/ping`
+
 簡單的連通性測試
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -84,9 +111,11 @@
 ```
 
 #### GET `/info`
+
 獲取服務器信息
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -108,6 +137,7 @@
 #### GET `/api/registrations`
 
 **查詢參數：**
+
 - `state` (string, optional) - 狀態篩選 (`draft`, `submitted`, `completed`)
 - `form_id` (string, optional) - 表單 ID 篩選
 - `user_created` (string, optional) - 創建者篩選
@@ -116,6 +146,7 @@
 - `offset` (integer, optional) - 偏移量 (預設: 0)
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -181,6 +212,7 @@
 #### GET `/api/registrations/{id}`
 
 **路徑參數：**
+
 - `id` (integer) - 報名記錄 ID
 
 **回應：** 同上單一記錄格式
@@ -190,6 +222,7 @@
 #### POST `/api/registrations`
 
 **請求體：**
+
 ```json
 {
   "formId": "REG001",
@@ -229,6 +262,7 @@
 #### DELETE `/api/registrations/{id}`
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -241,6 +275,7 @@
 #### GET `/api/registrations/user/{user_id}`
 
 **路徑參數：**
+
 - `user_id` (string) - 用戶 ID
 
 **回應：** 該用戶的所有報名記錄
@@ -250,6 +285,7 @@
 #### GET `/api/registrations/state/{state}`
 
 **路徑參數：**
+
 - `state` (string) - 狀態 (`draft`, `submitted`, `completed`)
 
 **回應：** 指定狀態的所有報名記錄
@@ -263,6 +299,7 @@
 #### GET `/api/monthly-donates`
 
 **查詢參數：**
+
 - `donate_type` (string, optional) - 贊助類型篩選
 - `registration_id` (integer, optional) - 關聯報名 ID
 - `sort` (string, optional) - 排序欄位
@@ -270,6 +307,7 @@
 - `offset` (integer, optional) - 偏移量
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -312,6 +350,7 @@
 #### POST `/api/monthly-donates`
 
 **請求體：**
+
 ```json
 {
   "name": "王小明",
@@ -330,6 +369,7 @@
 ```
 
 ### 其他贊助 API
+
 - `GET /api/monthly-donates/{id}` - 獲取單一記錄
 - `PUT /api/monthly-donates/{id}` - 更新記錄
 - `DELETE /api/monthly-donates/{id}` - 刪除記錄
@@ -345,6 +385,7 @@
 #### GET `/api/activities`
 
 **查詢參數：**
+
 - `state` (string, optional) - 活動狀態 (`planning`, `active`, `completed`, `cancelled`)
 - `item_type` (string, optional) - 活動類型
 - `activity_id` (string, optional) - 活動 ID 篩選
@@ -353,6 +394,7 @@
 - `offset` (integer, optional) - 偏移量
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -399,6 +441,7 @@
 #### POST `/api/activities`
 
 **請求體：**
+
 ```json
 {
   "activityId": "ACT001",
@@ -412,6 +455,7 @@
 ```
 
 ### 其他活動 API
+
 - `GET /api/activities/{id}` - 獲取單一活動
 - `PUT /api/activities/{id}` - 更新活動
 - `DELETE /api/activities/{id}` - 刪除活動
@@ -426,6 +470,7 @@
 #### POST `/api/auth/login`
 
 **請求體：**
+
 ```json
 {
   "username": "admin",
@@ -434,6 +479,7 @@
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -455,11 +501,13 @@
 #### POST `/api/auth/logout`
 
 **標頭：**
+
 ```
 Authorization: Bearer <token>
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -472,11 +520,13 @@ Authorization: Bearer <token>
 #### GET `/api/auth/verify`
 
 **標頭：**
+
 ```
 Authorization: Bearer <token>
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -497,14 +547,14 @@ Authorization: Bearer <token>
 
 ### 常見錯誤碼
 
-| 錯誤碼 | 說明 | 解決方案 |
-|--------|------|----------|
-| `VALIDATION_ERROR` | 輸入驗證失敗 | 檢查請求參數格式 |
-| `NOT_FOUND` | 資源不存在 | 確認資源 ID 正確 |
-| `UNAUTHORIZED` | 未認證 | 提供有效的認證 Token |
-| `FORBIDDEN` | 權限不足 | 檢查用戶權限 |
-| `DATABASE_ERROR` | 資料庫錯誤 | 聯繫系統管理員 |
-| `INTERNAL_ERROR` | 內部服務器錯誤 | 聯繫系統管理員 |
+| 錯誤碼             | 說明           | 解決方案             |
+| ------------------ | -------------- | -------------------- |
+| `VALIDATION_ERROR` | 輸入驗證失敗   | 檢查請求參數格式     |
+| `NOT_FOUND`        | 資源不存在     | 確認資源 ID 正確     |
+| `UNAUTHORIZED`     | 未認證         | 提供有效的認證 Token |
+| `FORBIDDEN`        | 權限不足       | 檢查用戶權限         |
+| `DATABASE_ERROR`   | 資料庫錯誤     | 聯繫系統管理員       |
+| `INTERNAL_ERROR`   | 內部服務器錯誤 | 聯繫系統管理員       |
 
 ### 錯誤回應範例
 
@@ -532,7 +582,7 @@ Authorization: Bearer <token>
 # 測試報名 API
 ./scripts/test_rust_registration_api.sh
 
-# 測試活動 API  
+# 測試活動 API
 ./scripts/test_rust_activity_api.sh
 
 # 使用模擬數據測試
@@ -561,11 +611,13 @@ curl -X POST http://localhost:3001/api/registrations \
 ## 版本更新
 
 ### API 版本控制
+
 - 當前版本: `v1`
 - 向後兼容性保證
 - 重大變更會提前通知
 
 ### 更新日誌
+
 請參考 `CHANGELOG.md` 了解 API 變更歷史。
 
 ---
@@ -573,6 +625,7 @@ curl -X POST http://localhost:3001/api/registrations \
 ## 支援與聯繫
 
 如有 API 使用問題，請：
+
 1. 查看本文檔
 2. 檢查測試腳本範例
 3. 查看系統日誌

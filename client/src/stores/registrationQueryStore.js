@@ -1,8 +1,8 @@
 // src/stores/registrationQueryStore.js
 import { defineStore } from "pinia";
 import { ref, computed, h } from "vue";
-import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
-//import { registrationService } from "../services/registrationService.js"; // 移除舊的導入
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
+//import { registrationService } from "../services/registrationService.js"; // CUD用
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";

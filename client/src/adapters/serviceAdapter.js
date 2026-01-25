@@ -3,6 +3,7 @@ import { activityService as directusActivity } from "../services/activityService
 import { authService as directusAuth } from "../services/authService.js";
 import { registrationService as directusRegistration } from "../services/registrationService.js";
 import { monthlyDonateService as directusMonthlyDonate } from "../services/monthlyDonateService.js";
+import { joinRecordService as directusJoinRecord } from "../services/joinRecordService.js";
 
 // Rust 服務（延遲加載，避免初始化錯誤）
 let rustServices = null;
@@ -16,11 +17,13 @@ async function loadRustServices() {
       { rustAuthService },
       { rustRegistrationService },
       { rustMonthlyDonateService },
+      { rustJoinRecordService },
     ] = await Promise.all([
       import("../rustServices/rustActivityService.js"),
       import("../rustServices/rustAuthService.js"),
       import("../rustServices/rustRegistrationService.js"),
       import("../rustServices/rustMonthlyDonateService.js"),
+      import("../rustServices/rustJoinRecordService.js"),
     ]);
 
     rustServices = {
@@ -28,6 +31,7 @@ async function loadRustServices() {
       auth: rustAuthService,
       registration: rustRegistrationService,
       monthlyDonate: rustMonthlyDonateService,
+      joinRecord: rustJoinRecordService,
     };
 
     console.log("✅ Rust 服務加載完成");
@@ -51,6 +55,7 @@ class ServiceAdapter {
       auth: directusAuth,
       registration: directusRegistration,
       monthlyDonate: directusMonthlyDonate,
+      joinRecord: directusJoinRecord,
     };
 
     // 錯誤計數器
@@ -272,6 +277,27 @@ class ServiceAdapter {
       this[method] = (...args) =>
         this.callServiceMethod("monthlyDonate", method, ...args);
     });
+
+    // JoinRecord 方法
+    const joinRecordMethods = [
+      "createParticipationRecord",
+      "getAllParticipationRecords",
+      "getParticipationRecordById",
+      "getParticipationRecordsByRegistrationId",
+      "getParticipationRecordsByActivityId",
+      "updateParticipationRecord",
+      "deleteParticipationRecord",
+      "saveRecord",
+      "getActivityConfig",
+      "getLampTypeLabel",
+      "generateMockData",
+      "handleParticipationRecordError",
+    ];
+
+    joinRecordMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("joinRecord", method, ...args);
+    });
   }
 
   /**
@@ -400,6 +426,37 @@ class ServiceAdapter {
     methods.forEach((method) => {
       proxy[method] = (...args) =>
         this.callServiceMethod("monthlyDonate", method, ...args);
+    });
+
+    return proxy;
+  }
+
+  get joinRecordService() {
+    const proxy = {
+      getCurrentMode: () => this.getCurrentMode(),
+      setMode: (mode) => this.setMode(mode),
+      getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
+    };
+
+    const methods = [
+      "createParticipationRecord",
+      "getAllParticipationRecords",
+      "getParticipationRecordById",
+      "getParticipationRecordsByRegistrationId",
+      "getParticipationRecordsByActivityId",
+      "updateParticipationRecord",
+      "deleteParticipationRecord",
+      "saveRecord",
+      "getActivityConfig",
+      "getLampTypeLabel",
+      "generateMockData",
+      "handleParticipationRecordError",
+    ];
+
+    methods.forEach((method) => {
+      proxy[method] = (...args) =>
+        this.callServiceMethod("joinRecord", method, ...args);
     });
 
     return proxy;

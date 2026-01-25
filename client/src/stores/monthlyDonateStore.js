@@ -4,8 +4,8 @@ import { ref, computed } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockDonateData from "../data/mock_monthlyDonates.json";
-import { serviceAdapter } from "../adapters/serviceAdapter.js"; // 使用適配器
-//import { monthlyDonateService } from "../services/monthlyDonateService.js"; // 移除舊的導入
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
+import { monthlyDonateService } from "../services/monthlyDonateService.js"; // CUD用
 import { authService } from "../services/authService.js";
 
 // 月度贊助的 Pinia store，管理月度贊助的狀態與操作。
@@ -959,7 +959,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // TODO: 未來串接 API
-      const result = await serviceAdapter.createMonthlyDonate(newDonate);
+      const result = await monthlyDonateService.createMonthlyDonate(newDonate);
       if (result.success) {
         allDonates.value.push(result.data);
         console.log("✅ 成功創建贊助:", result.data.name);
@@ -1020,7 +1020,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // Directus 模式：調用 API
-      const result = await serviceAdapter.deleteMonthlyDonate(
+      const result = await monthlyDonateService.deleteMonthlyDonate(
         exDonate.id, // 使用數據庫中的 ID
       );
 
@@ -1114,7 +1114,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       exDonate.memo = itemData.memo || exDonate.memo;
 
       // 更新贊助記錄備註
-      const result = await serviceAdapter.updateMonthlyDonate(
+      const result = await monthlyDonateService.updateMonthlyDonate(
         exDonate.id,
         exDonate,
       );
@@ -1266,7 +1266,7 @@ export const useMonthlyDonateStore = defineStore("monthlyDonate", () => {
       }
 
       // Directus 模式：調用 API
-      const result = await serviceAdapter.deleteDonateItem(
+      const result = await monthlyDonateService.deleteDonateItem(
         exDonate.id, // 使用數據庫中的 ID
         itemId,
       );

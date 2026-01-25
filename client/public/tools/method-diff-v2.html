@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雙後端服務比較工具 v2.0</title>
+    <style>
+        /* 保持原有樣式，添加新功能樣式 */
+        .quick-load {
+            background: #e3f2fd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .service-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .service-btn {
+            padding: 8px 16px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .service-btn:hover {
+            background: #1976d2;
+        }
+
+        .export-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .export-btn {
+            padding: 8px 16px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .input-section {
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* 桌面版 2 列 */
+            gap: 1rem;
+        }
+
+        /* 活動項目容器 - 使用 Grid 佈局 */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* 桌面版 2 列 */
+            gap: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group h3 {
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1976d2;
+        }
+
+        #results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 保持原有 HTML 結構，在 input-section 中添加 -->
+    <div class="quick-load">
+        <h3>🚀 快速載入服務</h3>
+        <p>點擊按鈕自動載入對應的服務代碼進行比較</p>
+        <div class="service-buttons">
+            <button class="service-btn" onclick="loadService('activity')">Activity Service</button>
+            <button class="service-btn" onclick="loadService('registration')">Registration Service</button>
+            <button class="service-btn" onclick="loadService('monthlyDonate')">Monthly Donate Service</button>
+            <button class="service-btn" onclick="loadService('joinRecord')">Join Record Service</button>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <div class="input-group">
+            <h3>Directus 服務代碼</h3>
+            <textarea id="directusCode" rows="15" placeholder="貼上 Directus 服務代碼..."></textarea>
+        </div>
+        <div class="input-group">
+            <h3>Rust 服務代碼</h3>
+            <textarea id="rustCode" rows="15" placeholder="貼上 Rust 服務代碼..."></textarea>
+        </div>
+        <button onclick="compareServices()">比較服務</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        // 服務代碼模板（實際使用時需要從文件讀取）
+        const serviceTemplates = {
+            activity: {
+                directus: `// Activity Service 代碼示例
+export class ActivityService {
+    async createActivity(data) {}
+    async getAllActivities() {}
+    async getActivityById(id) {}
+    async updateActivity(id, data) {}
+    async deleteActivity(id) {}
+}`,
+                rust: `// Rust Activity Service 代碼示例
+export class RustActivityService {
+    async createActivity(data) {}
+    async getAllActivities() {}
+    async getActivityById(id) {}
+    async updateActivity(id, data) {}
+    async deleteActivity(id) {}
+    async batchOperations(ops) {} // Rust 特有
+}`
+            },
+            joinRecord: {
+                directus: `// Join Record Service 代碼示例
+export class JoinRecordService {
+    async createParticipationRecord(data) {}
+    async getAllParticipationRecords() {}
+    async getParticipationRecordById(id) {}
+    async updateParticipationRecord(id, data) {}
+    async deleteParticipationRecord(id) {}
+    async saveRecord(payload) {}
+}`,
+                rust: `// Rust Join Record Service 代碼示例
+export class RustJoinRecordService {
+    async createParticipationRecord(data) {}
+    async getAllParticipationRecords() {}
+    async getParticipationRecordById(id) {}
+    async updateParticipationRecord(id, data) {}
+    async deleteParticipationRecord(id) {}
+    async saveRecord(payload) {}
+    async batchOperations(ops) {} // Rust 特有
+}`
+            }
+        };
+
+        function loadService(serviceName) {
+            const template = serviceTemplates[serviceName];
+            if (template) {
+                document.getElementById('directusCode').value = template.directus;
+                document.getElementById('rustCode').value = template.rust;
+                compareServices(); // 自動比較
+            }
+        }
+
+        function compareServices() {
+            const directusCode = document.getElementById('directusCode').value;
+            const rustCode = document.getElementById('rustCode').value;
+
+            if (!directusCode || !rustCode) {
+                alert('請輸入兩個服務的代碼！');
+                return;
+            }
+
+            const results = {
+                directusMethods: extractMethods(directusCode),
+                rustMethods: extractMethods(rustCode),
+                timestamp: new Date().toISOString()
+            };
+
+            displayResults(results);
+        }
+
+        function extractMethods(code) {
+            const methodRegex = /async\s+(\w+)\s*\([^)]*\)/g;
+            const methods = [];
+            let match;
+
+            while ((match = methodRegex.exec(code)) !== null) {
+                methods.push(match[1]);
+            }
+
+            return methods;
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            const directusOnly = data.directusMethods.filter(m => !data.rustMethods.includes(m));
+            const rustOnly = data.rustMethods.filter(m => !data.directusMethods.includes(m));
+            const common = data.directusMethods.filter(m => data.rustMethods.includes(m));
+
+            resultsDiv.innerHTML = `
+                <h3>📊 比較結果</h3>
+                <div><strong>共同方法 (${common.length}):</strong> ${common.join(', ') || '無'}</div>
+                <div><strong>僅 Directus (${directusOnly.length}):</strong> ${directusOnly.join(', ') || '無'}</div>
+                <div><strong>僅 Rust (${rustOnly.length}):</strong> ${rustOnly.join(', ') || '無'}</div>
+                
+                <div class="export-section">
+                    <h3>📤 導出結果</h3>
+                    <button class="export-btn" onclick="exportResults('json')">導出 JSON</button>
+                    <button class="export-btn" onclick="exportResults('csv')">導出 CSV</button>
+                </div>
+            `;
+        }
+
+        function exportResults(format) {
+            const results = getCurrentResults();
+            if (!results) {
+                alert('請先進行比較！');
+                return;
+            }
+
+            if (format === 'json') {
+                const blob = new Blob([JSON.stringify(results, null, 2)],
+                    { type: 'application/json' });
+                downloadFile(blob, 'service-comparison.json');
+            } else if (format === 'csv') {
+                const csv = generateCSV(results);
+                const blob = new Blob([csv], { type: 'text/csv' });
+                downloadFile(blob, 'service-comparison.csv');
+            }
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 在原有的 displayResults 函數末尾添加導出按鈕
+        function displayResults(data) {
+            // ... 原有代碼 ...
+
+            const exportSection = `
+                <div class="export-section">
+                    <h3>📤 導出結果</h3>
+                    <button class="export-btn" onclick="exportResults('json')">導出 JSON</button>
+                    <button class="export-btn" onclick="exportResults('csv')">導出 CSV</button>
+                </div>
+            `;
+
+            resultsDiv.innerHTML += exportSection;
+        }
+    </script>
+</body>
+
+</html>

@@ -22,6 +22,7 @@ export class BaseRustService {
       activities: "/api/activities",
       registrations: "/api/registrations",
       monthlyDonates: "/api/monthly-donates",
+      participationRecords: "/api/participation-records",
       users: "/api/users",
       health: "/health",
       dbTest: "/db-test",
@@ -161,7 +162,7 @@ export class BaseRustService {
 
       const success = navigator.sendBeacon?.(
         import.meta.env.VITE_REMOTE_LOG_URL,
-        blob
+        blob,
       );
 
       if (!success) {
@@ -187,7 +188,7 @@ export class BaseRustService {
 
     console.groupCollapsed(
       `%c🦀 ${logEntry.endpoint} - ${logEntry.status}`,
-      style
+      style,
     );
     console.log("上下文:", logEntry.context);
     console.log("耗時:", logEntry.duration, "ms");
@@ -576,7 +577,7 @@ export class BaseRustService {
       {
         service: "BaseRustService",
         operation: "dbTest",
-      }
+      },
     );
   }
 
@@ -587,7 +588,7 @@ export class BaseRustService {
       {
         service: "BaseRustService",
         operation: "serverInfo",
-      }
+      },
     );
   }
 
@@ -598,7 +599,7 @@ export class BaseRustService {
       {
         service: "BaseRustService",
         operation: "serverPing",
-      }
+      },
     );
   }
 
@@ -609,7 +610,7 @@ export class BaseRustService {
       {
         service: "BaseRustService",
         operation: "healthCheck",
-      }
+      },
     );
   }
 }

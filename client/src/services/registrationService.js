@@ -267,15 +267,6 @@ export class RegistrationService {
     });
   }
 
-  // 根據用戶 ID 查詢報名表
-  async getRegistrationsByUser(userId) {
-    return this.getAllRegistrations({
-      filter: {
-        user_created: { _eq: userId },
-      },
-    });
-  }
-
   // ========== 狀態管理 ==========
 
   // 變更報名表狀態

@@ -42,7 +42,7 @@ export class MonthlyDonateService {
 
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功獲取百元贊助記錄"
+        "成功獲取百元贊助記錄",
       );
       return result;
     } catch (error) {
@@ -100,7 +100,7 @@ export class MonthlyDonateService {
       const result = await this.base.handleDirectusResponse(
         response,
         "成功創建百元贊助人",
-        { ...logContext, duration }
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -136,7 +136,7 @@ export class MonthlyDonateService {
     try {
       const startTime = Date.now();
       const logContext = {
-        service: "MonthlyDonateService",
+        service: this.serviceName,
         operation: "updateMonthlyDonate",
         method: "PATCH",
         startTime: startTime,
@@ -160,7 +160,7 @@ export class MonthlyDonateService {
       const result = await this.base.handleDirectusResponse(
         response,
         "成功更新百元贊助人",
-        { ...logContext, duration }
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -193,7 +193,7 @@ export class MonthlyDonateService {
 
     const startTime = Date.now();
     const logContext = {
-      service: "MonthlyDonateService",
+      service: this.serviceName,
       operation: "deleteMonthlyDonate",
       method: "DELETE",
       startTime: startTime,
@@ -213,7 +213,7 @@ export class MonthlyDonateService {
       const result = await this.base.handleDirectusResponse(
         response,
         "成功刪除百元贊助人",
-        { ...logContext, duration }
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -269,7 +269,7 @@ export class MonthlyDonateService {
       // ✅ 在 try 外面定義，確保 catch 也能訪問
       const startTime = Date.now();
       const logContext = {
-        service: "MonthlyDonateService",
+        service: this.serviceName,
         operation: "addDonateItem",
         method: "PATCH",
         startTime: startTime,
@@ -289,7 +289,7 @@ export class MonthlyDonateService {
       const result = await this.base.handleDirectusResponse(
         response,
         "成功添加贊助項目",
-        { ...logContext, duration }
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -330,7 +330,7 @@ export class MonthlyDonateService {
 
       // 找到要更新的項目索引
       const itemIndex = donateItems.findIndex(
-        (item) => item.donateItemsId === donateItemsId
+        (item) => item.donateItemsId === donateItemsId,
       );
 
       if (itemIndex === -1) {
@@ -356,7 +356,7 @@ export class MonthlyDonateService {
 
       const startTime = Date.now();
       const logContext = {
-        service: "MonthlyDonateService",
+        service: this.serviceName,
         operation: "updateDonateItem",
         method: "PATCH",
         startTime: startTime,
@@ -376,12 +376,12 @@ export class MonthlyDonateService {
       const result = await this.base.handleDirectusResponse(
         response,
         "成功更新贊助項目",
-        { ...logContext, duration }
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
       console.error(
-        `❌ 更新贊助項目失敗 (ID: ${recordId} donateItemsId: ${donateItemsId}) ${error.message}`
+        `❌ 更新贊助項目失敗 (ID: ${recordId} donateItemsId: ${donateItemsId}) ${error.message}`,
       );
       this.handleMonthlyDonateError(error);
     }
@@ -412,7 +412,7 @@ export class MonthlyDonateService {
       let donateItems = currentDonate.donateItems || [];
 
       let currentDelete = donateItems.find(
-        (item) => item.donateItemsId === itemsId
+        (item) => item.donateItemsId === itemsId,
       );
       if (!currentDelete) {
         return {
@@ -424,7 +424,7 @@ export class MonthlyDonateService {
       // 過濾掉要刪除的項目
       const originalLength = donateItems.length;
       donateItems = donateItems.filter(
-        (item) => item.donateItemsId !== itemsId
+        (item) => item.donateItemsId !== itemsId,
       );
 
       if (originalLength === donateItems.length) {
@@ -441,7 +441,7 @@ export class MonthlyDonateService {
 
       const startTime = Date.now();
       const logContext = {
-        service: "MonthlyDonateService",
+        service: this.serviceName,
         operation: "deleteDonateItem",
         method: "PATCH",
         startTime: startTime,
@@ -461,12 +461,12 @@ export class MonthlyDonateService {
       const result = await this.base.handleDirectusResponse(
         response,
         "成功刪除贊助項目",
-        { ...logContext, duration }
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
       console.error(
-        `❌ 刪除贊助項目失敗: (ID: ${recordId}, itemsId: ${itemsId}) ${error.message}`
+        `❌ 刪除贊助項目失敗: (ID: ${recordId}, itemsId: ${itemsId}) ${error.message}`,
       );
       return this.handleMonthlyDonateError(error);
     }
@@ -514,7 +514,7 @@ export class MonthlyDonateService {
 
         const result = await this.base.handleDirectusResponse(
           response,
-          "成功獲取百元贊助記錄"
+          "成功獲取百元贊助記錄",
         );
         return result;
       }
@@ -552,7 +552,7 @@ export class MonthlyDonateService {
 
         const result = await this.base.handleDirectusResponse(
           response,
-          "成功獲取百元贊助記錄列表"
+          "成功獲取百元贊助記錄列表",
         );
         return result;
       }
@@ -589,7 +589,7 @@ export class MonthlyDonateService {
 
         const result = await this.base.handleDirectusResponse(
           response,
-          "成功獲取百元贊助記錄列表"
+          "成功獲取百元贊助記錄列表",
         );
         return result;
       }
@@ -626,7 +626,7 @@ export class MonthlyDonateService {
 
         const result = await this.base.handleDirectusResponse(
           response,
-          "成功獲取百元贊助記錄列表"
+          "成功獲取百元贊助記錄列表",
         );
         return result;
       }
@@ -667,7 +667,7 @@ export class MonthlyDonateService {
 
         const result = await this.base.handleDirectusResponse(
           response,
-          "成功獲取百元贊助統計"
+          "成功獲取百元贊助統計",
         );
         return result;
       }

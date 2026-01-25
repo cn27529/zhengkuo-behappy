@@ -1,10 +1,12 @@
 // src/stores/joinRecordStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { joinRecordService } from "../services/joinRecordService.js";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
+import { DateUtils } from "../utils/dateUtils.js";
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
+import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
 import { authService } from "../services/authService.js";
 import mockData from "../data/mock_registrations.json";
-import { registrationService } from "../services/registrationService.js";
 
 /**
  * 參加記錄的 Pinia store，管理參加記錄的狀態與操作。
@@ -127,7 +129,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
     // 計算總金額
     const totalAmount = calculateTotalAmount(items);
-
+    const createISOTime = DateUtils.getCurrentISOTime();
     // 建立完整的參與記錄
     return {
       registrationId: registration.id, // registration.id
@@ -154,10 +156,10 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       paymentDate: "", // 付款日期
       paymentNotes: "", // 付款備註
       notes: "", // 備註
-      createdAt: new Date().toISOString(),
-      createdBy: getCurrentUser(),
-      updatedAt: new Date().toISOString(),
-      //updatedUser: getCurrentUser(),
+      createdAt: createISOTime,
+      createdUser: getCurrentUser(),
+      updatedAt: "",
+      updatedUser: "",
     };
   };
 
@@ -210,6 +212,8 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
    * @param {*} notes
    */
   const recordPayment = (record, method, amount, notes = "") => {
+    const createISOTime = DateUtils.getCurrentISOTime();
+
     record.paidAmount += amount;
     record.paymentMethod = method;
     record.paymentDate = new Date().toISOString();
@@ -222,7 +226,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       record.paymentState = "partial";
     }
 
-    record.updatedAt = new Date().toISOString();
+    record.updatedAt = createISOTime;
     record.updatedUser = getCurrentUser();
   };
 
@@ -261,7 +265,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     isLoading.value = true;
     error.value = null;
     try {
-      if (joinRecordService.base.getIsMock()) {
+      if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 資料");
         allJoinRecords.value = mockData;
         return {
@@ -273,7 +277,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
       // TODO: 未來串接 API
       console.log("📄 從服務器獲取參加記錄資料...");
-      const result = await joinRecordService.getAllParticipationRecords(params);
+      const result = await serviceAdapter.getAllParticipationRecords(params);
       if (result.success) {
         allJoinRecords.value = result.data || [];
         console.log(`✅ 成功獲取 ${allJoinRecords.value.length} 筆參加記錄`);
@@ -297,7 +301,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const getAllRegistrations = async () => {
     try {
       isLoading.value = true;
-      const result = await registrationService.getAllRegistrations();
+      const result = await serviceAdapter.getAllRegistrations();
       if (result.success) {
         return result.data;
       } else {
@@ -380,12 +384,15 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
     isLoading.value = true;
     try {
+      // 獲取當前用戶信息
+
       const payload = {
         registrationId: selectedRegistration.value.id,
         activityId: selectedRegistration.value.activityId,
         items: selections.value,
         personLampTypes: personLampTypes.value, // 每個人的燈種選擇
         total: totalAmount.value,
+        user_created: getCurrentUser(),
         createdAt: new Date().toISOString(),
       };
 
