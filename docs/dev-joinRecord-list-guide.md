@@ -1,5 +1,8 @@
 # 活動參加記錄查詢功能開發指南
 
+## kiro ai
+我要生成"活動參加的記錄查詢"，我們依照 ./client\src\views\RegistrationList.vue, ./client\src\stores\registrationQueryStore.js 的模版與代碼的建構的方式進行，命名為 JoinRecordList.vue, joinRecordQueryStore.js，列表的＂操作＂：列印表單，刪除，不用實作 等下一階段再實現，注意 分頁, storeToRefs, 調試信息 的實現。查詢條件是 state, items 欄位。列表的資料你可以參考 ./client\src\data\mock_participation_records.json 檔案，有問題可以與我討論。
+
 ## 概述
 
 本功能實現了"活動參加記錄查詢"，允許用戶查詢和管理已提交的活動參加記錄。
