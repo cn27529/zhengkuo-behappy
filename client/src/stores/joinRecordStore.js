@@ -393,7 +393,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   };
 
   // 送出存檔
-  const submitRecord = async () => {
+  const submitRecord = async (activityId = null) => {
     isLoading.value = true;
     error.value = null;
 
@@ -404,7 +404,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
       const payload = {
         registrationId: selectedRegistration.value.id,
-        activityId: selectedRegistration.value.activityId,
+        activityId: activityId || -1, // 使用傳入的 activityId，如果沒有則使用 -1
         items: selections.value,
         personLampTypes: personLampTypes.value, // 每個人的燈種選擇
         total: totalAmount.value,

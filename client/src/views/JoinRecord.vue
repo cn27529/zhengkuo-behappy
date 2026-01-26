@@ -20,6 +20,9 @@
           <p>篩選後數量: {{ filteredRegistrations.length }}</p>
           <p>已保存記錄: {{ savedRecords.length }}</p>
           <p>搜尋關鍵字: "{{ searchKeyword }}"</p>
+          <p>活動總數: {{ allActivities.length }}</p>
+          <p>可用活動數: {{ availableActivities.length }}</p>
+          <p>選中活動ID: {{ selectedActivityId }}</p>
           
           <div v-if="selectedRegistration"><strong>已選擇登記:</strong></div>
           <p v-if="selectedRegistration">
@@ -28,6 +31,14 @@
             祖先數: {{ selectedRegistration.salvation?.ancestors?.length || 0 }}<br>
             消災數: {{ selectedRegistration.blessing?.persons?.length || 0 }}<br>
             陽上數: {{ selectedRegistration.salvation?.survivors?.length || 0 }}
+          </p>
+
+          <div v-if="selectedActivity"><strong>已選擇活動:</strong></div>
+          <p v-if="selectedActivity">
+            活動名稱: {{ selectedActivity.name }}<br>
+            活動日期: {{ formatActivityDate(selectedActivity.date) }}<br>
+            活動類型: {{ getActivityTypeLabel(selectedActivity.item_type) }}<br>
+            活動狀態: {{ getActivityStateLabel(selectedActivity.state) }}
           </p>
           
           <div><strong>選擇狀態:</strong></div>
@@ -46,6 +57,7 @@
           
           <hr />
         </div>
+        
         <!-- 已選擇的祈福登記 -->
         <div class="form-section" v-if="selectedRegistration">
           <h6>已選擇祈福登記：{{ selectedRegistration.formName }}</h6>
@@ -71,6 +83,68 @@
                 {{ selectedRegistration.contact.otherRelationship }}
               </span>
             </span>
+          </div>
+
+          <!-- 活動選擇區塊 -->
+          <div class="activity-selection-section">
+            <h6>選擇活動</h6>
+            <div class="activity-selector">
+              <el-select
+                v-model="selectedActivityId"
+                placeholder="請選擇活動"
+                size="large"
+                style="width: 100%"
+                clearable
+                filterable
+                @change="handleActivityChange"
+              >
+                <el-option
+                  v-for="activity in availableActivities"
+                  :key="activity.id"
+                  :label="`${activity.name} - ${formatActivityDate(activity.date)}`"
+                  :value="activity.id"
+                >
+                  <div class="activity-option">
+                    <div class="activity-name">{{ activity.name }}</div>
+                    <div class="activity-details">
+                      <span class="activity-date">{{ formatActivityDate(activity.date) }}</span>
+                      <span class="activity-type">{{ getActivityTypeLabel(activity.item_type) }}</span>
+                      <span class="activity-location">{{ activity.location }}</span>
+                    </div>
+                  </div>
+                </el-option>
+              </el-select>
+            </div>
+            
+            <!-- 選中活動的詳細信息 -->
+            <div v-if="selectedActivity" class="selected-activity-info">
+              <div class="activity-info-card">
+                <div class="activity-header">
+                  <h6>{{ selectedActivity.name }}</h6>
+                  <el-tag :type="getActivityStateType(selectedActivity.state)">
+                    {{ getActivityStateLabel(selectedActivity.state) }}
+                  </el-tag>
+                </div>
+                <div class="activity-details-grid">
+                  <div class="detail-item">
+                    <span class="label">日期：</span>
+                    <span>{{ formatActivityDate(selectedActivity.date) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">地點：</span>
+                    <span>{{ selectedActivity.location }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">類型：</span>
+                    <span>{{ getActivityTypeLabel(selectedActivity.item_type) }}</span>
+                  </div>
+                  <div class="detail-item" v-if="selectedActivity.description">
+                    <span class="label">說明：</span>
+                    <span>{{ selectedActivity.description }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -542,13 +616,16 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordStore } from "../stores/joinRecordStore.js";
+import { useActivityStore } from "../stores/activityStore.js";
 import { storeToRefs } from "pinia";
 
 const joinRecordStore = useJoinRecordStore();
+const activityStore = useActivityStore();
 
 // 狀態管理
 const searchKeyword = ref("");
 const isDev = computed(() => authService.getCurrentDev());
+const selectedActivityId = ref(null);
 
 const {
   activityConfigs,
@@ -560,6 +637,11 @@ const {
   totalAmount,
 } = storeToRefs(joinRecordStore);
 
+const {
+  activities: allActivities,
+  loading: activitiesLoading,
+} = storeToRefs(activityStore);
+
 // 載入祈福登記資料
 const loadRegistrationData = async () => {
   try {
@@ -569,6 +651,83 @@ const loadRegistrationData = async () => {
     console.error("載入祈福登記資料失敗:", error);
     ElMessage.error("載入祈福登記資料失敗", error);
   }
+};
+
+// 載入活動資料
+const loadActivityData = async () => {
+  try {
+    await activityStore.getAllActivities();
+    console.log(`載入活動資料成功：${allActivities.value.length} 筆`);
+  } catch (error) {
+    console.error("載入活動資料失敗:", error);
+    ElMessage.error("載入活動資料失敗");
+  }
+};
+
+// 可用的活動列表（只顯示即將到來和進行中的活動）
+const availableActivities = computed(() => {
+  return allActivities.value.filter(activity => 
+    activity.state === 'upcoming' || activity.state === 'ongoing'
+  ).sort((a, b) => new Date(a.date) - new Date(b.date));
+});
+
+// 選中的活動
+const selectedActivity = computed(() => {
+  if (!selectedActivityId.value) return null;
+  return allActivities.value.find(activity => activity.id === selectedActivityId.value);
+});
+
+// 活動選擇變更處理
+const handleActivityChange = (activityId) => {
+  console.log('選擇活動:', activityId);
+  if (activityId) {
+    const activity = allActivities.value.find(a => a.id === activityId);
+    if (activity) {
+      console.log('選中活動:', activity.name);
+    }
+  }
+};
+
+// 格式化活動日期
+const formatActivityDate = (dateString) => {
+  if (!dateString) return '';
+  return DateUtils.formatDateLong(dateString);
+};
+
+// 獲取活動類型標籤
+const getActivityTypeLabel = (itemType) => {
+  const typeLabels = {
+    ceremony: '法會',
+    lecture: '講座',
+    meditation: '禪修',
+    festival: '節慶',
+    volunteer: '志工',
+    pudu: '普度',
+    other: '其他'
+  };
+  return typeLabels[itemType] || itemType;
+};
+
+// 獲取活動狀態標籤
+const getActivityStateLabel = (state) => {
+  const stateLabels = {
+    upcoming: '即將開始',
+    ongoing: '進行中',
+    completed: '已完成',
+    cancelled: '已取消'
+  };
+  return stateLabels[state] || state;
+};
+
+// 獲取活動狀態類型（用於 el-tag）
+const getActivityStateType = (state) => {
+  const stateTypes = {
+    upcoming: 'warning',
+    ongoing: 'success',
+    completed: 'info',
+    cancelled: 'danger'
+  };
+  return stateTypes[state] || 'info';
 };
 
 // 計算篩選後的祈福登記
@@ -668,6 +827,7 @@ const handleReset = async () => {
       type: "warning",
     });
     joinRecordStore.resetSelections();
+    selectedActivityId.value = null;
     ElMessage.success("選擇已重置");
   } catch (err) {
     if (err !== "cancel") {
@@ -680,6 +840,11 @@ const handleReset = async () => {
 const handleSubmitRecord = async () => {
   if (!selectedRegistration.value) {
     ElMessage.warning("請選擇祈福登記");
+    return;
+  }
+
+  if (!selectedActivityId.value) {
+    ElMessage.warning("請選擇活動");
     return;
   }
 
@@ -700,7 +865,8 @@ const handleSubmitRecord = async () => {
   }
 
   try {
-    const result = await joinRecordStore.submitRecord();
+    // 修改 joinRecordStore 的 submitRecord 方法，傳遞 activityId
+    const result = await joinRecordStore.submitRecord(selectedActivityId.value);
     const createdISOTime = DateUtils.getCurrentISOTime();
 
     if (result.success) {
@@ -711,6 +877,7 @@ const handleSubmitRecord = async () => {
 
       // 重置選擇
       joinRecordStore.resetSelections();
+      selectedActivityId.value = null;
     } else {
       ElMessage.error("保存失敗，請稍後再試");
     }
@@ -741,6 +908,7 @@ onMounted(async () => {
   console.log("Store 狀態:", joinRecordStore);
   isDev.value = authService.getCurrentDev();
   await loadRegistrationData(); // 載入真實報名資料
+  await loadActivityData(); // 載入活動資料
 });
 </script>
 
@@ -800,6 +968,108 @@ onMounted(async () => {
   background: #f8f9fa;
   border-radius: 6px;
   margin-top: 0.5rem;
+}
+
+/* 活動選擇區塊 */
+.activity-selection-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.activity-selection-section h6 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.activity-selector {
+  margin-bottom: 1rem;
+}
+
+.activity-option {
+  padding: 0.5rem 0;
+}
+
+.activity-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.activity-details {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.activity-date {
+  color: #007bff;
+}
+
+.activity-type {
+  background: #e9ecef;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.activity-location {
+  color: #666;
+}
+
+/* 選中活動信息卡片 */
+.selected-activity-info {
+  margin-top: 1rem;
+}
+
+.activity-info-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.activity-header h6 {
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.activity-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.detail-item .label {
+  font-weight: 600;
+  color: #666;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.detail-item span:last-child {
+  color: #333;
+  word-break: break-word;
 }
 
 .no-selection {
