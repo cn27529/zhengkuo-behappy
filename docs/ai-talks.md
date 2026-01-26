@@ -12,4 +12,8 @@
 
 接下來要調適 client\src\views\JoinRecord.vue，將　<!-- 已選擇的祈福登記 -->　區塊加入活動設置（）提供使用者單選一個"活動"，將"活動"的 id 綁定activityId，你能理解嗎。
 
-調適 ./client/src/stores/joinRecordQueryStore.js，將查詢到的資料將 label 等於 "陽上人" 不顯示在列表， 因為 "陽上人" 的 price 是 0 沒有金額，為資料結構參見 ./client/src/data/mock_participation_records.json。
+列表顯示調適 ./client/src/stores/joinRecordQueryStore.js，將查詢到的資料將 label 等於 "陽上人" 不顯示列表， 因為 "陽上人" 的 price 是 0 沒有金額，為資料結構參見 ./client/src/data/mock_participation_records.json。
+
+目前「活動參加」 ./client/src/views/JoinRecord.vue, ./client/src/stores/joinRecordStore.js 功能己經可以運行了，但是我目前有些信息是缺少的想要添加進來，我想先了解你的思路。在 ./docs/dev-joinRecord-guide.md 是我們對功能的規劃，在 ./client/src/data/mock_participation_records.json 是我們的資料設計， 生成「活動參加」的資料我們會參照的資料來源還有「祈福登記」資料與文件說明 ./client/src/data/mock_registrations.json, ./docs/mock-registrations.md。「活動設置」資料 ./client/src/data/mock_activities.json。「活動參加」是由「祈福登記」資料與「活動設置」資料組成的，我想調適在 ./client/src/stores/joinRecordStore.js 的 const payload 添加 payload.contact 也就是「聯絡人」 registration.contact 記錄當前 registration.contact 這是方便日後查詢用的沒有要追溯過去。在 soruceData 添加地址也就是「祖先」 registration.salvation.address, registration.blessing.address，我明白這可能會影響 activityConfigs 的 source，記錄當前 blessing.address 這是方便日後查詢用的沒有要追溯過去，這些改變也需要改變 participationRecordDB 的 schema。代碼我看了很久哈哈，想先與你確認我們還不用急著執行。你將思路生成 ./docs/dev-joinRecord-modify-guide.md 我來看看分析。
+
+依據 ./docs/dev-joinRecord-modify-guide.md 的說明，如果 sourceData 照舊我們添加 sourceAddress 是否調適更方便。
