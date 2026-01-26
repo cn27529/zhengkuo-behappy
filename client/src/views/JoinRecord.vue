@@ -61,6 +61,33 @@
           <p>總金額: ${{ totalAmount }}</p>
           <p>載入狀態: {{ isLoading ? "載入中..." : "已完成" }}</p>
 
+          <div><strong>已保存記錄:</strong></div>
+          <div v-if="savedRecords.length === 0">
+            <p>尚無保存記錄</p>
+          </div>
+          <div v-else>
+            <div
+              v-for="(record, index) in savedRecords"
+              :key="index"
+              style="
+                margin-bottom: 10px;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+              "
+            >
+              <p>
+                <strong>記錄 {{ index + 1 }}:</strong>
+              </p>
+              <p>聯絡人: {{ record.contact.name }}</p>
+              <p>總金額: ${{ record.totalAmount }}</p>
+              <p>保存時間: {{ record.createdAt }}</p>
+              <p>
+                {{ JSON.stringify(record.items) }}
+              </p>
+            </div>
+          </div>
+
           <hr />
         </div>
 
@@ -591,10 +618,10 @@
               class="saved-record-item"
             >
               <div class="record-header">
-                <span class="record-name">{{ record.contactName }}</span>
+                <span class="record-name">{{ record.contact.name }}</span>
                 <span class="record-amount">${{ record.totalAmount }}</span>
               </div>
-              <div class="record-time">{{ formatDate(record.savedAt) }}</div>
+              <div class="record-time">{{ formatDate(record.createdAt) }}</div>
             </div>
           </div>
         </div>
