@@ -19,11 +19,25 @@ const routes = [
   {
     path: "/td-clock",
     component: () => import("../views/TianganDizhiClock12.vue"),
-  },
+  },  
   {
     path: "/join-record",
     title: "活動參加",
     component: () => import("../views/JoinRecord.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/join-record-list",
+    title: "參加記錄查詢",
+    name: "JoinRecordList",
+    component: () => import("../views/JoinRecordList.vue"),
+    beforeEnter: (to, from, next) => {
+      console.log("🚪 進入 JoinRecordList 路由");
+      const pageStateStore = usePageStateStore();
+      pageStateStore.clearPageState("joinRecord");
+      console.log("🚪 清除頁面狀態");
+      next();
+    },
     meta: { requiresAuth: true },
   },
   {

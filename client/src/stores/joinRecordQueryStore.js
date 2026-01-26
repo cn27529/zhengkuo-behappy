@@ -1,0 +1,299 @@
+// src/stores/joinRecordQueryStore.js
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import { serviceAdapter } from "../adapters/serviceAdapter.js";
+import mockParticipationRecords from "../data/mock_participation_records.json";
+import { useConfigStore } from "./configStore.js";
+import { useAuthStore } from "./authStore.js";
+
+// 活動參加記錄查詢的 Pinia store，管理查詢狀態與操作。
+export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
+  const configStore = useConfigStore();
+  const authStore = useAuthStore();
+
+  // 狀態定義 - Pinia 會自動保持這些狀態
+  const searchResults = ref([]);
+  const searchQuery = ref("");
+  const isLoading = ref(false);
+  const hasSearched = ref(false);
+
+  // 分頁狀態
+  const currentPage = ref(1);
+  const pageSize = ref(10);
+
+  // 查詢條件狀態
+  const stateFilter = ref("");
+  const itemsFilter = ref("");
+
+  // 使用 computed 保持響應式
+  const stateOptions = computed(() => [
+    { value: "", label: "全部狀態" },
+    { value: "confirmed", label: "已確認" },
+    { value: "pending", label: "待處理" },
+    { value: "cancelled", label: "已取消" },
+  ]);
+
+  const itemTypeOptions = computed(() => [
+    { value: "", label: "全部項目" },
+    { value: "chaodu", label: "超度/超薦" },
+    { value: "diandeng", label: "點燈" },
+    { value: "qifu", label: "消災祈福" },
+    { value: "xiaozai", label: "固定消災" },
+    { value: "survivors", label: "陽上人" },
+    { value: "pudu", label: "中元普度" },
+  ]);
+
+  const queryJoinRecordData = async (queryData) => {
+    isLoading.value = true;
+    try {
+      // 檢查是否為 mock 模式
+      if (serviceAdapter.getIsMock()) {
+        console.warn("⚠️ 當前模式不是 directus，使用 Mock 數據");
+
+        if (!mockParticipationRecords || mockParticipationRecords.length === 0) {
+          console.error("Mock 數據為空或未找到");
+          return {
+            success: false,
+            message: "Mock 數據為空或未找到",
+            data: [],
+          };
+        }
+
+        let filteredData = getFilteredData(queryData, mockParticipationRecords);
+
+        console.log("🔍 Mock 模式最終 filteredData:", filteredData);
+        console.log("🔍 filteredData 類型:", typeof filteredData);
+        console.log("🔍 filteredData 是陣列嗎?", Array.isArray(filteredData));
+        console.log("Mock 查詢結果:", filteredData.length, "筆資料");
+
+        // 更新狀態
+        searchResults.value = filteredData;
+        hasSearched.value = true;
+
+        console.log("🔍 Store 更新後 searchResults:", searchResults.value);
+        console.log("🔍 Store searchResults 長度:", searchResults.value.length);
+
+        return {
+          success: true,
+          message: `找到 ${filteredData.length} 筆資料 (Mock 模式)`,
+          data: filteredData,
+        };
+      }
+
+      // Directus 模式
+      console.log("開始查詢參加記錄數據...", queryData);
+
+      const params = {
+        sort: "-createdAt",
+      };
+
+      // 使用 serviceAdapter 的參加記錄查詢方法
+      const result = await serviceAdapter.getAllParticipationRecords(params);
+
+      if (result.success) {
+        console.log("後端查詢成功:", result.data?.length || 0, "筆資料");
+
+        let filteredData = getFilteredData(queryData, result.data);
+
+        // 更新狀態
+        searchResults.value = filteredData;
+        hasSearched.value = true;
+
+        return {
+          success: true,
+          message: result.message || `找到 ${filteredData?.length || 0} 筆資料`,
+          data: filteredData || [],
+        };
+      } else {
+        console.error("後端查詢失敗:", result.message);
+
+        // 清空結果
+        searchResults.value = [];
+        hasSearched.value = true;
+
+        return {
+          success: false,
+          message: result.message || "查詢失敗",
+          data: [],
+        };
+      }
+    } catch (error) {
+      console.error("參加記錄查詢錯誤:", error);
+
+      // 清空結果
+      searchResults.value = [];
+      hasSearched.value = true;
+
+      return {
+        success: false,
+        message: "查詢過程中發生錯誤",
+        data: [],
+      };
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const getFilteredData = (queryData, data) => {
+    console.log("🎯 開始過濾參加記錄數據...");
+
+    if (!data || !Array.isArray(data)) {
+      console.warn("⚠️ 數據不是陣列或為空");
+      return [];
+    }
+
+    let filteredData = [...data];
+
+    // 1. 狀態過濾
+    if (queryData.state && queryData.state.trim()) {
+      const stateQuery = queryData.state.trim().toLowerCase();
+      console.log("🔍 狀態過濾:", stateQuery);
+      filteredData = filteredData.filter((item) => {
+        return item.state && item.state.toLowerCase() === stateQuery;
+      });
+      console.log("狀態過濾後筆數:", filteredData.length);
+    }
+
+    // 2. 項目類型過濾
+    if (queryData.items && queryData.items.trim()) {
+      const itemsQuery = queryData.items.trim().toLowerCase();
+      console.log("🔍 項目類型過濾:", itemsQuery);
+      filteredData = filteredData.filter((item) => {
+        if (!item.items || !Array.isArray(item.items)) return false;
+        
+        return item.items.some((itemDetail) => {
+          return itemDetail.type && itemDetail.type.toLowerCase().includes(itemsQuery);
+        });
+      });
+      console.log("項目類型過濾後筆數:", filteredData.length);
+    }
+
+    // 3. 通用搜尋過濾
+    if (queryData.query && queryData.query.trim()) {
+      const query = queryData.query.trim().toLowerCase();
+      console.log("🔍 通用搜索關鍵字:", query);
+
+      filteredData = filteredData.filter((item, index) => {
+        console.log(`--- 檢查第 ${index} 筆資料 ---`);
+        let matchFound = false;
+
+        // 檢查 registrationId
+        if (item.registrationId && item.registrationId.toString().includes(query)) {
+          console.log("✅ 匹配登記ID");
+          matchFound = true;
+        }
+
+        // 檢查項目內容
+        if (item.items && Array.isArray(item.items)) {
+          item.items.forEach((itemDetail, i) => {
+            // 檢查項目標籤
+            if (itemDetail.label && itemDetail.label.toLowerCase().includes(query)) {
+              console.log(`✅ 匹配項目標籤 ${i}:`, itemDetail.label);
+              matchFound = true;
+            }
+
+            // 檢查來源數據中的姓名
+            if (itemDetail.sourceData && Array.isArray(itemDetail.sourceData)) {
+              itemDetail.sourceData.forEach((sourceItem, j) => {
+                if (sourceItem.name && sourceItem.name.toLowerCase().includes(query)) {
+                  console.log(`✅ 匹配來源數據姓名 ${i}-${j}:`, sourceItem.name);
+                  matchFound = true;
+                }
+                if (sourceItem.surname && sourceItem.surname.toLowerCase().includes(query)) {
+                  console.log(`✅ 匹配來源數據姓氏 ${i}-${j}:`, sourceItem.surname);
+                  matchFound = true;
+                }
+              });
+            }
+          });
+        }
+
+        // 檢查備註
+        if (item.notes && item.notes.toLowerCase().includes(query)) {
+          console.log("✅ 匹配備註");
+          matchFound = true;
+        }
+
+        console.log(
+          `第 ${index} 筆資料匹配結果:`,
+          matchFound ? "✅ 匹配" : "❌ 不匹配",
+        );
+        return matchFound;
+      });
+    }
+
+    console.log("🎯 過濾完成，結果:", filteredData);
+    return filteredData;
+  };
+
+  // 狀態管理方法
+  const clearSearch = () => {
+    searchResults.value = [];
+    searchQuery.value = "";
+    stateFilter.value = "";
+    itemsFilter.value = "";
+    hasSearched.value = false;
+    isLoading.value = false;
+  };
+
+  const setSearchQuery = (query) => {
+    searchQuery.value = query;
+  };
+
+  const setStateFilter = (state) => {
+    stateFilter.value = state;
+  };
+
+  const setItemsFilter = (items) => {
+    itemsFilter.value = items;
+  };
+
+  const isMobile = () => {
+    if (
+      authStore.isMobileDevice() ||
+      authStore.detectDeviceType() === "mobile"
+    ) {
+      console.log("手機裝置");
+      return true;
+    } else {
+      console.log("非手機裝置");
+      return false;
+    }
+  };
+
+  return {
+    // 狀態
+    searchResults,
+    searchQuery,
+    isLoading,
+    hasSearched,
+    currentPage,
+    pageSize,
+    stateFilter,
+    itemsFilter,
+
+    // 計算屬性
+    stateOptions,
+    itemTypeOptions,
+
+    // 方法
+    queryJoinRecordData,
+    clearSearch,
+    setSearchQuery,
+    setStateFilter,
+    setItemsFilter,
+    getFilteredData,
+    isMobile,
+
+    // 分頁方法
+    setCurrentPage: (page) => {
+      currentPage.value = page;
+    },
+    setPageSize: (size) => {
+      pageSize.value = size;
+    },
+    resetPagination: () => {
+      currentPage.value = 1;
+    },
+  };
+});

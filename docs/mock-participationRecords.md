@@ -1,6 +1,7 @@
 # 參加記錄資料結構說明
+檔案位置：`/src/data/mock_participation_records.json`
 
-## 概述
+## 概要
 
 參加記錄 (Participation Records) 是寺廟管理系統中記錄信眾參加各種宗教活動的核心資料結構，包含活動項目選擇、費用計算、付款狀態、收據開立及會計處理等完整資訊。
 
@@ -121,7 +122,7 @@
 | 項目代碼 | 項目名稱 | 單價 | 資料來源 | 說明 |
 |---------|---------|------|----------|------|
 | `chaodu` | 超度/超薦 | 1000 | salvation.ancestors | 祖先超度 |
-| `survivors` | 陽上人 | 300 | salvation.survivors | 陽上人登記 |
+| `survivors` | 陽上人 | 0 | salvation.survivors | 陽上人登記 |
 | `qifu` | 消災祈福 | 300 | blessing.persons | 消災祈福 |
 | `diandeng` | 點燈 | 600 | blessing.persons | 點燈祈福 |
 | `xiaozai` | 固定消災 | 100 | blessing.persons | 固定消災 |

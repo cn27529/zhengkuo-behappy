@@ -75,8 +75,6 @@ CREATE TABLE joinRecordDB (
 
 ### 2.1 基礎結構
 
-參考 `monthlyDonateService.js` 的架構：
-
 ```javascript
 export class JoinRecordService {
   constructor() {
@@ -97,7 +95,7 @@ async createJoinRecord(recordData) {
     ...recordData,
     joinRecordId: await generateGitHashBrowser(),
     createdAt: DateUtils.getCurrentISOTime(),
-    updatedAt: DateUtils.getCurrentISOTime()
+    updatedAt: null
   };
 
   // Mock/Directus 模式處理
