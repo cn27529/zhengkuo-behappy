@@ -9,3 +9,6 @@
 請查找 getIsMock() 方法，查看 ./client/src/stores/ 的全部檔案，確認是否都有套用 getIsMock()，並且 getIsMock() 是 true 的條件下所有資料都是來自 ./client/src/data/mock\_???.json 以及是 true 的條件下都不會往後端的 service層做調用。如果有請告訴我，我必須讓它們一致。
 
 確認所有使用 import.meta.env.XXX 環境變數的檔案都有適當的使用，避免 truthy 陷阱。檔案有 ./client/src/adapters/serviceAdapter.js, ./client/src/components/DevTools.vue, ./client/src/config/serviceConfig.js, ./client/src/config/supabase.js, ./client/src/rustServices/baseRustService.js, ./client/src/services/baseService.js
+
+接下來要調適 client\src\views\JoinRecord.vue，將　<!-- 已選擇的祈福登記 -->　區塊加入活動設置（）提供使用者單選一個"活動"，將"活動"的 id 綁定activityId，你能理解嗎。
+
