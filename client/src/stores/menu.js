@@ -99,16 +99,6 @@ export const useMenuStore = defineStore("menu", () => {
       enabled: true,
     },
     {
-      id: 9,
-      name: "活動參加",
-      path: "/join-record",
-      icon: "📋",
-      component: "JoinRecord",
-      requiredAuth: true,
-      order: 9,
-      enabled: true,
-    },
-    {
       id: 10,
       name: "參加記錄查詢",
       path: "/join-record-list",

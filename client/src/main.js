@@ -25,14 +25,14 @@ const pinia = createPinia();
 if (import.meta.env.VITE_AUTH_MODE === "mock") {
   console.warn("🚨 注意！");
   console.warn(
-    "⚠️ 當前使用前端模擬認證，密碼為明碼儲存！正式環境請切換到後端模式並移除密碼硬編碼。"
+    "⚠️ 當前使用前端模擬認證，密碼為明碼儲存！正式環境請切換到後端模式並移除密碼硬編碼。",
   );
   //console.log("🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01");
 }
 
-if (import.meta.env.VITE_DEV === "true") {
+if (authService.getCurrentDev()) {
   console.warn(
-    "🔧 調試信息已打開！使用 window.authService.setMode() 來切換模式"
+    "🔧 調試信息已打開！使用 window.authService.setMode() 來切換模式",
   );
 }
 
@@ -92,7 +92,7 @@ if (typeof router !== "undefined") {
     try {
       const menuStore = useMenuStore();
       const found = menuStore.availableMenuItems.find(
-        (m) => m.path === to.path || (to.name && m.name === to.name)
+        (m) => m.path === to.path || (to.name && m.name === to.name),
       );
       if (found && found.name) menuTitle = found.name;
     } catch (e) {
