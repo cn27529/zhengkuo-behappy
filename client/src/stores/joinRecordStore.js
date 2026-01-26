@@ -414,11 +414,21 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     try {
       // 獲取當前用戶信息
 
+      // 將 selections 轉換為完整的 items 結構
+      const processedItems = [];
+      Object.keys(selections.value).forEach((activityType) => {
+        const selectedItems = selections.value[activityType];
+        if (selectedItems && selectedItems.length > 0) {
+          const item = createParticipationItem(activityType, selectedItems);
+          processedItems.push(item);
+        }
+      });
+
       const payload = {
         registrationId: selectedRegistration.value.id,
         activityId: activityId || -1, // 使用傳入的 activityId，如果沒有則使用 -1
         contact: selectedRegistration.value.contact, // 新增聯絡人資訊
-        items: selections.value,
+        items: processedItems, // 使用處理過的完整 items
         personLampTypes: personLampTypes.value, // 每個人的燈種選擇
         total: totalAmount.value,
         totalAmount: totalAmount.value,

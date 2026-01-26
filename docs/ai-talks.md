@@ -14,6 +14,47 @@
 
 列表顯示調適 ./client/src/stores/joinRecordQueryStore.js，將查詢到的資料將 label 等於 "陽上人" 不顯示列表， 因為 "陽上人" 的 price 是 0 沒有金額，為資料結構參見 ./client/src/data/mock_participation_records.json。
 
+## 添加聯絡人資訊 (payload.contact) items 添加地址(sourceAddress)
+
 目前「活動參加」 ./client/src/views/JoinRecord.vue, ./client/src/stores/joinRecordStore.js 功能己經可以運行了，但是我目前有些信息是缺少的想要添加進來，我想先了解你的思路。在 ./docs/dev-joinRecord-guide.md 是我們對功能的規劃，在 ./client/src/data/mock_participation_records.json 是我們的資料設計， 生成「活動參加」的資料我們會參照的資料來源還有「祈福登記」資料與文件說明 ./client/src/data/mock_registrations.json, ./docs/mock-registrations.md。「活動設置」資料 ./client/src/data/mock_activities.json。「活動參加」是由「祈福登記」資料與「活動設置」資料組成的，我想調適在 ./client/src/stores/joinRecordStore.js 的 const payload 添加 payload.contact 也就是「聯絡人」 registration.contact 記錄當前 registration.contact 這是方便日後查詢用的沒有要追溯過去。在 soruceData 添加地址也就是「祖先」 registration.salvation.address, registration.blessing.address，我明白這可能會影響 activityConfigs 的 source，記錄當前 blessing.address 這是方便日後查詢用的沒有要追溯過去，這些改變也需要改變 participationRecordDB 的 schema。代碼我看了很久哈哈，想先與你確認我們還不用急著執行。你將思路生成 ./docs/dev-joinRecord-modify-guide.md 我來看看分析。
 
 依據 ./docs/dev-joinRecord-modify-guide.md 的說明，如果 sourceData 照舊我們添加 sourceAddress 是否調適更方便。
+
+我來更動 table schema，你先實現store，「活動參加」、「參加記錄查詢」運行沒問題後我們再接service層，這段期間我會改為mock模式運行，我們需要先將 client/src/data/mock_participation_records.json 內容調適。
+
+添加聯絡人資訊 (payload.contact) items 添加地址(sourceAddress)
+
+將 ./client/src/views/JoinRecord.vue 的 <!-- 調試信息 -->區塊加入 store 的 savedRecords ，方便查看數據。
+
+## 今日完成總結 ✅
+
+### 新增欄位
+
+- **contact** - 聯絡人資訊（來自 registration.contact）
+- **sourceAddress** - 地址資訊（根據項目類型自動對應）
+
+### 完成的修改
+
+#### 1. Store 層
+
+- joinRecordStore.js - createParticipationItem 添加 sourceAddress 邏輯
+- submitRecord 中 payload 添加 contact 欄位
+- 修復 items 處理邏輯，使用完整的 createParticipationItem 結果
+
+#### 2. Service 層
+
+- joinRecordService.js - 傳送 contact 欄位
+- rustJoinRecordService.js - 傳送 contact 欄位
+- 簡化邏輯，直接使用 store 處理好的 items
+
+#### 3. Mock 資料
+
+- mock_participation_records.json - 所有記錄添加 contact 和 sourceAddress
+
+#### 4. 資料庫
+
+- 新增 contact 欄位，已有資料
+
+### 明日待辦
+
+- 調整「參加記錄查詢」功能，支援新欄位的顯示和搜尋

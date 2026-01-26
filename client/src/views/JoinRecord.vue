@@ -27,15 +27,17 @@
           <p>可用活動數: {{ availableActivities.length }}</p>
           <p>選中活動ID: {{ selectedActivityId }}</p>
 
-          <div v-if="selectedRegistration"><strong>已選擇登記:</strong></div>
+          <div v-if="selectedRegistration">
+            <p>選中登記ID:{{ selectedRegistration.id }}</p>
+          </div>
           <p v-if="selectedRegistration">
-            ID: {{ selectedRegistration.id }}<br />
-            聯絡人: {{ selectedRegistration.contact.name }}<br />
-            祖先數: {{ selectedRegistration.salvation?.ancestors?.length || 0
+            --聯絡人: {{ selectedRegistration.contact.name }}<br />
+            --祖先數: {{ selectedRegistration.salvation?.ancestors?.length || 0
             }}<br />
-            消災數: {{ selectedRegistration.blessing?.persons?.length || 0
+            --消災數: {{ selectedRegistration.blessing?.persons?.length || 0
             }}<br />
-            陽上數: {{ selectedRegistration.salvation?.survivors?.length || 0 }}
+            --陽上數:
+            {{ selectedRegistration.salvation?.survivors?.length || 0 }}
           </p>
 
           <div v-if="selectedActivity"><strong>已選擇活動:</strong></div>

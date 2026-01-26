@@ -307,59 +307,13 @@ export class JoinRecordService {
     try {
       console.log("Service 傳送資料:", payload);
 
-      // 構建 items 陣列
-      const items = [];
-
-      // 處理各種活動類型的選擇
-      if (payload.items) {
-        Object.keys(payload.items).forEach((activityType) => {
-          const selectedItems = payload.items[activityType];
-          if (selectedItems && selectedItems.length > 0) {
-            // 根據活動類型獲取配置
-            const activityConfig = this.getActivityConfig(activityType);
-            if (!activityConfig) return;
-
-            // 處理點燈的特殊情況（有燈種選擇）
-            if (activityType === "diandeng" && payload.personLampTypes) {
-              const processedSourceData = selectedItems.map((person) => ({
-                ...person,
-                lampType: payload.personLampTypes[person.id] || "guangming",
-                lampTypeLabel: this.getLampTypeLabel(
-                  payload.personLampTypes[person.id] || "guangming",
-                ),
-              }));
-
-              items.push({
-                type: activityType,
-                label: activityConfig.label,
-                price: activityConfig.price,
-                quantity: selectedItems.length,
-                subtotal: activityConfig.price * selectedItems.length,
-                source: activityConfig.source,
-                sourceData: processedSourceData,
-              });
-            } else {
-              // 其他活動類型
-              items.push({
-                type: activityType,
-                label: activityConfig.label,
-                price: activityConfig.price,
-                quantity: selectedItems.length,
-                subtotal: activityConfig.price * selectedItems.length,
-                source: activityConfig.source,
-                sourceData: selectedItems,
-              });
-            }
-          }
-        });
-      }
-
       // 轉換為 participationRecordDB 格式
       const recordData = {
         registrationId: payload.registrationId || -1,
         activityId: payload.activityId || -1,
+        contact: payload.contact || null, // 新增聯絡人資訊
         state: "confirmed",
-        items: items, // 直接傳遞陣列，讓 Directus 處理 JSON 序列化
+        items: payload.items || [], // 直接使用 store 處理好的 items（已包含 sourceAddress）
         totalAmount: payload.total || 0,
         finalAmount: payload.total || 0,
         notes: payload.notes || "",

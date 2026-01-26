@@ -7,13 +7,14 @@
 ## 修改需求分析
 
 ### 1. 添加聯絡人資訊 (payload.contact)
+
 - **來源**: `registration.contact`
 - **目的**: 記錄當前登記表的聯絡人資訊，方便日後查詢
-- **資料結構**: 
+- **資料結構**:
   ```json
   {
     "name": "唐建國999",
-    "phone": "07-44556677", 
+    "phone": "07-44556677",
     "mobile": "0980-999-444",
     "relationship": "娘家",
     "otherRelationship": ""
@@ -21,7 +22,8 @@
   ```
 
 ### 2. 添加地址資訊到 sourceData
-- **祖先地址**: `registration.salvation.address` 
+
+- **祖先地址**: `registration.salvation.address`
 - **消災地址**: `registration.blessing.address`
 - **目的**: 在各項目的 sourceData 中記錄對應地址，方便日後查詢
 - **影響範圍**: 所有使用 sourceData 的活動項目
@@ -31,6 +33,7 @@
 ### 1. joinRecordStore.js 修改點
 
 #### A. payload 結構調整
+
 ```javascript
 const payload = {
   registrationId: selectedRegistration.value.id,
@@ -45,20 +48,24 @@ const payload = {
 ```
 
 #### B. createParticipationItem 函數調整
+
 需要修改此函數以添加 sourceAddress 欄位：
 
 ```javascript
 const createParticipationItem = (type, sourceData) => {
   const config = activityConfigs.value[type];
-  
+
   // 根據項目類型決定地址來源
   let sourceAddress = "";
-  if (config.source === "salvation.ancestors" || config.source === "salvation.survivors") {
+  if (
+    config.source === "salvation.ancestors" ||
+    config.source === "salvation.survivors"
+  ) {
     sourceAddress = selectedRegistration.value?.salvation?.address || "";
   } else if (config.source === "blessing.persons") {
     sourceAddress = selectedRegistration.value?.blessing?.address || "";
   }
-  
+
   return {
     type,
     label,
@@ -76,6 +83,7 @@ const createParticipationItem = (type, sourceData) => {
 ### 2. activityConfigs 影響評估
 
 現有的 `activityConfigs` 結構不需要大幅修改，但需要確保：
+
 - `source` 欄位正確對應到資料來源
 - 地址資訊根據 `source` 類型自動添加到對應的 sourceData
 
@@ -94,21 +102,25 @@ ALTER TABLE participation_records ADD COLUMN contact JSON;
 ## 實作步驟建議
 
 ### 階段一：Store 層修改
+
 1. 修改 `submitRecord` 函數中的 `payload` 結構
 2. 調整 `createParticipationItem` 函數以包含地址資訊
 3. 確保地址資訊正確對應到不同的項目類型
 
 ### 階段二：資料驗證
+
 1. 驗證聯絡人資訊完整性
 2. 確保地址資訊正確添加到 sourceData
 3. 測試不同項目類型的地址對應關係
 
 ### 階段三：資料庫調整
+
 1. 更新 participationRecordDB schema
 2. 調整相關的 API 接口
 3. 更新 mock 資料格式
 
 ### 階段四：查詢功能調整
+
 1. 更新 `joinRecordQueryStore.js` 以支援聯絡人和地址查詢
 2. 調整查詢介面以顯示新增的資訊
 3. 更新過濾和搜尋邏輯
@@ -116,6 +128,7 @@ ALTER TABLE participation_records ADD COLUMN contact JSON;
 ## 資料結構變更
 
 ### 修改前的 payload
+
 ```json
 {
   "registrationId": 105,
@@ -129,6 +142,7 @@ ALTER TABLE participation_records ADD COLUMN contact JSON;
 ```
 
 ### 修改後的 payload
+
 ```json
 {
   "registrationId": 105,
@@ -136,7 +150,7 @@ ALTER TABLE participation_records ADD COLUMN contact JSON;
   "contact": {
     "name": "唐建國999",
     "phone": "07-44556677",
-    "mobile": "0980-999-444", 
+    "mobile": "0980-999-444",
     "relationship": "娘家",
     "otherRelationship": ""
   },
@@ -151,6 +165,7 @@ ALTER TABLE participation_records ADD COLUMN contact JSON;
 ### sourceData 結構變更
 
 #### 修改前的 item 結構
+
 ```json
 {
   "type": "qifu",
@@ -171,6 +186,7 @@ ALTER TABLE participation_records ADD COLUMN contact JSON;
 ```
 
 #### 修改後的 item 結構
+
 ```json
 {
   "type": "qifu",
@@ -194,18 +210,22 @@ ALTER TABLE participation_records ADD COLUMN contact JSON;
 ## 注意事項
 
 ### 1. 向後相容性
+
 - 確保修改不會影響現有的參加記錄查詢功能
 - 考慮舊資料的處理方式（沒有聯絡人和地址資訊的記錄）
 
 ### 2. 效能考量
+
 - 地址資訊會增加資料量，需要評估對查詢效能的影響
 - 考慮是否需要為聯絡人和地址建立索引
 
 ### 3. 資料一致性
+
 - 確保聯絡人資訊與原始登記表保持一致
 - 地址資訊需要根據項目類型正確對應
 
 ### 4. 測試重點
+
 - 測試不同項目類型的地址對應關係
 - 驗證聯絡人資訊的完整性
 - 確保查詢功能正常運作
@@ -213,25 +233,30 @@ ALTER TABLE participation_records ADD COLUMN contact JSON;
 ## 相關檔案清單
 
 ### 需要修改的檔案
+
 - `./client/src/stores/joinRecordStore.js` - 主要修改點
 - `./client/src/stores/joinRecordQueryStore.js` - 查詢功能調整
 - `./client/src/data/mock_participation_records.json` - 測試資料更新
 - 資料庫 schema 檔案 - 新增聯絡人欄位
 
 ### 需要測試的檔案
+
 - `./client/src/views/JoinRecord.vue` - 確保介面正常顯示
 - `./client/src/views/JoinRecordList.vue` - 確保查詢功能正常
 
 ## 風險評估
 
 ### 低風險
+
 - 添加聯絡人資訊到 payload（純新增，不影響現有邏輯）
 
-### 中風險  
+### 中風險
+
 - 添加 sourceAddress 欄位（需要確保查詢功能能正確處理新欄位）
 - 資料庫 schema 調整（需要考慮資料遷移）
 
 ### 建議
+
 - 先在開發環境進行完整測試
 - 考慮分階段部署，先部署 Store 層修改，再進行資料庫調整
 - 保留舊資料的相容性處理機制
