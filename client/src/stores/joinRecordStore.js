@@ -255,11 +255,11 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     }));
   };
 
-  const allRegistrations = ref([]); // 所有祈福登記
+  const allRegistrations = ref(mockRegistrationData || []); // 所有祈福登記
   const selectedRegistration = ref(null); // 選擇的祈福登記
   const isLoading = ref(false);
   const error = ref(null);
-  const allJoinRecords = ref([]); // 所有參加記錄
+  const allJoinRecords = ref(mockJoinRecordData || []); // 所有參加記錄
   const savedRecords = ref([]); // 獲取已保存的參加記錄
 
   // 取得所有參加記錄
@@ -306,6 +306,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，成功加載 Mock 資料");
+        allRegistrations.value = mockRegistrationData;
         return mockRegistrationData;
       }
 
@@ -315,10 +316,12 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         return result.data;
       } else {
         console.warn("獲取祈福登記資料失敗，使用 Mock 資料");
+        allRegistrations.value = mockRegistrationData;
         return mockRegistrationData;
       }
     } catch (error) {
       console.error("取得所有祈福登記資料失敗:", error);
+      allRegistrations.value = mockRegistrationData; // 失敗時回退到 Mock 資料
       return mockRegistrationData; // 失敗時回退到 Mock 資料
     } finally {
       isLoading.value = false;

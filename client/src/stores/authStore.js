@@ -2,6 +2,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authService } from "../services/authService.js";
+import { serviceAdapter } from "../adapters/serviceAdapter.js";
 import userData from "../data/auth_user.json";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -63,7 +64,7 @@ export const useAuthStore = defineStore("auth", () => {
         if (result.data.refreshToken) {
           sessionStorage.setItem(
             "auth-refresh-token",
-            result.data.refreshToken
+            result.data.refreshToken,
           );
         }
 
@@ -122,7 +123,7 @@ export const useAuthStore = defineStore("auth", () => {
         if (result.data.refreshToken) {
           sessionStorage.setItem(
             "auth-refresh-token",
-            result.data.refreshToken
+            result.data.refreshToken,
           );
         }
 
@@ -171,7 +172,7 @@ export const useAuthStore = defineStore("auth", () => {
         if (result.data.refreshToken) {
           sessionStorage.setItem(
             "auth-refresh-token",
-            result.data.refreshToken
+            result.data.refreshToken,
           );
         }
 
@@ -203,7 +204,7 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       // 這裡可以實現檢查用戶是否啟用了 2FA 的邏輯
       // 目前先返回模擬數據
-      if (authService.getCurrentMode() === "mock") {
+      if (serviceAdapter.getIsMock()) {
         // 模擬檢查：特定用戶需要 2FA
         const usersRequire2FA = ["admin", "zkuser01"];
         return {
@@ -273,7 +274,7 @@ export const useAuthStore = defineStore("auth", () => {
 
           console.log(
             "auth store 從本地存儲恢復用戶會話:",
-            userInfo.value.displayName
+            userInfo.value.displayName,
           );
 
           // 重新啟動閒置檢測
@@ -293,7 +294,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   // 檢查用戶是否存在（用於提供登入建議）
   const checkUserExists = async (username) => {
-    if (authService.getCurrentMode() === "mock") {
+    if (serviceAdapter.getIsMock()) {
       // 在 mock 模式下，我們可以直接檢查本地數據
       return userData.default.some((user) => user.username === username);
     }
@@ -319,7 +320,7 @@ export const useAuthStore = defineStore("auth", () => {
       throw new Error("權限不足");
     }
 
-    if (authService.getCurrentMode() === "mock") {
+    if (serviceAdapter.getIsMock()) {
       return userData.default;
     } else {
       // 後端模式下需要呼叫 API
@@ -369,7 +370,7 @@ export const useAuthStore = defineStore("auth", () => {
     const isMobile = {
       // User Agent 檢測
       byUA: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        userAgent
+        userAgent,
       ),
       // 屏幕尺寸 + 觸控
       byScreen:
