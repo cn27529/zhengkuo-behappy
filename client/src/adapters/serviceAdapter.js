@@ -46,14 +46,15 @@ class ServiceAdapter {
   constructor() {
     // 注意：環境變數都是字符串！"false" 是 truthy，必須用 === "true" 判斷
     /*
-    * 環境變數在 JavaScript 中都是字符串，這是個常見的陷阱：
+    * 環境變數在 JavaScript 中都是字符串，這是個常見的 truthy 陷阱：
       - VITE_MOCK=true → "true" (truthy)
       - VITE_MOCK=false → "false" (也是 truthy！)
       - VITE_MOCK= → undefined (falsy)
       所以必須用 === "true" 來正確判斷。
     */
-    this.isDev = import.meta.env.VITE_DEV === "true";
     this.isMock = import.meta.env.VITE_MOCK === "true";
+    // 是否為開發模式
+    this.isDev = import.meta.env.VITE_DEV === "true";
     this.backend = import.meta.env.VITE_BACKEND_TYPE || "directus";
     this.autoFallback = import.meta.env.VITE_AUTO_FALLBACK === "true";
     this.fallbackBackend = "directus";

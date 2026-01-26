@@ -6,12 +6,11 @@ export class BaseService {
   constructor() {
     console.log(`BaseService 初始化: 當前模式為 ${this.mode}`);
 
-    this.isMock = import.meta.env.VITE_MOCK === true;
+    this.isMock = import.meta.env.VITE_MOCK === "true";
+    // 是否為開發模式
+    this.isDev = import.meta.env.VITE_DEV === "true";
     // 可切換模式: 'mock' 或 'backend'
     this.mode = import.meta.env.VITE_AUTH_MODE || "mock";
-
-    // 是否為開發模式
-    this.isDev = import.meta.env.VITE_DEV || false;
 
     this.apiBaseUrl =
       import.meta.env.VITE_API_BASE_URL || "http://localhost:8055";
@@ -88,7 +87,7 @@ export class BaseService {
       }
 
       // 開發模式下在控制台顯示
-      if (import.meta.env.VITE_DEV) {
+      if (this.isDev) {
         this.displayLogInConsole(sanitizedLog);
       }
     } catch (error) {

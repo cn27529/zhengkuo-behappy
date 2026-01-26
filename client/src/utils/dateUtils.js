@@ -3,7 +3,7 @@
 const DEFAULT_CONFIG = Object.freeze({
   timeZone: import.meta.env.VITE_APP_TIMEZONE || "Asia/Taipei",
   locale: import.meta.env.VITE_APP_LOCALE || "zh-TW",
-  hour12: import.meta.env.VITE_APP_HOUR12 !== "false",
+  hour12: import.meta.env.VITE_APP_HOUR12 === "true",
 });
 
 const createFormatter = (options) => (dateString) => {

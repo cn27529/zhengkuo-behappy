@@ -22,7 +22,7 @@ export class AuthService {
       console.warn(
         "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
           "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
-          "🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01"
+          "🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01",
       );
 
       return this.mockLogin(username, password);
@@ -213,7 +213,7 @@ export class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Directus 錯誤: ${response.status}`
+          errorData.message || `Directus 錯誤: ${response.status}`,
         );
       }
 
@@ -305,7 +305,7 @@ export class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Directus 錯誤: ${response.status}`
+          errorData.message || `Directus 錯誤: ${response.status}`,
         );
       }
 
@@ -385,7 +385,7 @@ export class AuthService {
         }
 
         throw new Error(
-          errorData.message || `2FA 驗證錯誤: ${response.status}`
+          errorData.message || `2FA 驗證錯誤: ${response.status}`,
         );
       }
 
@@ -790,17 +790,17 @@ export class AuthService {
 
   getCurrentDev() {
     if (sessionStorage.getItem("auth-dev") !== null) {
-      this.base.isDev = sessionStorage.getItem("auth-dev");
+      this.base.isDev = sessionStorage.getItem("auth-dev") === "true";
     }
     //console.log("getCurrentDev: ", this.base.isDev);
-    return this.base.isDev === "true" ? true : false;
+    return this.base.isDev;
   }
 
   // 修改 setDev 方法 ,用於設置是否為開發模式，可開啟調試模式
   setDev(isDev) {
     console.log("setDev: ", isDev);
-    this.base.isDev = isDev;
-    sessionStorage.setItem("auth-dev", isDev);
+    this.base.isDev = Boolean(isDev);
+    sessionStorage.setItem("auth-dev", String(isDev));
     console.log(`🔧 開發模式已切換為: ${this.base.isDev} `);
   }
 

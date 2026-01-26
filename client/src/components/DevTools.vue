@@ -36,7 +36,8 @@
 import { ref, computed, onMounted } from "vue";
 import { authService } from "../services/authService.js";
 
-const isDev = computed(() => import.meta.env.VITE_DEV || false);
+//const isDev = computed(() => authService.getCurrentDev());
+const isDev = computed(() => authService.getCurrentDev());
 const envMode = import.meta.env.VITE_MODE || "development";
 const appVersion = import.meta.env.VITE_APP_VERSION || "unknown";
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";

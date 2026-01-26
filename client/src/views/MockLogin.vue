@@ -48,7 +48,7 @@
 import { ref, computed, onMounted } from "vue";
 import { authService } from "../services/authService.js";
 
-const isDevelopment = computed(() => import.meta.env.VITE_DEV === "true");
+const isDevelopment = computed(() => authService.getCurrentDev());
 const currentAuthMode = ref(import.meta.env.VITE_AUTH_MODE || "directus");
 
 const testAccounts = [

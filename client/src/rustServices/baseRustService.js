@@ -6,7 +6,9 @@ export class BaseRustService {
   constructor() {
     console.log(`BaseRustService 初始化: 當前模式為 ${this.mode}`);
 
-    this.isMock = import.meta.env.VITE_MOCK === true;
+    this.isMock = import.meta.env.VITE_MOCK === "true";
+    // 是否為開發模式
+    this.isDev = import.meta.env.VITE_DEV === "true";
     this.rustApiBaseUrl =
       import.meta.env.VITE_RUST_API_URL || "http://localhost:3000";
     this.mode = import.meta.env.VITE_RUST_MODE || "rust";
@@ -111,7 +113,7 @@ export class BaseRustService {
       }
 
       // 開發模式控制台顯示
-      if (import.meta.env.VITE_DEV) {
+      if (this.isDev) {
         this.displayLogInConsole(sanitizedLog);
       }
     } catch (error) {
