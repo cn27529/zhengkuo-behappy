@@ -76,6 +76,17 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     let price = config.price;
     let label = config.label;
 
+    // 根據項目類型決定地址來源
+    let sourceAddress = "";
+    if (
+      config.source === "salvation.ancestors" ||
+      config.source === "salvation.survivors"
+    ) {
+      sourceAddress = selectedRegistration.value?.salvation?.address || "";
+    } else if (config.source === "blessing.persons") {
+      sourceAddress = selectedRegistration.value?.blessing?.address || "";
+    }
+
     // 如果是點燈且有選擇燈種，使用燈種價格和標籤
     if (type === "diandeng" && lampTypeSelection.value) {
       const lampType = config.lampTypes[lampTypeSelection.value];
@@ -91,6 +102,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       subtotal: price * sourceData.length, // 小計
       source: config.source, // 資料來源：registration
       sourceData: sourceData, // 當下選擇的：registration
+      sourceAddress: sourceAddress, // 對應的地址
       ...(type === "diandeng" &&
         lampTypeSelection.value && {
           lampType: lampTypeSelection.value,
@@ -405,9 +417,11 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       const payload = {
         registrationId: selectedRegistration.value.id,
         activityId: activityId || -1, // 使用傳入的 activityId，如果沒有則使用 -1
+        contact: selectedRegistration.value.contact, // 新增聯絡人資訊
         items: selections.value,
         personLampTypes: personLampTypes.value, // 每個人的燈種選擇
         total: totalAmount.value,
+        totalAmount: totalAmount.value,
         createdUser: getCurrentUser(),
         createdAt: createISOTime,
       };
@@ -421,7 +435,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
           totalAmount: totalAmount.value,
           savedAt: createISOTime,
         };
-        savedRecords.value.unshift(forUI);
+        savedRecords.value.unshift(payload);
         // 頁面顯示用----------------------
 
         console.warn("⚠️ 當前模式不是 directus，無法創建數據");
@@ -444,7 +458,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
           totalAmount: totalAmount.value,
           savedAt: createISOTime,
         };
-        savedRecords.value.unshift(forUI);
+        savedRecords.value.unshift(result.data);
         // 頁面顯示用----------------------
 
         return result;
