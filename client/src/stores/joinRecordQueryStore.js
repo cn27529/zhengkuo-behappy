@@ -50,7 +50,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不是 directus，使用 Mock 數據");
 
-        if (!mockParticipationRecords || mockParticipationRecords.length === 0) {
+        if (
+          !mockParticipationRecords ||
+          mockParticipationRecords.length === 0
+        ) {
           console.error("Mock 數據為空或未找到");
           return {
             success: false,
@@ -160,9 +163,12 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
       console.log("🔍 項目類型過濾:", itemsQuery);
       filteredData = filteredData.filter((item) => {
         if (!item.items || !Array.isArray(item.items)) return false;
-        
+
         return item.items.some((itemDetail) => {
-          return itemDetail.type && itemDetail.type.toLowerCase().includes(itemsQuery);
+          return (
+            itemDetail.type &&
+            itemDetail.type.toLowerCase().includes(itemsQuery)
+          );
         });
       });
       console.log("項目類型過濾後筆數:", filteredData.length);
@@ -178,7 +184,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
         let matchFound = false;
 
         // 檢查 registrationId
-        if (item.registrationId && item.registrationId.toString().includes(query)) {
+        if (
+          item.registrationId &&
+          item.registrationId.toString().includes(query)
+        ) {
           console.log("✅ 匹配登記ID");
           matchFound = true;
         }
@@ -187,7 +196,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
         if (item.items && Array.isArray(item.items)) {
           item.items.forEach((itemDetail, i) => {
             // 檢查項目標籤
-            if (itemDetail.label && itemDetail.label.toLowerCase().includes(query)) {
+            if (
+              itemDetail.label &&
+              itemDetail.label.toLowerCase().includes(query)
+            ) {
               console.log(`✅ 匹配項目標籤 ${i}:`, itemDetail.label);
               matchFound = true;
             }
@@ -195,12 +207,24 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
             // 檢查來源數據中的姓名
             if (itemDetail.sourceData && Array.isArray(itemDetail.sourceData)) {
               itemDetail.sourceData.forEach((sourceItem, j) => {
-                if (sourceItem.name && sourceItem.name.toLowerCase().includes(query)) {
-                  console.log(`✅ 匹配來源數據姓名 ${i}-${j}:`, sourceItem.name);
+                if (
+                  sourceItem.name &&
+                  sourceItem.name.toLowerCase().includes(query)
+                ) {
+                  console.log(
+                    `✅ 匹配來源數據姓名 ${i}-${j}:`,
+                    sourceItem.name,
+                  );
                   matchFound = true;
                 }
-                if (sourceItem.surname && sourceItem.surname.toLowerCase().includes(query)) {
-                  console.log(`✅ 匹配來源數據姓氏 ${i}-${j}:`, sourceItem.surname);
+                if (
+                  sourceItem.surname &&
+                  sourceItem.surname.toLowerCase().includes(query)
+                ) {
+                  console.log(
+                    `✅ 匹配來源數據姓氏 ${i}-${j}:`,
+                    sourceItem.surname,
+                  );
                   matchFound = true;
                 }
               });
@@ -221,6 +245,15 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
         return matchFound;
       });
     }
+
+    // 4. 過濾掉 "陽上人" 項目（price 為 0）
+    filteredData = filteredData.map((record) => {
+      if (record.items && Array.isArray(record.items)) {
+        const filteredItems = record.items.filter(item => item.label !== "陽上人");
+        return { ...record, items: filteredItems };
+      }
+      return record;
+    }).filter(record => record.items && record.items.length > 0);
 
     console.log("🎯 過濾完成，結果:", filteredData);
     return filteredData;

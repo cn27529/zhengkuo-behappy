@@ -16,7 +16,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋登記ID、姓名、項目"
+              placeholder="搜尋登記ID、參加姓名、參加項目"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -70,7 +70,9 @@
               清空
             </el-button>
           </div>
-          <p class="search-hint">💡 提示: 可依狀態、項目類型或關鍵字搜尋相關記錄</p>
+          <p class="search-hint">
+            💡 提示: 可依狀態、項目類型或關鍵字搜尋相關記錄
+          </p>
         </div>
       </div>
     </div>
@@ -119,7 +121,7 @@
         <el-table-column
           prop="registrationId"
           label="登記ID"
-          min-width="100"
+          min-width="50"
           align="center"
         >
           <template #default="{ row }">
@@ -181,12 +183,22 @@
         <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
             <el-tooltip content="列印表單" placement="top">
-              <el-button type="success" circle @click="handlePrint(row)" disabled>
+              <el-button
+                type="success"
+                circle
+                @click="handlePrint(row)"
+                disabled
+              >
                 🖨️
               </el-button>
             </el-tooltip>
             <el-tooltip content="刪除記錄" placement="top">
-              <el-button type="danger" circle @click="handleDelete(row)" disabled>
+              <el-button
+                type="danger"
+                circle
+                @click="handleDelete(row)"
+                disabled
+              >
                 🗑️
               </el-button>
             </el-tooltip>
@@ -318,7 +330,7 @@ const handleSearch = async () => {
   const query = searchQuery.value ? searchQuery.value.trim() : "";
   const state = stateFilter.value ? stateFilter.value.trim() : "";
   const items = itemsFilter.value ? itemsFilter.value.trim() : "";
-  
+
   console.log("開始搜尋參加記錄,查詢條件:", { query, state, items });
 
   try {
@@ -387,9 +399,9 @@ const handleDelete = async (item) => {
         confirmButtonText: "確定刪除",
         cancelButtonText: "取消",
         type: "warning",
-      }
+      },
     );
-    
+
     ElMessage.info(`刪除功能尚未實作 - 記錄ID: ${item.id}`);
   } catch {
     ElMessage.info("已取消刪除");
@@ -421,7 +433,7 @@ const formatDateLong = (dateString) => {
 onMounted(() => {
   console.log("✅ JoinRecordList 組件已載入");
   console.log("清除頁面狀態");
-  pageStateStore.clearPageState("joinRecord");  
+  pageStateStore.clearPageState("joinRecord");
 });
 </script>
 

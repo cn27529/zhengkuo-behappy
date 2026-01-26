@@ -71,6 +71,7 @@
   - items[].sourceData[].name
   - items[].sourceData[].surname
   - notes
+- **陽上人過濾**: 自動過濾掉 `label` 為 "陽上人" 的項目（因為 `price` 為 0）
 
 ## 資料結構
 

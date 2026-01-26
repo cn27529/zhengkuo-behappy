@@ -12,3 +12,4 @@
 
 接下來要調適 client\src\views\JoinRecord.vue，將　<!-- 已選擇的祈福登記 -->　區塊加入活動設置（）提供使用者單選一個"活動"，將"活動"的 id 綁定activityId，你能理解嗎。
 
+調適 ./client/src/stores/joinRecordQueryStore.js，將查詢到的資料將 label 等於 "陽上人" 不顯示在列表， 因為 "陽上人" 的 price 是 0 沒有金額，為資料結構參見 ./client/src/data/mock_participation_records.json。

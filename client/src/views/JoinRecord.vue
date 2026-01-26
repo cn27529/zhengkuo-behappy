@@ -2,7 +2,7 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>活動參加記錄</h2>
+      <h2>活動參加</h2>
     </div>
 
     <div class="activity-record-container">
@@ -10,7 +10,10 @@
       <div class="left-panel">
         <!-- 調試信息 -->
         <div v-if="isDev" class="debug-panel">
-          <el-button type="success" class="dev-button" @click="loadRegistrationData"
+          <el-button
+            type="success"
+            class="dev-button"
+            @click="loadRegistrationData"
             >🔄 重新載入資料</el-button
           >
           <h4>🔧 調試信息</h4>
@@ -23,71 +26,48 @@
           <p>活動總數: {{ allActivities.length }}</p>
           <p>可用活動數: {{ availableActivities.length }}</p>
           <p>選中活動ID: {{ selectedActivityId }}</p>
-          
+
           <div v-if="selectedRegistration"><strong>已選擇登記:</strong></div>
           <p v-if="selectedRegistration">
-            ID: {{ selectedRegistration.id }}<br>
-            聯絡人: {{ selectedRegistration.contact.name }}<br>
-            祖先數: {{ selectedRegistration.salvation?.ancestors?.length || 0 }}<br>
-            消災數: {{ selectedRegistration.blessing?.persons?.length || 0 }}<br>
+            ID: {{ selectedRegistration.id }}<br />
+            聯絡人: {{ selectedRegistration.contact.name }}<br />
+            祖先數: {{ selectedRegistration.salvation?.ancestors?.length || 0
+            }}<br />
+            消災數: {{ selectedRegistration.blessing?.persons?.length || 0
+            }}<br />
             陽上數: {{ selectedRegistration.salvation?.survivors?.length || 0 }}
           </p>
 
           <div v-if="selectedActivity"><strong>已選擇活動:</strong></div>
           <p v-if="selectedActivity">
-            活動名稱: {{ selectedActivity.name }}<br>
-            活動日期: {{ formatActivityDate(selectedActivity.date) }}<br>
-            活動類型: {{ getActivityTypeLabel(selectedActivity.item_type) }}<br>
+            活動名稱: {{ selectedActivity.name }}<br />
+            活動日期: {{ formatActivityDate(selectedActivity.date) }}<br />
+            活動類型: {{ getActivityTypeLabel(selectedActivity.item_type)
+            }}<br />
             活動狀態: {{ getActivityStateLabel(selectedActivity.state) }}
           </p>
-          
+
           <div><strong>選擇狀態:</strong></div>
           <p>
-            超度: {{ selections.chaodu.length }}<br>
-            陽上: {{ selections.survivors.length }}<br>
-            點燈: {{ selections.diandeng.length }}<br>
-            祈福: {{ selections.qifu.length }}<br>
-            消災: {{ selections.xiaozai.length }}<br>
+            超度: {{ selections.chaodu.length }}<br />
+            陽上: {{ selections.survivors.length }}<br />
+            點燈: {{ selections.diandeng.length }}<br />
+            祈福: {{ selections.qifu.length }}<br />
+            消災: {{ selections.xiaozai.length }}<br />
             普度: {{ selections.pudu.length }}
           </p>
-          
+
           <div><strong>金額計算:</strong></div>
           <p>總金額: ${{ totalAmount }}</p>
-          <p>載入狀態: {{ isLoading ? '載入中...' : '已完成' }}</p>
-          
+          <p>載入狀態: {{ isLoading ? "載入中..." : "已完成" }}</p>
+
           <hr />
         </div>
-        
-        <!-- 已選擇的祈福登記 -->
-        <div class="form-section" v-if="selectedRegistration">
-          <h6>已選擇祈福登記：{{ selectedRegistration.formName }}</h6>
-          <div class="selected-info">
-            <span
-              ><strong>聯絡人：</strong
-              >{{ selectedRegistration.contact.name }}</span
-            >
-            <span
-              ><strong style="display: none">手機/電話：</strong
-              >{{
-                selectedRegistration.contact.mobile ||
-                selectedRegistration.contact.phone
-              }}</span
-            >
-            <span
-              ><strong>關係：</strong>
-              {{ selectedRegistration.contact.relationship }}
-              <span
-                class="price-tag"
-                v-if="selectedRegistration.contact.otherRelationship"
-              >
-                {{ selectedRegistration.contact.otherRelationship }}
-              </span>
-            </span>
-          </div>
 
+        <div class="form-section" v-if="selectedRegistration">
           <!-- 活動選擇區塊 -->
           <div class="activity-selection-section">
-            <h6>選擇活動</h6>
+            <!-- <h6>選擇活動</h6> -->
             <div class="activity-selector">
               <el-select
                 v-model="selectedActivityId"
@@ -107,17 +87,27 @@
                   <div class="activity-option">
                     <div class="activity-name">{{ activity.name }}</div>
                     <div class="activity-details">
-                      <span class="activity-date">{{ formatActivityDate(activity.date) }}</span>
-                      <span class="activity-type">{{ getActivityTypeLabel(activity.item_type) }}</span>
-                      <span class="activity-location">{{ activity.location }}</span>
+                      <span class="activity-date">{{
+                        formatActivityDate(activity.date)
+                      }}</span>
+                      <span class="activity-type">{{
+                        getActivityTypeLabel(activity.item_type)
+                      }}</span>
+                      <span class="activity-location">{{
+                        activity.location
+                      }}</span>
                     </div>
                   </div>
                 </el-option>
               </el-select>
             </div>
-            
+
             <!-- 選中活動的詳細信息 -->
-            <div v-if="selectedActivity" class="selected-activity-info">
+            <div
+              v-if="selectedActivity"
+              class="selected-activity-info"
+              style="display: none"
+            >
               <div class="activity-info-card">
                 <div class="activity-header">
                   <h6>{{ selectedActivity.name }}</h6>
@@ -134,17 +124,52 @@
                     <span class="label">地點：</span>
                     <span>{{ selectedActivity.location }}</span>
                   </div>
-                  <div class="detail-item">
+                  <div class="detail-item" style="display: none">
                     <span class="label">類型：</span>
-                    <span>{{ getActivityTypeLabel(selectedActivity.item_type) }}</span>
+                    <span>{{
+                      getActivityTypeLabel(selectedActivity.item_type)
+                    }}</span>
                   </div>
-                  <div class="detail-item" v-if="selectedActivity.description">
+                  <div
+                    class="detail-item"
+                    style="display: none"
+                    v-if="selectedActivity.description"
+                  >
                     <span class="label">說明：</span>
                     <span>{{ selectedActivity.description }}</span>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- 已選擇的祈福登記 -->
+          <div class="selected-info">
+            <el-tooltip :content="selectedRegistration.id" placement="left">
+              <span>
+                <!-- <strong>聯絡人：</strong> -->
+                {{ selectedRegistration.contact.name }}</span
+              >
+            </el-tooltip>
+
+            <span>
+              <!-- <strong>手機/電話：</strong> -->
+              {{
+                selectedRegistration.contact.mobile ||
+                selectedRegistration.contact.phone
+              }}
+            </span>
+
+            <span>
+              <!-- <strong>關係：</strong> -->
+              {{ selectedRegistration.contact.relationship }}
+              <span
+                class="price-tag"
+                v-if="selectedRegistration.contact.otherRelationship"
+              >
+                {{ selectedRegistration.contact.otherRelationship }}
+              </span>
+            </span>
           </div>
         </div>
 
@@ -637,16 +662,16 @@ const {
   totalAmount,
 } = storeToRefs(joinRecordStore);
 
-const {
-  activities: allActivities,
-  loading: activitiesLoading,
-} = storeToRefs(activityStore);
+const { activities: allActivities, loading: activitiesLoading } =
+  storeToRefs(activityStore);
 
 // 載入祈福登記資料
 const loadRegistrationData = async () => {
   try {
     await joinRecordStore.loadRegistrationData();
-    ElMessage.success(`載入祈福登記資料成功：${allRegistrations.value.length} 筆`);
+    ElMessage.success(
+      `載入祈福登記資料成功：${allRegistrations.value.length} 筆`,
+    );
   } catch (error) {
     console.error("載入祈福登記資料失敗:", error);
     ElMessage.error("載入祈福登記資料失敗", error);
@@ -666,44 +691,49 @@ const loadActivityData = async () => {
 
 // 可用的活動列表（只顯示即將到來和進行中的活動）
 const availableActivities = computed(() => {
-  return allActivities.value.filter(activity => 
-    activity.state === 'upcoming' || activity.state === 'ongoing'
-  ).sort((a, b) => new Date(a.date) - new Date(b.date));
+  return allActivities.value
+    .filter(
+      (activity) =>
+        activity.state === "upcoming" || activity.state === "ongoing",
+    )
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 });
 
 // 選中的活動
 const selectedActivity = computed(() => {
   if (!selectedActivityId.value) return null;
-  return allActivities.value.find(activity => activity.id === selectedActivityId.value);
+  return allActivities.value.find(
+    (activity) => activity.id === selectedActivityId.value,
+  );
 });
 
 // 活動選擇變更處理
 const handleActivityChange = (activityId) => {
-  console.log('選擇活動:', activityId);
+  console.log("選擇活動:", activityId);
   if (activityId) {
-    const activity = allActivities.value.find(a => a.id === activityId);
+    const activity = allActivities.value.find((a) => a.id === activityId);
     if (activity) {
-      console.log('選中活動:', activity.name);
+      console.log("選中活動:", activity.name);
     }
   }
 };
 
 // 格式化活動日期
 const formatActivityDate = (dateString) => {
-  if (!dateString) return '';
+  if (!dateString) return "";
   return DateUtils.formatDateLong(dateString);
 };
 
 // 獲取活動類型標籤
 const getActivityTypeLabel = (itemType) => {
   const typeLabels = {
-    ceremony: '法會',
-    lecture: '講座',
-    meditation: '禪修',
-    festival: '節慶',
-    volunteer: '志工',
-    pudu: '普度',
-    other: '其他'
+    ceremony: "法會",
+    lecture: "講座",
+    meditation: "禪修",
+    festival: "節慶",
+    volunteer: "志工",
+    pudu: "普度",
+    other: "其他",
   };
   return typeLabels[itemType] || itemType;
 };
@@ -711,10 +741,10 @@ const getActivityTypeLabel = (itemType) => {
 // 獲取活動狀態標籤
 const getActivityStateLabel = (state) => {
   const stateLabels = {
-    upcoming: '即將開始',
-    ongoing: '進行中',
-    completed: '已完成',
-    cancelled: '已取消'
+    upcoming: "即將開始",
+    ongoing: "進行中",
+    completed: "已完成",
+    cancelled: "已取消",
   };
   return stateLabels[state] || state;
 };
@@ -722,12 +752,12 @@ const getActivityStateLabel = (state) => {
 // 獲取活動狀態類型（用於 el-tag）
 const getActivityStateType = (state) => {
   const stateTypes = {
-    upcoming: 'warning',
-    ongoing: 'success',
-    completed: 'info',
-    cancelled: 'danger'
+    upcoming: "warning",
+    ongoing: "success",
+    completed: "info",
+    cancelled: "danger",
   };
-  return stateTypes[state] || 'info';
+  return stateTypes[state] || "info";
 };
 
 // 計算篩選後的祈福登記
@@ -793,22 +823,22 @@ const isIndeterminate = (activityKey) => {
 const toggleActivity = (activityKey) => {
   const sourceData = getSourceData(activityKey);
   joinRecordStore.toggleGroup(activityKey, sourceData);
-  
+
   // 特殊邏輯：超度/超薦 與 陽上人 雙向聯動
-  if (activityKey === 'chaodu') {
-    const survivorsData = getSourceData('survivors');
+  if (activityKey === "chaodu") {
+    const survivorsData = getSourceData("survivors");
     if (selections.value.chaodu.length > 0) {
       // 如果選了祖先，自動全選陽上人
-      joinRecordStore.setGroupSelection('survivors', survivorsData);
+      joinRecordStore.setGroupSelection("survivors", survivorsData);
     } else {
       // 如果取消祖先，自動取消陽上人
-      joinRecordStore.setGroupSelection('survivors', []);
+      joinRecordStore.setGroupSelection("survivors", []);
     }
-  } else if (activityKey === 'survivors') {
-    const chaodu = getSourceData('chaodu');
+  } else if (activityKey === "survivors") {
+    const chaodu = getSourceData("chaodu");
     if (selections.value.survivors.length === 0) {
       // 如果取消陽上人，自動取消祖先
-      joinRecordStore.setGroupSelection('chaodu', []);
+      joinRecordStore.setGroupSelection("chaodu", []);
     }
   }
 };
@@ -854,12 +884,18 @@ const handleSubmitRecord = async () => {
   }
 
   // 檢查超度邏輯：祖先與陽上人必須同時存在或同時不存在
-  if (selections.value.chaodu.length > 0 && selections.value.survivors.length === 0) {
+  if (
+    selections.value.chaodu.length > 0 &&
+    selections.value.survivors.length === 0
+  ) {
     ElMessage.warning("超度祖先需要有陽上人參與，請選擇陽上人");
     return;
   }
-  
-  if (selections.value.survivors.length > 0 && selections.value.chaodu.length === 0) {
+
+  if (
+    selections.value.survivors.length > 0 &&
+    selections.value.chaodu.length === 0
+  ) {
     ElMessage.warning("陽上人參與需要選擇祖先超度，請選擇祖先");
     return;
   }

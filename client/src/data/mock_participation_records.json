@@ -1,282 +1,130 @@
 [
   {
-    "id": 4,
+    "id": 20,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-24T06:09:42.075Z",
-    "user_updated": null,
-    "date_updated": null,
-    "registrationId": 199,
-    "activityId": -1,
+    "date_created": "2026-01-26 11:21:28",
+    "registrationId": 90,
+    "activityId": 42,
     "state": "confirmed",
     "items": [
       {
-        "type": "diandeng",
-        "label": "點燈",
-        "price": 600,
+        "label": "消災祈福",
+        "price": 300,
         "quantity": 2,
-        "subtotal": 1200,
         "source": "blessing.persons",
         "sourceData": [
           {
             "id": 1,
-            "name": "王大明",
-            "zodiac": "龍",
-            "notes": "",
             "isHouseholdHead": true,
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈"
+            "name": "蘇怡君",
+            "notes": "",
+            "zodiac": "蛇"
           },
           {
             "id": 2,
-            "name": "李小華",
-            "zodiac": "蛇",
-            "notes": "妻子",
             "isHouseholdHead": false,
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈"
+            "name": "蘇媽媽",
+            "notes": "母親",
+            "zodiac": "馬"
           }
-        ]
+        ],
+        "subtotal": 600,
+        "type": "qifu"
       },
       {
-        "type": "xiaozai",
         "label": "固定消災",
         "price": 100,
         "quantity": 2,
-        "subtotal": 200,
         "source": "blessing.persons",
         "sourceData": [
           {
             "id": 1,
-            "name": "王大明",
-            "zodiac": "龍",
+            "isHouseholdHead": true,
+            "name": "蘇怡君",
             "notes": "",
-            "isHouseholdHead": true
+            "zodiac": "蛇"
           },
           {
             "id": 2,
-            "name": "李小華",
-            "zodiac": "蛇",
-            "notes": "妻子",
-            "isHouseholdHead": false
+            "isHouseholdHead": false,
+            "name": "蘇媽媽",
+            "notes": "母親",
+            "zodiac": "馬"
           }
-        ]
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
       }
     ],
-    "totalAmount": 1400,
+    "totalAmount": 800,
     "discountAmount": 0,
-    "finalAmount": 1400,
+    "finalAmount": 800,
     "paidAmount": 0,
     "needReceipt": "false",
-    "receiptNumber": null,
     "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
     "notes": "",
-    "createdAt": "2026-01-24T06:09:42.037Z",
-    "updatedAt": null
+    "createdAt": "2026-01-26T11:21:28.660Z"
   },
   {
-    "id": 5,
+    "id": 19,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-24T06:19:46.097Z",
-    "user_updated": null,
-    "date_updated": null,
-    "registrationId": 5,
+    "date_created": "2026-01-26 02:38:16",
+    "registrationId": 105,
     "activityId": -1,
     "state": "confirmed",
     "items": [
       {
-        "type": "chaodu",
-        "label": "超度/超薦",
-        "price": 1000,
+        "label": "點燈",
+        "price": 600,
         "quantity": 1,
-        "subtotal": 1000,
-        "source": "salvation.ancestors",
+        "source": "blessing.persons",
         "sourceData": [
           {
-            "id": 1,
-            "surname": "張家",
-            "notes": "伯父祖先"
+            "id": 4,
+            "isHouseholdHead": true,
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "name": "唐建國999",
+            "notes": "",
+            "zodiac": "兔"
           }
-        ]
+        ],
+        "subtotal": 600,
+        "type": "diandeng"
       },
       {
-        "type": "survivors",
-        "label": "陽上人",
-        "price": 0,
-        "quantity": 2,
-        "subtotal": 0,
-        "source": "salvation.survivors",
-        "sourceData": [
-          {
-            "id": 1,
-            "name": "張國華",
-            "zodiac": "雞",
-            "notes": ""
-          },
-          {
-            "id": 2,
-            "name": "王淑芬",
-            "zodiac": "狗",
-            "notes": "伯母"
-          }
-        ]
-      },
-      {
-        "type": "qifu",
         "label": "消災祈福",
         "price": 300,
         "quantity": 1,
-        "subtotal": 300,
         "source": "blessing.persons",
         "sourceData": [
           {
-            "id": 1,
-            "name": "張國華",
-            "zodiac": "雞",
-            "notes": "",
-            "isHouseholdHead": true
-          }
-        ]
-      }
-    ],
-    "totalAmount": 1300,
-    "discountAmount": 0,
-    "finalAmount": 1300,
-    "paidAmount": 0,
-    "needReceipt": "false",
-    "receiptNumber": null,
-    "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
-    "notes": "",
-    "createdAt": "2026-01-24T06:19:46.085Z",
-    "updatedAt": null
-  },
-  {
-    "id": 6,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-24T06:20:53.141Z",
-    "user_updated": null,
-    "date_updated": null,
-    "registrationId": 8,
-    "activityId": -1,
-    "state": "confirmed",
-    "items": [
-      {
-        "type": "diandeng",
-        "label": "點燈",
-        "price": 600,
-        "quantity": 2,
-        "subtotal": 1200,
-        "source": "blessing.persons",
-        "sourceData": [
-          {
-            "id": 1,
-            "name": "謝明宏",
-            "zodiac": "虎",
-            "notes": "",
+            "id": 4,
             "isHouseholdHead": true,
-            "lampType": "taisui",
-            "lampTypeLabel": "太歲燈"
-          },
-          {
-            "id": 2,
-            "name": "謝太太",
-            "zodiac": "兔",
+            "name": "唐建國999",
             "notes": "",
-            "isHouseholdHead": false,
-            "lampType": "yuanchen",
-            "lampTypeLabel": "元辰燈"
+            "zodiac": "兔"
           }
-        ]
+        ],
+        "subtotal": 300,
+        "type": "qifu"
       },
       {
-        "type": "xiaozai",
         "label": "固定消災",
         "price": 100,
-        "quantity": 2,
-        "subtotal": 200,
+        "quantity": 1,
         "source": "blessing.persons",
         "sourceData": [
           {
-            "id": 1,
-            "name": "謝明宏",
-            "zodiac": "虎",
+            "id": 4,
+            "isHouseholdHead": true,
+            "name": "唐建國999",
             "notes": "",
-            "isHouseholdHead": true
-          },
-          {
-            "id": 2,
-            "name": "謝太太",
-            "zodiac": "兔",
-            "notes": "",
-            "isHouseholdHead": false
+            "zodiac": "兔"
           }
-        ]
-      }
-    ],
-    "totalAmount": 1400,
-    "discountAmount": 0,
-    "finalAmount": 1400,
-    "paidAmount": 0,
-    "needReceipt": "false",
-    "receiptNumber": null,
-    "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
-    "notes": "",
-    "createdAt": "2026-01-24T06:20:53.122Z",
-    "updatedAt": null
-  },
-  {
-    "id": 7,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-24T06:22:48.683Z",
-    "user_updated": null,
-    "date_updated": null,
-    "registrationId": 1,
-    "activityId": -1,
-    "state": "confirmed",
-    "items": [
-      {
-        "type": "chaodu",
-        "label": "超度/超薦",
-        "price": 1000,
-        "quantity": 1,
-        "subtotal": 1000,
-        "source": "salvation.ancestors",
-        "sourceData": [
-          {
-            "id": 1,
-            "surname": "王府",
-            "notes": "歷代祖先"
-          }
-        ]
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 1000,
@@ -284,215 +132,144 @@
     "finalAmount": 1000,
     "paidAmount": 0,
     "needReceipt": "false",
-    "receiptNumber": null,
     "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
     "notes": "",
-    "createdAt": "2026-01-24T06:22:48.664Z",
-    "updatedAt": null
+    "createdAt": "2026-01-26T02:38:15.988Z"
   },
   {
-    "id": 8,
+    "id": 18,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-24T06:25:18.214Z",
-    "user_updated": null,
-    "date_updated": null,
-    "registrationId": 1,
+    "date_created": "2026-01-25 14:30:25",
+    "registrationId": 105,
     "activityId": -1,
     "state": "confirmed",
     "items": [
       {
-        "type": "qifu",
-        "label": "消災祈福",
-        "price": 300,
-        "quantity": 2,
-        "subtotal": 600,
-        "source": "blessing.persons",
-        "sourceData": [
-          {
-            "id": 1,
-            "name": "王大明",
-            "zodiac": "龍",
-            "notes": "二哥",
-            "isHouseholdHead": true
-          },
-          {
-            "id": 2,
-            "name": "李小華",
-            "zodiac": "蛇",
-            "notes": "大姐",
-            "isHouseholdHead": false
-          }
-        ]
-      },
-      {
-        "type": "xiaozai",
-        "label": "固定消災",
-        "price": 100,
-        "quantity": 2,
-        "subtotal": 200,
-        "source": "blessing.persons",
-        "sourceData": [
-          {
-            "id": 1,
-            "name": "王大明",
-            "zodiac": "龍",
-            "notes": "二哥",
-            "isHouseholdHead": true
-          },
-          {
-            "id": 2,
-            "name": "李小華",
-            "zodiac": "蛇",
-            "notes": "大姐",
-            "isHouseholdHead": false
-          }
-        ]
-      }
-    ],
-    "totalAmount": 800,
-    "discountAmount": 0,
-    "finalAmount": 800,
-    "paidAmount": 0,
-    "needReceipt": "false",
-    "receiptNumber": null,
-    "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
-    "notes": "",
-    "createdAt": "2026-01-24T06:25:18.173Z",
-    "updatedAt": null
-  },
-  {
-    "id": 9,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-24T07:14:06.658Z",
-    "user_updated": null,
-    "date_updated": null,
-    "registrationId": 26,
-    "activityId": -1,
-    "state": "confirmed",
-    "items": [
-      {
-        "type": "chaodu",
-        "label": "超度/超薦",
-        "price": 1000,
-        "quantity": 1,
-        "subtotal": 1000,
-        "source": "salvation.ancestors",
-        "sourceData": [
-          {
-            "id": 1,
-            "surname": "蘇氏",
-            "notes": "外祖歷代祖先"
-          }
-        ]
-      },
-      {
-        "type": "survivors",
         "label": "陽上人",
         "price": 0,
-        "quantity": 2,
-        "subtotal": 0,
+        "quantity": 1,
         "source": "salvation.survivors",
         "sourceData": [
           {
-            "id": 1,
-            "name": "蘇怡君",
-            "zodiac": "蛇",
-            "notes": ""
-          },
-          {
-            "id": 2,
-            "name": "蘇媽媽",
-            "zodiac": "馬",
-            "notes": ""
+            "id": 11,
+            "name": "唐建國999",
+            "notes": "12312",
+            "zodiac": "兔"
           }
-        ]
+        ],
+        "subtotal": 0,
+        "type": "survivors"
       },
       {
-        "type": "diandeng",
         "label": "點燈",
         "price": 600,
-        "quantity": 2,
-        "subtotal": 1200,
+        "quantity": 1,
         "source": "blessing.persons",
         "sourceData": [
           {
-            "id": 1,
-            "name": "蘇怡君",
-            "zodiac": "蛇",
-            "notes": "",
+            "id": 4,
             "isHouseholdHead": true,
             "lampType": "guangming",
-            "lampTypeLabel": "光明燈"
-          },
-          {
-            "id": 2,
-            "name": "蘇媽媽",
-            "zodiac": "馬",
-            "notes": "母親",
-            "isHouseholdHead": false,
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈"
+            "lampTypeLabel": "光明燈",
+            "name": "唐建國999",
+            "notes": "",
+            "zodiac": "兔"
           }
-        ]
+        ],
+        "subtotal": 600,
+        "type": "diandeng"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 4,
+            "isHouseholdHead": true,
+            "name": "唐建國999",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
       }
     ],
-    "totalAmount": 2200,
+    "totalAmount": 700,
     "discountAmount": 0,
-    "finalAmount": 2200,
+    "finalAmount": 700,
     "paidAmount": 0,
     "needReceipt": "false",
-    "receiptNumber": null,
     "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
     "notes": "",
-    "createdAt": "2026-01-24T07:14:06.636Z",
-    "updatedAt": null
+    "createdAt": "2026-01-25T14:30:25.086Z"
   },
   {
-    "id": 10,
+    "id": 17,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-24T14:15:54.610Z",
-    "user_updated": null,
-    "date_updated": null,
+    "date_created": "2026-01-25 10:45:54",
+    "registrationId": 105,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 4,
+            "isHouseholdHead": true,
+            "name": "唐建國999",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 300,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 4,
+            "isHouseholdHead": true,
+            "name": "唐建國999",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
+      }
+    ],
+    "totalAmount": 400,
+    "discountAmount": 0,
+    "finalAmount": 400,
+    "paidAmount": 0,
+    "needReceipt": "false",
+    "receiptIssued": "false",
+    "notes": "",
+    "createdAt": "2026-01-25T10:45:54.169Z"
+  },
+  {
+    "id": 16,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-25 10:34:08",
     "registrationId": 26,
     "activityId": -1,
     "state": "confirmed",
     "items": [
       {
-        "type": "qifu",
         "label": "消災祈福",
         "price": 300,
         "quantity": 2,
-        "subtotal": 600,
         "source": "blessing.persons",
         "sourceData": [
           {
@@ -509,14 +286,14 @@
             "notes": "母親",
             "zodiac": "馬"
           }
-        ]
+        ],
+        "subtotal": 600,
+        "type": "qifu"
       },
       {
-        "type": "xiaozai",
         "label": "固定消災",
         "price": 100,
         "quantity": 2,
-        "subtotal": 200,
         "source": "blessing.persons",
         "sourceData": [
           {
@@ -533,7 +310,9 @@
             "notes": "母親",
             "zodiac": "馬"
           }
-        ]
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 800,
@@ -541,38 +320,76 @@
     "finalAmount": 800,
     "paidAmount": 0,
     "needReceipt": "false",
-    "receiptNumber": null,
     "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
     "notes": "",
-    "createdAt": "2026-01-24T14:15:54.584Z",
-    "updatedAt": null
+    "createdAt": "2026-01-25T10:34:08.719Z"
+  },
+  {
+    "id": 12,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-25 07:40:25",
+    "registrationId": 30,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "price": 600,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "name": "唐建國",
+            "notes": "",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 600,
+        "type": "diandeng"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "唐建國",
+            "notes": "",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
+      }
+    ],
+    "totalAmount": 700,
+    "discountAmount": 0,
+    "finalAmount": 700,
+    "paidAmount": 0,
+    "needReceipt": "false",
+    "receiptIssued": "false",
+    "notes": "",
+    "createdAt": "2026-01-25T07:40:25.418Z"
   },
   {
     "id": 11,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-24T14:32:35.154Z",
-    "user_updated": null,
-    "date_updated": null,
+    "date_created": "2026-01-24 14:32:35",
     "registrationId": 103,
     "activityId": -1,
     "state": "confirmed",
     "items": [
       {
-        "type": "chaodu",
         "label": "超度/超薦",
         "price": 1000,
         "quantity": 1,
-        "subtotal": 1000,
         "source": "salvation.ancestors",
         "sourceData": [
           {
@@ -580,14 +397,14 @@
             "notes": "九玄七祖",
             "surname": "蘇蘇"
           }
-        ]
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
       },
       {
-        "type": "survivors",
         "label": "陽上人",
         "price": 0,
         "quantity": 1,
-        "subtotal": 0,
         "source": "salvation.survivors",
         "sourceData": [
           {
@@ -596,33 +413,33 @@
             "notes": "媽媽",
             "zodiac": "牛"
           }
-        ]
+        ],
+        "subtotal": 0,
+        "type": "survivors"
       },
       {
-        "type": "diandeng",
         "label": "點燈",
         "price": 600,
         "quantity": 1,
-        "subtotal": 600,
         "source": "blessing.persons",
         "sourceData": [
           {
             "id": 2,
             "isHouseholdHead": false,
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
             "name": "蘇小妹",
             "notes": "妹妹",
-            "zodiac": "鼠",
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈"
+            "zodiac": "鼠"
           }
-        ]
+        ],
+        "subtotal": 600,
+        "type": "diandeng"
       },
       {
-        "type": "qifu",
         "label": "消災祈福",
         "price": 300,
         "quantity": 1,
-        "subtotal": 300,
         "source": "blessing.persons",
         "sourceData": [
           {
@@ -632,14 +449,14 @@
             "notes": "",
             "zodiac": "蛇"
           }
-        ]
+        ],
+        "subtotal": 300,
+        "type": "qifu"
       },
       {
-        "type": "xiaozai",
         "label": "固定消災",
         "price": 100,
         "quantity": 1,
-        "subtotal": 100,
         "source": "blessing.persons",
         "sourceData": [
           {
@@ -649,7 +466,9 @@
             "notes": "妹妹",
             "zodiac": "鼠"
           }
-        ]
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 2000,
@@ -657,88 +476,468 @@
     "finalAmount": 2000,
     "paidAmount": 0,
     "needReceipt": "false",
-    "receiptNumber": null,
     "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
     "notes": "",
-    "createdAt": "2026-01-24T14:32:35.136Z",
-    "updatedAt": null
+    "createdAt": "2026-01-24T14:32:35.136Z"
   },
   {
-    "id": 12,
+    "id": 10,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-01-25T07:40:25.494Z",
-    "user_updated": null,
-    "date_updated": null,
-    "registrationId": 30,
+    "date_created": "2026-01-24 14:15:54",
+    "registrationId": 26,
     "activityId": -1,
     "state": "confirmed",
     "items": [
       {
-        "type": "diandeng",
-        "label": "點燈",
-        "price": 600,
-        "quantity": 1,
-        "subtotal": 600,
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 2,
         "source": "blessing.persons",
         "sourceData": [
           {
             "id": 1,
-            "name": "唐建國",
-            "zodiac": "龍",
-            "notes": "",
             "isHouseholdHead": true,
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈"
+            "name": "蘇怡君",
+            "notes": "",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "蘇媽媽",
+            "notes": "母親",
+            "zodiac": "馬"
           }
-        ]
+        ],
+        "subtotal": 600,
+        "type": "qifu"
       },
       {
-        "type": "xiaozai",
         "label": "固定消災",
         "price": 100,
-        "quantity": 1,
-        "subtotal": 100,
+        "quantity": 2,
         "source": "blessing.persons",
         "sourceData": [
           {
             "id": 1,
-            "name": "唐建國",
-            "zodiac": "龍",
+            "isHouseholdHead": true,
+            "name": "蘇怡君",
             "notes": "",
-            "isHouseholdHead": true
+            "zodiac": "蛇"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "蘇媽媽",
+            "notes": "母親",
+            "zodiac": "馬"
           }
-        ]
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
       }
     ],
-    "totalAmount": 700,
+    "totalAmount": 800,
     "discountAmount": 0,
-    "finalAmount": 700,
+    "finalAmount": 800,
     "paidAmount": 0,
     "needReceipt": "false",
-    "receiptNumber": null,
     "receiptIssued": "false",
-    "receiptIssuedAt": null,
-    "receiptIssuedBy": null,
-    "accountingState": null,
-    "accountingDate": null,
-    "accountingBy": null,
-    "accountingNotes": null,
-    "paymentState": null,
-    "paymentMethod": null,
-    "paymentDate": null,
-    "paymentNotes": null,
     "notes": "",
-    "createdAt": "2026-01-25T07:40:25.418Z",
-    "updatedAt": null
+    "createdAt": "2026-01-24T14:15:54.584Z"
+  },
+  {
+    "id": 9,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-24 07:14:06",
+    "registrationId": 26,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "外祖歷代祖先",
+            "surname": "蘇氏"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "蘇怡君",
+            "notes": "",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 2,
+            "name": "蘇媽媽",
+            "notes": "",
+            "zodiac": "馬"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "price": 600,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "name": "蘇怡君",
+            "notes": "",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "name": "蘇媽媽",
+            "notes": "母親",
+            "zodiac": "馬"
+          }
+        ],
+        "subtotal": 1200,
+        "type": "diandeng"
+      }
+    ],
+    "totalAmount": 2200,
+    "discountAmount": 0,
+    "finalAmount": 2200,
+    "paidAmount": 0,
+    "needReceipt": "false",
+    "receiptIssued": "false",
+    "notes": "",
+    "createdAt": "2026-01-24T07:14:06.636Z"
+  },
+  {
+    "id": 8,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-24 06:25:18",
+    "registrationId": 1,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "王大明",
+            "notes": "二哥",
+            "zodiac": "龍"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "李小華",
+            "notes": "大姐",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 600,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "王大明",
+            "notes": "二哥",
+            "zodiac": "龍"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "李小華",
+            "notes": "大姐",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
+      }
+    ],
+    "totalAmount": 800,
+    "discountAmount": 0,
+    "finalAmount": 800,
+    "paidAmount": 0,
+    "needReceipt": "false",
+    "receiptIssued": "false",
+    "notes": "",
+    "createdAt": "2026-01-24T06:25:18.173Z"
+  },
+  {
+    "id": 7,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-24 06:22:48",
+    "registrationId": 1,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "歷代祖先",
+            "surname": "王府"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      }
+    ],
+    "totalAmount": 1000,
+    "discountAmount": 0,
+    "finalAmount": 1000,
+    "paidAmount": 0,
+    "needReceipt": "false",
+    "receiptIssued": "false",
+    "notes": "",
+    "createdAt": "2026-01-24T06:22:48.664Z"
+  },
+  {
+    "id": 6,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-24 06:20:53",
+    "registrationId": 8,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "price": 600,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "lampType": "taisui",
+            "lampTypeLabel": "太歲燈",
+            "name": "謝明宏",
+            "notes": "",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "lampType": "yuanchen",
+            "lampTypeLabel": "元辰燈",
+            "name": "謝太太",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 1200,
+        "type": "diandeng"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "謝明宏",
+            "notes": "",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "謝太太",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
+      }
+    ],
+    "totalAmount": 1400,
+    "discountAmount": 0,
+    "finalAmount": 1400,
+    "paidAmount": 0,
+    "needReceipt": "false",
+    "receiptIssued": "false",
+    "notes": "",
+    "createdAt": "2026-01-24T06:20:53.122Z"
+  },
+  {
+    "id": 5,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-24 06:19:46",
+    "registrationId": 5,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "伯父祖先",
+            "surname": "張家"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "張國華",
+            "notes": "",
+            "zodiac": "雞"
+          },
+          {
+            "id": 2,
+            "name": "王淑芬",
+            "notes": "伯母",
+            "zodiac": "狗"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "張國華",
+            "notes": "",
+            "zodiac": "雞"
+          }
+        ],
+        "subtotal": 300,
+        "type": "qifu"
+      }
+    ],
+    "totalAmount": 1300,
+    "discountAmount": 0,
+    "finalAmount": 1300,
+    "paidAmount": 0,
+    "needReceipt": "false",
+    "receiptIssued": "false",
+    "notes": "",
+    "createdAt": "2026-01-24T06:19:46.085Z"
+  },
+  {
+    "id": 4,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-24 06:09:42",
+    "registrationId": 199,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "price": 600,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "name": "王大明",
+            "notes": "",
+            "zodiac": "龍"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "name": "李小華",
+            "notes": "妻子",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 1200,
+        "type": "diandeng"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "王大明",
+            "notes": "",
+            "zodiac": "龍"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "李小華",
+            "notes": "妻子",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
+      }
+    ],
+    "totalAmount": 1400,
+    "discountAmount": 0,
+    "finalAmount": 1400,
+    "paidAmount": 0,
+    "needReceipt": "false",
+    "receiptIssued": "false",
+    "notes": "",
+    "createdAt": "2026-01-24T06:09:42.037Z"
   }
 ]
