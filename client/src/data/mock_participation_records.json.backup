@@ -29,8 +29,7 @@
           }
         ],
         "subtotal": 600,
-        "type": "qifu",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "qifu"
       },
       {
         "label": "固定消災",
@@ -54,8 +53,7 @@
           }
         ],
         "subtotal": 200,
-        "type": "xiaozai",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 800,
@@ -65,14 +63,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-26T11:21:28.660Z",
-    "contact": {
-      "mobile": "0910-555-888",
-      "name": "蘇怡君",
-      "otherRelationship": "大伯父",
-      "phone": "",
-      "relationship": "其它"
-    }
+    "createdAt": "2026-01-26T11:21:28.660Z"
   },
   {
     "id": 19,
@@ -99,8 +90,7 @@
           }
         ],
         "subtotal": 600,
-        "type": "diandeng",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "diandeng"
       },
       {
         "label": "消災祈福",
@@ -117,8 +107,7 @@
           }
         ],
         "subtotal": 300,
-        "type": "qifu",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "qifu"
       },
       {
         "label": "固定消災",
@@ -135,8 +124,7 @@
           }
         ],
         "subtotal": 100,
-        "type": "xiaozai",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 1000,
@@ -146,14 +134,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-26T02:38:15.988Z",
-    "contact": {
-      "mobile": "0980-999-444",
-      "name": "唐建國999",
-      "otherRelationship": "",
-      "phone": "07-44556677",
-      "relationship": "娘家"
-    }
+    "createdAt": "2026-01-26T02:38:15.988Z"
   },
   {
     "id": 18,
@@ -177,8 +158,7 @@
           }
         ],
         "subtotal": 0,
-        "type": "survivors",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "survivors"
       },
       {
         "label": "點燈",
@@ -197,8 +177,7 @@
           }
         ],
         "subtotal": 600,
-        "type": "diandeng",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "diandeng"
       },
       {
         "label": "固定消災",
@@ -215,8 +194,7 @@
           }
         ],
         "subtotal": 100,
-        "type": "xiaozai",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 700,
@@ -226,14 +204,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-25T14:30:25.086Z",
-    "contact": {
-      "mobile": "0980-999-444",
-      "name": "唐建國999",
-      "otherRelationship": "",
-      "phone": "07-44556677",
-      "relationship": "娘家"
-    }
+    "createdAt": "2026-01-25T14:30:25.086Z"
   },
   {
     "id": 17,
@@ -258,8 +229,7 @@
           }
         ],
         "subtotal": 300,
-        "type": "qifu",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "qifu"
       },
       {
         "label": "固定消災",
@@ -276,8 +246,7 @@
           }
         ],
         "subtotal": 100,
-        "type": "xiaozai",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 400,
@@ -287,14 +256,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-25T10:45:54.169Z",
-    "contact": {
-      "mobile": "0980-999-444",
-      "name": "唐建國999",
-      "otherRelationship": "",
-      "phone": "07-44556677",
-      "relationship": "娘家"
-    }
+    "createdAt": "2026-01-25T10:45:54.169Z"
   },
   {
     "id": 16,
@@ -326,8 +288,7 @@
           }
         ],
         "subtotal": 600,
-        "type": "qifu",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "qifu"
       },
       {
         "label": "固定消災",
@@ -351,8 +312,7 @@
           }
         ],
         "subtotal": 200,
-        "type": "xiaozai",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 800,
@@ -362,14 +322,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-25T10:34:08.719Z",
-    "contact": {
-      "mobile": "0910-555-888",
-      "name": "蘇怡君",
-      "otherRelationship": "三叔公",
-      "phone": "",
-      "relationship": "其它"
-    }
+    "createdAt": "2026-01-25T10:34:08.719Z"
   },
   {
     "id": 12,
@@ -396,8 +349,7 @@
           }
         ],
         "subtotal": 600,
-        "type": "diandeng",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "diandeng"
       },
       {
         "label": "固定消災",
@@ -414,8 +366,7 @@
           }
         ],
         "subtotal": 100,
-        "type": "xiaozai",
-        "sourceAddress": "高雄市鳳山區光遠路700號"
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 700,
@@ -425,14 +376,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-25T07:40:25.418Z",
-    "contact": {
-      "mobile": "0980-999-444",
-      "name": "高建民",
-      "otherRelationship": "",
-      "phone": "07-44556677",
-      "relationship": "娘家"
-    }
+    "createdAt": "2026-01-25T07:40:25.418Z"
   },
   {
     "id": 11,
@@ -455,8 +399,7 @@
           }
         ],
         "subtotal": 1000,
-        "type": "chaodu",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "chaodu"
       },
       {
         "label": "陽上人",
@@ -472,8 +415,7 @@
           }
         ],
         "subtotal": 0,
-        "type": "survivors",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "survivors"
       },
       {
         "label": "點燈",
@@ -492,8 +434,7 @@
           }
         ],
         "subtotal": 600,
-        "type": "diandeng",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "diandeng"
       },
       {
         "label": "消災祈福",
@@ -510,8 +451,7 @@
           }
         ],
         "subtotal": 300,
-        "type": "qifu",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "qifu"
       },
       {
         "label": "固定消災",
@@ -528,8 +468,7 @@
           }
         ],
         "subtotal": 100,
-        "type": "xiaozai",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 2000,
@@ -539,14 +478,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-24T14:32:35.136Z",
-    "contact": {
-      "mobile": "0910-555-888",
-      "name": "蘇怡君",
-      "otherRelationship": "",
-      "phone": "",
-      "relationship": "朋友"
-    }
+    "createdAt": "2026-01-24T14:32:35.136Z"
   },
   {
     "id": 10,
@@ -578,8 +510,7 @@
           }
         ],
         "subtotal": 600,
-        "type": "qifu",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "qifu"
       },
       {
         "label": "固定消災",
@@ -603,8 +534,7 @@
           }
         ],
         "subtotal": 200,
-        "type": "xiaozai",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 800,
@@ -614,14 +544,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-24T14:15:54.584Z",
-    "contact": {
-      "mobile": "0910-555-888",
-      "name": "蘇怡君",
-      "otherRelationship": "三叔公",
-      "phone": "",
-      "relationship": "其它"
-    }
+    "createdAt": "2026-01-24T14:15:54.584Z"
   },
   {
     "id": 9,
@@ -644,8 +567,7 @@
           }
         ],
         "subtotal": 1000,
-        "type": "chaodu",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "chaodu"
       },
       {
         "label": "陽上人",
@@ -667,8 +589,7 @@
           }
         ],
         "subtotal": 0,
-        "type": "survivors",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "survivors"
       },
       {
         "label": "點燈",
@@ -696,8 +617,7 @@
           }
         ],
         "subtotal": 1200,
-        "type": "diandeng",
-        "sourceAddress": "新北市永和區永和路二段200號"
+        "type": "diandeng"
       }
     ],
     "totalAmount": 2200,
@@ -707,14 +627,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-24T07:14:06.636Z",
-    "contact": {
-      "mobile": "0910-555-888",
-      "name": "蘇怡君",
-      "otherRelationship": "三叔公",
-      "phone": "",
-      "relationship": "其它"
-    }
+    "createdAt": "2026-01-24T07:14:06.636Z"
   },
   {
     "id": 8,
@@ -746,8 +659,7 @@
           }
         ],
         "subtotal": 600,
-        "type": "qifu",
-        "sourceAddress": ""
+        "type": "qifu"
       },
       {
         "label": "固定消災",
@@ -771,8 +683,7 @@
           }
         ],
         "subtotal": 200,
-        "type": "xiaozai",
-        "sourceAddress": ""
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 800,
@@ -782,14 +693,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-24T06:25:18.173Z",
-    "contact": {
-      "name": "未知聯絡人",
-      "phone": "",
-      "mobile": "",
-      "relationship": "",
-      "otherRelationship": ""
-    }
+    "createdAt": "2026-01-24T06:25:18.173Z"
   },
   {
     "id": 7,
@@ -812,8 +716,7 @@
           }
         ],
         "subtotal": 1000,
-        "type": "chaodu",
-        "sourceAddress": ""
+        "type": "chaodu"
       }
     ],
     "totalAmount": 1000,
@@ -823,14 +726,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-24T06:22:48.664Z",
-    "contact": {
-      "name": "未知聯絡人",
-      "phone": "",
-      "mobile": "",
-      "relationship": "",
-      "otherRelationship": ""
-    }
+    "createdAt": "2026-01-24T06:22:48.664Z"
   },
   {
     "id": 6,
@@ -866,8 +762,7 @@
           }
         ],
         "subtotal": 1200,
-        "type": "diandeng",
-        "sourceAddress": ""
+        "type": "diandeng"
       },
       {
         "label": "固定消災",
@@ -891,8 +786,7 @@
           }
         ],
         "subtotal": 200,
-        "type": "xiaozai",
-        "sourceAddress": ""
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 1400,
@@ -902,14 +796,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-24T06:20:53.122Z",
-    "contact": {
-      "name": "未知聯絡人",
-      "phone": "",
-      "mobile": "",
-      "relationship": "",
-      "otherRelationship": ""
-    }
+    "createdAt": "2026-01-24T06:20:53.122Z"
   },
   {
     "id": 5,
@@ -932,8 +819,7 @@
           }
         ],
         "subtotal": 1000,
-        "type": "chaodu",
-        "sourceAddress": ""
+        "type": "chaodu"
       },
       {
         "label": "陽上人",
@@ -955,8 +841,7 @@
           }
         ],
         "subtotal": 0,
-        "type": "survivors",
-        "sourceAddress": ""
+        "type": "survivors"
       },
       {
         "label": "消災祈福",
@@ -973,8 +858,7 @@
           }
         ],
         "subtotal": 300,
-        "type": "qifu",
-        "sourceAddress": ""
+        "type": "qifu"
       }
     ],
     "totalAmount": 1300,
@@ -984,14 +868,7 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-24T06:19:46.085Z",
-    "contact": {
-      "name": "未知聯絡人",
-      "phone": "",
-      "mobile": "",
-      "relationship": "",
-      "otherRelationship": ""
-    }
+    "createdAt": "2026-01-24T06:19:46.085Z"
   },
   {
     "id": 4,
@@ -1027,8 +904,7 @@
           }
         ],
         "subtotal": 1200,
-        "type": "diandeng",
-        "sourceAddress": ""
+        "type": "diandeng"
       },
       {
         "label": "固定消災",
@@ -1052,8 +928,7 @@
           }
         ],
         "subtotal": 200,
-        "type": "xiaozai",
-        "sourceAddress": ""
+        "type": "xiaozai"
       }
     ],
     "totalAmount": 1400,
@@ -1063,13 +938,6 @@
     "needReceipt": "false",
     "receiptIssued": "false",
     "notes": "",
-    "createdAt": "2026-01-24T06:09:42.037Z",
-    "contact": {
-      "name": "未知聯絡人",
-      "phone": "",
-      "mobile": "",
-      "relationship": "",
-      "otherRelationship": ""
-    }
+    "createdAt": "2026-01-24T06:09:42.037Z"
   }
 ]
