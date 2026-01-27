@@ -36,6 +36,14 @@ pub struct ParticipationRecord {
     )]
     pub items: Option<String>,
     
+    #[sqlx(default)]
+    #[serde(
+        serialize_with = "serialize_json_string",
+        deserialize_with = "deserialize_json_string",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub contact: Option<String>,
+    
     #[sqlx(rename = "totalAmount", default)]
     pub total_amount: Option<i64>,
     
@@ -146,6 +154,9 @@ pub struct CreateParticipationRecordRequest {
     pub items: Option<JsonValue>,
     
     #[serde(default)]
+    pub contact: Option<JsonValue>,
+    
+    #[serde(default)]
     pub total_amount: Option<i64>,
     
     #[serde(default)]
@@ -208,6 +219,7 @@ pub struct UpdateParticipationRecordRequest {
     pub activity_id: Option<i64>,
     pub state: Option<String>,
     pub items: Option<JsonValue>,
+    pub contact: Option<JsonValue>,
     pub total_amount: Option<i64>,
     pub discount_amount: Option<i64>,
     pub final_amount: Option<i64>,
@@ -273,6 +285,9 @@ pub struct ParticipationRecordResponse {
     pub items: Option<JsonValue>,
     
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub contact: Option<JsonValue>,
+    
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub total_amount: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub discount_amount: Option<i64>,
@@ -327,6 +342,8 @@ impl From<ParticipationRecord> for ParticipationRecordResponse {
             activity_id: record.activity_id,
             state: record.state,
             items: record.items
+                .and_then(|s| serde_json::from_str(&s).ok()),
+            contact: record.contact
                 .and_then(|s| serde_json::from_str(&s).ok()),
             total_amount: record.total_amount,
             discount_amount: record.discount_amount,

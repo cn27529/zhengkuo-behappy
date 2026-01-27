@@ -192,9 +192,7 @@
             <span>
               <!-- <strong>關係：</strong> -->
               {{ selectedRegistration.contact.relationship }}
-              <span                
-                v-if="selectedRegistration.contact.otherRelationship"
-              >
+              <span v-if="selectedRegistration.contact.otherRelationship">
                 {{ selectedRegistration.contact.otherRelationship }}
               </span>
             </span>
@@ -592,11 +590,12 @@
                 reg.contact.mobile || reg.contact.phone
               }}</span>
 
-              <span>{{ reg.contact.relationship }}
-                <span v-if="reg.contact.otherRelationship">{{ reg.contact.otherRelationship }}</span>
+              <span
+                >{{ reg.contact.relationship }}
+                <span v-if="reg.contact.otherRelationship">{{
+                  reg.contact.otherRelationship
+                }}</span>
               </span>
-              
-              
 
               <div class="data-summary" style="display: none">
                 <span
@@ -728,7 +727,9 @@ const availableActivities = computed(() => {
       (activity) =>
         activity.state === "upcoming" || activity.state === "ongoing",
     )
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  // 按日期降序排列，修改內容：將 new Date(a.date) - new Date(b.date) 改為 new Date(b.date) - new Date(a.date)，
+  // 這樣會讓活動按日期降序排列，最新的活動會出現在下拉選項的最前面
 });
 
 // 選中的活動
@@ -933,8 +934,27 @@ const handleSubmitRecord = async () => {
   }
 
   try {
-    // 修改 joinRecordStore 的 submitRecord 方法，傳遞 activityId
-    const result = await joinRecordStore.submitRecord(selectedActivityId.value);
+    // 確認提交對話框
+    const { value: notes } = await ElMessageBox.prompt(
+      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：NT$${totalAmount.value}\n\n請在下方備註欄填寫相關說明：`,
+      "確認提交參加記錄",
+      {
+        confirmButtonText: "確認提交",
+        cancelButtonText: "取消",
+        inputPlaceholder: "請輸入備註說明（必填）",
+        inputValidator: (value) => {
+          if (!value || value.trim() === "") {
+            return "請填寫備註說明";
+          }
+          return true;
+        },
+        inputErrorMessage: "備註說明不能為空",
+        type: "warning",
+      }
+    );
+
+    // 修改 joinRecordStore 的 submitRecord 方法，傳遞 activityId 和 notes
+    const result = await joinRecordStore.submitRecord(selectedActivityId.value, notes.trim());
     const createdISOTime = DateUtils.getCurrentISOTime();
 
     if (result.success) {
@@ -943,13 +963,17 @@ const handleSubmitRecord = async () => {
         duration: 3000,
       });
 
-      // 重置選擇
+      // 重置選擇（保留活動選擇）
+      //selectedActivityId.value = null;
       joinRecordStore.resetSelections();
-      selectedActivityId.value = null;
     } else {
       ElMessage.error("保存失敗，請稍後再試");
     }
   } catch (error) {
+    if (error === "cancel") {
+      ElMessage.info("已取消提交");
+      return;
+    }
     console.error("保存記錄失敗:", error);
     ElMessage.error({
       message: error.message || "保存過程中發生錯誤",

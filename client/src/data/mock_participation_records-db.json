@@ -1,0 +1,796 @@
+[
+  {
+    "id": 40,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:16:03",
+    "registrationId": 97,
+    "activityId": 1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "taisui",
+            "lampTypeLabel": "太歲燈",
+            "personId": 1,
+            "personName": "周美珍",
+            "price": 800
+          },
+          {
+            "lampType": "taisui",
+            "lampTypeLabel": "太歲燈",
+            "personId": 2,
+            "personName": "周爸爸",
+            "price": 800
+          },
+          {
+            "lampType": "taisui",
+            "lampTypeLabel": "太歲燈",
+            "personId": 3,
+            "personName": "周媽媽",
+            "price": 800
+          }
+        ],
+        "price": 800,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新竹市東區光復路一段700號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "周美珍",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "周爸爸",
+            "notes": "父親",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "周媽媽",
+            "notes": "母親",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 2400,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新竹市東區光復路一段700號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "周美珍",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "周爸爸",
+            "notes": "父親",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "周媽媽",
+            "notes": "母親",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      }
+    ],
+    "contact": {
+      "mobile": "0989-012-345",
+      "name": "周美珍",
+      "otherRelationship": "",
+      "phone": "03-12345678",
+      "relationship": "娘家"
+    },
+    "totalAmount": 2700,
+    "discountAmount": 0,
+    "finalAmount": 2700,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:16:03.046Z"
+  },
+  {
+    "id": 39,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:15:39",
+    "registrationId": 98,
+    "activityId": 1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "台中市西區五權路100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "劉府"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "台中市西區五權路100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "黃雅雯",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "name": "劉建國",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台中市西區五權路100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "黃雅雯",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "劉建國",
+            "notes": "先生",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "劉小妹",
+            "notes": "女兒",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 300,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "",
+      "name": "黃雅雯123",
+      "otherRelationship": "",
+      "phone": "04-23456789",
+      "relationship": "朋友"
+    },
+    "totalAmount": 1300,
+    "discountAmount": 0,
+    "finalAmount": 1300,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:15:39.663Z"
+  },
+  {
+    "id": 38,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:15:11",
+    "registrationId": 99,
+    "activityId": 1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "許志強",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "宜蘭縣宜蘭市中山路三段900號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "許志強",
+            "notes": "",
+            "zodiac": "豬"
+          }
+        ],
+        "subtotal": 600,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "宜蘭縣宜蘭市中山路三段900號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "許志強",
+            "notes": "",
+            "zodiac": "豬"
+          }
+        ],
+        "subtotal": 300,
+        "type": "qifu"
+      }
+    ],
+    "contact": {
+      "mobile": "0901-222-333",
+      "name": "許志強333",
+      "otherRelationship": "表弟",
+      "phone": "",
+      "relationship": "其它"
+    },
+    "totalAmount": 900,
+    "discountAmount": 0,
+    "finalAmount": 900,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:15:11.751Z"
+  },
+  {
+    "id": 37,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:14:03",
+    "registrationId": 100,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "梁小琪",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "南投縣埔里鎮中山路三段1000號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "梁小琪",
+            "notes": "",
+            "zodiac": "狗"
+          }
+        ],
+        "subtotal": 600,
+        "type": "diandeng"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "南投縣埔里鎮中山路三段1000號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "梁小琪",
+            "notes": "",
+            "zodiac": "狗"
+          }
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0925-444-111",
+      "name": "梁小琪",
+      "otherRelationship": "外甥女",
+      "phone": "049-55667788",
+      "relationship": "其它"
+    },
+    "totalAmount": 700,
+    "discountAmount": 0,
+    "finalAmount": 700,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:14:03.613Z"
+  },
+  {
+    "id": 36,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:13:48",
+    "registrationId": 101,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "台北市大安區仁愛路四段100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "歷代祖先",
+            "surname": "趙府"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "台北市大安區仁愛路四段100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "趙文雄",
+            "notes": "",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "name": "趙美惠",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市大安區仁愛路四段100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "趙文雄",
+            "notes": "",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "趙美惠",
+            "notes": "配偶",
+            "zodiac": "兔"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "趙小寶",
+            "notes": "兒子",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      }
+    ],
+    "contact": {
+      "mobile": "0988-123-456",
+      "name": "趙文雄999",
+      "otherRelationship": "",
+      "phone": "02-27894561",
+      "relationship": "本家"
+    },
+    "totalAmount": 1900,
+    "discountAmount": 0,
+    "finalAmount": 1900,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:13:48.559Z"
+  },
+  {
+    "id": 35,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:13:09",
+    "registrationId": 102,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市中正區中山南路1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "李小華",
+            "notes": "妻子",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": true,
+            "name": "王大明",
+            "notes": "老公",
+            "zodiac": "鼠"
+          }
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0912-345-678",
+      "name": "王大明2026",
+      "otherRelationship": "",
+      "phone": "02-12345678",
+      "relationship": "本家"
+    },
+    "totalAmount": 200,
+    "discountAmount": 0,
+    "finalAmount": 200,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:13:09.151Z"
+  },
+  {
+    "id": 34,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:12:55",
+    "registrationId": 103,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "蘇怡君",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "蘇小妹",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "蘇媽媽",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新北市永和區永和路二段200號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "蘇怡君",
+            "notes": "",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "蘇小妹",
+            "notes": "妹妹",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "蘇媽媽",
+            "notes": "媽媽",
+            "zodiac": "牛"
+          }
+        ],
+        "subtotal": 1800,
+        "type": "diandeng"
+      }
+    ],
+    "contact": {
+      "mobile": "0910-555-888",
+      "name": "蘇怡君",
+      "otherRelationship": "",
+      "phone": "",
+      "relationship": "朋友"
+    },
+    "totalAmount": 1800,
+    "discountAmount": 0,
+    "finalAmount": 1800,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:12:55.759Z"
+  },
+  {
+    "id": 33,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:03:08",
+    "registrationId": 104,
+    "activityId": 42,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新竹市東區光復路一段700號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "周美珍",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "周爸爸",
+            "notes": "父親",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "周媽媽",
+            "notes": "母親",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      }
+    ],
+    "contact": {
+      "mobile": "0989-012-345",
+      "name": "周美珍123",
+      "otherRelationship": "",
+      "phone": "03-12345678",
+      "relationship": "娘家"
+    },
+    "totalAmount": 900,
+    "discountAmount": 0,
+    "finalAmount": 900,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:03:08.748Z"
+  },
+  {
+    "id": 32,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 05:02:49",
+    "registrationId": 105,
+    "activityId": 42,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "高雄市鳳山區光遠路700號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "岳家祖先",
+            "surname": "唐氏"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "高雄市鳳山區光遠路700號",
+        "sourceData": [
+          {
+            "id": 11,
+            "name": "唐建國999",
+            "notes": "12312",
+            "zodiac": "兔"
+          },
+          {
+            "id": 12,
+            "name": "黃洧析",
+            "notes": "434234",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      }
+    ],
+    "contact": {
+      "mobile": "0980-999-444",
+      "name": "唐建國999",
+      "otherRelationship": "",
+      "phone": "07-44556677",
+      "relationship": "娘家"
+    },
+    "totalAmount": 1000,
+    "discountAmount": 0,
+    "finalAmount": 1000,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-01-27T05:02:49.629Z"
+  }
+]

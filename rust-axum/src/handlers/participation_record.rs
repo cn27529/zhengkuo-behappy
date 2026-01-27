@@ -33,6 +33,7 @@ SELECT
     activityId,
     state,
     items,
+    contact,
     totalAmount,
     discountAmount,
     finalAmount,
@@ -249,24 +250,26 @@ pub async fn create_participation_record(
 
     // 將 JsonValue 轉換為字符串存入資料庫
     let items_str = payload.items.map(|v| v.to_string());
+    let contact_str = payload.contact.map(|v| v.to_string());
 
     // 插入新記錄
     let result = sqlx::query(
         r#"
         INSERT INTO participationRecordDB (
-            registrationId, activityId, state, items, totalAmount, discountAmount,
+            registrationId, activityId, state, items, contact, totalAmount, discountAmount,
             finalAmount, paidAmount, needReceipt, receiptNumber, receiptIssued,
             receiptIssuedAt, receiptIssuedBy, accountingState, accountingDate,
             accountingBy, accountingNotes, paymentState, paymentMethod,
             paymentDate, paymentNotes, notes, createdAt, updatedAt
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&payload.registration_id)
     .bind(&payload.activity_id)
     .bind(&payload.state)
     .bind(&items_str)
+    .bind(&contact_str)
     .bind(&payload.total_amount)
     .bind(&payload.discount_amount)
     .bind(&payload.final_amount)
@@ -366,6 +369,11 @@ pub async fn update_participation_record(
     if let Some(items) = &payload.items {
         updates.push("items = ?");
         bindings.push(items.to_string());
+    }
+    
+    if let Some(contact) = &payload.contact {
+        updates.push("contact = ?");
+        bindings.push(contact.to_string());
     }
 
     if let Some(total_amount) = &payload.total_amount {

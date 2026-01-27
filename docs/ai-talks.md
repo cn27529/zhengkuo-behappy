@@ -59,5 +59,4 @@
 
 - 調整「參加記錄查詢」功能，支援新欄位的顯示和搜尋
 
-
 依據 ./docs\dev-joinRecord-modify-guide.md 文件的調適結果, 己添加 contact, sourceAddress 接下來要調適 ./client\src\views\JoinRecordList.vue "活動參加記錄查詢"功能, 及相關影響檔。我們也要將"活動參加記錄查詢"功能的修改 生成 ./docs\dev-joinRecord-list-modify-guide.md 文件

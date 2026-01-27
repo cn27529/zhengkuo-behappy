@@ -87,11 +87,38 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       sourceAddress = selectedRegistration.value?.blessing?.address || "";
     }
 
-    // 如果是點燈且有選擇燈種，使用燈種價格和標籤
-    if (type === "diandeng" && lampTypeSelection.value) {
-      const lampType = config.lampTypes[lampTypeSelection.value];
-      price = lampType.price;
-      label = `${config.label}(${lampType.label})`;
+    // 如果是點燈，計算總價格（每個人可能選擇不同燈種）
+    if (type === "diandeng") {
+      let totalPrice = 0;
+      const lampDetails = [];
+
+      sourceData.forEach((person) => {
+        const lampType = getPersonLampType(person.id);
+        const lampConfig = config.lampTypes[lampType];
+        totalPrice += lampConfig.price;
+        lampDetails.push({
+          personId: person.id,
+          personName: person.name,
+          lampType: lampType,
+          lampTypeLabel: lampConfig.label,
+          price: lampConfig.price,
+        });
+      });
+
+      price = totalPrice / sourceData.length; // 平均價格用於顯示
+      label = `${config.label}`;
+
+      return {
+        type,
+        label,
+        price,
+        quantity: sourceData.length,
+        subtotal: totalPrice,
+        source: config.source,
+        sourceData: sourceData,
+        sourceAddress: sourceAddress,
+        lampDetails: lampDetails, // 詳細的燈種資訊
+      };
     }
 
     return {
@@ -103,11 +130,6 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       source: config.source, // 資料來源：registration
       sourceData: sourceData, // 當下選擇的：registration
       sourceAddress: sourceAddress, // 對應的地址
-      ...(type === "diandeng" &&
-        lampTypeSelection.value && {
-          lampType: lampTypeSelection.value,
-          lampTypeLabel: config.lampTypes[lampTypeSelection.value].label,
-        }),
     };
   };
 
@@ -147,10 +169,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     return {
       registrationId: registration.id, // registration.id
       activityId: activity.activityId, // activity.activityId
-      registeredAt: new Date().toISOString(),
-      registeredBy: registration.contact.name,
       state: "confirmed", // confirmed=已確認，unconfirmed=未確認，canceled=已取消
       items, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普度。資料來源：createParticipationItem
+      contact: registration.contact, // 聯絡人資訊
       totalAmount, // 總金額
       discountAmount: 0, // 折扣金額
       finalAmount: totalAmount, // 最終金額
@@ -171,8 +192,6 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       notes: "", // 備註
       createdAt: createISOTime,
       createdUser: getCurrentUser(),
-      updatedAt: "",
-      updatedUser: "",
     };
   };
 
@@ -405,7 +424,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   };
 
   // 送出存檔
-  const submitRecord = async (activityId = null) => {
+  const submitRecord = async (activityId = null, notes = "") => {
     isLoading.value = true;
     error.value = null;
 
@@ -427,27 +446,21 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       const payload = {
         registrationId: selectedRegistration.value.id,
         activityId: activityId || -1, // 使用傳入的 activityId，如果沒有則使用 -1
-        contact: selectedRegistration.value.contact, // 新增聯絡人資訊
+        state: "confirmed", // confirmed=已確認，unconfirmed=未確認，canceled=已取消
         items: processedItems, // 使用處理過的完整 items
+        contact: selectedRegistration.value.contact, // 新增聯絡人資訊
         personLampTypes: personLampTypes.value, // 每個人的燈種選擇
         total: totalAmount.value,
         totalAmount: totalAmount.value,
+        notes: notes, // 新增備註欄位
         createdUser: getCurrentUser(),
         createdAt: createISOTime,
       };
       console.log("submitRecord:", payload);
+      // forUI 頁面顯示用
+      savedRecords.value.unshift(payload);
 
       if (serviceAdapter.getIsMock()) {
-        // 頁面顯示用----------------------
-        const forUI = {
-          contactName:
-            selectedRegistration.value?.contact?.name || "未知聯絡人",
-          totalAmount: totalAmount.value,
-          savedAt: createISOTime,
-        };
-        savedRecords.value.unshift(payload);
-        // 頁面顯示用----------------------
-
         console.warn("⚠️ 當前模式不是 directus，無法創建數據");
         return {
           success: true,
@@ -460,17 +473,6 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       const result = await joinRecordService.saveRecord(payload);
       if (result.success) {
         console.log("✅ 成功創建參加記錄:", result.data);
-
-        // 頁面顯示用----------------------
-        const forUI = {
-          contactName:
-            selectedRegistration.value?.contact?.name || "未知聯絡人",
-          totalAmount: totalAmount.value,
-          savedAt: createISOTime,
-        };
-        savedRecords.value.unshift(result.data);
-        // 頁面顯示用----------------------
-
         return result;
       } else {
         error.value = result.message;

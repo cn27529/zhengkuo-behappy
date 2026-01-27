@@ -16,7 +16,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋登記ID、聯絡人、參加者姓名、地址"
+              placeholder="搜尋姓名、手機、電話、地址、關係、參加項目、備註"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -31,6 +31,7 @@
               size="large"
               style="width: 150px"
               clearable
+              v-show="false"
             >
               <el-option
                 v-for="option in stateOptions"
@@ -71,7 +72,8 @@
             </el-button>
           </div>
           <p class="search-hint">
-            💡 提示: 可依狀態、項目類型或關鍵字（聯絡人、參加者、地址）搜尋相關記錄
+            💡 提示:
+            可依項目類型或關鍵字（聯絡人、參加者、地址、備註）搜尋相關記錄
           </p>
         </div>
       </div>
@@ -129,39 +131,31 @@
           </template>
         </el-table-column>
 
-        <el-table-column
-          label="聯絡人"
-          min-width="120"
-          align="center"
-        >
+        <el-table-column label="聯絡人" min-width="120" align="center">
           <template #default="{ row }">
             <div class="contact-info">
               <div class="contact-name">
                 <strong>{{ row.contact?.name || "-" }}</strong>
               </div>
-              <div class="contact-phone" v-if="row.contact?.mobile || row.contact?.phone">
+              <div
+                class="contact-phone"
+                v-if="row.contact?.mobile || row.contact?.phone"
+              >
                 {{ row.contact?.mobile || row.contact?.phone }}
               </div>
-              <div class="contact-relationship" v-if="row.contact?.relationship">
+              <div
+                class="contact-relationship"
+                v-if="row.contact?.relationship"
+              >
                 {{ row.contact?.relationship }}
-                <span v-if="row.contact?.otherRelationship" class="other-relationship">
+                <span
+                  v-if="row.contact?.otherRelationship"
+                  class="other-relationship"
+                >
                   ({{ row.contact.otherRelationship }})
                 </span>
               </div>
             </div>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="state"
-          label="狀態"
-          min-width="100"
-          align="center"
-        >
-          <template #default="{ row }">
-            <el-tag :type="getStateTagType(row.state)">
-              {{ getStateText(row.state) }}
-            </el-tag>
           </template>
         </el-table-column>
 
@@ -182,10 +176,13 @@
                   <span class="address-label">地址：</span>
                   <span class="address-text">{{ item.sourceAddress }}</span>
                 </div>
-                <div class="item-participants" v-if="item.sourceData && item.sourceData.length > 0">
+                <div
+                  class="item-participants"
+                  v-if="item.sourceData && item.sourceData.length > 0"
+                >
                   <span class="participants-label">參加者：</span>
                   <span class="participants-list">
-                    {{ getParticipantNames(item.sourceData).join('、') }}
+                    {{ getParticipantNames(item.sourceData).join("、") }}
                   </span>
                 </div>
               </div>
@@ -468,13 +465,15 @@ const formatDateLong = (dateString) => {
 // 獲取參加者姓名列表
 const getParticipantNames = (sourceData) => {
   if (!sourceData || !Array.isArray(sourceData)) return [];
-  
-  return sourceData.map(item => {
-    // 處理不同的姓名欄位
-    if (item.name) return item.name;
-    if (item.surname) return `${item.surname}氏`;
-    return '未知';
-  }).filter(name => name && name !== '未知');
+
+  return sourceData
+    .map((item) => {
+      // 處理不同的姓名欄位
+      if (item.name) return item.name;
+      if (item.surname) return `${item.surname}氏`;
+      return "未知";
+    })
+    .filter((name) => name && name !== "未知");
 };
 
 onMounted(() => {

@@ -263,19 +263,36 @@ export class RustJoinRecordService {
   async saveRecord(payload, context = {}) {
     try {
       console.log("🦀 [Rust] Service 傳送資料:", payload);
-
+      const createISOTime = DateUtils.getCurrentISOTime();
       // 轉換為 participationRecordDB 格式
       const recordData = {
         registrationId: payload.registrationId || -1,
         activityId: payload.activityId || -1,
-        contact: payload.contact || null, // 新增聯絡人資訊
         state: "confirmed",
         items: payload.items || [], // 直接使用 store 處理好的 items（已包含 sourceAddress）
+        contact: payload.contact || null, // 新增聯絡人資訊
         totalAmount: payload.total || 0,
         finalAmount: payload.total || 0,
         notes: payload.notes || "",
+        discountAmount: 0, // 折扣金額
+        paidAmount: 0, // 付款金額
+        needReceipt: false, // 需要收據
+        receiptNumber: "", // 收據號碼
+        receiptIssued: false, // 收據已開立
+        receiptIssuedAt: "", // 收據開立日期
+        receiptIssuedBy: "", // 收據開立者
+        accountingState: "pending", // pending=未沖帳,reconciled=已沖帳, none=無需沖帳
+        accountingDate: "", // 沖帳日期
+        accountingBy: "", // 沖帳者
+        accountingNotes: "", // 沖帳備註
+        paymentState: "", // paid=已付款，partial=部分付款，unpaid=未付款, none=無需付款
+        paymentMethod: "", // cash=現金，transfer=轉帳，credit_card=信用卡，other=其他
+        paymentDate: "", // 付款日期
+        paymentNotes: "", // 付款備註
+        createdAt: createISOTime,
       };
 
+      console.log("🦀 [Rust] 準備儲存的記錄資料:", recordData);
       const result = await this.createParticipationRecord(recordData, {
         ...context,
       });
