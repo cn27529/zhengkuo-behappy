@@ -14,13 +14,6 @@ A zhengkuo-behappy project for client and server apps
 
 npm run dev:full
 
-## look tree
-
-tree -L 3 -I "node_modules|.git|dist|docs|.md" ./client > client-tree.txt
-tree -L 2 -I "node_modules|.git|dist|docs|.md" ./server > server-tree.txt
-tree -L 3 -I "target|.lock|docs|.md" ./rust-axum > rust-axum-tree.txt
-tree -L 5 -I "node_modules|target|public|requitements|results|.lock|.git|dist|docs|.md" ./ > zk-tree.txt
-
 ## 上版
 
 ### 1. 切換到部署分支

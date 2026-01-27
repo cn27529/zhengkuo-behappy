@@ -1,0 +1,11 @@
+Figma.com
+cn27529@hotmail.com
+(DX8Rhz_7$Cw^pd
+
+## look tree
+
+tree -L 3 -I "node_modules|.git|dist|docs|.md" ./client > client-tree.txt
+tree -L 2 -I "node_modules|.git|dist|docs|.md" ./server > server-tree.txt
+tree -L 3 -I "target|.lock|docs|.md" ./rust-axum > rust-axum-tree.txt
+
+tree -L 5 -I "node_modules|target|public|requitements|results|scripts|docs|db|docker|dist|docs|.lock|.git|.kiro|.github|*.md|*.txt|*.log|*.yaml" ./ > zk-tree.txt

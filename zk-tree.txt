@@ -1,5 +1,4 @@
 ./
-├── README.md
 ├── client
 │   ├── index.html
 │   ├── package.json
@@ -31,13 +30,13 @@
 │   │   │   ├── card-template-zk02a.png
 │   │   │   ├── card-template-zk02b.png
 │   │   │   ├── card-template-zk03a.png
-│   │   │   ├── mock2.json
 │   │   │   ├── mock_activities.json
 │   │   │   ├── mock_logs.json
 │   │   │   ├── mock_monthlyDonates.json
+│   │   │   ├── mock_participation_records-db.json
 │   │   │   ├── mock_participation_records.json
+│   │   │   ├── mock_participation_records.json.backup
 │   │   │   ├── mock_registrations.json
-│   │   │   ├── mock_registrations_2data.json
 │   │   │   └── submit-success.json
 │   │   ├── main.js
 │   │   ├── router
@@ -46,6 +45,7 @@
 │   │   │   ├── baseRustService.js
 │   │   │   ├── rustActivityService.js
 │   │   │   ├── rustAuthService.js
+│   │   │   ├── rustJoinRecordService.js
 │   │   │   ├── rustMonthlyDonateService.js
 │   │   │   └── rustRegistrationService.js
 │   │   ├── services
@@ -61,6 +61,7 @@
 │   │   │   ├── authStore.js
 │   │   │   ├── cardStore.js
 │   │   │   ├── configStore.js
+│   │   │   ├── joinRecordQueryStore.js
 │   │   │   ├── joinRecordStore.js
 │   │   │   ├── menu.js
 │   │   │   ├── monthlyDonateStore.js
@@ -87,8 +88,7 @@
 │   │       ├── Env.vue
 │   │       ├── HashCode.vue
 │   │       ├── JoinRecord.vue
-│   │       ├── JoinRecord2.vue
-│   │       ├── JoinRecord3.vue
+│   │       ├── JoinRecordList.vue
 │   │       ├── LogViewPage.vue
 │   │       ├── Login.vue
 │   │       ├── Logout.vue
@@ -98,7 +98,6 @@
 │   │       ├── MydataList.vue
 │   │       ├── NewTab.vue
 │   │       ├── Placeholder.vue
-│   │       ├── Registration copy.vue
 │   │       ├── Registration.vue
 │   │       ├── RegistrationEdit.vue
 │   │       ├── RegistrationList.vue
@@ -111,26 +110,19 @@
 │   │       └── TianganDizhiClock24.vue
 │   ├── stats.html
 │   └── vite.config.js
-├── client-tree.txt
-├── db
-│   └── data.db
-├── docker
-│   ├── README.md
-│   ├── docker-compose.yml
-│   ├── extensions
-│   ├── logs
-│   └── uploads
 ├── netlify.toml
 ├── package.json
 ├── rust-axum
 │   ├── Cargo.lock
 │   ├── Cargo.toml
-│   ├── README.md
 │   ├── data.db
 │   ├── migrations
+│   │   ├── directus_participationRecordDB_collection.json
 │   │   ├── mydata.sql
 │   │   ├── sqlite_activityDB_table.sql
 │   │   ├── sqlite_monthlyDonateDB_table.sql
+│   │   ├── sqlite_participationRecordDB_table_v2.sql
+│   │   ├── sqlite_participationRecordDB_testdata_v2.sql
 │   │   └── sqlite_registrationDB_table.sql
 │   ├── package.json
 │   └── src
@@ -139,6 +131,7 @@
 │       │   ├── activity.rs
 │       │   ├── mod.rs
 │       │   ├── monthly_donate.rs
+│       │   ├── participation_record.rs
 │       │   └── registration.rs
 │       ├── main.rs
 │       ├── middleware
@@ -148,39 +141,22 @@
 │       │   ├── api_response.rs
 │       │   ├── mod.rs
 │       │   ├── monthly_donate.rs
+│       │   ├── participation_record.rs
 │       │   └── registration.rs
 │       ├── routes
 │       │   ├── activity.rs
 │       │   ├── mod.rs
 │       │   ├── monthly_donate.rs
+│       │   ├── participation_record.rs
 │       │   └── registration.rs
 │       └── utils
 │           └── mod.rs
-├── rust-axum-tree.txt
-├── scripts
-│   ├── curl.txt
-│   ├── deepseek.txt
-│   ├── mydata.txt
-│   ├── testGitHash.js
-│   ├── testMydata.js
-│   ├── test_mydata.sh
-│   ├── test_rust_activity_api.sh
-│   ├── test_rust_directus.md
-│   ├── test_rust_registration_api.sh
-│   ├── test_rust_registration_api_mockdata.sh
-│   └── test_rust_registration_with_user_created.sh
-├── server
-│   ├── Directus user setup.md
-│   ├── Dockerfile
-│   ├── README.md
-│   ├── data.db
-│   ├── extensions
-│   ├── package-lock.json
-│   ├── package-windows.json
-│   ├── package.json
-│   └── uploads
-│       └── test.txt
-├── server-tree.txt
-└── zk-tree.txt
+└── server
+    ├── Dockerfile
+    ├── data.db
+    ├── extensions
+    ├── package-windows.json
+    ├── package.json
+    └── uploads
 
-30 directories, 154 files
+24 directories, 136 files
