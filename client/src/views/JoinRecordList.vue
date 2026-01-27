@@ -16,7 +16,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋登記ID、參加姓名、參加項目"
+              placeholder="搜尋登記ID、聯絡人、參加者姓名、地址"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -71,7 +71,7 @@
             </el-button>
           </div>
           <p class="search-hint">
-            💡 提示: 可依狀態、項目類型或關鍵字搜尋相關記錄
+            💡 提示: 可依狀態、項目類型或關鍵字（聯絡人、參加者、地址）搜尋相關記錄
           </p>
         </div>
       </div>
@@ -130,6 +130,29 @@
         </el-table-column>
 
         <el-table-column
+          label="聯絡人"
+          min-width="120"
+          align="center"
+        >
+          <template #default="{ row }">
+            <div class="contact-info">
+              <div class="contact-name">
+                <strong>{{ row.contact?.name || "-" }}</strong>
+              </div>
+              <div class="contact-phone" v-if="row.contact?.mobile || row.contact?.phone">
+                {{ row.contact?.mobile || row.contact?.phone }}
+              </div>
+              <div class="contact-relationship" v-if="row.contact?.relationship">
+                {{ row.contact?.relationship }}
+                <span v-if="row.contact?.otherRelationship" class="other-relationship">
+                  ({{ row.contact.otherRelationship }})
+                </span>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column
           prop="state"
           label="狀態"
           min-width="100"
@@ -142,7 +165,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="參加項目" min-width="200">
+        <el-table-column label="參加項目" min-width="250">
           <template #default="{ row }">
             <div class="items-list">
               <div
@@ -150,9 +173,21 @@
                 :key="index"
                 class="item-tag"
               >
-                <span class="item-label">{{ item.label }}</span>
-                <span class="item-quantity">x{{ item.quantity }}</span>
-                <span class="item-amount">NT${{ item.subtotal }}</span>
+                <div class="item-header">
+                  <span class="item-label">{{ item.label }}</span>
+                  <span class="item-quantity">x{{ item.quantity }}</span>
+                  <span class="item-amount">NT${{ item.subtotal }}</span>
+                </div>
+                <div class="item-address" v-if="item.sourceAddress">
+                  <span class="address-label">地址：</span>
+                  <span class="address-text">{{ item.sourceAddress }}</span>
+                </div>
+                <div class="item-participants" v-if="item.sourceData && item.sourceData.length > 0">
+                  <span class="participants-label">參加者：</span>
+                  <span class="participants-list">
+                    {{ getParticipantNames(item.sourceData).join('、') }}
+                  </span>
+                </div>
               </div>
             </div>
           </template>
@@ -430,6 +465,18 @@ const formatDateLong = (dateString) => {
   return DateUtils.formatDateLong(dateString);
 };
 
+// 獲取參加者姓名列表
+const getParticipantNames = (sourceData) => {
+  if (!sourceData || !Array.isArray(sourceData)) return [];
+  
+  return sourceData.map(item => {
+    // 處理不同的姓名欄位
+    if (item.name) return item.name;
+    if (item.surname) return `${item.surname}氏`;
+    return '未知';
+  }).filter(name => name && name !== '未知');
+};
+
 onMounted(() => {
   console.log("✅ JoinRecordList 組件已載入");
   console.log("清除頁面狀態");
@@ -472,17 +519,21 @@ onMounted(() => {
 .items-list {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
 
 .item-tag {
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.item-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  background: #f8f9fa;
-  border-radius: 4px;
-  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
 }
 
 .item-label {
@@ -499,6 +550,62 @@ onMounted(() => {
   color: var(--el-color-primary);
   font-weight: 600;
   margin-left: auto;
+}
+
+.item-address {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.address-label {
+  font-weight: 500;
+  color: #888;
+}
+
+.address-text {
+  color: #555;
+}
+
+.item-participants {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.participants-label {
+  font-weight: 500;
+  color: #888;
+}
+
+.participants-list {
+  color: #555;
+}
+
+/* 聯絡人信息樣式 */
+.contact-info {
+  text-align: center;
+}
+
+.contact-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.contact-phone {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.contact-relationship {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.other-relationship {
+  color: #666;
+  font-style: italic;
 }
 
 .amount {
@@ -615,13 +722,21 @@ onMounted(() => {
   }
 
   .items-list {
-    max-width: 150px;
+    max-width: 200px;
   }
 
   .item-tag {
+    padding: 0.25rem;
+  }
+
+  .item-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.125rem;
+  }
+
+  .contact-info {
+    text-align: left;
   }
 }
 

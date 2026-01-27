@@ -192,6 +192,30 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
           matchFound = true;
         }
 
+        // 檢查聯絡人資訊
+        if (item.contact) {
+          if (item.contact.name && item.contact.name.toLowerCase().includes(query)) {
+            console.log("✅ 匹配聯絡人姓名:", item.contact.name);
+            matchFound = true;
+          }
+          if (item.contact.mobile && item.contact.mobile.includes(query)) {
+            console.log("✅ 匹配聯絡人手機:", item.contact.mobile);
+            matchFound = true;
+          }
+          if (item.contact.phone && item.contact.phone.includes(query)) {
+            console.log("✅ 匹配聯絡人電話:", item.contact.phone);
+            matchFound = true;
+          }
+          if (item.contact.relationship && item.contact.relationship.toLowerCase().includes(query)) {
+            console.log("✅ 匹配聯絡人關係:", item.contact.relationship);
+            matchFound = true;
+          }
+          if (item.contact.otherRelationship && item.contact.otherRelationship.toLowerCase().includes(query)) {
+            console.log("✅ 匹配聯絡人其他關係:", item.contact.otherRelationship);
+            matchFound = true;
+          }
+        }
+
         // 檢查項目內容
         if (item.items && Array.isArray(item.items)) {
           item.items.forEach((itemDetail, i) => {
@@ -201,6 +225,12 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
               itemDetail.label.toLowerCase().includes(query)
             ) {
               console.log(`✅ 匹配項目標籤 ${i}:`, itemDetail.label);
+              matchFound = true;
+            }
+
+            // 檢查地址資訊
+            if (itemDetail.sourceAddress && itemDetail.sourceAddress.toLowerCase().includes(query)) {
+              console.log(`✅ 匹配項目地址 ${i}:`, itemDetail.sourceAddress);
               matchFound = true;
             }
 
@@ -224,6 +254,16 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
                   console.log(
                     `✅ 匹配來源數據姓氏 ${i}-${j}:`,
                     sourceItem.surname,
+                  );
+                  matchFound = true;
+                }
+                if (
+                  sourceItem.notes &&
+                  sourceItem.notes.toLowerCase().includes(query)
+                ) {
+                  console.log(
+                    `✅ 匹配來源數據備註 ${i}-${j}:`,
+                    sourceItem.notes,
                   );
                   matchFound = true;
                 }
