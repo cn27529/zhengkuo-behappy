@@ -22,7 +22,7 @@ git checkout zk-client-netlify
 
 ### 2. 重設為與 v?-?? 相同的分支內容
 
-git reset --hard zk-client-v2-1210
+git reset --hard zk-client-rustaxum
 
 ### 3. 推送覆蓋遠端（⚠️ 小心使用）
 
