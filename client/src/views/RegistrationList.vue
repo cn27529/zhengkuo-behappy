@@ -38,13 +38,13 @@
               清空
             </el-button>
             <el-button
-          type="primary"
-          @click="handleNewRegistration"
-          :icon="Plus"
-          size="large"
-        >
-          祈福登記
-        </el-button>
+              type="primary"
+              @click="handleNewRegistration"
+              :icon="Plus"
+              size="large"
+            >
+              祈福登記
+            </el-button>
           </div>
           <p class="search-hint">💡 提示:搜尋關鍵字,系統會自動匹配相關欄位</p>
         </div>
@@ -86,7 +86,7 @@
               <el-tooltip :content="row.id" placement="top">
                 <span class="form-icon">👤</span>
               </el-tooltip>
-              <div class="form-name"></div>              
+              <div class="form-name"></div>
             </div>
           </template>
         </el-table-column>
@@ -155,8 +155,11 @@
                 >🖨️</el-button
               >
             </el-tooltip>
-            <el-tooltip content="卡片設計" placement="top">
-              <el-button circle @click="handleCardDesign(row)"
+            <el-tooltip content="卡片設計" placement="right">
+              <el-button
+                circle
+                @click="handleCardDesign(row)"
+                style="display: none"
                 >💳</el-button
               >
             </el-tooltip>
@@ -230,7 +233,16 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import { Refresh, Plus, Edit, Check, Delete, View, Search, User } from "@element-plus/icons-vue";
+import {
+  Refresh,
+  Plus,
+  Edit,
+  Check,
+  Delete,
+  View,
+  Search,
+  User,
+} from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { authService } from "../services/authService";
