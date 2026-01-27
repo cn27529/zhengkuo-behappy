@@ -62,3 +62,5 @@
 依據 ./docs\dev-joinRecord-modify-guide.md 文件的調適結果, 己添加 contact, sourceAddress 接下來要調適 ./client\src\views\JoinRecordList.vue "活動參加記錄查詢"功能, 及相關影響檔。我們也要將"活動參加記錄查詢"功能的修改 生成 ./docs\dev-joinRecord-list-modify-guide.md 文件
 
 我有一個問題要請教 看看你有什麼說法, 我有兩個分支 zk-client-netlify 及 zk-client-rustaxum，zk-client-netlify 分支是要部署到 netlify 平台的, 我會將目前開發中的分支 zk-client-rustaxum 蓋到 zk-client-netlify 分支, 但是有些功能還不想露出給使用者看見, 我己經綁定菜單但是又不想每次部署每次改菜單還要 commit, push 接著還要切到 zk-client-netlify 做 git reset --hard zk-client-rustaxum，有沒有什麼可行的說法。將你的說法生成在 docs/deployment-netlify-guide.md
+
+現在我要建構 client/src/views/JoinRecordPrint.vue，這個功能你參考 client/src/views/RegistrationPrint.vue 這個頁面很簡約純粹 主要是要打印用的頁面 沒有使用多餘的CSS 因為是為了不讓CSS影響了打印品質，有些列印機是無法支援CSS設置，你可以複刻 client/src/views/RegistrationPrint.vue 的模式打印 pdf image print都是可以的，如果你有更好的說法你也可以實現，實現完成後參考 client/src/views/RegistrationList.vue 的 handlePrint方法實現在 client/src/views/JoinRecordList.vue 。需要生成 docs/dev-joinRecord-print-guide.md 說明文件
