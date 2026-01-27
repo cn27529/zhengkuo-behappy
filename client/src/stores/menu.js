@@ -169,9 +169,10 @@ export const useMenuStore = defineStore("menu", () => {
 
   // Getter - 获取可用的菜單项（按order排序）
   const availableMenuItems = computed(() => {
+    // 判断当前环境是否为生产环境
     const isProduction = process.env.NODE_ENV === "production";
 
-    // 过滤掉未启用或未发布的菜單项
+    // 依環境決定菜單的顯示，过滤掉未启用或未发布的菜單项
     return menuItems.value
       .filter((item) => {
         if (!item.enabled) return false; // 过滤未启用项
