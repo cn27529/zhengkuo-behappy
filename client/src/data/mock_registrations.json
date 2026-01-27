@@ -414,7 +414,7 @@
         },
         "contact": {
             "mobile": "0901-222-333",
-            "name": "mock許志強333",
+            "name": "mock許志強",
             "otherRelationship": "表弟",
             "phone": "",
             "relationship": "其它"
@@ -1621,9 +1621,9 @@
         "contact": {
             "mobile": "0925-444-111",
             "name": "mock梁小琪",
-            "otherRelationship": "外甥女",
+            "otherRelationship": "",
             "phone": "049-55667788",
-            "relationship": "其它"
+            "relationship": "娘家"
         },
         "blessing": {
             "address": "南投縣埔里鎮中山路三段1000號",
@@ -1984,61 +1984,7 @@
         },
         "createdAt": "2025-11-18T12:18:12.016Z",
         "updatedAt": "2026-01-24T14:27:07.964939+00:00"
-    },
-    {
-        "id": 68,
-        "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-        "date_created": "2025-11-18 12:15:21",
-        "state": "submitted",
-        "formId": "715fda2",
-        "formName": "mock消災超度報名表-027",
-        "formSource": "",
-        "salvation": {
-            "address": "南投縣埔里鎮中山路三段1000號",
-            "ancestors": [
-                {
-                    "id": 1,
-                    "notes": "舅舅祖先",
-                    "surname": "梁氏"
-                }
-            ],
-            "survivors": [
-                {
-                    "id": 1,
-                    "name": "mock梁小琪",
-                    "notes": "",
-                    "zodiac": "狗"
-                },
-                {
-                    "id": 2,
-                    "name": "mock梁阿姨",
-                    "notes": "阿姨",
-                    "zodiac": "豬"
-                }
-            ]
-        },
-        "contact": {
-            "mobile": "0925-444-111",
-            "name": "mock梁小琪",
-            "otherRelationship": "外甥女",
-            "phone": "049-55667788",
-            "relationship": "其它"
-        },
-        "blessing": {
-            "address": "南投縣埔里鎮中山路三段1000號",
-            "persons": [
-                {
-                    "id": 1,
-                    "isHouseholdHead": true,
-                    "name": "mock梁小琪",
-                    "notes": "",
-                    "zodiac": "狗"
-                }
-            ]
-        },
-        "createdAt": "2025-11-18T12:15:21.123Z",
-        "updatedAt": ""
-    },
+    },    
     {
         "id": 67,
         "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
@@ -2424,63 +2370,7 @@
         },
         "createdAt": "2025-11-15T14:40:00.721Z",
         "updatedAt": ""
-    },
-    {
-        "id": 59,
-        "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-        "date_created": "2025-11-15 14:39:57",
-        "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-        "date_updated": "2025-12-09 11:23:06",
-        "state": "updated",
-        "formId": "8037245",
-        "formName": "mock消災超度報名表-027",
-        "formSource": "",
-        "salvation": {
-            "address": "南投縣埔里鎮中山路三段1000號",
-            "ancestors": [
-                {
-                    "id": 1,
-                    "notes": "舅舅祖先",
-                    "surname": "梁氏"
-                }
-            ],
-            "survivors": [
-                {
-                    "id": 1,
-                    "name": "mock梁小琪",
-                    "notes": "",
-                    "zodiac": "狗"
-                },
-                {
-                    "id": 2,
-                    "name": "mock梁阿姨",
-                    "notes": "阿姨",
-                    "zodiac": "豬"
-                }
-            ]
-        },
-        "contact": {
-            "mobile": "0925-444-111",
-            "name": "mock梁小琪333",
-            "otherRelationship": "外甥女",
-            "phone": "049-55667788",
-            "relationship": "其它"
-        },
-        "blessing": {
-            "address": "南投縣埔里鎮中山路三段1000號",
-            "persons": [
-                {
-                    "id": 1,
-                    "isHouseholdHead": true,
-                    "name": "mock梁小琪",
-                    "notes": "",
-                    "zodiac": "狗"
-                }
-            ]
-        },
-        "createdAt": "2025-11-15T14:39:57.716Z",
-        "updatedAt": "2025-12-09T11:23:06.953Z"
-    },
+    },    
     {
         "id": 58,
         "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
@@ -2534,61 +2424,7 @@
         },
         "createdAt": "2025-11-15T14:39:54.707Z",
         "updatedAt": ""
-    },
-    {
-        "id": 57,
-        "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-        "date_created": "2025-11-15 14:39:51",
-        "state": "submitted",
-        "formId": "63bd6ad",
-        "formName": "mock消災超度報名表-027",
-        "formSource": "",
-        "salvation": {
-            "address": "南投縣埔里鎮中山路三段1000號",
-            "ancestors": [
-                {
-                    "id": 1,
-                    "notes": "舅舅祖先",
-                    "surname": "梁氏"
-                }
-            ],
-            "survivors": [
-                {
-                    "id": 1,
-                    "name": "mock梁小琪",
-                    "notes": "",
-                    "zodiac": "狗"
-                },
-                {
-                    "id": 2,
-                    "name": "mock梁阿姨",
-                    "notes": "阿姨",
-                    "zodiac": "豬"
-                }
-            ]
-        },
-        "contact": {
-            "mobile": "0925-444-111",
-            "name": "mock梁小琪",
-            "otherRelationship": "外甥女",
-            "phone": "049-55667788",
-            "relationship": "其它"
-        },
-        "blessing": {
-            "address": "南投縣埔里鎮中山路三段1000號",
-            "persons": [
-                {
-                    "id": 1,
-                    "isHouseholdHead": true,
-                    "name": "mock梁小琪",
-                    "notes": "",
-                    "zodiac": "狗"
-                }
-            ]
-        },
-        "createdAt": "2025-11-15T14:39:51.738Z",
-        "updatedAt": ""
-    },
+    },    
     {
         "id": 56,
         "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
@@ -3308,61 +3144,7 @@
         },
         "createdAt": "2025-11-15T14:36:21.753Z",
         "updatedAt": ""
-    },
-    {
-        "id": 40,
-        "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-        "date_created": "2025-11-15 14:36:19",
-        "state": "submitted",
-        "formId": "3254f2a",
-        "formName": "mock消災超度報名表-027",
-        "formSource": "",
-        "salvation": {
-            "address": "南投縣埔里鎮中山路三段1000號",
-            "ancestors": [
-                {
-                    "id": 1,
-                    "notes": "舅舅祖先",
-                    "surname": "梁氏"
-                }
-            ],
-            "survivors": [
-                {
-                    "id": 1,
-                    "name": "mock梁小琪",
-                    "notes": "",
-                    "zodiac": "狗"
-                },
-                {
-                    "id": 2,
-                    "name": "mock梁阿姨",
-                    "notes": "阿姨",
-                    "zodiac": "豬"
-                }
-            ]
-        },
-        "contact": {
-            "mobile": "0925-444-111",
-            "name": "mock梁小琪",
-            "otherRelationship": "外甥女",
-            "phone": "049-55667788",
-            "relationship": "其它"
-        },
-        "blessing": {
-            "address": "南投縣埔里鎮中山路三段1000號",
-            "persons": [
-                {
-                    "id": 1,
-                    "isHouseholdHead": true,
-                    "name": "mock梁小琪",
-                    "notes": "",
-                    "zodiac": "狗"
-                }
-            ]
-        },
-        "createdAt": "2025-11-15T14:36:18.941Z",
-        "updatedAt": ""
-    },
+    },    
     {
         "id": 39,
         "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
@@ -3815,7 +3597,7 @@
             "name": "mock羅美玲",
             "otherRelationship": "",
             "phone": "06-22334455",
-            "relationship": "本家"
+            "relationship": "朋友"
         },
         "blessing": {
             "address": "台南市安平區永華路二段600號",

@@ -192,8 +192,7 @@
             <span>
               <!-- <strong>關係：</strong> -->
               {{ selectedRegistration.contact.relationship }}
-              <span
-                class="price-tag"
+              <span                
                 v-if="selectedRegistration.contact.otherRelationship"
               >
                 {{ selectedRegistration.contact.otherRelationship }}
@@ -564,7 +563,7 @@
             <input
               type="text"
               v-model="searchKeyword"
-              placeholder="搜尋姓名、手機、電話、地址"
+              placeholder="搜尋姓名、手機、電話、地址、關係"
             />
           </div>
         </div>
@@ -593,7 +592,11 @@
                 reg.contact.mobile || reg.contact.phone
               }}</span>
 
-              <span>{{ reg.contact.relationship }}</span>
+              <span>{{ reg.contact.relationship }}
+                <span v-if="reg.contact.otherRelationship">{{ reg.contact.otherRelationship }}</span>
+              </span>
+              
+              
 
               <div class="data-summary" style="display: none">
                 <span
