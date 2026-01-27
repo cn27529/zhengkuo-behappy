@@ -1,5 +1,262 @@
 [
   {
+    "id": 49,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 13:04:40",
+    "registrationId": 102,
+    "activityId": 42,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "台北市中正區中山南路1號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "歷代祖先",
+            "surname": "王府"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "台北市中正區中山南路1號",
+        "sourceData": [
+          {
+            "id": 5,
+            "name": "王大明",
+            "notes": "老公",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 6,
+            "name": "李小華",
+            "notes": "妻子",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "李小華",
+            "price": 600
+          },
+          {
+            "lampType": "taisui",
+            "lampTypeLabel": "太歲燈",
+            "personId": 3,
+            "personName": "王大明",
+            "price": 800
+          }
+        ],
+        "price": 700,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市中正區中山南路1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "李小華",
+            "notes": "妻子",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": true,
+            "name": "王大明",
+            "notes": "老公",
+            "zodiac": "鼠"
+          }
+        ],
+        "subtotal": 1400,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市中正區中山南路1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "李小華",
+            "notes": "妻子",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": true,
+            "name": "王大明",
+            "notes": "老公",
+            "zodiac": "鼠"
+          }
+        ],
+        "subtotal": 600,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市中正區中山南路1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "李小華",
+            "notes": "妻子",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": true,
+            "name": "王大明",
+            "notes": "老公",
+            "zodiac": "鼠"
+          }
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0912-345-678",
+      "name": "王大明2026",
+      "otherRelationship": "",
+      "phone": "02-12345678",
+      "relationship": "本家"
+    },
+    "totalAmount": 3000,
+    "discountAmount": 0,
+    "finalAmount": 3000,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "123",
+    "createdAt": "2026-01-27T13:04:40.422Z"
+  },
+  {
+    "id": 48,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-01-27 12:35:07",
+    "registrationId": 108,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "陳一書",
+            "price": 600
+          },
+          {
+            "lampType": "taisui",
+            "lampTypeLabel": "太歲燈",
+            "personId": 2,
+            "personName": "陳許樂",
+            "price": 800
+          },
+          {
+            "lampType": "yuanchen",
+            "lampTypeLabel": "元辰燈",
+            "personId": 3,
+            "personName": "彭小因",
+            "price": 1000
+          }
+        ],
+        "price": 800,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市永和區永福路二段111巷3弄10號5樓",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "陳一書",
+            "notes": "爸爸👨",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "陳許樂",
+            "notes": "女兒",
+            "zodiac": "兔"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "彭小因",
+            "notes": "媽媽👩",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 2400,
+        "type": "diandeng"
+      }
+    ],
+    "contact": {
+      "mobile": "0928230520",
+      "name": "BK",
+      "otherRelationship": "BK",
+      "phone": "",
+      "relationship": "其它"
+    },
+    "totalAmount": 1800,
+    "discountAmount": 0,
+    "finalAmount": 1800,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "0",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "BK",
+    "createdAt": "2026-01-27T12:35:07.311Z"
+  },
+  {
     "id": 40,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:16:03",

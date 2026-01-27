@@ -19,7 +19,7 @@ const routes = [
   {
     path: "/td-clock",
     component: () => import("../views/TianganDizhiClock12.vue"),
-  },  
+  },
   {
     path: "/join-record",
     title: "活動參加",
@@ -38,6 +38,12 @@ const routes = [
       console.log("🚪 清除頁面狀態");
       next();
     },
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/join-record-print",
+    title: "活動參加記錄列印",
+    component: () => import("../views/JoinRecordPrint.vue"),
     meta: { requiresAuth: true },
   },
   {

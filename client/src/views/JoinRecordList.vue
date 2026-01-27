@@ -170,17 +170,19 @@
                 <div class="item-header">
                   <span class="item-label">{{ item.label }}</span>
                   <span class="item-quantity">x{{ item.quantity }}</span>
-                  <span class="item-amount">NT${{ item.subtotal }}</span>
+                  <span class="item-amount"
+                    >{appConfig.dollarTitle}{{ item.subtotal }}</span
+                  >
                 </div>
                 <div class="item-address" v-if="item.sourceAddress">
-                  <span class="address-label">地址：</span>
+                  <!-- <span class="address-label">地址：</span> -->
                   <span class="address-text">{{ item.sourceAddress }}</span>
                 </div>
                 <div
                   class="item-participants"
                   v-if="item.sourceData && item.sourceData.length > 0"
                 >
-                  <span class="participants-label">參加者：</span>
+                  <!-- <span class="participants-label">參加者：</span> -->
                   <span class="participants-list">
                     {{ getParticipantNames(item.sourceData).join("、") }}
                   </span>
@@ -197,7 +199,9 @@
           align="center"
         >
           <template #default="{ row }">
-            <strong class="amount">NT${{ row.totalAmount || 0 }}</strong>
+            <strong class="amount"
+              >{{ appConfig.dollarTitle }}{{ row.totalAmount || 0 }}</strong
+            >
           </template>
         </el-table-column>
 
@@ -215,12 +219,7 @@
         <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
             <el-tooltip content="列印表單" placement="top">
-              <el-button
-                type="success"
-                circle
-                @click="handlePrint(row)"
-                disabled
-              >
+              <el-button type="success" circle @click="handlePrint(row)">
                 🖨️
               </el-button>
             </el-tooltip>
@@ -311,6 +310,7 @@ import { authService } from "../services/authService";
 import { useJoinRecordQueryStore } from "../stores/joinRecordQueryStore.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { appConfig } from "../config/appConfig.js";
 
 const pageStateStore = usePageStateStore();
 const queryStore = useJoinRecordQueryStore();
@@ -416,9 +416,35 @@ const handleCurrentChange = (newPage) => {
   }
 };
 
-// 列印表單 (暫未實作)
+// 列印表單
 const handlePrint = (item) => {
-  ElMessage.info(`列印功能尚未實作 - 記錄ID: ${item.id}`);
+  try {
+    const recordId = item.id;
+    const printData = JSON.stringify(item);
+
+    console.log("準備列印數據:", { recordId, printData });
+    ElMessage.info(`準備列印表單: ${recordId}`);
+
+    const printId = `print_join_record_${recordId}_${Math.floor(Math.random() * 1000)}`;
+    console.log("列印表單 ID:", printId);
+
+    sessionStorage.setItem(printId, printData);
+    console.log("儲存列印數據:", {
+      printId,
+      data: JSON.parse(printData),
+    });
+
+    router.push({
+      path: "/join-record-print",
+      query: {
+        print_id: printId,
+        print_data: printData,
+      },
+    });
+  } catch (error) {
+    console.error("導航到列印頁面失敗:", error);
+    ElMessage.error("導航到列印頁面失敗");
+  }
 };
 
 // 刪除記錄 (暫未實作)

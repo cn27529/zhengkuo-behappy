@@ -211,7 +211,7 @@
             <!-- 超度/超薦 -->
             <div
               class="activity-section"
-              v-if="selectedRegistration.salvation.ancestors.length > 0"
+              v-if="hasValidAncestors(selectedRegistration)"
             >
               <div
                 class="activity-header clickable"
@@ -235,7 +235,8 @@
                   (已選 {{ selections.chaodu.length }} 位)
                 </span>
                 <span class="price-tag"
-                  >每位 ${{ activityConfigs.chaodu.price }}</span
+                  >每位 {{ appConfig.dollarTitle
+                  }}{{ activityConfigs.chaodu.price }}</span
                 >
               </div>
               {{ selectedRegistration.salvation.address }}
@@ -292,7 +293,7 @@
             <!-- 消災祈福 -->
             <div
               class="activity-section"
-              v-if="selectedRegistration.salvation.ancestors.length > 0"
+              v-if="hasValidAncestors(selectedRegistration)"
             >
               <div
                 class="activity-header clickable"
@@ -313,7 +314,8 @@
                   (已選 {{ selections.qifu.length }} 位)
                 </span>
                 <span class="price-tag"
-                  >每位 ${{ activityConfigs.qifu.price }}</span
+                  >每位 {{ appConfig.dollarTitle
+                  }}{{ activityConfigs.qifu.price }}</span
                 >
               </div>
               <div class="address">
@@ -369,7 +371,8 @@
                 </span>
 
                 <span class="price-tag"
-                  >每位 ${{ activityConfigs.diandeng.price }}</span
+                  >每位 {{ appConfig.dollarTitle
+                  }}{{ activityConfigs.diandeng.price }}</span
                 >
               </div>
 
@@ -450,7 +453,8 @@
                 </span>
 
                 <span class="price-tag"
-                  >每位 ${{ activityConfigs.xiaozai.price }}</span
+                  >每位 {{ appConfig.dollarTitle
+                  }}{{ activityConfigs.xiaozai.price }}</span
                 >
               </div>
               <div class="address">
@@ -503,7 +507,8 @@
                 </span>
 
                 <span class="price-tag"
-                  >每位 ${{ activityConfigs.pudu.price }}</span
+                  >每位 {{ appConfig.dollarTitle
+                  }}{{ activityConfigs.pudu.price }}</span
                 >
               </div>
 
@@ -674,6 +679,7 @@ import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordStore } from "../stores/joinRecordStore.js";
 import { useActivityStore } from "../stores/activityStore.js";
 import { storeToRefs } from "pinia";
+import appConfig from "../config/appConfig.js";
 
 const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
@@ -791,6 +797,26 @@ const getActivityStateType = (state) => {
     cancelled: "danger",
   };
   return stateTypes[state] || "info";
+};
+
+// 檢查是否有有效的祖先資料
+const hasValidAncestors = (registration) => {
+  if (!registration || !registration.salvation) return false;
+
+  // 檢查是否有祖先地址
+  const hasAddress =
+    registration.salvation.address &&
+    registration.salvation.address.trim() !== "";
+
+  // 檢查是否有有效的祖先名稱
+  const hasValidAncestorNames =
+    registration.salvation.ancestors &&
+    registration.salvation.ancestors.length > 0 &&
+    registration.salvation.ancestors.some(
+      (ancestor) => ancestor.surname && ancestor.surname.trim() !== "",
+    );
+
+  return hasAddress && hasValidAncestorNames;
 };
 
 // 計算篩選後的祈福登記
@@ -936,7 +962,7 @@ const handleSubmitRecord = async () => {
   try {
     // 確認提交對話框
     const { value: notes } = await ElMessageBox.prompt(
-      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：NT$${totalAmount.value}\n\n請在下方備註欄填寫相關說明：`,
+      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.dollarTitle}${totalAmount.value}\n\n請在下方備註欄填寫相關說明：`,
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
@@ -950,11 +976,14 @@ const handleSubmitRecord = async () => {
         },
         inputErrorMessage: "備註說明不能為空",
         type: "warning",
-      }
+      },
     );
 
     // 修改 joinRecordStore 的 submitRecord 方法，傳遞 activityId 和 notes
-    const result = await joinRecordStore.submitRecord(selectedActivityId.value, notes.trim());
+    const result = await joinRecordStore.submitRecord(
+      selectedActivityId.value,
+      notes.trim(),
+    );
     const createdISOTime = DateUtils.getCurrentISOTime();
 
     if (result.success) {
@@ -1222,7 +1251,7 @@ onMounted(async () => {
 
 .activity-price {
   color: #666;
-  font-size: 0.9rem;
+  font-size: 0.5rem;
 }
 
 .price-tag {
@@ -1232,6 +1261,7 @@ onMounted(async () => {
   border-radius: 100px;
   font-weight: bold;
   margin-left: auto; /* 推到右側 */
+  font-size: 0.9rem;
 }
 
 .selected-count {
