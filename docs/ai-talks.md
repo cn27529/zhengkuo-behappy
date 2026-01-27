@@ -61,5 +61,4 @@
 
 依據 ./docs\dev-joinRecord-modify-guide.md 文件的調適結果, 己添加 contact, sourceAddress 接下來要調適 ./client\src\views\JoinRecordList.vue "活動參加記錄查詢"功能, 及相關影響檔。我們也要將"活動參加記錄查詢"功能的修改 生成 ./docs\dev-joinRecord-list-modify-guide.md 文件
 
-
-我有一個問題要請教 看看你有什麼說法, 我有一個 zk-client-netlify 分支這個分支是要部署到 netlify的, 我會將目前開發中的分支 zk-client-rustaxum 蓋到 zk-client-netlify 分支, 但是有些功能還不想露出給使用者看見, 我己經綁定菜單但是又不想每次部署每次改菜單還要 commit and push 還要切到 zk-client-netlify 做 git reset --hard zk-client-rustaxum, 你有什麼說法.
+我有一個問題要請教 看看你有什麼說法, 我有兩個分支 zk-client-netlify 及 zk-client-rustaxum，zk-client-netlify 分支是要部署到 netlify 平台的, 我會將目前開發中的分支 zk-client-rustaxum 蓋到 zk-client-netlify 分支, 但是有些功能還不想露出給使用者看見, 我己經綁定菜單但是又不想每次部署每次改菜單還要 commit, push 接著還要切到 zk-client-netlify 做 git reset --hard zk-client-rustaxum，有沒有什麼可行的說法。將你的說法生成在 docs/deployment-netlify-guide.md

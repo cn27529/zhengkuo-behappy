@@ -17,6 +17,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 1,
       enabled: true,
+      publish: true,
     },
     {
       id: 2,
@@ -27,6 +28,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 2,
       enabled: true,
+      publish: true,
     },
     {
       id: 3,
@@ -37,6 +39,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 3,
       enabled: true,
+      publish: true,
     },
     {
       id: 4,
@@ -47,6 +50,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 4,
       enabled: true,
+      publish: true,
     },
     {
       id: 5,
@@ -57,6 +61,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 5,
       enabled: true,
+      publish: true,
     },
     {
       id: 6,
@@ -67,6 +72,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 6,
       enabled: false,
+      publish: false,
     },
     {
       id: 7,
@@ -77,6 +83,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 7,
       enabled: true,
+      publish: true,
     },
     {
       id: 8,
@@ -87,6 +94,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 8,
       enabled: true,
+      publish: false,
     },
     {
       id: 9,
@@ -97,6 +105,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 9,
       enabled: true,
+      publish: false,
     },
     {
       id: 10,
@@ -107,6 +116,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 10,
       enabled: true,
+      publish: false,
     },
     {
       id: 11,
@@ -117,6 +127,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: false,
       order: 11,
       enabled: true,
+      publish: false,
     },
     {
       id: 99,
@@ -127,6 +138,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 99,
       enabled: false,
+      publish: false,
     },
     {
       id: 99,
@@ -137,6 +149,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 99,
       enabled: false,
+      publish: false,
     },
     {
       id: 99,
@@ -147,17 +160,8 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: false,
       order: 99,
       enabled: false,
+      publish: false,
     },
-    // {
-    //   id: 99,
-    //   name: "Mydata",
-    //   path: "/mydata",
-    //   icon: "📥",
-    //   component: "MydataList",
-    //   requiredAuth: true,
-    //   order: 99,
-    //   enabled: false,
-    // },
   ]);
 
   // 当前激活的菜單项
@@ -165,8 +169,15 @@ export const useMenuStore = defineStore("menu", () => {
 
   // Getter - 获取可用的菜單项（按order排序）
   const availableMenuItems = computed(() => {
+    const isProduction = process.env.NODE_ENV === "production";
+
+    // 过滤掉未启用或未发布的菜單项
     return menuItems.value
-      .filter((item) => item.enabled)
+      .filter((item) => {
+        if (!item.enabled) return false; // 过滤未启用项
+        if (isProduction && item.publish === false) return false; // 生产环境过滤未发布项
+        return true;
+      })
       .sort((a, b) => a.order - b.order);
   });
 
