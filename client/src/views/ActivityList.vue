@@ -1154,7 +1154,7 @@ const submitByParticipantRecordsUpdate = async () => {
     // 使用 joinRecordQueryStore 查詢參加記錄（支援 mock 模式）
     const queryData = {
       query: "", // 不需要關鍵字搜尋，查詢該活動的所有記錄
-      activityId: selectedActivity.value.id,
+      activityId: selectedActivity.value.id, // 保持數字類型
     };
 
     const result = await joinRecordQueryStore.queryJoinRecordData(queryData);

@@ -147,13 +147,11 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
     let filteredData = [...data];
 
-    if (queryData.activityId && queryData.activityId > 0) {
-      const activityIdQuery = queryData.activityId.trim().toLowerCase();
+    if (queryData.activityId && (typeof queryData.activityId === 'number' || queryData.activityId > 0)) {
+      const activityIdQuery = parseInt(queryData.activityId);
       console.log("🔍 activityId過濾:", activityIdQuery);
       filteredData = filteredData.filter((item) => {
-        return (
-          item.activityId && item.activityId.toLowerCase() === activityIdQuery
-        );
+        return item.activityId && item.activityId === activityIdQuery;
       });
       console.log("activityId過濾後筆數:", filteredData.length);
     }
