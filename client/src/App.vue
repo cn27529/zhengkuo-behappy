@@ -89,7 +89,7 @@ const menuStore = useMenuStore();
 const pageStateStore = usePageStateStore();
 const appTitle = computed(() => appConfig.title);
 const myPageState = computed(() =>
-  pageStateStore.loadPageState("registration")
+  pageStateStore.loadPageState("registration"),
 );
 
 const menuPosition = ref(sessionStorage.getItem("menuPosition") || "left");
@@ -117,7 +117,7 @@ const showUserInfo = computed(() => {
     showHeader.value &&
     !isPrintRoute.value &&
     route.path !== "/login" &&
-    route.path !== "/logout"    
+    route.path !== "/logout"
   );
 });
 
@@ -149,7 +149,11 @@ const computeVisibility = () => {
   const tdClock = route.path && route.path.includes("td-clock");
   return {
     header: !isPrint && !tdClock, // 顶部导航栏：非打印页面显示
-    sidebar: !isPrint && !tdClock && route.path !== "/login" && route.path !== "/logout", // 側邊菜單栏：非打印页面且非登录/登出页面显示
+    sidebar:
+      !isPrint &&
+      !tdClock &&
+      route.path !== "/login" &&
+      route.path !== "/logout", // 側邊菜單栏：非打印页面且非登录/登出页面显示
     footer: !isPrint && !tdClock, // 底部：非打印页面显示
   };
 };
@@ -171,12 +175,12 @@ watch(
   () => route.path,
   (newPath) => {
     menuStore.setActiveMenuByPath(newPath);
-  }
+  },
 );
 
 // 每次路由切換開始時，先把 layoutReady 關閉，避免中途顯示舊 layout
 router.beforeEach((to, from, next) => {
-  layoutReady.value = false;
+  //layoutReady.value = false;
   next();
 });
 
@@ -193,48 +197,25 @@ watch(
   (newUser) => {
     userDisplayName.value = newUser ? newUser.displayName : "訪客";
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // 在组件挂载前初始化认证状态
 const initializeApp = async () => {
-  // // 确保认证状态已恢复
-  // if (sessionStorage.getItem("auth-user")) {
-  //   authStore.initializeAuth();
-  // }
-
-  // // 检查当前路由是否需要重定向
-  // if (route.meta.requiresAuth && !authStore.isAuthenticated) {
-  //   await router.push("/login");
-  //   return;
-  // }
-
-  // if (route.meta.requiresGuest && authStore.isAuthenticated) {
-  //   await router.push("/");
-  //   return;
-  // }
-
   // 初始化菜單
   menuStore.initializeActiveMenu();
-  // 更新布局可见性
-  await updateLayoutVisibility();
+
+  // 每次路由切換後，在 nextTick 後更新（確保 router-view 的子組件已渲染完成）
+  router.afterEach(() => {
+    console.log("每次路由切換後，路由切換完成，更新布局可见性");
+    updateLayoutVisibility();
+  });
 };
 
 onMounted(() => {
   initializeApp();
-  // 初始化菜單
-  menuStore.initializeActiveMenu();
-
   // 修改用户昵称的计算方式
   userDisplayName.value = authStore.user ? authStore.user.displayName : "訪客";
-
-  // 初始載入時，在 nextTick 後設定 header/sidebar/footer
-  updateLayoutVisibility();
-
-  // 每次路由切換後，在 nextTick 後更新（確保 router-view 的子組件已渲染完成）
-  router.afterEach(() => {
-    updateLayoutVisibility();
-  });
 });
 
 // 增加粘性标题时的样式
