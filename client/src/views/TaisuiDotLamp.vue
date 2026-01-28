@@ -118,7 +118,7 @@
                   <div class="notes-cell">
                     <span
                       v-for="(note, noteIndex) in tableData.getNotesForColumn(
-                        index
+                        index,
                       )"
                       :key="`note-${index}-${noteIndex}`"
                       class="note-tag"
@@ -420,7 +420,7 @@ onUnmounted(() => {
 .dotlamp-table th,
 .dotlamp-table td {
   border: 1px solid #ddd;
-  padding: 0.75rem;
+  padding: 0.95rem;
   text-align: center;
   min-width: 80px;
 }
@@ -514,7 +514,7 @@ onUnmounted(() => {
 .numbers-cell {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: 0.55rem;
   justify-content: center;
 }
 
@@ -532,6 +532,7 @@ onUnmounted(() => {
   background: #ffffff;
 }
 
+/* 點燈 */
 .lamp-cell {
   display: flex;
   flex-direction: column;
@@ -548,17 +549,22 @@ onUnmounted(() => {
   color: white;
 }
 
+/* 太歲燈 */
 .lamp-taisui {
   background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  /* color: #333 !important; */
 }
 
+/* 元辰燈 */
 .lamp-yuanchen {
   background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+  /* color: #333 !important; */
 }
 
+/* 光明燈 */
 .lamp-guangming {
   background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-  color: #333 !important;
+  /* color: #333 !important; */
 }
 
 .explanation-text {

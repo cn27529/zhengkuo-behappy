@@ -29,7 +29,7 @@
     <LogViewer ref="logViewer" />
     <div class="log-view-page">
       <!-- 導航按鈕 -->
-      <div class="navigation">
+      <div class="navigation" style="display: none">
         <button @click="goBack" class="btn-back">← 返回上一頁</button>
         <button @click="exportLogs" class="btn-export" :disabled="isExporting">
           {{ isExporting ? "匯出中..." : "📥 匯出日誌" }}
@@ -58,10 +58,11 @@ const mockLogs = mock_logs;
 // 計算屬性
 const totalLogs = computed(() => logs.value.length);
 const successCount = computed(
-  () => logs.value.filter((log) => log.status >= 200 && log.status < 300).length
+  () =>
+    logs.value.filter((log) => log.status >= 200 && log.status < 300).length,
 );
 const errorCount = computed(
-  () => logs.value.filter((log) => log.status >= 400).length
+  () => logs.value.filter((log) => log.status >= 400).length,
 );
 const avgDuration = computed(() => {
   if (logs.value.length === 0) return 0;
@@ -153,8 +154,9 @@ defineExpose({
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    sans-serif;
 }
 
 .stats-cards {
@@ -171,7 +173,9 @@ defineExpose({
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid #e0e0e0;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .stat-card:hover {
