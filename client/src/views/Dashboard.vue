@@ -57,7 +57,7 @@
           <div class="stat-info">
             <h3>{{ activity.name }}</h3>
             <div class="stat-number">{{ activity.participants }}</div>
-            <div class="stat-label">報名人次</div>
+            <div class="stat-label">參與人次</div>
             <div class="activity-date">{{ formatDate(activity.date) }}</div>
           </div>
         </el-card>
@@ -78,7 +78,7 @@
           <div class="stat-info">
             <h3>{{ activity.name }}</h3>
             <div class="stat-number">{{ activity.participants }}</div>
-            <div class="stat-label">報名人次</div>
+            <div class="stat-label">參與人次</div>
             <div class="activity-date">{{ formatDate(activity.date) }}</div>
           </div>
         </el-card>
@@ -106,10 +106,10 @@ const totalParticipants = computed(() => activityStore.totalParticipants);
 const upcomingActivities = computed(() => activityStore.upcomingActivities);
 const completedActivities = computed(() => activityStore.completedActivities);
 const upcomingCardActivities = computed(
-  () => activityStore.upcomingCardActivities
+  () => activityStore.upcomingCardActivities,
 );
 const completedCardActivities = computed(
-  () => activityStore.completedCardActivities
+  () => activityStore.completedCardActivities,
 );
 
 const formatDate = (dateString) => {
@@ -144,7 +144,9 @@ onUnmounted(() => {
   border-radius: 10px;
   display: flex;
   align-items: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   border-left: 4px solid var(--primary-color);
   height: 100%;
 }

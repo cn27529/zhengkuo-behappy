@@ -110,11 +110,15 @@
                 <el-option
                   v-for="activity in availableActivities"
                   :key="activity.id"
-                  :label="`${activity.name} - ${formatActivityDate(activity.date)}`"
+                  :label="`${activity.icon} ${activity.name} - ${formatActivityDate(activity.date)} ${activity.location}`"
                   :value="activity.id"
                 >
                   <div class="activity-option">
-                    <div class="activity-name">{{ activity.name }}</div>
+                    <div class="activity-name">
+                      {{ activity.icon }} {{ activity.name }} -
+                      {{ formatActivityDate(activity.date) }}
+                      {{ activity.location }}
+                    </div>
                     <div class="activity-details">
                       <span class="activity-date">{{
                         formatActivityDate(activity.date)
