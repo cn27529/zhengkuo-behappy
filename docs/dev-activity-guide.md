@@ -163,6 +163,51 @@ const activities1Year = computed(() => {
 });
 ```
 
+#### 參與人次更新功能
+
+系統提供兩種更新參與人次的方式：
+
+1. **手動更新**：直接輸入參與人次數量
+2. **依參加記錄更新**：自動計算參加記錄中的實際人數
+
+```javascript
+// 依參加記錄更新人次
+const submitByParticipantRecordsUpdate = async () => {
+  // 根據活動ID查詢所有參加記錄
+  const result = await serviceAdapter.getParticipationRecordsByActivityId(activityId);
+  
+  let totalParticipants = 0;
+  
+  // 遍歷所有參加記錄，計算 sourceData 中的實際參與人數
+  result.data?.forEach(record => {
+    record.items?.forEach(item => {
+      // 每個項目的 sourceData 包含實際參與的人員資料
+      if (item.sourceData && Array.isArray(item.sourceData)) {
+        totalParticipants += item.sourceData.length;
+      }
+    });
+  });
+  
+  // 更新活動的參與人次
+  await activityStore.updateActivityParticipants(activityId, totalParticipants);
+};
+```
+
+**計算邏輯說明：**
+- 每個參加記錄包含多個項目（items）
+- 每個項目的 `sourceData` 陣列包含實際參與的人員資料
+- 總人次 = 所有項目中 `sourceData` 的人數總和
+
+**範例計算：**
+```
+參加記錄1：
+- 超度項目：1個祖先 = 1人次
+- 陽上人項目：2個人員 = 2人次  
+- 點燈項目：2個人員 = 2人次
+- 消災祈福項目：2個人員 = 2人次
+總計：7人次
+```
+
 ### 5. 智能篩選系統
 
 #### 多維度篩選
