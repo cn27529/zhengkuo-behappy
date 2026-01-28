@@ -130,6 +130,17 @@ export const useMenuStore = defineStore("menu", () => {
       publish: true,
     },
     {
+      id: 12,
+      name: "祈福登記編輯",
+      path: "/registration-edit", //路徑
+      icon: "🔍",
+      component: "RegistrationEdit",
+      requiredAuth: true,
+      order: 12,
+      enabled: false,
+      publish: false,
+    },
+    {
       id: 99,
       name: "收据管理",
       path: "/receipts",
