@@ -127,7 +127,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: false,
       order: 11,
       enabled: true,
-      publish: false,
+      publish: true,
     },
     {
       id: 99,
