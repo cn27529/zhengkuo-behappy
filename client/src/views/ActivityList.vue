@@ -684,6 +684,13 @@
           >
             更新人次
           </el-button>
+          <!-- 依參加記錄更新人次，實現`submitByParticipantRecordsUpdate`方法，以`activity.id`取得`參加記錄查詢`的數量進行更新人次 -->
+          <el-button
+            type="success"
+            @click="submitByParticipantRecordsUpdate"
+            :loading="submitting"
+            >依參加記錄
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -707,6 +714,7 @@ import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import IconSelector from "../components/IconSelector.vue";
 import { storeToRefs } from "pinia";
+import { serviceAdapter } from "../adapters/serviceAdapter.js";
 
 const activityStore = useActivityStore();
 
@@ -977,7 +985,7 @@ const deleteActivity = async (activity) => {
     const result = await activityStore.deleteActivity(activity.id);
 
     if (result.success) {
-      ElMessage.success("活動刪除成功");
+      ElMessage.success("✅ 活動刪除成功");
       //await initialize(); // 重新加載數據
     } else {
       throw new Error(result.message);
@@ -1044,7 +1052,7 @@ const handleNewActivity = async () => {
     const result = await activityStore.submitActivity(activityData);
 
     if (result.success) {
-      ElMessage.success("活動新增成功");
+      ElMessage.success("✅ 活動新增成功");
       closeModal();
       //await initialize(); // 重新加載數據
     } else {
@@ -1096,7 +1104,7 @@ const handleEditActivity = async () => {
     );
 
     if (result.success) {
-      ElMessage.success("活動更新成功");
+      ElMessage.success("✅ 活動更新成功");
       closeModal();
       //await initialize(); // 重新加載數據
     } else {
@@ -1121,7 +1129,7 @@ const submitParticipantsUpdate = async () => {
     );
 
     if (result.success) {
-      ElMessage.success("參與人次更新成功");
+      ElMessage.success("✅ 參與人次更新成功");
       closeModal();
       //await initialize(); // 重新加載數據
     } else {
@@ -1129,6 +1137,53 @@ const submitParticipantsUpdate = async () => {
     }
   } catch (err) {
     ElMessage.error(err.message || "更新參與人次失敗");
+  } finally {
+    submitting.value = false;
+  }
+};
+
+// 依參加記錄更新人次，實現`submitByParticipantRecordsUpdate`方法，以`activity.id`取得`參加記錄查詢`的數量進行更新人次
+const submitByParticipantRecordsUpdate = async () => {
+  if (!selectedActivity.value) return;
+
+  submitting.value = true;
+
+  try {
+    // 根據活動ID查詢所有參加記錄
+    const result = await serviceAdapter.getParticipationRecordsByActivityId(
+      selectedActivity.value.id,
+    );
+
+    if (result.success) {
+      let totalParticipants = 0;
+
+      // 遍歷所有參加記錄，計算 sourceData 中的實際參與人數
+      result.data?.forEach((record) => {
+        record.items?.forEach((item) => {
+          // 每個項目的 sourceData 包含實際參與的人員資料
+          if (item.sourceData && Array.isArray(item.sourceData)) {
+            totalParticipants += item.sourceData.length;
+          }
+        });
+      });
+
+      // 更新活動的參與人次
+      const updateResult = await activityStore.updateActivityParticipants(
+        selectedActivity.value.id,
+        totalParticipants,
+      );
+
+      if (updateResult.success) {
+        ElMessage.success(`依參加記錄更新成功，共 ${totalParticipants} 人次`);
+        closeModal();
+      } else {
+        throw new Error(updateResult.message);
+      }
+    } else {
+      throw new Error(result.message || "查詢參加記錄失敗");
+    }
+  } catch (err) {
+    ElMessage.error(err.message || "依參加記錄更新失敗");
   } finally {
     submitting.value = false;
   }
