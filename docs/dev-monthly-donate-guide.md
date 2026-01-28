@@ -1,8 +1,8 @@
-# Monthly Donate（每月贊助）開發指南
+# Monthly Donate（`每月贊助`）開發指南
 
 ## 功能概述
 
-Monthly Donate 是寺廟管理系統中的每月贊助管理模組，專門處理信眾的定期月度贊助，支援預繳、不連續月份贊助、24個月視窗顯示等複雜業務邏輯。
+Monthly Donate 是寺廟管理系統中的`每月贊助`管理模組，專門處理信眾的定期月度贊助，支援預繳、不連續月份贊助、24個月視窗顯示等複雜業務邏輯。
 
 ## 使用者故事分析
 
@@ -17,7 +17,7 @@ Monthly Donate 是寺廟管理系統中的每月贊助管理模組，專門處�
 ### 使用者操作流程
 
 ```
-贊助人列表 → 點擊「加贊助」→ 彈出視窗
+`每月贊助`列表 → 點擊「加贊助」→ 彈出視窗
                               ↓
                     上方：查詢功能
                     左邊：全部贊助列表
@@ -37,7 +37,7 @@ Monthly Donate 是寺廟管理系統中的每月贊助管理模組，專門處�
 
 - **JSON 儲存**：donateItems 陣列包含多個贊助項目
 - **月份格式**：使用 "YYYYMM" 格式（如 "202512"）
-- **資料合併**：前端自動合併同名贊助人的多筆記錄
+- **資料合併**：前端自動合併同名`每月贊助`的多筆記錄
 - **彈性單位**：monthlyUnitPrice 可調整（預設100元）
 
 ### 🏗️ 技術實作（從程式碼）
@@ -49,12 +49,12 @@ Monthly Donate 是寺廟管理系統中的每月贊助管理模組，專門處�
 
 ### 🎨 使用者介面（從 Vue 組件）
 
-- **表格展示**：贊助人 + 24個月份欄位 + 操作按鈕
+- **表格展示**：`每月贊助` + 24個月份欄位 + 操作按鈕
 - **彈窗設計**：上方查詢 + 左邊列表 + 右邊輸入
 - **月份選擇器**：根據金額自動計算可選月份數
 - **視覺標示**：已贊助月份顯示 "✓" 標記
 
-這個功能的設計相當複雜且實用，特別是那個24個月視窗的概念，讓操作人員可以清楚看到每個贊助人在時間軸上的贊助分佈。而且支援不連續月份的設計很符合實際需求！
+這個功能的設計相當複雜且實用，特別是那個24個月視窗的概念，讓操作人員可以清楚看到每個`每月贊助`在時間軸上的贊助分佈。而且支援不連續月份的設計很符合實際需求！
 
 ## 系統架構
 
@@ -80,7 +80,7 @@ pub struct MonthlyDonate {
     pub date_updated: Option<String>,
 
     // 業務字段
-    pub name: Option<String>,                // 贊助人姓名
+    pub name: Option<String>,                // `每月贊助`姓名
     pub registration_id: Option<i64>,        // 關聯登記表ID
     pub donate_id: Option<String>,           // 贊助唯一ID
     pub donate_type: Option<String>,         // 贊助類型
@@ -96,10 +96,10 @@ pub struct MonthlyDonate {
 ### 前端資料結構
 
 ```javascript
-// 贊助人資料結構
+// `每月贊助`資料結構
 const monthlyDonate = {
   id: 1,
-  name: "王小明", // 贊助人姓名
+  name: "王小明", // `每月贊助`姓名
   registrationId: -1, // 關聯登記表ID
   donateId: "a8b9c0d", // 唯一識別碼
   donateType: "", // 贊助類型
@@ -198,9 +198,9 @@ const generateMonthList = (config = null) => {
 };
 ```
 
-### 2. 贊助人資料合併
+### 2. `每月贊助`資料合併
 
-#### 同名贊助人合併邏輯
+#### 同名`每月贊助`合併邏輯
 
 ```javascript
 const donateSummary = computed(() => {
@@ -251,7 +251,7 @@ const calculateAvailableMonths = (amount) => {
 const getAvailableMonths = (donorName) => {
   const existingMonths = new Set();
 
-  // 收集該贊助人已有的月份
+  // 收集該`每月贊助`已有的月份
   allDonates.value
     .filter((donate) => donate.name === donorName)
     .forEach((donate) => {
@@ -302,7 +302,7 @@ async createMonthlyDonate(donateData) {
 
 ```javascript
 async addDonateItem(donorName, newItem) {
-    // 查找現有贊助人記錄
+    // 查找現有`每月贊助`記錄
     const existingDonate = allDonates.value.find(d => d.name === donorName);
 
     if (existingDonate) {
@@ -325,12 +325,12 @@ async addDonateItem(donorName, newItem) {
 
 ### 主要區塊
 
-#### 1. 贊助人列表表格
+#### 1. `每月贊助`列表表格
 
 ```html
 <el-table :data="filteredDonates" style="width: 100%">
-  <!-- 贊助人姓名 -->
-  <el-table-column prop="name" label="贊助人" width="120" />
+  <!-- `每月贊助`姓名 -->
+  <el-table-column prop="name" label="`每月贊助`" width="120" />
 
   <!-- 24個月份欄位 -->
   <el-table-column
@@ -366,7 +366,7 @@ async addDonateItem(donorName, newItem) {
   <div class="donation-dialog">
     <!-- 上方查詢區 -->
     <div class="dialog-header">
-      <el-input v-model="dialogSearchQuery" placeholder="搜尋贊助人" />
+      <el-input v-model="dialogSearchQuery" placeholder="搜尋`每月贊助`" />
     </div>
 
     <div class="dialog-content">
@@ -416,14 +416,14 @@ async addDonateItem(donorName, newItem) {
 
 ### 操作功能
 
-#### 1. 新增贊助人
+#### 1. 新增`每月贊助`
 
 - 輸入姓名和金額
 - 系統自動計算可贊助月份數
 - 選擇要贊助的月份
 - 提交後在表格中顯示
 
-#### 2. 為現有贊助人新增贊助
+#### 2. 為現有`每月贊助`新增贊助
 
 - 點擊「加贊助」按鈕
 - 輸入金額並選擇可用月份
@@ -456,7 +456,7 @@ const monthDisplayConfig = ref({
 
 ### 3. 資料合併顯示
 
-- 同名贊助人自動合併顯示
+- 同名`每月贊助`自動合併顯示
 - 保留原始多筆贊助記錄
 - 統計總金額和總月份數
 
@@ -482,7 +482,7 @@ CREATE TABLE "monthlyDonateDB" (
     `date_created` datetime NULL,
     `user_updated` char(36) NULL,
     `date_updated` datetime NULL,
-    `name` varchar(255) null,           -- 贊助人姓名
+    `name` varchar(255) null,           -- `每月贊助`姓名
     `registrationId` integer null default '-1', -- 關聯登記表
     `donateId` varchar(255) null,       -- 贊助唯一ID
     `donateType` varchar(255) null,     -- 贊助類型
@@ -523,7 +523,7 @@ DELETE /monthly-donates/:id       # 刪除贊助記錄
 
 ### 查詢參數
 
-- `name` - 按贊助人姓名篩選
+- `name` - 按`每月贊助`姓名篩選
 - `donate_type` - 按贊助類型篩選
 - `month` - 按特定月份篩選
 - `registration_id` - 按關聯登記表篩選
