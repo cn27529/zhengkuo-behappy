@@ -43,7 +43,7 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 4,
-      name: "活動設置",
+      name: "活動管理",
       path: "/activity-list",
       icon: "📅",
       component: "ActivityList",

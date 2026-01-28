@@ -2,7 +2,7 @@
 
 ## 概述
 
-zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理消災超度登記、每月贊助管理、活動設置和太歲點燈等宗教服務。本文檔詳細說明各項業務功能的邏輯流程。
+zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理消災超度登記、每月贊助管理、活動管理和太歲點燈等宗教服務。本文檔詳細說明各項業務功能的邏輯流程。
 
 ---
 
@@ -22,15 +22,18 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 #### 1.1 聯絡人資訊 (Contact)
 
 **必填欄位：**
+
 - `name` - 聯絡人姓名
 - `relationship` - 與消災/超度對象的關係
 
 **可選欄位：**
+
 - `phone` - 市內電話
 - `mobile` - 行動電話
 - `otherRelationship` - 當關係選擇「其它」時的補充說明
 
 **關係選項：**
+
 - 本家 - 直系親屬
 - 娘家 - 母系親屬
 - 朋友 - 朋友關係
@@ -39,10 +42,12 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 #### 1.2 消災人員資訊 (Blessing)
 
 **地址資訊：**
+
 - `address` - 消災地址（必填）
 
 **人員清單：**
 每位消災人員包含：
+
 - `id` - 清單內唯一識別碼
 - `name` - 姓名
 - `zodiac` - 生肖（十二生肖選項）
@@ -50,6 +55,7 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 - `isHouseholdHead` - 是否為戶長
 
 **業務規則：**
+
 1. 至少需要一位已填寫姓名的消災人員
 2. 必須指定至少一位戶長
 3. 戶長數量不得超過系統設定上限
@@ -58,20 +64,24 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 #### 1.3 超度資訊 (Salvation)
 
 **地址資訊：**
+
 - `address` - 超度地址（必填）
 
 **祖先清單 (Ancestors)：**
+
 - `id` - 清單內唯一識別碼
 - `surname` - 姓氏
 - `notes` - 備註（如：祖父、祖母等關係說明）
 
 **陽上人清單 (Survivors)：**
+
 - `id` - 清單內唯一識別碼
 - `name` - 姓名
 - `zodiac` - 生肖
 - `notes` - 備註說明
 
 **業務邏輯：**
+
 - 祖先清單記錄需要超度的往生者
 - 陽上人清單記錄為往生者祈福的在世親屬
 - 兩個清單都可以為空，但至少要有消災或超度其中一項
@@ -79,11 +89,13 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 ### 表單狀態管理
 
 **狀態類型：**
+
 - `draft` - 草稿狀態，可繼續編輯
 - `submitted` - 已提交，等待處理
 - `completed` - 已完成處理
 
 **多表單支援：**
+
 - 系統支援同時管理多張表單
 - 每張表單有獨立的 `formId` 和 `formName`
 - 支援表單間的切換和同步
@@ -101,6 +113,7 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 #### 2.1 贊助記錄 (MonthlyDonate)
 
 **基本資訊：**
+
 - `id` - 記錄唯一識別碼
 - `name` - 贊助者姓名
 - `registrationId` - 關聯的報名記錄（-1 表示無關聯）
@@ -112,6 +125,7 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 #### 2.2 贊助項目 (DonateItems)
 
 每筆贊助記錄可包含多個贊助項目：
+
 - `donateItemsId` - 項目唯一識別碼
 - `price` - 贊助金額
 - `months` - 贊助月份陣列（格式：YYYYMM）
@@ -126,15 +140,16 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 
 ```javascript
 monthDisplayConfig = {
-  pastMonths: 0,        // 顯示過去的月份數
-  futureMonths: 12,     // 顯示未來的月份數
+  pastMonths: 0, // 顯示過去的月份數
+  futureMonths: 12, // 顯示未來的月份數
   showAllMonths: false, // 是否顯示所有月份
   customStartDate: null, // 自定義開始日期
-  customEndDate: null   // 自定義結束日期
-}
+  customEndDate: null, // 自定義結束日期
+};
 ```
 
 **月份生成規則：**
+
 1. 預設顯示未來 12 個月
 2. 可配置顯示過去的月份
 3. 支援自定義日期範圍
@@ -143,12 +158,14 @@ monthDisplayConfig = {
 #### 2.4 贊助統計功能
 
 **統計維度：**
+
 - 月度贊助總額
 - 贊助者人數統計
 - 贊助趨勢分析
 - 贊助類型分布
 
 **計算邏輯：**
+
 ```javascript
 // 計算指定月份的總贊助額
 calculateMonthlyTotal(targetMonth) {
@@ -180,6 +197,7 @@ calculateMonthlyTotal(targetMonth) {
 #### 3.2 活動狀態管理
 
 **狀態流程：**
+
 ```
 planning → active → completed
     ↓
@@ -187,6 +205,7 @@ cancelled (可從任何狀態取消)
 ```
 
 **狀態說明：**
+
 - `planning` - 籌劃中，尚未開放報名
 - `active` - 進行中，開放報名參與
 - `completed` - 已完成
@@ -195,6 +214,7 @@ cancelled (可從任何狀態取消)
 #### 3.3 參與者管理
 
 **參與者資訊：**
+
 - `id` - 參與者識別碼
 - `name` - 參與者姓名
 - `registrationId` - 關聯的報名記錄
@@ -202,6 +222,7 @@ cancelled (可從任何狀態取消)
 - `status` - 參與狀態（confirmed, pending, cancelled）
 
 **參與邏輯：**
+
 1. 參與者可以關聯到報名記錄
 2. 支援批量參與者管理
 3. 參與狀態可獨立管理
@@ -209,17 +230,19 @@ cancelled (可從任何狀態取消)
 #### 3.4 月度統計
 
 **統計項目：**
+
 ```javascript
 monthlyStats = {
   "2026-01": {
-    totalParticipants: 50,    // 總參與人數
-    newParticipants: 10,      // 新參與人數
-    revenue: 25000            // 收入金額
-  }
-}
+    totalParticipants: 50, // 總參與人數
+    newParticipants: 10, // 新參與人數
+    revenue: 25000, // 收入金額
+  },
+};
 ```
 
 **計算規則：**
+
 - 按月統計參與人數和收入
 - 區分新參與者和回流參與者
 - 支援趨勢分析和比較
@@ -240,6 +263,7 @@ monthlyStats = {
 鼠、牛、虎、兔、龍、蛇、馬、羊、猴、雞、狗、豬
 
 **犯太歲類型：**
+
 - 值太歲 - 本命年
 - 沖太歲 - 對沖生肖
 - 刑太歲 - 相刑生肖
@@ -248,6 +272,7 @@ monthlyStats = {
 #### 4.2 點燈管理
 
 **點燈資訊：**
+
 - 點燈者姓名和生肖
 - 點燈類型和期間
 - 點燈狀態追蹤
@@ -262,6 +287,7 @@ monthlyStats = {
 #### 5.1 多重認證支援
 
 **認證方式：**
+
 1. **Mock 認證** - 開發測試用
 2. **Directus 認證** - 基於 Directus 的用戶系統
 3. **Supabase 認證** - 雲端認證服務
@@ -269,17 +295,21 @@ monthlyStats = {
 #### 5.2 權限控制
 
 **用戶角色：**
+
 - `admin` - 系統管理員，完整權限
 - `staff` - 工作人員，業務操作權限
 - `user` - 一般用戶，查看和編輯自己的記錄
 
 **權限檢查：**
+
 ```javascript
 // 路由層級權限檢查
-meta: { requiresAuth: true }
+meta: {
+  requiresAuth: true;
+}
 
 // 功能層級權限檢查
-if (userRole !== 'admin') {
+if (userRole !== "admin") {
   // 限制操作
 }
 ```
@@ -293,6 +323,7 @@ if (userRole !== 'admin') {
 #### 6.1 Pinia Store 架構
 
 **Store 分工：**
+
 - `registrationStore` - 報名表單狀態
 - `monthlyDonateStore` - 贊助記錄狀態
 - `activityStore` - 活動管理狀態
@@ -302,6 +333,7 @@ if (userRole !== 'admin') {
 #### 6.2 資料同步機制
 
 **雙向同步：**
+
 ```javascript
 // 表單陣列與當前表單的同步
 watch(currentFormIndex, (newIndex) => {
@@ -311,11 +343,15 @@ watch(currentFormIndex, (newIndex) => {
 });
 
 // 當前表單變更時同步到陣列
-watch(registrationForm, (newForm) => {
-  if (formArray.value[currentFormIndex.value]) {
-    formArray.value[currentFormIndex.value] = { ...newForm };
-  }
-}, { deep: true });
+watch(
+  registrationForm,
+  (newForm) => {
+    if (formArray.value[currentFormIndex.value]) {
+      formArray.value[currentFormIndex.value] = { ...newForm };
+    }
+  },
+  { deep: true },
+);
 ```
 
 ### 後端資料處理
@@ -323,6 +359,7 @@ watch(registrationForm, (newForm) => {
 #### 6.3 JSON 欄位處理
 
 **複雜資料結構：**
+
 - `contact` - JSON 格式儲存聯絡人資訊
 - `blessing` - JSON 格式儲存消災資訊
 - `salvation` - JSON 格式儲存超度資訊
@@ -330,6 +367,7 @@ watch(registrationForm, (newForm) => {
 - `participants` - JSON 陣列儲存參與者資訊
 
 **序列化/反序列化：**
+
 ```rust
 // Rust 端 JSON 處理
 fn serialize_json_string<T: Serialize>(value: &T) -> String {
@@ -362,6 +400,7 @@ fn deserialize_json_string<T: DeserializeOwned>(json_str: &str) -> T {
 #### 7.3 資料關聯邏輯
 
 **關聯關係：**
+
 - 報名記錄 ↔ 每月贊助（通過 registrationId）
 - 報名記錄 ↔ 活動參與（通過 registrationId）
 - 用戶 ↔ 所有記錄（通過 user_created）
@@ -373,27 +412,30 @@ fn deserialize_json_string<T: DeserializeOwned>(json_str: &str) -> T {
 ### 8.1 驗證規則
 
 **表單驗證：**
+
 ```javascript
 // 聯絡人驗證
 if (!contact.name.trim()) {
-  errors.push('聯絡人姓名為必填');
+  errors.push("聯絡人姓名為必填");
 }
 
 // 戶長驗證
-const householdHeads = blessing.persons.filter(p => p.isHouseholdHead);
+const householdHeads = blessing.persons.filter((p) => p.isHouseholdHead);
 if (hasNamedPersons && householdHeads.length === 0) {
-  errors.push('至少需要指定一位戶長');
+  errors.push("至少需要指定一位戶長");
 }
 ```
 
 ### 8.2 資料完整性
 
 **自動補全：**
+
 - 自動生成 formId 和 donateId
 - 自動設定建立時間和用戶
 - 自動計算統計數據
 
 **資料清理：**
+
 - 移除空白的人員記錄
 - 標準化日期格式
 - 清理無效的月份資料
@@ -405,11 +447,13 @@ if (hasNamedPersons && householdHeads.length === 0) {
 ### 9.1 常見業務異常
 
 **資料不一致：**
+
 - 報名記錄與贊助記錄關聯錯誤
 - 月份資料格式不正確
 - 參與者資訊缺失
 
 **解決策略：**
+
 - 資料驗證和清理
 - 自動修復機制
 - 錯誤日誌記錄
@@ -417,6 +461,7 @@ if (hasNamedPersons && householdHeads.length === 0) {
 ### 9.2 業務邏輯異常
 
 **處理原則：**
+
 1. 優雅降級 - 部分功能失效時保持核心功能
 2. 資料保護 - 防止資料丟失
 3. 用戶提示 - 清楚的錯誤訊息
@@ -429,6 +474,7 @@ if (hasNamedPersons && householdHeads.length === 0) {
 ### 10.1 模組化設計
 
 **新功能擴展：**
+
 - 新增服務類型（如：法會預約）
 - 新增統計維度（如：地區分析）
 - 新增通知機制（如：簡訊提醒）
@@ -436,6 +482,7 @@ if (hasNamedPersons && householdHeads.length === 0) {
 ### 10.2 客製化支援
 
 **可配置項目：**
+
 - 表單欄位和驗證規則
 - 服務類型和價格
 - 統計報表格式
@@ -448,6 +495,7 @@ if (hasNamedPersons && householdHeads.length === 0) {
 zhengkuo-behappy 系統通過模組化的設計，完整地涵蓋了寺廟管理的核心業務需求。每個模組都有清晰的業務邏輯和資料流程，同時保持了良好的擴展性和維護性。
 
 系統的設計重點在於：
+
 1. **業務流程的數位化** - 將傳統的紙本作業轉為數位化管理
 2. **資料的結構化** - 建立完整的資料關聯和統計機制
 3. **用戶體驗的優化** - 簡化操作流程，提高工作效率

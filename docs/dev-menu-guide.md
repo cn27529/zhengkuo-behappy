@@ -17,12 +17,12 @@
 
 ### 四種狀態組合
 
-| enabled | publish | 開發環境 | 生產環境 | 使用場景 |
-|---------|---------|----------|----------|----------|
-| `true`  | `true`  | ✅ 顯示  | ✅ 顯示  | 完成的功能 |
-| `true`  | `false` | ✅ 顯示  | ❌ 隱藏  | 開發中功能 |
+| enabled | publish | 開發環境 | 生產環境 | 使用場景         |
+| ------- | ------- | -------- | -------- | ---------------- |
+| `true`  | `true`  | ✅ 顯示  | ✅ 顯示  | 完成的功能       |
+| `true`  | `false` | ✅ 顯示  | ❌ 隱藏  | 開發中功能       |
 | `false` | `true`  | ❌ 隱藏  | ✅ 顯示  | 暫時關閉但要發布 |
-| `false` | `false` | ❌ 隱藏  | ❌ 隱藏  | 完全停用 |
+| `false` | `false` | ❌ 隱藏  | ❌ 隱藏  | 完全停用         |
 
 ## 開發流程
 
@@ -65,6 +65,7 @@
 ### 發布功能到生產環境
 
 只需要修改一個屬性：
+
 ```javascript
 publish: false,  // 改為
 publish: true,   // 就會在下次部署時發布
@@ -77,16 +78,54 @@ enabled: false,  // 開發時不顯示
 publish: true,   // 但生產環境保持可用
 ```
 
-## 部署操作
+### 1. 菜單結構設計
 
-### 一鍵部署
+每個菜單項目都有兩個控制屬性：
 
-```bash
-# 執行部署腳本
-./scripts/deploy-netlify.sh
+- `enabled` - 控制開發時是否顯示（開發邏輯）
+- `publish` - 控制生產環境是否發布（部署邏輯）
 
-# 或使用 npm 命令
-npm run deploy:netlify
+```javascript
+{
+  id: 1,
+  name: "儀表板",
+  path: "/dashboard",
+  icon: "📊",
+  component: "Dashboard",
+  requiredAuth: true,
+  order: 1,
+  enabled: true,    // 開發時顯示
+  publish: true,    // 生產環境發布
+},
+{
+  id: 6,
+  name: "卡片設計",
+  path: "/card-design",
+  icon: "💳",
+  component: "CardDesign",
+  requiredAuth: true,
+  order: 6,
+  enabled: true,    // 開發時顯示
+  publish: false,   // 生產環境不發布
+}
+```
+
+### 2. 過濾邏輯
+
+在 `availableMenuItems` 中實現雙重過濾：
+
+```javascript
+const availableMenuItems = computed(() => {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  return menuItems.value
+    .filter((item) => {
+      if (!item.enabled) return false; // 開發邏輯
+      if (isProduction && item.publish === false) return false; // 部署邏輯
+      return true;
+    })
+    .sort((a, b) => a.order - b.order);
+});
 ```
 
 ### 部署後檢查
@@ -97,6 +136,7 @@ npm run deploy:netlify
 ## 常見場景
 
 ### 場景一：開發新功能
+
 ```javascript
 // 開發階段
 enabled: true, publish: false
@@ -106,6 +146,7 @@ enabled: true, publish: true
 ```
 
 ### 場景二：緊急隱藏功能
+
 ```javascript
 // 生產環境有問題，先隱藏
 enabled: false, publish: false
@@ -115,6 +156,7 @@ enabled: true, publish: true
 ```
 
 ### 場景三：A/B 測試
+
 ```javascript
 // 功能 A
 enabled: true, publish: true
@@ -133,15 +175,14 @@ enabled: true, publish: false
 ## 技術實現
 
 ### 過濾邏輯位置
+
 `client/src/stores/menu.js` 的 `availableMenuItems` computed
 
-### 部署腳本位置
-`scripts/deploy-netlify.sh`
-
 ### 環境判斷
+
 生產環境：`process.env.NODE_ENV === 'production'`
 
 ---
 
-*記錄日期：2026-01-27*  
-*作者：趁著還在地球上的開發者* 🌍→🚀
+_記錄日期：2026-01-27_  
+_作者：趁著還在地球上的開發者_ 🌍→🚀
