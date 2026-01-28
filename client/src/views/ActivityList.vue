@@ -715,6 +715,7 @@ import { DateUtils } from "../utils/dateUtils.js";
 import IconSelector from "../components/IconSelector.vue";
 import { storeToRefs } from "pinia";
 import { serviceAdapter } from "../adapters/serviceAdapter.js";
+import { useJoinRecordQueryStore } from "../stores/joinRecordQueryStore.js";
 
 const activityStore = useActivityStore();
 
@@ -726,6 +727,7 @@ const showEditModal = ref(false);
 const showParticipantsModal = ref(false);
 const submitting = ref(false);
 const isDev = computed(() => authService.getCurrentDev());
+const joinRecordQueryStore = useJoinRecordQueryStore();
 
 // 查詢條件, 分頁
 // 修改後 (從 store 取得，會保留)
@@ -1149,10 +1151,13 @@ const submitByParticipantRecordsUpdate = async () => {
   submitting.value = true;
 
   try {
-    // 根據活動ID查詢所有參加記錄
-    const result = await serviceAdapter.getParticipationRecordsByActivityId(
-      selectedActivity.value.id,
-    );
+    // 使用 joinRecordQueryStore 查詢參加記錄（支援 mock 模式）
+    const queryData = {
+      query: "", // 不需要關鍵字搜尋，查詢該活動的所有記錄
+      activityId: selectedActivity.value.id,
+    };
+
+    const result = await joinRecordQueryStore.queryJoinRecordData(queryData);
 
     if (result.success) {
       let totalParticipants = 0;

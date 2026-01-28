@@ -147,6 +147,17 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
     let filteredData = [...data];
 
+    if (queryData.activityId && queryData.activityId > 0) {
+      const activityIdQuery = queryData.activityId.trim().toLowerCase();
+      console.log("🔍 activityId過濾:", activityIdQuery);
+      filteredData = filteredData.filter((item) => {
+        return (
+          item.activityId && item.activityId.toLowerCase() === activityIdQuery
+        );
+      });
+      console.log("activityId過濾後筆數:", filteredData.length);
+    }
+
     // 1. 狀態過濾
     if (queryData.state && queryData.state.trim()) {
       const stateQuery = queryData.state.trim().toLowerCase();
@@ -194,7 +205,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
         // 檢查聯絡人資訊
         if (item.contact) {
-          if (item.contact.name && item.contact.name.toLowerCase().includes(query)) {
+          if (
+            item.contact.name &&
+            item.contact.name.toLowerCase().includes(query)
+          ) {
             console.log("✅ 匹配聯絡人姓名:", item.contact.name);
             matchFound = true;
           }
@@ -206,12 +220,21 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
             console.log("✅ 匹配聯絡人電話:", item.contact.phone);
             matchFound = true;
           }
-          if (item.contact.relationship && item.contact.relationship.toLowerCase().includes(query)) {
+          if (
+            item.contact.relationship &&
+            item.contact.relationship.toLowerCase().includes(query)
+          ) {
             console.log("✅ 匹配聯絡人關係:", item.contact.relationship);
             matchFound = true;
           }
-          if (item.contact.otherRelationship && item.contact.otherRelationship.toLowerCase().includes(query)) {
-            console.log("✅ 匹配聯絡人其他關係:", item.contact.otherRelationship);
+          if (
+            item.contact.otherRelationship &&
+            item.contact.otherRelationship.toLowerCase().includes(query)
+          ) {
+            console.log(
+              "✅ 匹配聯絡人其他關係:",
+              item.contact.otherRelationship,
+            );
             matchFound = true;
           }
         }
@@ -229,7 +252,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
             }
 
             // 檢查地址資訊
-            if (itemDetail.sourceAddress && itemDetail.sourceAddress.toLowerCase().includes(query)) {
+            if (
+              itemDetail.sourceAddress &&
+              itemDetail.sourceAddress.toLowerCase().includes(query)
+            ) {
               console.log(`✅ 匹配項目地址 ${i}:`, itemDetail.sourceAddress);
               matchFound = true;
             }
@@ -287,13 +313,17 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     }
 
     // 4. 過濾掉 "陽上人" 項目（price 為 0）
-    filteredData = filteredData.map((record) => {
-      if (record.items && Array.isArray(record.items)) {
-        const filteredItems = record.items.filter(item => item.label !== "陽上人");
-        return { ...record, items: filteredItems };
-      }
-      return record;
-    }).filter(record => record.items && record.items.length > 0);
+    filteredData = filteredData
+      .map((record) => {
+        if (record.items && Array.isArray(record.items)) {
+          const filteredItems = record.items.filter(
+            (item) => item.label !== "陽上人",
+          );
+          return { ...record, items: filteredItems };
+        }
+        return record;
+      })
+      .filter((record) => record.items && record.items.length > 0);
 
     console.log("🎯 過濾完成，結果:", filteredData);
     return filteredData;
