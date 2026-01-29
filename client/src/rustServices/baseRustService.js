@@ -92,6 +92,7 @@ export class BaseRustService {
 
     // 檢查是否有有效的 context
     if (this.logConfig.onlyWithContext) {
+      // 檢查 context 有效的 service 和 operation
       const hasValidContext =
         logEntry.context &&
         logEntry.context.service !== "unknown" &&
