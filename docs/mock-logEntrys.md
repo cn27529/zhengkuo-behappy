@@ -247,9 +247,9 @@ const failedOperations = logEntries.filter(log =>
 
 ## 檔案位置
 
-- 模擬資料：`./src/data/mock_logentrys.json`
-- 記錄管理服務：`./src/services/LogService.js`
-- 操作記錄介面：`./src/views/LogViewer.vue`
+- 模擬資料：`.client/src/data/mock_logentrys.json`
+- 記錄管理服務：`.client/src/services/loEntryService.js`
+- 操作記錄介面：`.client/src/views/LogViewPage.vue`
 
 ## 注意事項
 
