@@ -766,7 +766,7 @@ const handleUpdateForm = async () => {
       ElMessage.success(result.message);
       setTimeout(() => {
         router.back();
-      }, 15000);
+      }, 1500);
     } else {
       ElMessage.error(result.message);
     }

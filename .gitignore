@@ -183,10 +183,10 @@ Cargo.lock  # 如果是應用程式，保留此文件；如果是庫，則忽略
 tarpaulin-report.html
 cobertura.xml
 
-# 文檔
-/doc/
-
 # 其他
 *.orig
 .cache/
 **/Cargo.lock
+
+# ln -sf 映射 SQLite 數據庫(directus, rust-axum)
+db/current.db
