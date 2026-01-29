@@ -1,0 +1,36 @@
+# Directus JWT 設置
+KEY="mT5qR8vW2tZ4cV7bN1mK3jH6gF9dA2sJ5hG8fD1kS4pX7yB0wM3rC6eU9iQ2"
+SECRET="xLp9vW2tZ5cV8bN1mK4jH7gF0dA3sJ6hG9fD2kS5pX8yB1wM4rC7eU0iQ3tZ6vN1mK4jH7gF0dA3sJ6hG9fD2kS5pX8yB1wM4rC7eU0iQ3"
+
+# 認證配置，預設15m
+#ACCESS_TOKEN_TTL="60m"
+#REFRESH_TOKEN_TTL="7d"
+ACCESS_TOKEN_TTL="24h"      # 24小時，方便開發測試
+REFRESH_TOKEN_TTL="30d"     # 30天
+
+# 資料庫配置（SQLite 範例）
+DB_CLIENT="sqlite3"
+DB_FILENAME="../db/data.db"
+
+# 或使用 PostgreSQL
+# DB_CLIENT="pg"
+# DB_HOST="localhost"
+# DB_PORT="5432"
+# DB_DATABASE="directus"
+# DB_USER="postgres"
+# DB_PASSWORD="password"
+
+# 伺服器配置
+HOST="127.0.0.1"
+PORT="8055"
+PUBLIC_URL="http://localhost:8055"
+
+# CORS 配置
+CORS_ENABLED="true"
+# client
+CORS_ORIGIN="http://localhost:5173"
+#CORS_ORIGIN=true
+# 谨慎使用以下設置
+#CONTENT_SECURITY_POLICY_DIRECTIVES=false
+
+
