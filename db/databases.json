@@ -1,0 +1,20 @@
+{
+    "active_database": "db/data.db",
+    "databases": {
+        "zk": {
+            "path": "db/zk.db",
+            "name": "鎮國寺",
+            "description": "鎮國寺客戶資料庫"
+        },
+        "ziyun": {
+            "path": "db/ziyun.db",
+            "name": "紫雲寺",
+            "description": "紫雲寺客戶資料庫"
+        },
+        "shaolin": {
+            "path": "db/shaolin.db",
+            "name": "少林寺",
+            "description": "少林寺客戶資料庫"
+        }
+    }
+}
