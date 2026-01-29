@@ -149,6 +149,7 @@ export class IndexedDBLogger {
           url: window.location.href,
         };
 
+        console.log("最終保存的日誌:", logData);
         const request = store.add(logData);
 
         request.onsuccess = () => {

@@ -131,7 +131,7 @@ const handleLogin = async () => {
   try {
     await authStore.login(loginForm.username, loginForm.password);
 
-    ElMessage.success("✅ 登录成功！正在跳转至主页...👍👍");
+    ElMessage.success("登录成功！正在跳转至主页...👍👍");
 
     // 模拟跳转延迟
     setTimeout(() => {
