@@ -2,11 +2,12 @@
 import { baseService } from "../services/baseService.js";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { authService } from "./authService.js";
 
 export class RegistrationService {
   // ========== 建構函式 ==========
   constructor() {
-    this.serverName = "RegistrationService";
+    this.serviceName = "RegistrationService";
     this.base = baseService;
     this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsRegistration}`;
     console.log(`RegistrationService 初始化: 當前模式為 ${this.base.mode}`);
@@ -76,9 +77,22 @@ export class RegistrationService {
         body: JSON.stringify(processedData),
       });
 
+      const startTime = Date.now();
+      const logContext = {
+        service: this.serviceName,
+        operation: "createRegistration",
+        method: "POST",
+        startTime: startTime,
+        endpoint: this.endpoint,
+        requestBody: processedData, // ✅ 記錄請求 body
+      };
+
+      // 計算實際耗時
+      const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
         "成功創建報名表",
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -97,10 +111,10 @@ export class RegistrationService {
     }
 
     try {
-      const updateData = {
+      const processedData = {
         ...registrationData,
         updatedAt: DateUtils.getCurrentISOTime(),
-        updatedUser: registrationData.updatedUser || "system",
+        updatedUser: authService.getCurrentUser(),
       };
 
       const myHeaders = await this.base.getAuthJsonHeaders();
@@ -108,12 +122,25 @@ export class RegistrationService {
       const response = await fetch(apiUrl, {
         method: "PATCH",
         headers: myHeaders,
-        body: JSON.stringify(updateData),
+        body: JSON.stringify(processedData),
       });
 
+      const startTime = Date.now();
+      const logContext = {
+        service: this.serviceName,
+        operation: "updateRegistration",
+        method: "POST",
+        startTime: startTime,
+        endpoint: this.endpoint,
+        requestBody: processedData, // ✅ 記錄請求 body
+      };
+
+      // 計算實際耗時
+      const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
         "成功更新報名表",
+        { ...logContext, duration },
       );
       return result;
     } catch (error) {
@@ -132,12 +159,38 @@ export class RegistrationService {
     }
 
     try {
+
+      const result = this.getRegistrationById(id);
+      console.log("服務器返回的表單數據:", result);
+      let processedData = null;
+      if (result.success && result.data) {
+        const formData = result.data;
+        processedData = {
+          ...formData,
+          deletedAt: DateUtils.getCurrentISOTime(),
+          deletedUser: authService.getCurrentUser(),
+        };
+      }
+
       const myHeaders = await this.base.getAuthJsonHeaders();
       const apiUrl = `${this.endpoint}/${id}`;
       const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: myHeaders,
       });
+
+      const startTime = Date.now();
+      const logContext = {
+        service: this.serviceName,
+        operation: "deleteRegistration",
+        method: "DELETE",
+        startTime: startTime,
+        endpoint: this.endpoint,
+        requestBody: processedData, // ✅ 記錄請求 body
+      };
+
+      // 計算實際耗時
+      const duration = Date.now() - startTime;
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -173,9 +226,10 @@ export class RegistrationService {
         headers: myHeaders,
       });
 
+      
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功獲取報名表",
+        "成功獲取報名表",        
       );
       return result;
     } catch (error) {

@@ -102,6 +102,7 @@ export class RustRegistrationService {
     const updateData = {
       ...registrationData,
       updatedAt: DateUtils.getCurrentISOTime(),
+      updatedUser: authService.getCurrentUser(),
     };
 
     return await this.base.rustFetch(

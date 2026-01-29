@@ -4,7 +4,7 @@ import userData from "../data/auth_user.json";
 
 export class AuthService {
   constructor() {
-    this.serverName = "AuthService";
+    this.serviceName = "AuthService";
     this.base = baseService;
     console.log(`AuthService 初始化: 當前模式為 ${this.base.mode}`);
   }
@@ -502,15 +502,7 @@ export class AuthService {
     }
   }
 
-  getUserInfo() {
-    try {
-      const user = sessionStorage.getItem("auth-user");
-      return JSON.parse(user);
-    } catch (error) {
-      console.error("獲取用戶資訊失敗:", error);
-      return null;
-    }
-  }
+  
 
   async directusValidateToken() {
     try {
@@ -835,7 +827,7 @@ export class AuthService {
     } else {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
     }
-  }
+  } 
 
   getCurrentUser = () => {
     try {
@@ -850,6 +842,23 @@ export class AuthService {
       return "anonymous";
     }
   };
+
+  getUserInfo() {
+    try {
+      const user = sessionStorage.getItem("auth-user");
+      return JSON.parse(user);
+    } catch (error) {
+      console.error("獲取用戶資訊失敗:", error);
+      return null;
+    }
+  }
+
+  getUserName() {
+    const user = this.getUserInfo();
+    return user ? user.username || user.displayName || "unknown" : "unknown";
+  }
+
+     
 }
 
 export const authService = new AuthService();

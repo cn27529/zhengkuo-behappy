@@ -266,6 +266,16 @@ export class MonthlyDonateService {
         updatedAt: DateUtils.getCurrentISOTime(),
       };
 
+      
+
+      const myHeaders = await this.base.getAuthJsonHeaders();
+      const apiUrl = `${this.endpoint}/${donateId}`;
+      const response = await fetch(apiUrl, {
+        method: "PATCH",
+        headers: myHeaders,
+        body: JSON.stringify(processedData),
+      });
+
       // ✅ 在 try 外面定義，確保 catch 也能訪問
       const startTime = Date.now();
       const logContext = {
@@ -276,14 +286,6 @@ export class MonthlyDonateService {
         endpoint: `${this.endpoint}/${donateId}`,
         requestBody: processedData,
       };
-
-      const myHeaders = await this.base.getAuthJsonHeaders();
-      const apiUrl = `${this.endpoint}/${donateId}`;
-      const response = await fetch(apiUrl, {
-        method: "PATCH",
-        headers: myHeaders,
-        body: JSON.stringify(processedData),
-      });
 
       const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(

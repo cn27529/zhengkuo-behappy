@@ -1,0 +1,93 @@
+{
+    "timestamp": "2026-01-29T04:17:52.425Z",
+    "endpoint": "http://localhost:8055/items/registrationDB/108",
+    "method": "POST",
+    "status": 200,
+    "statusText": "OK",
+    "context": {
+        "service": "RegistrationService",
+        "operation": "updateRegistration",
+        "startTime": 1769660272410,
+        "method": "POST",
+        "endpoint": "http://localhost:8055/items/registrationDB",
+        "requestBody": {
+            "id": 108,
+            "state": "updated",
+            "createdAt": "2026-01-27T12:33:48.689Z",
+            "createdUser": "",
+            "updatedAt": "2026-01-29T04:17:52.361Z",
+            "updatedUser": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+            "formName": "消災超度報名表OnService",
+            "formId": "183be03",
+            "formSource": "",
+            "contact": {
+                "name": "BK123",
+                "phone": "048-353868",
+                "mobile": "0928230520",
+                "relationship": "娘家",
+                "otherRelationship": "BK"
+            },
+            "blessing": {
+                "address": "台北市永和區永福路二段111巷3弄10號4,5樓",
+                "persons": [
+                    {
+                        "id": 1,
+                        "isHouseholdHead": true,
+                        "name": "陳一書",
+                        "notes": "爸爸👨",
+                        "zodiac": "虎"
+                    },
+                    {
+                        "id": 2,
+                        "isHouseholdHead": false,
+                        "name": "陳許樂",
+                        "notes": "女兒",
+                        "zodiac": "兔"
+                    },
+                    {
+                        "id": 3,
+                        "isHouseholdHead": false,
+                        "name": "彭小因",
+                        "notes": "媽媽👩",
+                        "zodiac": "猴"
+                    }
+                ]
+            },
+            "salvation": {
+                "address": "",
+                "ancestors": [
+                    {
+                        "id": 1,
+                        "notes": "",
+                        "surname": "",
+                        "zodiac": ""
+                    }
+                ],
+                "survivors": [
+                    {
+                        "id": 1,
+                        "name": "",
+                        "notes": "",
+                        "zodiac": ""
+                    }
+                ]
+            },
+            "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+            "date_created": "2026-01-23 20:33:48",
+            "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+            "date_updated": "2026-01-29 04:17:24"
+        },
+        "duration": 0
+    },
+    "duration": 0,
+    "success": true,
+    "jsonParseError": false,
+    "parseError": "",
+    "error": false,
+    "errorText": "",
+    "errorMessage": "",
+    "noContent": false,
+    "id": "20bff0e5-f373-42f9-a258-ee0da0e688b4",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+    "url": "http://localhost:5173/registration-edit"
+}
