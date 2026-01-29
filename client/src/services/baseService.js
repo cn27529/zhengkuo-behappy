@@ -75,10 +75,16 @@ export class BaseService {
     }
 
     try {
+      // 紀錄當前時間戳
+      if (logEntry.context.duration) {
+        logEntry.duration = logEntry.context.duration;
+      } else {
+        logEntry.duration = Date.now() - logEntry.context.startTime;
+      }
+
       // 過濾敏感信息
       //const sanitizedLog = this.sanitizeLogEntry(logEntry);
       const sanitizedLog = { ...logEntry };
-
       // 保存到 IndexedDB
       await indexedDBLogger.addLog(sanitizedLog);
 

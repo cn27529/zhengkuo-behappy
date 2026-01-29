@@ -25,11 +25,13 @@ export class RegistrationService {
         data: {
           id: crypto.randomUUID(), // 標準且保證唯一
           ...registrationData,
+          createdAt: createISOTime,
         },
       };
     }
 
     try {
+      console.log("🚀 Directus 服務健康檢查中...");
       // 先檢查連接 ✅ 修正：正確的健康檢查邏輯
       const healthCheck = await this.base.healthCheck();
       if (!healthCheck.online) {
@@ -46,11 +48,7 @@ export class RegistrationService {
       // 準備提交數據
       const processedData = {
         state: registrationData.state || "creating",
-        createdAt: createISOTime,
-        createdUser: registrationData.createdUser || "system",
-        updatedAt: "",
-        updatedUser: registrationData.updatedUser || "system",
-        formName: registrationData.formName || "消災超度報名表OnService",
+        formName: registrationData.formName || "未命名表單",
         formId: registrationData.formId || formId,
         formSource: registrationData.formSource || "",
         contact: registrationData.contact || {
@@ -65,10 +63,15 @@ export class RegistrationService {
         },
         salvation: registrationData.salvation || {
           ancestors: [], // 祖先列表
-          livingPersons: [], // 陽上人列表
+          survivors: [], // 陽上人列表
         },
+        createdAt: createISOTime,
+        createdUser: authService.getCurrentUser(),
+        //updatedAt: "",
+        //updatedUser: "",
       };
 
+      const startTime = Date.now(); // 記錄開始時間
       const myHeaders = await this.base.getAuthJsonHeaders();
       const apiUrl = this.endpoint;
       const response = await fetch(apiUrl, {
@@ -77,7 +80,6 @@ export class RegistrationService {
         body: JSON.stringify(processedData),
       });
 
-      const startTime = Date.now();
       const logContext = {
         service: this.serviceName,
         operation: "createRegistration",
@@ -101,7 +103,7 @@ export class RegistrationService {
     }
   }
 
-  async updateRegistration(id, registrationData) {
+  async updateRegistration(recordId, registrationData) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return {
@@ -117,15 +119,15 @@ export class RegistrationService {
         updatedUser: authService.getCurrentUser(),
       };
 
+      const startTime = Date.now(); // 記錄開始時間
       const myHeaders = await this.base.getAuthJsonHeaders();
-      const apiUrl = `${this.endpoint}/${id}`;
+      const apiUrl = `${this.endpoint}/${recordId}`;
       const response = await fetch(apiUrl, {
         method: "PATCH",
         headers: myHeaders,
         body: JSON.stringify(processedData),
       });
 
-      const startTime = Date.now();
       const logContext = {
         service: this.serviceName,
         operation: "updateRegistration",
@@ -144,12 +146,12 @@ export class RegistrationService {
       );
       return result;
     } catch (error) {
-      console.error(`更新報名表 (ID: ${id}) 失敗:`, error);
+      console.error(`更新報名表 (ID: ${recordId}) 失敗:`, error);
       return this.handleRegistrationDirectusError(error);
     }
   }
 
-  async deleteRegistration(id) {
+  async deleteRegistration(recordId) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return {
@@ -159,12 +161,21 @@ export class RegistrationService {
     }
 
     try {
+      const currentDelete = this.getRegistrationById(recordId);
 
-      const result = this.getRegistrationById(id);
-      console.log("服務器返回的表單數據:", result);
+      if (!currentDelete) {
+        return {
+          success: false,
+          message: `找不到 ID 為 ${recordId} 的報名表`,
+          data: null,
+        };
+      }
+
+      console.log("服務器返回的表單數據:", currentDelete);
+
       let processedData = null;
-      if (result.success && result.data) {
-        const formData = result.data;
+      if (currentDelete.success && currentDelete.data) {
+        const formData = currentDelete.data;
         processedData = {
           ...formData,
           deletedAt: DateUtils.getCurrentISOTime(),
@@ -172,39 +183,33 @@ export class RegistrationService {
         };
       }
 
+      const startTime = Date.now(); // 記錄開始時間
       const myHeaders = await this.base.getAuthJsonHeaders();
-      const apiUrl = `${this.endpoint}/${id}`;
+      const apiUrl = `${this.endpoint}/${recordId}`;
       const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: myHeaders,
       });
 
-      const startTime = Date.now();
       const logContext = {
         service: this.serviceName,
         operation: "deleteRegistration",
         method: "DELETE",
         startTime: startTime,
-        endpoint: this.endpoint,
-        requestBody: processedData, // ✅ 記錄請求 body
+        endpoint: `${this.endpoint}/${recordId}`,
+        requestBody: processedData, // ✅ 刪除的資料
       };
 
       // 計算實際耗時
       const duration = Date.now() - startTime;
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || `Directus 錯誤: ${response.status}`,
-        );
-      }
-
-      return {
-        success: true,
-        message: "成功刪除報名表",
-      };
+      const result = await this.base.handleDirectusResponse(
+        response,
+        "成功刪除報名表",
+        { ...logContext, duration },
+      );
+      return result;
     } catch (error) {
-      console.error(`刪除報名表 (ID: ${id}) 失敗:`, error);
+      console.error(`刪除報名表 (ID: ${recordId}) 失敗:`, error);
       return this.handleRegistrationDirectusError(error);
     }
   }
@@ -219,6 +224,7 @@ export class RegistrationService {
     }
 
     try {
+      const startTime = Date.now(); // 記錄開始時間
       const myHeaders = await this.base.getAuthJsonHeaders();
       const apiUrl = `${this.endpoint}/${id}?fields=*`;
       const response = await fetch(apiUrl, {
@@ -226,10 +232,9 @@ export class RegistrationService {
         headers: myHeaders,
       });
 
-      
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功獲取報名表",        
+        "成功獲取報名表",
       );
       return result;
     } catch (error) {
@@ -265,6 +270,7 @@ export class RegistrationService {
 
       const apiUrl = `${this.endpoint}?${queryParams.toString()}`;
       console.log("📡 查詢 URL:", apiUrl);
+      const startTime = Date.now(); // 記錄開始時間
       const myHeaders = await this.base.getAuthJsonHeaders();
       const response = await fetch(apiUrl, {
         method: "GET",

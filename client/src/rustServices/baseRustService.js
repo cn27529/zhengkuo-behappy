@@ -105,15 +105,25 @@ export class BaseRustService {
     }
 
     try {
-      const sanitizedLog = this.sanitizeLogEntry(logEntry);
+      // 紀錄當前時間戳
+      if (logEntry.context.duration) {
+        logEntry.duration = logEntry.context.duration;
+      } else {
+        logEntry.duration = Date.now() - logEntry.context.startTime;
+      }
+
+      // 過濾敏感信息
+      //const sanitizedLog = this.sanitizeLogEntry(logEntry);
+      const sanitizedLog = { ...logEntry };
+      // 保存到 IndexedDB
       await indexedDBLogger.addLog(sanitizedLog);
 
-      // 遠程日誌
+      // 如果配置了遠程日誌服務，也發送一份
       if (import.meta.env.VITE_REMOTE_LOG_URL) {
         await this.sendToRemoteLog(sanitizedLog);
       }
 
-      // 開發模式控制台顯示
+      // 開發模式下在控制台顯示
       if (this.isDev) {
         this.displayLogInConsole(sanitizedLog);
       }
