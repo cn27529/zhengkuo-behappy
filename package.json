@@ -15,7 +15,7 @@
     "start:rust": "cd rust-axum && cargo run",
     "dev": "concurrently \"npm:start:server\" \"npm:start:client\" \"npm:start:rust\" ",
     "deploy:netlify": "./scripts/deploy-netlify.sh",
-    "db": "node scripts/init-database.js && node scripts/start-with-db2.js"
+    "db": "node scripts/start-with-db.js"
   },
   "keywords": [],
   "author": "",

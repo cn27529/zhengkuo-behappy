@@ -1,71 +1,8 @@
 // scripts/start-with-db.js
 const { execSync, spawn } = require("child_process");
 const readline = require("readline");
-
-// ls -l db/
-console.log("查看目前「current.db」資料庫指向狀態:");
-execSync("ls -l db/", { stdio: "inherit" });
-console.log("--------------------------------------------------");
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-console.log("🏯 請選擇要啟動的客戶資料庫:");
-console.log("1. 少林寺 (shaolin.db)");
-console.log("2. 紫雲寺 (ziyun.db)");
-console.log("3. 鎮國寺 (zk.db)");
-console.log("4. 使用當前設定（data.db）不更改資料庫");
-
-// 提示用戶輸入選項
-rl.question("請輸入選項 (1-4): ", (answer) => {
-  switch (answer.trim()) {
-    case "1":
-      console.log("切換到少林寺資料庫...");
-      execSync("ln -sf shaolin.db db/current.db", { stdio: "inherit" });
-      break;
-    case "2":
-      console.log("切換到紫雲寺資料庫...");
-      execSync("ln -sf ziyun.db db/current.db", { stdio: "inherit" });
-      break;
-    case "3":
-      console.log("切換到鎮國寺資料庫...");
-      execSync("ln -sf zk.db db/current.db", { stdio: "inherit" });
-      break;
-    case "4":
-      console.log("使用當前資料庫設定...");
-      execSync("ln -sf data.db db/current.db", { stdio: "inherit" });
-      break;
-    default:
-      console.log("無效選項，結束對話。");
-      rl.close();
-      return;
-  }
-
-  rl.close();
-
-  console.log("\n🚀 啟動所有服務...");
-
-  // 使用 concurrently 啟動所有服務
-  const processes = spawn(
-    "npx",
-    [
-      "concurrently",
-      '"npm run start:server"',
-      '"npm run start:client"',
-      '"npm run start:rust"',
-    ],
-    {
-      stdio: "inherit",
-      shell: true,
-    },
-  );
-
-  processes.on("close", (code) => {
-    console.log(`所有服務已結束，退出碼: ${code}`);
-  });
-});
+const fs = require("fs");
+const path = require("path");
 
 // 顏色輸出
 const colors = {
@@ -75,8 +12,461 @@ const colors = {
   red: "\x1b[31m",
   cyan: "\x1b[36m",
   blue: "\x1b[34m",
+  magenta: "\x1b[35m",
 };
 
 function log(message, color = "reset") {
   console.log(`${colors[color]}${message}${colors.reset}`);
+}
+
+function error(message) {
+  log(`❌ ${message}`, "red");
+}
+
+function success(message) {
+  log(`✅ ${message}`, "green");
+}
+
+function info(message) {
+  log(`ℹ️ ${message}`, "cyan");
+}
+
+function warning(message) {
+  log(`⚠️ ${message}`, "yellow");
+}
+
+console.log("=".repeat(50));
+log("🏯 客戶資料庫管理工具", "blue");
+console.log("=".repeat(50));
+
+// 獲取專案根目錄
+const projectRoot = path.resolve(__dirname, "..");
+log(`📁 專案根目錄: ${projectRoot}`, "cyan");
+
+// 定義可能的配置檔路徑（優先級順序）
+const possibleConfigPaths = [
+  path.join(projectRoot, "db", "databases.json"), // 您的配置檔位置
+  path.join(projectRoot, "databases.json"), // 專案根目錄
+  path.join(process.cwd(), "db", "databases.json"), // 當前目錄的 db
+  path.join(process.cwd(), "databases.json"), // 當前目錄
+];
+
+let configPath = null;
+for (const p of possibleConfigPaths) {
+  if (fs.existsSync(p)) {
+    configPath = p;
+    success(`找到配置檔: ${p}`);
+    break;
+  }
+}
+
+if (!configPath) {
+  error("找不到 databases.json 配置檔");
+  log("嘗試過以下路徑:", "yellow");
+  possibleConfigPaths.forEach((p) => log(`  ${p}`, "yellow"));
+  log("\n💡 您的配置檔應該在: db/databases.json", "yellow");
+  process.exit(1);
+}
+
+// 讀取配置檔
+let config;
+try {
+  const configContent = fs.readFileSync(configPath, "utf8");
+  config = JSON.parse(configContent);
+  success(`已載入配置檔: ${configPath}`);
+} catch (err) {
+  error(`讀取配置檔失敗: ${err.message}`);
+  log("配置檔內容:", "yellow");
+  try {
+    console.log(fs.readFileSync(configPath, "utf8"));
+  } catch (e) {
+    console.log("無法讀取檔案內容");
+  }
+  process.exit(1);
+}
+
+// 處理 active_database 路徑
+let activeDb = config.active_database;
+if (!activeDb) {
+  warning("配置檔缺少 active_database，使用預設值 data.db");
+  activeDb = "data.db";
+} else if (activeDb.startsWith("db/")) {
+  // 移除 db/ 前綴
+  activeDb = activeDb.replace("db/", "");
+  log(
+    `修正 active_database 路徑: ${config.active_database} -> ${activeDb}`,
+    "yellow",
+  );
+}
+
+// 顯示配置摘要
+console.log("\n" + "=".repeat(50));
+log("📋 配置摘要", "cyan");
+console.log("-".repeat(50));
+log(`基礎資料庫: ${activeDb}`, "cyan");
+log(`可用客戶數: ${Object.keys(config.databases || {}).length}`, "cyan");
+
+// 顯示當前狀態
+console.log("\n" + "=".repeat(50));
+log("📊 當前資料庫狀態", "cyan");
+console.log("-".repeat(50));
+
+const currentLink = path.join(projectRoot, "db", "current.db");
+const dbDir = path.join(projectRoot, "db");
+
+if (fs.existsSync(currentLink)) {
+  try {
+    const stats = fs.lstatSync(currentLink);
+    if (stats.isSymbolicLink()) {
+      const target = fs.readlinkSync(currentLink);
+      log(`🔗 當前連結: current.db -> ${target}`, "green");
+
+      // 檢查目標是否存在
+      const targetPath = path.join(dbDir, target);
+      if (fs.existsSync(targetPath)) {
+        const targetStats = fs.statSync(targetPath);
+        const sizeMB = (targetStats.size / 1024 / 1024).toFixed(2);
+        log(`    目標檔案: ${target} (${sizeMB} MB) ✅`, "green");
+      } else {
+        log(`    目標檔案: ${target} ❌ 不存在!`, "red");
+      }
+    } else {
+      const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+      log(`📄 當前: current.db (實體檔案, ${sizeMB} MB)`, "yellow");
+    }
+  } catch (err) {
+    log(`❌ 讀取連結失敗: ${err.message}`, "red");
+  }
+} else {
+  log("❌ current.db 不存在", "yellow");
+}
+
+console.log("-".repeat(50));
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+// 詢問是否解除連結
+rl.question("是否要解除目前的資料庫連結？(y/n): ", (answer) => {
+  if (answer.trim().toLowerCase() === "y") {
+    if (fs.existsSync(currentLink)) {
+      try {
+        fs.unlinkSync(currentLink);
+        success("已解除 db/current.db 連結");
+      } catch (err) {
+        error(`解除連結失敗: ${err.message}`);
+      }
+    } else {
+      info("current.db 不存在，無需解除");
+    }
+  }
+
+  rl.close();
+  showDatabaseMenu(config, projectRoot, activeDb);
+});
+
+function showDatabaseMenu(config, projectRoot, activeDb) {
+  console.log("\n" + "=".repeat(50));
+  log("🏯 請選擇要啟動的客戶資料庫:", "blue");
+  console.log("=".repeat(50));
+
+  const databases = config.databases || {};
+  const dbDir = path.join(projectRoot, "db");
+
+  let optionNumber = 1;
+  const options = [];
+
+  // 顯示配置中的資料庫
+  for (const [key, dbInfo] of Object.entries(databases)) {
+    // 從 path 中提取檔案名稱
+    let dbFile;
+    if (dbInfo.path) {
+      // 移除路徑中的 db/ 前綴
+      dbFile = dbInfo.path.replace(/^db\//, "");
+    } else {
+      dbFile = `${key}.db`;
+    }
+
+    const dbPath = path.join(dbDir, dbFile);
+    const exists = fs.existsSync(dbPath);
+
+    const statusColor = exists ? "green" : "yellow";
+    const statusIcon = exists ? "✅" : "❌";
+
+    log(
+      `${optionNumber}. ${dbInfo.name || key} (${dbFile}) ${statusIcon}`,
+      statusColor,
+    );
+
+    if (dbInfo.description) {
+      log(`   描述: ${dbInfo.description}`, "cyan");
+    }
+
+    if (exists) {
+      const stats = fs.statSync(dbPath);
+      const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+      log(`   大小: ${sizeMB} MB`, "cyan");
+    } else {
+      log(`   狀態: 不存在，將從 ${activeDb} 複製建立`, "magenta");
+    }
+
+    console.log();
+
+    options.push({
+      number: optionNumber,
+      key: key,
+      name: dbInfo.name || key,
+      file: dbFile,
+      path: dbPath,
+      exists: exists,
+    });
+
+    optionNumber++;
+  }
+
+  // 顯示基礎資料庫選項
+  const baseDbPath = path.join(dbDir, activeDb);
+  const baseExists = fs.existsSync(baseDbPath);
+
+  const baseStatusColor = baseExists ? "cyan" : "yellow";
+  const baseStatusIcon = baseExists ? "✅" : "❌";
+
+  log(
+    `${optionNumber}. 基礎資料庫 (${activeDb}) ${baseStatusIcon}`,
+    baseStatusColor,
+  );
+  log(`   描述: 系統預設基礎資料庫`, "cyan");
+
+  if (baseExists) {
+    const stats = fs.statSync(baseDbPath);
+    const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+    log(`   大小: ${sizeMB} MB`, "cyan");
+  } else {
+    log(`   狀態: ❌ 檔案不存在！`, "red");
+  }
+
+  console.log();
+
+  options.push({
+    number: optionNumber,
+    key: "active",
+    name: "基礎資料庫",
+    file: activeDb,
+    path: baseDbPath,
+    exists: baseExists,
+  });
+
+  optionNumber++;
+
+  log(`${optionNumber}. 使用當前設定 (不更改)`, "reset");
+  log(`   描述: 保持現有連結不變`, "cyan");
+  console.log();
+
+  options.push({
+    number: optionNumber,
+    key: "current",
+    name: "當前設定",
+  });
+
+  console.log("-".repeat(50));
+
+  const rl2 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl2.question(`請輸入選項 (1-${options.length}): `, (answer) => {
+    const choice = parseInt(answer.trim());
+
+    if (isNaN(choice) || choice < 1 || choice > options.length) {
+      error("無效選項，結束對話。");
+      rl2.close();
+      return;
+    }
+
+    const selected = options[choice - 1];
+
+    if (selected.key === "current") {
+      info("使用當前資料庫設定");
+    } else {
+      log(`\n🔄 切換到: ${selected.name}`, "magenta");
+
+      const targetFile = selected.file;
+      const targetPath = selected.path;
+      const baseDbPath = path.join(dbDir, activeDb);
+
+      // 1. 檢查目標檔案是否存在，不存在則建立
+      if (!selected.exists) {
+        if (fs.existsSync(baseDbPath)) {
+          info(`從 ${activeDb} 複製建立 ${targetFile}...`);
+          try {
+            fs.copyFileSync(baseDbPath, targetPath);
+            const stats = fs.statSync(targetPath);
+            const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+            success(`✅ 已建立 ${targetFile} (${sizeMB} MB)`);
+          } catch (err) {
+            error(`❌ 複製失敗: ${err.message}`);
+            rl2.close();
+            return;
+          }
+        } else {
+          error(`❌ 基礎資料庫 ${activeDb} 不存在！無法建立 ${targetFile}`);
+          error(`💡 請先建立基礎資料庫檔案: ${baseDbPath}`);
+          rl2.close();
+          return;
+        }
+      }
+
+      // 2. 建立符號連結（先刪除已存在的）
+      try {
+        if (fs.existsSync(currentLink)) {
+          fs.unlinkSync(currentLink);
+          info("已刪除舊的 current.db");
+        }
+
+        // 確保目標檔案存在
+        if (!fs.existsSync(targetPath)) {
+          error(`❌ 目標檔案 ${targetFile} 不存在！`);
+          rl2.close();
+          return;
+        }
+
+        // 建立符號連結
+        fs.symlinkSync(targetFile, currentLink);
+        success(`✅ 已建立連結: current.db -> ${targetFile}`);
+      } catch (err) {
+        error(`❌ 建立連結失敗: ${err.message}`);
+
+        if (err.code === "EEXIST") {
+          error(`💡 檔案已存在，嘗試強制刪除...`);
+          try {
+            fs.unlinkSync(currentLink);
+            fs.symlinkSync(targetFile, currentLink);
+            success(`✅ 已強制重新建立連結`);
+          } catch (forceErr) {
+            error(`❌ 強制重建失敗: ${forceErr.message}`);
+          }
+        } else if (process.platform === "win32") {
+          // Windows 備用方案
+          warning("Windows 環境，嘗試使用複製...");
+          try {
+            fs.copyFileSync(targetPath, currentLink);
+            success(`✅ 已複製: ${targetFile} -> current.db`);
+          } catch (copyErr) {
+            error(`❌ 複製失敗: ${copyErr.message}`);
+          }
+        }
+      }
+    }
+
+    rl2.close();
+
+    // 顯示最終狀態
+    console.log("\n" + "=".repeat(50));
+    log("📊 最終狀態", "green");
+    console.log("-".repeat(50));
+
+    if (fs.existsSync(currentLink)) {
+      try {
+        const stats = fs.lstatSync(currentLink);
+        if (stats.isSymbolicLink()) {
+          const target = fs.readlinkSync(currentLink);
+          log(`🔗 符號連結: current.db -> ${target}`, "green");
+
+          // 檢查目標
+          const targetPath = path.join(dbDir, target);
+          if (fs.existsSync(targetPath)) {
+            const targetStats = fs.statSync(targetPath);
+            const sizeMB = (targetStats.size / 1024 / 1024).toFixed(2);
+            log(`📏 檔案大小: ${sizeMB} MB`, "cyan");
+          }
+        } else {
+          log(`📄 實體檔案: current.db`, "yellow");
+        }
+      } catch (err) {
+        error(`讀取連結失敗: ${err.message}`);
+      }
+    } else {
+      log("❌ current.db 不存在", "yellow");
+    }
+
+    console.log("-".repeat(50));
+
+    // 啟動服務
+    startServices(projectRoot);
+  });
+}
+
+function startServices(projectRoot) {
+  console.log("\n" + "=".repeat(50));
+  log("🚀 啟動所有服務...", "green");
+  console.log("=".repeat(50));
+
+  log("📡 啟動服務:", "cyan");
+  log("  1. Directus (後台管理) - port 8055");
+  log("  2. Vue 前端 - port 5173");
+  log("  3. Rust Axum API - port 3000");
+  console.log("=".repeat(50));
+  log("按 Ctrl+C 可同時關閉所有服務", "yellow");
+  console.log("=".repeat(50) + "\n");
+
+  // 確保在專案根目錄
+  const originalCwd = process.cwd();
+  process.chdir(projectRoot);
+
+  const processes = spawn(
+    "npx",
+    [
+      "concurrently",
+      "-k",
+      "-p",
+      "[{name}]",
+      "-n",
+      "Directus,Frontend,RustAPI",
+      "-c",
+      "cyan.bold,green.bold,magenta.bold",
+      '"npm run start:server"',
+      '"npm run start:client"',
+      '"npm run start:rust"',
+    ],
+    {
+      stdio: "inherit",
+      shell: true,
+      cwd: projectRoot,
+    },
+  );
+
+  processes.on("close", (code) => {
+    console.log("\n" + "=".repeat(50));
+    if (code === 0) {
+      log("✅ 所有服務已正常結束", "green");
+    } else {
+      log(`⚠️ 服務結束，退出碼: ${code}`, "yellow");
+    }
+    console.log("=".repeat(50));
+
+    // 恢復原始工作目錄
+    process.chdir(originalCwd);
+  });
+
+  // // 執行 npm run dev
+  // const processes = spawn("npm", ["run", "dev"], {
+  //   stdio: "inherit",
+  //   shell: true,
+  // });
+
+  // processes.on("close", (code) => {
+  //   console.log("\n" + "=".repeat(50));
+  //   if (code === 0) {
+  //     log("✅ 所有服務已正常結束", "green");
+  //   } else {
+  //     log(`⚠️ 服務結束，退出碼: ${code}`, "yellow");
+  //   }
+  //   console.log("=".repeat(50));
+
+  //   // 恢復原始工作目錄
+  //   process.chdir(originalCwd);
+  // });
 }
