@@ -2,6 +2,11 @@
 const { execSync, spawn } = require("child_process");
 const readline = require("readline");
 
+// ls -l db/
+console.log("查看目前「current.db」資料庫指向狀態:");
+execSync("ls -l db/", { stdio: "inherit" });
+console.log("--------------------------------------------------");
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -13,6 +18,7 @@ console.log("2. 紫雲寺 (ziyun.db)");
 console.log("3. 鎮國寺 (zk.db)");
 console.log("4. 使用當前設定（data.db）不更改資料庫");
 
+// 提示用戶輸入選項
 rl.question("請輸入選項 (1-4): ", (answer) => {
   switch (answer.trim()) {
     case "1":
@@ -32,7 +38,9 @@ rl.question("請輸入選項 (1-4): ", (answer) => {
       execSync("ln -sf data.db db/current.db", { stdio: "inherit" });
       break;
     default:
-      console.log("無效選項，使用當前設定");
+      console.log("無效選項，結束對話。");
+      rl.close();
+      return;
   }
 
   rl.close();
