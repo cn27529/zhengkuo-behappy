@@ -45,7 +45,7 @@ import { useRouter } from "vue-router";
 import LogViewer from "../components/LogViewer.vue";
 import { indexedDBLogger } from "../utils/indexedDB.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import mock_logs from "../data/mock_logs.json";
+import mock_logEntrys from "../data/mock_logEntrys.json";
 
 const router = useRouter();
 const logViewer = ref(null);
@@ -53,7 +53,7 @@ const logs = ref([]);
 const isExporting = ref(false);
 
 // 模擬數據（如果沒有真實日誌）
-const mockLogs = mock_logs;
+const mockLogs = mock_logEntrys;
 
 // 計算屬性
 const totalLogs = computed(() => logs.value.length);
