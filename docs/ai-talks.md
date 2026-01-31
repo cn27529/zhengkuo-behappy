@@ -64,3 +64,23 @@
 我有一個問題要請教 看看你有什麼說法, 我有兩個分支 zk-client-netlify 及 zk-client-rustaxum，zk-client-netlify 分支是要部署到 netlify 平台的, 我會將目前開發中的分支 zk-client-rustaxum 蓋到 zk-client-netlify 分支, 但是有些功能還不想露出給使用者看見, 我己經綁定菜單但是又不想每次部署每次改菜單還要 commit, push 接著還要切到 zk-client-netlify 做 git reset --hard zk-client-rustaxum，有沒有什麼可行的說法。將你的說法生成在 docs/deployment-netlify-guide.md
 
 現在我要建構 client/src/views/JoinRecordPrint.vue，這個功能你參考 client/src/views/RegistrationPrint.vue 這個頁面很簡約純粹 主要是要打印用的頁面 沒有使用多餘的CSS 因為是為了不讓CSS影響了打印品質，有些列印機是無法支援CSS設置，你可以複刻 client/src/views/RegistrationPrint.vue 的模式打印 pdf image print都是可以的，如果你有更好的說法你也可以實現，實現完成後參考 client/src/views/RegistrationList.vue 的 handlePrint方法實現在 client/src/views/JoinRecordList.vue 。需要生成 docs/dev-joinRecord-print-guide.md 說明文件
+
+將 client/src/stores/registrationStore.js 的 validationDetails 方法增加檢查 mobile 欄位格式檢查需要符合 "09xxxxxxxx" 格式檢查，不符合格式時依照目前方法的使用方式加入信息回應，並加入代碼註解。
+
+將 client/src/stores/registrationStore.js 的 validationDetails 方法內沒有註解的加入註解，欄位說明查看 docs/mock-registrations.md 文檔內容的說明，只處理註解不更改現有代碼。如果有疑問請與我討論。
+
+添加的註解包括：
+
+1. 戶長數量檢查 - 檢查戶長數量限制
+2. 祖先數量檢查 - 檢查祖先數量限制
+3. 陽上人數量檢查 - 檢查陽上人數量限制
+4. 聯絡人資料檢查 - 姓名必填、關係必填
+5. 聯絡電話檢查 - 市話或手機至少填一個
+6. 其它關係補充說明檢查 - 選擇「其它」時的補充說明
+7. 消災地址與人員一致性檢查 - 有人員但沒地址、有地址但沒人員
+8. 消災人員資料完整性檢查 - 生肖和姓名的完整性
+9. 祖先資料完整性檢查 - 姓氏完整性（多筆時）
+10. 陽上人資料完整性檢查 - 姓名完整性（多筆時）
+11. 超度地址與資料一致性檢查 - 地址與祖先/陽上人的關聯
+12. 祖先與陽上人關聯性檢查 - 有祖先必須有陽上人
+13. 至少一項服務檢查 - 消災或超度至少選一項
