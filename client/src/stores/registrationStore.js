@@ -473,6 +473,16 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.contactPhone = null;
     }
 
+    // 手機號碼格式檢查：必須符合 "09xxxxxxxx" 格式（09開頭，共10位數字）
+    const mobileValue = registrationForm.value.contact.mobile.trim();
+    if (mobileValue && !/^09\d{8}$/.test(mobileValue)) {
+      details.valid = false;
+      details.errors.contactMobile = "手機號碼格式錯誤，請輸入09開頭的10位數字";
+      details.messages.push(details.errors.contactMobile);
+    } else {
+      details.errors.contactMobile = null;
+    }
+
     if (
       registrationForm.value.contact.relationship === "其它" &&
       !registrationForm.value.contact.otherRelationship.trim()
