@@ -190,3 +190,7 @@ cobertura.xml
 
 # ln -sf 映射 SQLite 數據庫(directus, rust-axum)
 db/current.db
+
+# apikey不可以上傳
+**/apikey.txt
+**/*-apikey.txt

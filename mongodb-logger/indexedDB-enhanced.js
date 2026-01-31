@@ -8,7 +8,7 @@ import { MongoDBRemoteLogger } from "./mongoDBLogger.js";
 export class EnhancedLogger extends IndexedDBLogger {
   constructor(dbName = "DirectusLogsDB", version = 1, mongoConfig = null) {
     super(dbName, version);
-    
+
     // 初始化 MongoDB 遠程日誌
     this.remoteLogger = null;
     if (mongoConfig) {
@@ -22,9 +22,9 @@ export class EnhancedLogger extends IndexedDBLogger {
   initRemoteLogger(mongoConfig) {
     try {
       this.remoteLogger = new MongoDBRemoteLogger(mongoConfig);
-      console.log('🌐 遠程日誌模組已初始化');
+      console.log("🌐 遠程日誌模組已初始化");
     } catch (error) {
-      console.error('❌ 遠程日誌初始化失敗:', error);
+      console.error("❌ 遠程日誌初始化失敗:", error);
     }
   }
 
@@ -43,7 +43,7 @@ export class EnhancedLogger extends IndexedDBLogger {
 
       return localResult;
     } catch (error) {
-      console.error('❌ 新增日誌失敗:', error);
+      console.error("❌ 新增日誌失敗:", error);
       return false;
     }
   }
@@ -53,7 +53,7 @@ export class EnhancedLogger extends IndexedDBLogger {
    */
   async syncToRemote() {
     if (!this.remoteLogger) {
-      return { success: false, message: '遠程日誌未啟用' };
+      return { success: false, message: "遠程日誌未啟用" };
     }
 
     return await this.remoteLogger.syncNow();
@@ -64,7 +64,7 @@ export class EnhancedLogger extends IndexedDBLogger {
    */
   async queryRemoteLogs(filter = {}, options = {}) {
     if (!this.remoteLogger) {
-      return { success: false, message: '遠程日誌未啟用' };
+      return { success: false, message: "遠程日誌未啟用" };
     }
 
     return await this.remoteLogger.queryLogs(filter, options);
@@ -75,7 +75,7 @@ export class EnhancedLogger extends IndexedDBLogger {
    */
   async getRemoteStats() {
     if (!this.remoteLogger) {
-      return { success: false, message: '遠程日誌未啟用' };
+      return { success: false, message: "遠程日誌未啟用" };
     }
 
     return await this.remoteLogger.getStats();
@@ -86,7 +86,7 @@ export class EnhancedLogger extends IndexedDBLogger {
    */
   async cleanupRemoteLogs(daysToKeep = 30) {
     if (!this.remoteLogger) {
-      return { success: false, message: '遠程日誌未啟用' };
+      return { success: false, message: "遠程日誌未啟用" };
     }
 
     return await this.remoteLogger.cleanup(daysToKeep);
