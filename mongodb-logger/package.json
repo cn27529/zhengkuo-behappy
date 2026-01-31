@@ -1,0 +1,22 @@
+{
+  "name": "mongodb-logger",
+  "version": "1.0.0",
+  "description": "本地 IndexedDB + 遠程 MongoDB 雙層日誌系統",
+  "type": "module",
+  "main": "indexedDB-enhanced.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "indexedDB",
+    "mongodb",
+    "logger",
+    "logging",
+    "remote-logging"
+  ],
+  "dependencies": {
+    "mongodb": "^6.21.0"
+  },
+  "author": "",
+  "license": "MIT"
+}

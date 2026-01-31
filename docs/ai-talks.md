@@ -86,3 +86,5 @@
 13. 至少一項服務檢查 - 消災或超度至少選一項
 
 依照 validationDetails 方法，檢查 docs/business-logic.md 業務邏輯區塊做適合的更新
+
+docs/mock-logEntry-guide.md「操作記錄資料說明文檔」、client/src/data/mock_logEntrys.json「操作記錄假資料」、rust-axum/migrations/sqlite_logEntryDB_table.sql「操作記錄DB表格」、client/src/utils/indexedDB.js「IndexedDBLogger」
