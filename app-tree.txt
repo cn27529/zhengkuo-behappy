@@ -31,7 +31,7 @@
 │   │   │   ├── card-template-zk02b.png
 │   │   │   ├── card-template-zk03a.png
 │   │   │   ├── mock_activities.json
-│   │   │   ├── mock_logentrys.json
+│   │   │   ├── mock_logEntrys.json
 │   │   │   ├── mock_logs.json
 │   │   │   ├── mock_monthlyDonates.json
 │   │   │   ├── mock_participation_records-db.json
