@@ -394,8 +394,51 @@ function showDatabaseMenu(config, projectRoot, activeDb) {
 
     console.log("-".repeat(50));
 
+    // 🔧 新增：啟動服務前先清理殘留文件
+
+    cleanupWalFiles();
+
     // 啟動服務
     startServices(projectRoot);
+  });
+}
+
+function cleanupWalFiles() {
+  log("🧹 清理殘留的資料庫文件...", "cyan");
+
+  // 檢查 dbDir 是否存在
+  if (!dbDir || !fs.existsSync(dbDir)) {
+    warning(`資料庫目錄不存在: ${dbDir}`);
+    return;
+  }
+
+  log(`   目錄: ${dbDir}`, "cyan");
+
+  // 只清理明顯的殘留文件
+  ["-shm", "-wal", "-journal"].forEach((suffix) => {
+    try {
+      const files = fs.readdirSync(dbDir).filter((f) => f.endsWith(suffix));
+
+      files.forEach((file) => {
+        const filePath = path.join(dbDir, file);
+        try {
+          const stats = fs.statSync(filePath);
+          // 只刪除舊文件（例如超過1小時）
+          if (Date.now() - stats.mtimeMs > 3600000) {
+            fs.unlinkSync(filePath);
+            log(`   已刪除: ${file}`, "yellow");
+          } else {
+            log(`   保留（新文件）: ${file}`, "cyan");
+          }
+        } catch (e) {
+          // 忽略文件錯誤
+          log(`   無法處理: ${file} (${e.message})`, "yellow");
+        }
+      });
+    } catch (e) {
+      // 忽略讀取目錄錯誤
+      log(`   無法讀取目錄: ${e.message}`, "yellow");
+    }
   });
 }
 
