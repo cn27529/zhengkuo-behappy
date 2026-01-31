@@ -40,6 +40,7 @@ lrwxr-xr-x  1 user  staff  10 Jan 30 12:00 current.db -> shaolin.db
 ```
 
 **判斷符號連結的關鍵：**
+
 - 第一個字母是 `l`
 - 最後有 `->` 箭頭指向目標
 
@@ -288,15 +289,15 @@ npm run show:current-db
 
 ## 🎯 快速參考表
 
-| 需求 | 命令 |
-|------|------|
-| 查看單個符號連結 | `ls -l db/current.db` |
-| 只顯示目標 | `readlink db/current.db` |
-| 顯示絕對路徑 | `readlink -f db/current.db` |
-| 列出目錄所有符號連結 | `find db/ -type l` |
-| 檢查是否有效 | `file db/current.db` |
-| 詳細信息 | `stat db/current.db` |
-| 使用工具檢查 | `node scripts/check-symlinks.js` |
+| 需求                 | 命令                             |
+| -------------------- | -------------------------------- |
+| 查看單個符號連結     | `ls -l db/current.db`            |
+| 只顯示目標           | `readlink db/current.db`         |
+| 顯示絕對路徑         | `readlink -f db/current.db`      |
+| 列出目錄所有符號連結 | `find db/ -type l`               |
+| 檢查是否有效         | `file db/current.db`             |
+| 詳細信息             | `stat db/current.db`             |
+| 使用工具檢查         | `node scripts/check-symlinks.js` |
 
 ## 💡 提示
 
@@ -370,5 +371,5 @@ Get-Item db\current.db -Force | Select-Object *
 
 ## 📚 相關資源
 
-- [DATABASE-SWITCHING-GUIDE.md](./DATABASE-SWITCHING-GUIDE.md) - 資料庫切換指南
-- [start-with-db.md](./start-with-db.md) - 啟動腳本說明
+- [db-start-with-db-guide.md](./db-start-with-db-guide.md) - 資料庫管理工具指南
+- [db-init-database-guide.md](./db-init-database-guide.md) - 資料庫初始化工具指南
