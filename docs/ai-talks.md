@@ -89,4 +89,4 @@
 
 docs/mock-logEntry-guide.md「操作記錄資料說明文檔」、client/src/data/mock_logEntrys.json「操作記錄假資料」、rust-axum/migrations/sqlite_logEntryDB_table.sql「操作記錄DB表格」、client/src/utils/indexedDB.js「IndexedDBLogger」
 
-我要生成 scripts/start-mongodb-logger.js，它會創建一個nodejs web API 接口，實現對mongo的串接，串接過程可以參考查看 mongodb-logger/usage-example.js 它引用了 mongodb-logger/mongoDBLogger.js, mongodb-logger/indexedDB-enhanced.js，由 start-mongodb-logger.js 產生的運行假設接口 "http://localhost:8080/mongo/logentry/"，那麼我會在 client/ 的環境變數設定 VITE_REMOTE_LOG_URL="http://localhost:8080/mongo/logentry/"
+我要生成 scripts/start-mongodb-logger.js，它會創建一個nodejs web API 接口，實現對mongo的串接，串接過程可以參考查看 mongodb-logger/usage-example.js 它引用了 mongodb-logger/mongoDBLogger.js, mongodb-logger/indexedDB-enhanced.js，由 start-mongodb-logger.js 產生的運行假設接口 "http://localhost:8080/mongo/logentry/"，那麼我會在 client/ 的環境變數設定 VITE_REMOTE_LOG_URL="http://localhost:8080/mongo/logentry/" 這樣 client/ 就可以調用 VITE_REMOTE_LOG_URL 將 indexedDB 的內容轉送一份到遠程做記錄。你能理解我的思路嗎。
