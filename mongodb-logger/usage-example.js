@@ -1,37 +1,37 @@
 // usage-example.js - 使用範例和設定指南
 
-import { EnhancedLogger } from './indexedDB-enhanced.js';
+import { EnhancedLogger } from "./indexedDB-enhanced.js";
 
 /**
  * ==========================================
  * 📋 MongoDB Atlas 設定步驟
  * ==========================================
- * 
+ *
  * 1. 登入 MongoDB Atlas
  *    https://cloud.mongodb.com
- * 
+ *
  * 2. 進入你的專案
  *    Project ID: 632c16c128686c379ccac3c4
- * 
+ *
  * 3. 建立或選擇 Cluster (M0 免費版)
  *    - 點擊 "Database" 選單
  *    - 如果還沒有 cluster，點擊 "Build a Database"
  *    - 選擇 "M0 Free" 方案
  *    - 選擇區域 (建議: Singapore ap-southeast-1)
  *    - 點擊 "Create"
- * 
+ *
  * 4. 設定資料庫使用者
  *    - 點擊 "Database Access"
  *    - 點擊 "Add New Database User"
  *    - 設定帳號密碼 (記住這個，等下要用)
  *    - 權限選 "Read and write to any database"
- * 
+ *
  * 5. 設定網路存取
  *    - 點擊 "Network Access"
  *    - 點擊 "Add IP Address"
  *    - 選擇 "Allow Access from Anywhere" (0.0.0.0/0)
  *    - 或只加入你的 IP
- * 
+ *
  * 6. 取得連線字串
  *    - 回到 "Database"
  *    - 點擊你的 Cluster 的 "Connect"
@@ -51,17 +51,18 @@ import { EnhancedLogger } from './indexedDB-enhanced.js';
 
 // 2. 初始化日誌管理器
 const logger = new EnhancedLogger(
-  'DirectusLogsDB',  // IndexedDB 名稱
-  1,                 // 版本號
+  "DirectusLogsDB", // IndexedDB 名稱
+  1, // 版本號
   {
     // MongoDB 連線設定
-    uri: 'mongodb+srv://your-username:your-password@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority',
-    dbName: 'app_logs',              // 資料庫名稱
-    collectionName: 'response_logs', // 集合名稱
-    batchSize: 50,                   // 批次上傳筆數
-    syncInterval: 300000,            // 自動同步間隔 (5分鐘)
-    autoSync: true,                  // 啟用自動同步
-  }
+    uri: "mongodb+srv://dbo:1q2w3e@cluster0.z2em3hn.mongodb.net/?appName=Cluster0", // 替換成你的連線字串
+    dbName: "logEntryDB", // 資料庫名稱
+    collectionName: "zk_client_logs", // 集合名稱
+    batchSize: 50, // 批次上傳筆數
+    syncInterval: 300000, // 自動同步間隔 (5分鐘)
+    autoSync: false, // 啟用自動同步
+    projectId: "5a090dd50bd66b458726ffa4", // 專案 ID
+  },
 );
 
 // ==========================================
@@ -80,39 +81,39 @@ async function logAPIRequest(endpoint, method, response) {
     responseData: response.data,
     errorText: response.error,
     context: {
-      service: 'directus',
-      operation: 'fetch',
+      service: "directus",
+      operation: "fetch",
       userId: getCurrentUserId(),
-    }
+    },
   });
 }
 
 // 使用範例
 async function fetchData() {
   const startTime = Date.now();
-  
+
   try {
-    const response = await fetch('https://api.example.com/data');
+    const response = await fetch("https://api.example.com/data");
     const data = await response.json();
-    
+
     // 記錄成功的請求
-    await logAPIRequest('/data', 'GET', {
+    await logAPIRequest("/data", "GET", {
       status: response.status,
       ok: response.ok,
       responseTime: Date.now() - startTime,
       data,
     });
-    
+
     return data;
   } catch (error) {
     // 記錄失敗的請求
-    await logAPIRequest('/data', 'GET', {
+    await logAPIRequest("/data", "GET", {
       status: 0,
       ok: false,
       responseTime: Date.now() - startTime,
       error: error.message,
     });
-    
+
     throw error;
   }
 }
@@ -124,32 +125,35 @@ async function fetchData() {
 // 查詢本地日誌 (IndexedDB)
 async function queryLocalLogs() {
   const logs = await logger.queryLogs({
-    endpoint: '/api/items',
-    method: 'POST',
+    endpoint: "/api/items",
+    method: "POST",
     status: 404,
-    dateFrom: '2025-01-01',
-    dateTo: '2025-01-31',
+    dateFrom: "2025-01-01",
+    dateTo: "2025-01-31",
   });
-  
-  console.log('本地日誌:', logs);
+
+  console.log("本地日誌:", logs);
   return logs;
 }
 
 // 查詢遠程日誌 (MongoDB)
 async function queryRemoteLogs() {
-  const result = await logger.queryRemoteLogs({
-    endpoint: '/api/items',
-    success: false,
-  }, {
-    limit: 50,
-    skip: 0,
-  });
-  
+  const result = await logger.queryRemoteLogs(
+    {
+      endpoint: "/api/items",
+      success: false,
+    },
+    {
+      limit: 50,
+      skip: 0,
+    },
+  );
+
   if (result.success) {
-    console.log('遠程日誌:', result.data);
+    console.log("遠程日誌:", result.data);
     return result.data;
   } else {
-    console.error('查詢失敗:', result.message);
+    console.error("查詢失敗:", result.message);
     return [];
   }
 }
@@ -160,18 +164,18 @@ async function queryRemoteLogs() {
 
 async function showStats() {
   const stats = await logger.getFullStats();
-  
-  console.log('=== 日誌統計 ===');
-  console.log('本地 IndexedDB:');
-  console.log('  - 數量:', stats.local.count);
-  console.log('  - 大小:', stats.local.size.formatted);
-  
+
+  console.log("=== 日誌統計 ===");
+  console.log("本地 IndexedDB:");
+  console.log("  - 數量:", stats.local.count);
+  console.log("  - 大小:", stats.local.size.formatted);
+
   if (stats.remote) {
-    console.log('遠程 MongoDB:');
-    console.log('  - 總數:', stats.remote.total);
-    console.log('  - 錯誤數:', stats.remote.errors);
-    console.log('  - 24小時內:', stats.remote.last24h);
-    console.log('  - 待上傳:', stats.remote.queueSize);
+    console.log("遠程 MongoDB:");
+    console.log("  - 總數:", stats.remote.total);
+    console.log("  - 錯誤數:", stats.remote.errors);
+    console.log("  - 24小時內:", stats.remote.last24h);
+    console.log("  - 待上傳:", stats.remote.queueSize);
   }
 }
 
@@ -183,7 +187,7 @@ async function cleanupOldLogs() {
   // 清理本地 30 天前的日誌
   const localCleaned = await logger.cleanupOldLogs(30);
   console.log(`本地清理了 ${localCleaned} 筆日誌`);
-  
+
   // 清理遠程 30 天前的日誌
   const remoteResult = await logger.cleanupRemoteLogs(30);
   if (remoteResult.success) {
@@ -196,13 +200,13 @@ async function cleanupOldLogs() {
 // ==========================================
 
 async function manualSync() {
-  console.log('開始手動同步...');
+  console.log("開始手動同步...");
   const result = await logger.syncToRemote();
-  
+
   if (result.success) {
     console.log(result.message);
   } else {
-    console.error('同步失敗:', result.message);
+    console.error("同步失敗:", result.message);
   }
 }
 
@@ -219,13 +223,13 @@ class DirectusAPIClient {
   async request(endpoint, options = {}) {
     const startTime = Date.now();
     const url = `${this.baseURL}${endpoint}`;
-    
+
     try {
       const response = await fetch(url, {
         ...options,
         headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.token}`,
+          "Content-Type": "application/json",
           ...options.headers,
         },
       });
@@ -236,20 +240,20 @@ class DirectusAPIClient {
       // 記錄日誌
       await logger.addLog({
         endpoint,
-        method: options.method || 'GET',
+        method: options.method || "GET",
         status: response.status,
         success: response.ok,
         responseTime,
         requestBody: options.body,
         responseData: data,
         context: {
-          service: 'directus',
+          service: "directus",
           url,
         },
       });
 
       if (!response.ok) {
-        throw new Error(data.errors?.[0]?.message || 'API Error');
+        throw new Error(data.errors?.[0]?.message || "API Error");
       }
 
       return data;
@@ -259,14 +263,14 @@ class DirectusAPIClient {
       // 記錄錯誤
       await logger.addLog({
         endpoint,
-        method: options.method || 'GET',
+        method: options.method || "GET",
         status: 0,
         success: false,
         responseTime,
         requestBody: options.body,
         errorText: error.message,
         context: {
-          service: 'directus',
+          service: "directus",
           url,
           error: error.stack,
         },
@@ -278,41 +282,37 @@ class DirectusAPIClient {
 
   async getItems(collection, params = {}) {
     const query = new URLSearchParams(params).toString();
-    return this.request(`/items/${collection}${query ? '?' + query : ''}`);
+    return this.request(`/items/${collection}${query ? "?" + query : ""}`);
   }
 
   async createItem(collection, data) {
     return this.request(`/items/${collection}`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(data),
     });
   }
 }
 
 // 使用範例
-const api = new DirectusAPIClient(
-  'https://your-directus.com',
-  'your-token'
-);
+const api = new DirectusAPIClient("https://your-directus.com", "your-token");
 
 async function testDirectusAPI() {
   try {
     // 取得資料
-    const items = await api.getItems('articles', {
+    const items = await api.getItems("articles", {
       limit: 10,
-      fields: 'id,title,status',
+      fields: "id,title,status",
     });
-    console.log('取得文章:', items);
+    console.log("取得文章:", items);
 
     // 新增資料
-    const newItem = await api.createItem('articles', {
-      title: 'Test Article',
-      content: 'This is a test',
+    const newItem = await api.createItem("articles", {
+      title: "Test Article",
+      content: "This is a test",
     });
-    console.log('新增文章:', newItem);
-
+    console.log("新增文章:", newItem);
   } catch (error) {
-    console.error('API 錯誤:', error);
+    console.error("API 錯誤:", error);
   }
 }
 
@@ -321,13 +321,13 @@ async function testDirectusAPI() {
 // ==========================================
 
 // React Hook 範例
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from "react";
 
 export function useLogger() {
   // 顯示統計資料
   const showStats = useCallback(async () => {
     const stats = await logger.getFullStats();
-    console.log('日誌統計:', stats);
+    console.log("日誌統計:", stats);
     return stats;
   }, []);
 
@@ -393,13 +393,17 @@ function LogViewerComponent() {
   return (
     <div>
       <h2>日誌管理</h2>
-      
+
       {stats && (
         <div>
           <h3>統計資料</h3>
-          <p>本地: {stats.local.count} 筆 ({stats.local.size.formatted})</p>
+          <p>
+            本地: {stats.local.count} 筆 ({stats.local.size.formatted})
+          </p>
           {stats.remote && (
-            <p>遠程: {stats.remote.total} 筆 (錯誤: {stats.remote.errors})</p>
+            <p>
+              遠程: {stats.remote.total} 筆 (錯誤: {stats.remote.errors})
+            </p>
           )}
         </div>
       )}
@@ -408,7 +412,7 @@ function LogViewerComponent() {
       <button onClick={loadLogs}>載入錯誤日誌</button>
 
       <div>
-        {logs.map(log => (
+        {logs.map((log) => (
           <div key={log._id}>
             <strong>{log.endpoint}</strong> - {log.status}
             <br />
@@ -464,16 +468,16 @@ class SecureLogger extends EnhancedLogger {
 
   async syncToRemote() {
     const logs = await this.getLogs({ limit: 50 });
-    
+
     try {
       const response = await fetch(`${this.backendURL}/api/logs/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ logs }),
       });
-      
+
       if (response.ok) {
-        return { success: true, message: '同步成功' };
+        return { success: true, message: "同步成功" };
       }
     } catch (error) {
       return { success: false, message: error.message };
@@ -518,7 +522,7 @@ app.listen(3000);
 // 輔助函數
 function getCurrentUserId() {
   // 從你的應用取得當前使用者 ID
-  return 'user-123';
+  return "user-123";
 }
 
 export {
