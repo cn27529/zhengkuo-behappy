@@ -7,6 +7,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const readline = require("readline");
 
 // 顏色輸出
 const colors = {
@@ -140,9 +141,35 @@ function scanDirectory(dirPath) {
 }
 
 /**
- * 顯示單個符號連結信息
+ * 詢問是否刪除損壞的符號連結
  */
-function displaySymlinkInfo(symlinkInfo) {
+function askToRemoveBrokenSymlink(symlinkInfo) {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    rl.question(`是否要刪除損壞的符號連結 "${symlinkInfo.fileName}"？(y/n): `, (answer) => {
+      const shouldRemove = answer.trim().toLowerCase() === 'y';
+      
+      if (shouldRemove) {
+        try {
+          fs.unlinkSync(symlinkInfo.fullPath);
+          success(`已刪除損壞的符號連結: ${symlinkInfo.fileName}`);
+        } catch (err) {
+          error(`刪除失敗: ${err.message}`);
+        }
+      } else {
+        info(`保留符號連結: ${symlinkInfo.fileName}`);
+      }
+      
+      rl.close();
+      resolve(shouldRemove);
+    });
+  });
+}
+async function displaySymlinkInfo(symlinkInfo, interactive = false) {
   console.log("=".repeat(80));
   
   log(`📄 ${symlinkInfo.fileName}`, "cyan");
@@ -156,6 +183,11 @@ function displaySymlinkInfo(symlinkInfo) {
     }
   } else {
     error(`   狀態: 損壞 (目標不存在)`);
+    
+    if (interactive) {
+      console.log();
+      await askToRemoveBrokenSymlink(symlinkInfo);
+    }
   }
   
   if (symlinkInfo.targetPath) {
@@ -190,7 +222,7 @@ function displayStatistics(symlinks) {
 /**
  * 主程式
  */
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   
   console.log("=".repeat(50));
@@ -214,7 +246,7 @@ function main() {
       return;
     }
     
-    displaySymlinkInfo(result);
+    await displaySymlinkInfo(result, true);
     return;
   }
 
@@ -239,9 +271,9 @@ function main() {
 
   log(`\n🔗 符號連結列表`, "cyan");
   
-  symlinks.forEach(symlink => {
-    displaySymlinkInfo(symlink);
-  });
+  for (const symlink of symlinks) {
+    await displaySymlinkInfo(symlink, true);
+  }
   
   displayStatistics(symlinks);
 }

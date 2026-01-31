@@ -162,7 +162,7 @@ greadlink -f db/current.db  # 需要安裝 coreutils
 ### 基本用法
 
 ```bash
-# 檢查 db 目錄下的所有符號連結
+# 檢查 db 目錄下的所有符號連結（互動模式）
 node scripts/check-symlinks.js
 
 # 輸出示例：
@@ -179,11 +179,20 @@ node scripts/check-symlinks.js
    ✓ 狀態: 有效
    大小: 12.45 MB
 
+📄 backup.db
+   路徑: /path/to/db/backup.db
+   指向: missing.db
+   ❌ 狀態: 損壞 (目標不存在)
+
+是否要刪除損壞的符號連結 "backup.db"？(y/n): y
+✅ 已刪除損壞的符號連結: backup.db
+
 ================================================================================
 
 📊 統計:
-   總數: 1
+   總數: 2
    ✓ 有效: 1
+   ✗ 損壞: 1 (已處理)
 ```
 
 ### 檢查特定文件
@@ -202,6 +211,21 @@ node scripts/check-symlinks.js db/current.db
    目標大小: 12.45 MB
    完整目標路徑: /path/to/db/shaolin.db
 ================================================================================
+```
+
+### 互動式損壞連結處理
+
+當發現損壞的符號連結時，工具會自動詢問是否刪除：
+
+```bash
+# 發現損壞連結時的互動
+📄 current.db
+   路徑: /path/to/db/current.db
+   指向: missing.db
+   ❌ 狀態: 損壞 (目標不存在)
+
+是否要刪除損壞的符號連結 "current.db"？(y/n): y
+✅ 已刪除損壞的符號連結: current.db
 ```
 
 ## 🪟 Windows 命令
@@ -274,7 +298,8 @@ fi
   "scripts": {
     "check:symlinks": "node scripts/check-symlinks.js",
     "check:db": "node scripts/check-symlinks.js db/current.db",
-    "show:current-db": "readlink db/current.db"
+    "show:current-db": "readlink db/current.db",
+    "clean:symlinks": "node scripts/check-symlinks.js"
   }
 }
 ```
@@ -282,9 +307,10 @@ fi
 使用：
 
 ```bash
-npm run check:symlinks
-npm run check:db
-npm run show:current-db
+npm run check:symlinks    # 檢查所有符號連結（互動模式）
+npm run check:db          # 檢查特定符號連結
+npm run show:current-db   # 快速顯示當前資料庫
+npm run clean:symlinks    # 清理損壞的符號連結
 ```
 
 ## 🎯 快速參考表
@@ -298,6 +324,7 @@ npm run show:current-db
 | 檢查是否有效         | `file db/current.db`             |
 | 詳細信息             | `stat db/current.db`             |
 | 使用工具檢查         | `node scripts/check-symlinks.js` |
+| 互動式清理損壞連結   | `node scripts/check-symlinks.js` |
 
 ## 💡 提示
 
@@ -355,7 +382,11 @@ ls -L db/current.db    # 追蹤並顯示目標文件
 ls -l db/current.db
 # 如果顯示紅色或有特殊標記，表示目標不存在
 
-# 重新創建
+# 使用工具互動式清理
+node scripts/check-symlinks.js
+# 工具會自動詢問是否刪除損壞的連結
+
+# 手動重新創建
 rm db/current.db
 ln -s shaolin.db db/current.db
 ```
