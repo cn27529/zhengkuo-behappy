@@ -18,14 +18,84 @@ const colors = {
   red: "\x1b[31m",
   cyan: "\x1b[36m",
   blue: "\x1b[34m",
+  magenta: "\x1b[35m",
 };
 
 function log(message, color = "reset") {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
+function error(message) {
+  log(`❌ ${message}`, "red");
+}
+
+function success(message) {
+  log(`✅ ${message}`, "green");
+}
+
+function info(message) {
+  log(`ℹ️ ${message}`, "cyan");
+}
+
+function warning(message) {
+  log(`⚠️ ${message}`, "yellow");
+}
+
+console.log("=".repeat(50));
+log("🏗️ 客戶資料庫初始化工具", "blue");
+console.log("=".repeat(50));
+
+// 獲取專案根目錄
+const projectRoot = path.resolve(__dirname, "..");
+log(`📁 專案根目錄: ${projectRoot}`, "cyan");
+
+// 定義可能的配置檔路徑（優先級順序）
+const possibleConfigPaths = [
+  path.join(projectRoot, "db", "databases.json"),
+  path.join(projectRoot, "databases.json"),
+  path.join(process.cwd(), "db", "databases.json"),
+  path.join(process.cwd(), "databases.json"),
+];
+
+let configPath = null;
+for (const p of possibleConfigPaths) {
+  if (fs.existsSync(p)) {
+    configPath = p;
+    success(`找到配置檔: ${p}`);
+    break;
+  }
+}
+
+if (!configPath) {
+  error("找不到 databases.json 配置檔");
+  log("嘗試過以下路徑:", "yellow");
+  possibleConfigPaths.forEach((p) => log(`  ${p}`, "yellow"));
+  log("\n💡 您的配置檔應該在: db/databases.json", "yellow");
+  process.exit(1);
+}
+
+// 讀取配置檔
+let config;
+try {
+  const configContent = fs.readFileSync(configPath, "utf8");
+  config = JSON.parse(configContent);
+  success(`已載入配置檔: ${configPath}`);
+} catch (err) {
+  error(`讀取配置檔失敗: ${err.message}`);
+  process.exit(1);
+}
+
+// 處理 active_database 路徑
+let activeDb = config.active_database;
+if (!activeDb) {
+  warning("配置檔缺少 active_database，使用預設值 data.db");
+  activeDb = "data.db";
+} else if (activeDb.startsWith("db/")) {
+  activeDb = activeDb.replace("db/", "");
+}
+
 // 路徑配置
-const ROOT_DIR = path.join(__dirname, "..");
+const ROOT_DIR = projectRoot;
 const DB_DIR = path.join(ROOT_DIR, "db");
 const SERVER_DIR = path.join(ROOT_DIR, "server");
 
@@ -141,7 +211,7 @@ function initializeWithDirectus(dbPath, dbName) {
  * 列出可用的資料庫
  */
 function listDatabases() {
-  log(`\n📊 現有資料庫列表:`, "cyan");
+  log(`\n📊 現有資料庫狀態:`, "cyan");
   log(`${"=".repeat(60)}`, "cyan");
 
   if (!fs.existsSync(DB_DIR)) {
@@ -149,40 +219,141 @@ function listDatabases() {
     return [];
   }
 
-  const files = fs
-    .readdirSync(DB_DIR)
-    .filter((f) => f.endsWith(".db") && f !== "current.db");
+  const databases = config.databases || {};
+  const initializedDbs = [];
 
-  if (files.length === 0) {
-    log(`  ⚠️  沒有找到資料庫文件`, "yellow");
-    return [];
+  // 顯示配置中的資料庫
+  for (const [key, dbInfo] of Object.entries(databases)) {
+    let dbFile = dbInfo.path ? dbInfo.path.replace(/^db\//, "") : `${key}.db`;
+    const dbPath = path.join(DB_DIR, dbFile);
+    const exists = fs.existsSync(dbPath);
+    
+    if (exists) {
+      const stats = fs.statSync(dbPath);
+      const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+      const isInit = isDatabaseInitialized(dbPath);
+      
+      if (isInit) {
+        initializedDbs.push({ key, name: dbInfo.name || key, file: dbFile, path: dbPath });
+        log(`  ${(dbInfo.name || key).padEnd(15)} ${dbFile.padEnd(20)} ${sizeMB.padStart(8)} MB  ✓ 已初始化`, "green");
+      } else {
+        log(`  ${(dbInfo.name || key).padEnd(15)} ${dbFile.padEnd(20)} ${sizeMB.padStart(8)} MB  ✗ 未初始化`, "red");
+      }
+    } else {
+      log(`  ${(dbInfo.name || key).padEnd(15)} ${dbFile.padEnd(20)} ${"N/A".padStart(8)}     ❌ 不存在`, "yellow");
+    }
   }
 
-  files.forEach((file) => {
-    const filePath = path.join(DB_DIR, file);
-    const stats = fs.statSync(filePath);
+  // 顯示基礎資料庫
+  const baseDbPath = path.join(DB_DIR, activeDb);
+  if (fs.existsSync(baseDbPath)) {
+    const stats = fs.statSync(baseDbPath);
     const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
-    const isInit = isDatabaseInitialized(filePath);
-    const status = isInit ? "✓ 已初始化" : "✗ 未初始化";
-    const color = isInit ? "green" : "red";
-
-    log(`  ${file.padEnd(20)} ${sizeMB.padStart(8)} MB  ${status}`, color);
-  });
+    const isInit = isDatabaseInitialized(baseDbPath);
+    
+    if (isInit) {
+      initializedDbs.push({ key: "active", name: "基礎資料庫", file: activeDb, path: baseDbPath });
+      log(`  ${"基礎資料庫".padEnd(15)} ${activeDb.padEnd(20)} ${sizeMB.padStart(8)} MB  ✓ 已初始化`, "cyan");
+    } else {
+      log(`  ${"基礎資料庫".padEnd(15)} ${activeDb.padEnd(20)} ${sizeMB.padStart(8)} MB  ✗ 未初始化`, "red");
+    }
+  } else {
+    log(`  ${"基礎資料庫".padEnd(15)} ${activeDb.padEnd(20)} ${"N/A".padStart(8)}     ❌ 不存在`, "yellow");
+  }
 
   log(`${"=".repeat(60)}\n`, "cyan");
+  return initializedDbs;
+}
 
-  return files.filter((f) => {
-    const filePath = path.join(DB_DIR, f);
-    return isDatabaseInitialized(filePath);
+/**
+ * 顯示資料庫選擇選單
+ */
+function showDatabaseMenu(initializedDbs) {
+  console.log("\n" + "=".repeat(50));
+  log("🏗️ 請選擇要初始化的客戶資料庫:", "blue");
+  console.log("=".repeat(50));
+
+  const databases = config.databases || {};
+  const options = [];
+  let optionNumber = 1;
+
+  // 顯示配置中未初始化的資料庫
+  for (const [key, dbInfo] of Object.entries(databases)) {
+    let dbFile = dbInfo.path ? dbInfo.path.replace(/^db\//, "") : `${key}.db`;
+    const dbPath = path.join(DB_DIR, dbFile);
+    const exists = fs.existsSync(dbPath);
+    const isInit = exists ? isDatabaseInitialized(dbPath) : false;
+
+    if (!isInit) {
+      const statusColor = exists ? "yellow" : "magenta";
+      const statusIcon = exists ? "⚠️" : "🆕";
+      const statusText = exists ? "未初始化" : "不存在，將建立";
+
+      log(`${optionNumber}. ${dbInfo.name || key} (${dbFile}) ${statusIcon}`, statusColor);
+      log(`   描述: ${dbInfo.description || "無描述"}`, "cyan");
+      log(`   狀態: ${statusText}`, statusColor);
+      console.log();
+
+      options.push({
+        number: optionNumber,
+        key: key,
+        name: dbInfo.name || key,
+        file: dbFile,
+        path: dbPath,
+        exists: exists,
+        description: dbInfo.description,
+      });
+
+      optionNumber++;
+    }
+  }
+
+  if (options.length === 0) {
+    log("✅ 所有配置的資料庫都已初始化", "green");
+    return null;
+  }
+
+  log(`${optionNumber}. 取消操作`, "red");
+  console.log();
+
+  options.push({
+    number: optionNumber,
+    key: "cancel",
+    name: "取消",
   });
+
+  console.log("-".repeat(50));
+  return options;
+}
+
+/**
+ * 顯示範本選擇選單
+ */
+function showTemplateMenu(initializedDbs) {
+  console.log("\n" + "=".repeat(50));
+  log("📋 請選擇範本資料庫:", "cyan");
+  console.log("=".repeat(50));
+
+  initializedDbs.forEach((db, index) => {
+    const stats = fs.statSync(db.path);
+    const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+    log(`${index + 1}. ${db.name} (${db.file})`, "green");
+    log(`   大小: ${sizeMB} MB`, "cyan");
+    console.log();
+  });
+
+  log(`${initializedDbs.length + 1}. 使用 Directus 初始化（慢，需要設定管理員）`, "yellow");
+  log(`${initializedDbs.length + 2}. 取消`, "red");
+  console.log();
+  console.log("-".repeat(50));
+
+  return initializedDbs.length + 2;
 }
 
 /**
  * 主程式
  */
 async function main() {
-  log(`\n🗄️  客戶資料庫初始化工具`, "cyan");
-
   // 確保目錄存在
   if (!fs.existsSync(DB_DIR)) {
     fs.mkdirSync(DB_DIR, { recursive: true });
@@ -191,129 +362,95 @@ async function main() {
   // 列出現有資料庫
   const initializedDbs = listDatabases();
 
+  if (initializedDbs.length === 0) {
+    error("沒有可用的範本資料庫");
+    log("💡 請先建立並初始化基礎資料庫", "yellow");
+    process.exit(1);
+  }
+
+  // 顯示資料庫選擇選單
+  const options = showDatabaseMenu(initializedDbs);
+  
+  if (!options) {
+    process.exit(0);
+  }
+
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
 
-  // 詢問要創建的資料庫名稱
-  rl.question(
-    `${colors.cyan}請輸入新資料庫名稱（不含 .db 後綴）: ${colors.reset}`,
-    (dbName) => {
-      if (!dbName.trim()) {
-        log(`\n❌ 資料庫名稱不能為空`, "red");
+  rl.question(`請輸入選項 (1-${options.length}): `, (answer) => {
+    const choice = parseInt(answer.trim());
+
+    if (isNaN(choice) || choice < 1 || choice > options.length) {
+      error("無效選項，結束操作。");
+      rl.close();
+      return;
+    }
+
+    const selected = options[choice - 1];
+
+    if (selected.key === "cancel") {
+      info("已取消操作");
+      rl.close();
+      return;
+    }
+
+    log(`\n🔄 初始化資料庫: ${selected.name}`, "magenta");
+
+    // 檢查是否已存在且已初始化
+    if (selected.exists && isDatabaseInitialized(selected.path)) {
+      success(`資料庫 ${selected.file} 已初始化，可以直接使用`);
+      rl.close();
+      return;
+    }
+
+    // 顯示範本選擇選單
+    const maxOption = showTemplateMenu(initializedDbs);
+
+    rl.question(`請選擇範本 (1-${maxOption}): `, (templateChoice) => {
+      const templateIndex = parseInt(templateChoice.trim());
+
+      if (isNaN(templateIndex) || templateIndex < 1 || templateIndex > maxOption) {
+        error("無效選擇");
         rl.close();
         return;
       }
 
-      const fullDbName = `${dbName.trim()}.db`;
-      const dbPath = path.join(DB_DIR, fullDbName);
+      if (templateIndex === maxOption) {
+        // 取消
+        info("已取消操作");
+        rl.close();
+        return;
+      }
 
-      // 檢查是否已存在
-      if (fs.existsSync(dbPath)) {
-        log(`\n⚠️  資料庫已存在: ${fullDbName}`, "yellow");
+      if (templateIndex === maxOption - 1) {
+        // 使用 Directus 初始化
+        if (!selected.exists) {
+          fs.writeFileSync(selected.path, "");
+        }
 
-        if (isDatabaseInitialized(dbPath)) {
-          log(`✓ 資料庫已初始化，可以直接使用`, "green");
+        if (initializeWithDirectus(selected.path, selected.file)) {
+          success(`資料庫初始化成功: ${selected.file}`);
+          log(`💡 現在可以使用 start-with-db.js 切換到這個資料庫`, "cyan");
         } else {
-          log(`✗ 資料庫未初始化，建議重新初始化`, "red");
+          error("資料庫初始化失敗");
+          log(`💡 建議使用範本複製方式`, "yellow");
         }
-
-        rl.close();
-        return;
+      } else {
+        // 從範本複製
+        const templateDb = initializedDbs[templateIndex - 1];
+        
+        if (copyFromTemplate(templateDb.path, selected.path)) {
+          success(`資料庫初始化成功: ${selected.file}`);
+          log(`💡 現在可以使用 start-with-db.js 切換到這個資料庫`, "cyan");
+        }
       }
 
-      // 選擇初始化方式
-      log(`\n📋 請選擇初始化方式:`, "cyan");
-      log(`${"=".repeat(60)}`, "cyan");
-
-      if (initializedDbs.length > 0) {
-        log(`  1. 從現有資料庫複製（快速，推薦）`, "green");
-        initializedDbs.forEach((db, i) => {
-          log(`     ${String.fromCharCode(97 + i)}. 從 ${db} 複製`, "blue");
-        });
-      }
-
-      //log(`  2. 使用 Directus 初始化（慢，需要設定管理員）`, "yellow");
-      log(`  0. 取消`, "red");
-      log(`${"=".repeat(60)}\n`, "cyan");
-
-      rl.question(`${colors.cyan}請選擇 (1/2/0): ${colors.reset}`, (choice) => {
-        switch (choice.trim()) {
-          case "1":
-            if (initializedDbs.length === 0) {
-              log(`\n❌ 沒有可用的範本資料庫`, "red");
-              rl.close();
-              return;
-            }
-
-            // 如果只有一個，直接使用
-            if (initializedDbs.length === 1) {
-              const templateDb = path.join(DB_DIR, initializedDbs[0]);
-              if (copyFromTemplate(templateDb, dbPath)) {
-                log(`\n✅ 資料庫創建成功: ${fullDbName}`, "green");
-                log(
-                  `💡 現在可以使用 start-with-db.js 切換到這個資料庫`,
-                  "cyan",
-                );
-              }
-              rl.close();
-              return;
-            }
-
-            // 多個範本，詢問選擇
-            rl.question(
-              `${colors.cyan}選擇範本 (a-${String.fromCharCode(96 + initializedDbs.length)}): ${colors.reset}`,
-              (templateChoice) => {
-                const index = templateChoice.charCodeAt(0) - 97;
-
-                if (index < 0 || index >= initializedDbs.length) {
-                  log(`\n❌ 無效選擇`, "red");
-                  rl.close();
-                  return;
-                }
-
-                const templateDb = path.join(DB_DIR, initializedDbs[index]);
-                if (copyFromTemplate(templateDb, dbPath)) {
-                  log(`\n✅ 資料庫創建成功: ${fullDbName}`, "green");
-                  log(
-                    `💡 現在可以使用 start-with-db.js 切換到這個資料庫`,
-                    "cyan",
-                  );
-                }
-
-                rl.close();
-              },
-            );
-            break;
-
-          case "2":
-            // 創建空資料庫文件
-            fs.writeFileSync(dbPath, "");
-
-            if (initializeWithDirectus(dbPath, fullDbName)) {
-              log(`\n✅ 資料庫創建成功: ${fullDbName}`, "green");
-              log(`💡 現在可以使用 start-with-db.js 切換到這個資料庫`, "cyan");
-            } else {
-              log(`\n❌ 資料庫初始化失敗`, "red");
-              log(`💡 建議使用方式 1（從現有資料庫複製）`, "yellow");
-            }
-
-            rl.close();
-            break;
-
-          case "0":
-            log(`\n👋 已取消`, "yellow");
-            rl.close();
-            break;
-
-          default:
-            log(`\n❌ 無效選擇`, "red");
-            rl.close();
-        }
-      });
-    },
-  );
+      rl.close();
+    });
+  });
 }
 
 // 執行
