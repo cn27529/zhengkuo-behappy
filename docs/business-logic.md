@@ -25,66 +25,77 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 
 - `name` - 聯絡人姓名
 - `relationship` - 與消災/超度對象的關係
+- `phone` 或 `mobile` - 聯絡電話（市話或手機至少填一個）
 
 **可選欄位：**
 
 - `phone` - 市內電話
-- `mobile` - 行動電話
-- `otherRelationship` - 當關係選擇「其它」時的補充說明
+- `mobile` - 行動電話（格式：09開頭的10位數字）
+- `otherRelationship` - 當關係選擇「其它」時的補充說明（必填）
 
 **關係選項：**
 
 - 本家 - 直系親屬
 - 娘家 - 母系親屬
 - 朋友 - 朋友關係
-- 其它 - 其他關係（需填寫補充說明）
+- 其它 - 其他關係（**選擇此項時必須填寫補充說明**）
+
+**驗證規則：**
+
+- 手機號碼必須符合台灣格式：09開頭，共10位數字
+- 選擇「其它」關係時，必須填寫其他關係說明
 
 #### 1.2 消災人員資訊 (Blessing)
 
 **地址資訊：**
 
-- `address` - 消災地址（必填）
+- `address` - 消災地址（與消災人員互為必填）
 
 **人員清單：**
 每位消災人員包含：
 
 - `id` - 清單內唯一識別碼
-- `name` - 姓名
-- `zodiac` - 生肖（十二生肖選項）
-- `notes` - 備註說明
+- `name` - 姓名（必填）
+- `zodiac` - 生肖（必填，十二生肖選項）
+- `notes` - 備註說明（可選）
 - `isHouseholdHead` - 是否為戶長
 
 **業務規則：**
 
-1. 至少需要一位已填寫姓名的消災人員
-2. 必須指定至少一位戶長
+1. 消災地址與消災人員互為必填（有其中一項就必須填寫另一項）
+2. 有消災人員時必須指定至少一位戶長
 3. 戶長數量不得超過系統設定上限
-4. 生肖為可選項目，用於特定法會需求
+4. 當有多筆消災人員時，所有條目的姓名和生肖都必須完整填寫
+5. 生肖用於特定法會需求和統計分析
 
 #### 1.3 超度資訊 (Salvation)
 
 **地址資訊：**
 
-- `address` - 超度地址（必填）
+- `address` - 超度地址（與祖先/陽上人互為必填）
 
 **祖先清單 (Ancestors)：**
 
 - `id` - 清單內唯一識別碼
-- `surname` - 姓氏
+- `surname` - 姓氏（必填）
 - `notes` - 備註（如：祖父、祖母等關係說明）
 
 **陽上人清單 (Survivors)：**
 
 - `id` - 清單內唯一識別碼
-- `name` - 姓名
-- `zodiac` - 生肖
+- `name` - 姓名（必填）
+- `zodiac` - 生肖（可選）
 - `notes` - 備註說明
 
 **業務邏輯：**
 
 - 祖先清單記錄需要超度的往生者
 - 陽上人清單記錄為往生者祈福的在世親屬
-- 兩個清單都可以為空，但至少要有消災或超度其中一項
+- 超度地址與祖先/陽上人互為必填（有其中一項就必須填寫另一項）
+- **重要規則：有祖先時必須有陽上人**（宗教儀式要求）
+- 祖先和陽上人數量都有系統設定上限
+- 當有多筆記錄時，所有條目的必填欄位都必須完整填寫
+- 整體服務要求：消災或超度至少要選擇其中一項
 
 ### 表單狀態管理
 
@@ -411,18 +422,119 @@ fn deserialize_json_string<T: DeserializeOwned>(json_str: &str) -> T {
 
 ### 8.1 驗證規則
 
-**表單驗證：**
+**聯絡人資訊驗證：**
 
 ```javascript
-// 聯絡人驗證
+// 聯絡人姓名（必填）
 if (!contact.name.trim()) {
   errors.push("聯絡人姓名為必填");
 }
 
-// 戶長驗證
+// 聯絡人關係（必填）
+if (!contact.relationship.trim()) {
+  errors.push("資料表屬性為必填");
+}
+
+// 聯絡電話（市話或手機至少填一個）
+if (!contact.phone.trim() && !contact.mobile.trim()) {
+  errors.push("請填寫電話或手機其中之一");
+}
+
+// 手機號碼格式檢查（09開頭，共10位數字）
+const mobileValue = contact.mobile.trim();
+if (mobileValue && !/^09\d{8}$/.test(mobileValue)) {
+  errors.push("手機號碼格式錯誤，請輸入09開頭的10位數字");
+}
+
+// 其它關係補充說明
+if (contact.relationship === "其它" && !contact.otherRelationship.trim()) {
+  errors.push("選擇『其它』時，請填寫其他關係說明");
+}
+```
+
+**消災人員驗證：**
+
+```javascript
+// 戶長數量檢查
 const householdHeads = blessing.persons.filter((p) => p.isHouseholdHead);
+if (householdHeads.length > maxHouseholdHeads) {
+  errors.push(`戶長數量超過限制 (${householdHeads.length}/${maxHouseholdHeads})`);
+}
+
+// 戶長必填檢查（有消災人員時）
 if (hasNamedPersons && householdHeads.length === 0) {
-  errors.push("至少需要指定一位戶長");
+  errors.push("請至少指定一位戶長");
+}
+
+// 消災地址與人員一致性
+if (filledBlessingPersons > 0 && !blessingAddress.trim()) {
+  errors.push("已填寫消災人員，消災地址為必填");
+}
+if (blessingAddress.trim() && filledBlessingPersons === 0) {
+  errors.push("消災地址已填寫，請至少填寫一筆消災人員");
+}
+
+// 消災人員資料完整性（多筆時）
+if (allBlessingPersons.length >= 2) {
+  const hasIncompleteData = allBlessingPersons.some(p => 
+    !p.name?.trim() || !p.zodiac?.trim()
+  );
+  if (hasIncompleteData) {
+    errors.push("消災人員中有未填寫完整的條目，請填寫或刪除空白條目");
+  }
+}
+```
+
+**超度資訊驗證：**
+
+```javascript
+// 祖先數量限制
+if (ancestorsCount > maxAncestors) {
+  errors.push(`祖先數量超過限制 (${ancestorsCount}/${maxAncestors})`);
+}
+
+// 陽上人數量限制
+if (survivorsCount > maxSurvivors) {
+  errors.push(`陽上人數量超過限制 (${survivorsCount}/${maxSurvivors})`);
+}
+
+// 超度地址與資料一致性
+if ((filledAncestors + filledSurvivors) > 0 && !salvationAddress.trim()) {
+  errors.push("已填寫祖先或陽上人，超度地址為必填");
+}
+if (salvationAddress.trim() && filledAncestors === 0) {
+  errors.push("超度地址已填寫，請至少填寫一筆歷代祖先");
+}
+
+// 祖先與陽上人關聯性（有祖先必須有陽上人）
+if (filledAncestors > 0 && filledSurvivors === 0) {
+  errors.push("已填寫祖先，請至少填寫一位陽上人");
+}
+
+// 資料完整性檢查（多筆時）
+if (allAncestors.length >= 2) {
+  const hasIncompleteSurname = allAncestors.some(a => !a.surname?.trim());
+  if (hasIncompleteSurname) {
+    errors.push("祖先名單中有未填寫姓氏的條目，請填寫或刪除空白條目");
+  }
+}
+
+if (allSurvivors.length >= 2) {
+  const hasIncompleteName = allSurvivors.some(s => !s.name?.trim());
+  if (hasIncompleteName) {
+    errors.push("陽上人名單中有未填寫姓名的條目，請填寫或刪除空白條目");
+  }
+}
+```
+
+**整體服務驗證：**
+
+```javascript
+// 至少要有消災或超度其中一項
+const hasBlessing = availableBlessingPersons.length > 0;
+const hasAncestors = availableAncestors.length > 0;
+if (!hasBlessing && !hasAncestors) {
+  errors.push("請至少填寫消災人員或歷代祖先其中一項");
 }
 ```
 
