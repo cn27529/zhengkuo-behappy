@@ -415,6 +415,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       messages: [],
     };
 
+    // 檢查戶長數量限制
     const hhCount = currentHouseholdHeadsCount.value;
     if (hhCount > formConfig.value.maxHouseholdHeads) {
       details.valid = false;
@@ -428,6 +429,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.householdHead = null;
     }
 
+    // 檢查祖先數量限制
     const ancCount = currentAncestorsCount.value;
     if (ancCount > formConfig.value.maxAncestors) {
       details.valid = false;
@@ -437,6 +439,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.ancestors = null;
     }
 
+    // 檢查陽上人數量限制
     const svCount = currentSurvivorsCount.value;
     if (svCount > formConfig.value.maxSurvivors) {
       details.valid = false;
@@ -446,6 +449,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.survivors = null;
     }
 
+    // 檢查聯絡人姓名（必填）
     if (!registrationForm.value.contact.name.trim()) {
       details.valid = false;
       details.errors.contactName = "聯絡人姓名為必填";
@@ -454,6 +458,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.contactName = null;
     }
 
+    // 檢查聯絡人關係（必填）
     if (!registrationForm.value.contact.relationship.trim()) {
       details.valid = false;
       details.errors.contactRelationship = "資料表屬性為必填";
@@ -462,6 +467,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.contactRelationship = null;
     }
 
+    // 檢查聯絡電話（市話或手機至少填一個）
     if (
       !registrationForm.value.contact.phone.trim() &&
       !registrationForm.value.contact.mobile.trim()
@@ -483,6 +489,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.contactMobile = null;
     }
 
+    // 檢查「其它」關係的補充說明
     if (
       registrationForm.value.contact.relationship === "其它" &&
       !registrationForm.value.contact.otherRelationship.trim()
@@ -494,11 +501,13 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.otherRelationship = null;
     }
 
+    // 檢查消災地址與消災人員的一致性
     const blessingAddrFilled =
       registrationForm.value.blessing.address &&
       registrationForm.value.blessing.address.trim();
     const filledBlessingPersons = availableBlessingPersons.value.length;
 
+    // 有消災人員但沒有消災地址
     if (filledBlessingPersons > 0 && !blessingAddrFilled) {
       details.valid = false;
       details.errors.blessingAddress = "已填寫消災人員，消災地址為必填";
@@ -507,6 +516,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.blessingAddress = null;
     }
 
+    // 有消災地址但沒有消災人員
     if (blessingAddrFilled && filledBlessingPersons === 0) {
       details.valid = false;
       details.errors.blessingPersons = "消災地址已填寫，請至少填寫一筆消災人員";
@@ -515,8 +525,10 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.blessingPersons = null;
     }
 
+    // 檢查消災人員資料完整性
     const allBlessingPersons = registrationForm.value.blessing.persons || [];
 
+    // 檢查消災人員生肖是否完整填寫
     if (filledBlessingPersons > 0 && blessingAddrFilled) {
       const hasIncompletePerson = allBlessingPersons.some(
         (p) => !p.zodiac || !p.zodiac.trim(),
@@ -531,6 +543,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
     }
 
+    // 檢查消災人員姓名是否完整填寫（當有多筆時）
     if (allBlessingPersons.length >= 2) {
       const hasIncompletePerson = allBlessingPersons.some(
         (p) => !p.name || !p.name.trim(),
@@ -545,6 +558,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       }
     }
 
+    // 檢查祖先資料完整性（當有多筆時）
     const allAncestors = registrationForm.value.salvation.ancestors || [];
     if (allAncestors.length >= 2) {
       const hasIncompleteAncestor = allAncestors.some(
@@ -562,6 +576,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.ancestorIncomplete = null;
     }
 
+    // 檢查陽上人資料完整性（當有多筆時）
     const allSurvivors = registrationForm.value.salvation.survivors || [];
     if (allSurvivors.length >= 2) {
       const hasIncompleteSurvivor = allSurvivors.some(
@@ -579,12 +594,14 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.survivorIncomplete = null;
     }
 
+    // 檢查超度地址與超度相關資料的一致性
     const salvationAddrFilled = (registrationForm.value.salvation.address || "")
       .toString()
       .trim();
     const filledAncestorsCount = availableAncestors.value.length;
     const filledSurvivorsCount = availableSurvivors.value.length;
 
+    // 有祖先或陽上人但沒有超度地址
     if (
       filledAncestorsCount + filledSurvivorsCount > 0 &&
       !salvationAddrFilled
@@ -593,12 +610,14 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.salvationAddress = "已填寫祖先或陽上人，超度地址為必填";
       details.messages.push(details.errors.salvationAddress);
     } else if (salvationAddrFilled) {
+      // 有超度地址但沒有祖先
       if (filledAncestorsCount === 0) {
         details.valid = false;
         details.errors.salvationAddress =
           "超度地址已填寫，請至少填寫一筆歷代祖先";
         details.messages.push(details.errors.salvationAddress);
       } else if (filledSurvivorsCount === 0) {
+        // 有祖先但沒有陽上人
         details.valid = false;
         details.errors.survivorsRequiredForAncestors =
           "已填寫祖先，請至少填寫一位陽上人";
@@ -610,6 +629,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.salvationAddress = null;
     }
 
+    // 檢查祖先與陽上人的關聯性（有祖先必須有陽上人）
     if (filledAncestorsCount > 0 && filledSurvivorsCount === 0) {
       details.valid = false;
       details.errors.survivorsRequiredForAncestors =
@@ -619,6 +639,7 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.survivorsRequiredForAncestors = null;
     }
 
+    // 檢查至少要有消災或超度其中一項
     const hasFilledBlessing = availableBlessingPersons.value.length > 0;
     const hasFilledAncestors = availableAncestors.value.length > 0;
     if (!hasFilledBlessing && !hasFilledAncestors) {
