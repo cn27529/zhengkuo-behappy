@@ -400,56 +400,72 @@ function showDatabaseMenu(config, projectRoot, activeDb) {
 }
 
 function startServices(projectRoot) {
-  console.log("\n" + "=".repeat(50));
-  log("🚀 啟動所有服務...", "green");
-  console.log("=".repeat(50));
+  log(`\n${"=".repeat(50)}`, "cyan");
+  log(`${colors.bold}${colors.green}🚀 啟動所有服務...${colors.reset}`);
+  log(`${"=".repeat(50)}\n`, "cyan");
 
-  log("📡 啟動服務:", "cyan");
-  log("  1. Directus (後台管理) - port 8055");
-  log("  2. Vue 前端 - port 5173");
-  log("  3. Rust Axum API - port 3000");
-  console.log("=".repeat(50));
-  log("按 Ctrl+C 可同時關閉所有服務", "yellow");
-  console.log("=".repeat(50) + "\n");
+  log("📦 服務列表:", "cyan");
+  log("  • Directus (port 8055)", "blue");
+  log("  • Vue Client (port 5173)", "blue");
+  log("  • Rust-Axum (port 3000)", "blue");
+  log("");
 
-  // 確保在專案根目錄
-  const originalCwd = process.cwd();
-  process.chdir(projectRoot);
+  log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
 
-  const processes = spawn(
-    "npx",
-    [
-      "concurrently",
-      "-k",
-      "-p",
-      "[{name}]",
-      "-n",
-      "Directus,Frontend,RustAPI",
-      "-c",
-      "cyan.bold,green.bold,magenta.bold",
-      '"npm run start:server"',
-      '"npm run start:client"',
-      '"npm run start:rust"',
-    ],
-    {
-      stdio: "inherit",
-      shell: true,
-      cwd: projectRoot,
-    },
-  );
+  try {
+    // 使用 concurrently 啟動所有服務
+    const processes = spawn(
+      "npx",
+      [
+        "concurrently",
+        "--kill-others",
+        "--names",
+        "DIRECTUS,CLIENT,RUST",
+        "--prefix-colors",
+        "bgBlue.bold,bgMagenta.bold,bgGreen.bold",
+        '"npm run start:server"',
+        '"npm run start:client"',
+        '"npm run start:rust"',
+      ],
+      {
+        stdio: "inherit",
+        shell: true,
+      },
+    );
 
-  processes.on("close", (code) => {
-    console.log("\n" + "=".repeat(50));
-    if (code === 0) {
-      log("✅ 所有服務已正常結束", "green");
-    } else {
-      log(`⚠️ 服務結束，退出碼: ${code}`, "yellow");
-    }
-    console.log("=".repeat(50));
+    // 處理進程退出
+    processes.on("close", (code) => {
+      if (code === 0) {
+        log(`\n✅ 所有服務正常結束`, "green");
+      } else {
+        log(`\n⚠️  服務結束，退出碼: ${code}`, "yellow");
+      }
+    });
 
-    // 恢復原始工作目錄
-    process.chdir(originalCwd);
-  });
+    // 處理錯誤
+    processes.on("error", (error) => {
+      log(`\n❌ 啟動服務時發生錯誤: ${error.message}`, "red");
+      process.exit(1);
+    });
+
+    // 處理 Ctrl+C
+    process.on("SIGINT", () => {
+      log(`\n\n👋 收到中斷信號，正在停止所有服務...`, "yellow");
+      processes.kill("SIGINT");
+    });
+
+    process.on("SIGTERM", () => {
+      log(`\n\n👋 收到終止信號，正在停止所有服務...`, "yellow");
+      processes.kill("SIGTERM");
+    });
+  } catch (error) {
+    log(`\n❌ 啟動失敗: ${error.message}`, "red");
+    log(`\n💡 請確認:`, "yellow");
+    log(`   1. 已安裝所有依賴: npm install`, "yellow");
+    log(`   2. concurrently 已安裝`, "yellow");
+    log(`   3. server、client、rust-axum 目錄都存在`, "yellow");
+    process.exit(1);
+  }
 
   // // 執行 npm run dev
   // const processes = spawn("npm", ["run", "dev"], {
