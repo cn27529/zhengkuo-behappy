@@ -234,7 +234,7 @@ async function main() {
         });
       }
 
-      log(`  2. 使用 Directus 初始化（慢，需要設定管理員）`, "yellow");
+      //log(`  2. 使用 Directus 初始化（慢，需要設定管理員）`, "yellow");
       log(`  0. 取消`, "red");
       log(`${"=".repeat(60)}\n`, "cyan");
 

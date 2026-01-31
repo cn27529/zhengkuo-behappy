@@ -995,6 +995,9 @@ const handleSubmitRecord = async () => {
         message: "參加記錄已保存！",
         duration: 3000,
       });
+      setTimeout(() => {
+        router.back();
+      }, 1500);
 
       // 重置選擇（保留活動選擇）
       //selectedActivityId.value = null;

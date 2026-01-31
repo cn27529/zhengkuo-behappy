@@ -171,7 +171,7 @@
                   <span class="item-label">{{ item.label }}</span>
                   <span class="item-quantity">x{{ item.quantity }}</span>
                   <span class="item-amount"
-                    >{appConfig.dollarTitle}{{ item.subtotal }}</span
+                    >{{ appConfig.dollarTitle }}{{ item.subtotal }}</span
                   >
                 </div>
                 <div class="item-address" v-if="item.sourceAddress">

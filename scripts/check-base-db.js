@@ -118,5 +118,5 @@ if (fs.existsSync(currentLink)) {
 // 建立修復腳本選項
 console.log("\n💡 修復建議:");
 console.log("1. 刪除壞連結: rm db/current.db 或 unlink db/current.db");
-console.log("2. 建立新連結: ln -sf data.db db/current.db");
-console.log("3. 檢查所有連結: find db/ -type l -exec ls -l {} \\;");
+console.log("2. 建立新連結: ln -sf db/data.db db/current.db");
+//console.log("3. 檢查所有連結: ls -l db/*.db");
