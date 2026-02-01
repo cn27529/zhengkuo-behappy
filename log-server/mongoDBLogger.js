@@ -394,13 +394,19 @@ async function startServer() {
     console.log(
       `✅ 本地 MongoDB 日誌服務器已啟動: http://localhost:${MONGO_CONFIG.port}`,
     );
+    console.log("📚 系統端點:");
     console.log(
-      `📡 日誌接收端點: http://localhost:${MONGO_CONFIG.port}/mongo/logentry/`,
+      `   📡 日誌接收: http://localhost:${MONGO_CONFIG.port}/mongo/logentry/`,
     );
-    console.log(`📊 健康檢查: http://localhost:${MONGO_CONFIG.port}/health`);
     console.log(
-      `📈 統計資料: http://localhost:${MONGO_CONFIG.port}/mongo/stats`,
+      `   📦 批次日誌: http://localhost:${MONGO_CONFIG.port}/mongo/logentry/batch`,
     );
+    console.log(
+      `   🔍 查詢日誌: http://localhost:${MONGO_CONFIG.port}/mongo/logentry/`,
+    );
+    console.log(`   📊 統計資料: http://localhost:${MONGO_CONFIG.port}/mongo/stats`);
+    console.log(`   🗑️ 清理日誌: http://localhost:${MONGO_CONFIG.port}/mongo/cleanup/:days`);
+    console.log(`   💚 健康檢查: http://localhost:${MONGO_CONFIG.port}/health`);
   });
 
   // 啟動定時清理任務
