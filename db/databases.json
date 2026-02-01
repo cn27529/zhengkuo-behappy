@@ -4,32 +4,38 @@
         "zk": {
             "path": "zk.db",
             "name": "鎮國寺",
-            "description": "鎮國寺客戶資料庫"
+            "description": "鎮國寺客戶資料庫",
+            "logsName": "zk_client_logs"
         },
         "ziyun": {
             "path": "ziyun.db",
             "name": "紫雲寺",
-            "description": "紫雲寺客戶資料庫"
+            "description": "紫雲寺客戶資料庫",
+            "logsName": "ziyun_client_logs"
         },
         "shaolin": {
             "path": "shaolin.db",
             "name": "少林寺",
-            "description": "少林寺客戶資料庫"
+            "description": "少林寺客戶資料庫",
+            "logsName": "shaolin_client_logs"
         },
         "佛光山": {
             "path": "foguangshan.db",
             "name": "佛光山",
-            "description": "佛光山客戶資料庫"
+            "description": "佛光山客戶資料庫",
+            "logsName": "foguangshan_client_logs"
         },
         "靈隱寺": {
             "path": "lingyinsi.db",
             "name": "靈隱寺",
-            "description": "靈隱寺客戶資料庫"
+            "description": "靈隱寺客戶資料庫",
+            "logsName": "lingyinsi_client_logs"
         },
         "天台寺": {
             "path": "tiantaisi.db",
             "name": "天台寺",
-            "description": "天台寺客戶資料庫"
+            "description": "天台寺客戶資料庫",
+            "logsName": "tiantaisi_client_logs"
         }
     }
 }
