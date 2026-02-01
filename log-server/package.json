@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "MongoDB 日誌接收服務器",
   "type": "module",
-  "main": "start-mongodb-logger.js",
+  "main": "mongoDBLogger.js",
   "scripts": {
-    "start": "node start-mongodb-logger.js",
-    "dev": "node --watch start-mongodb-logger.js"
+    "start": "node mongoDBLogger.js",
+    "dev": "node --watch mongoDBLogger.js"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -20,6 +20,6 @@
     "api",
     "express"
   ],
-  "author": "zhengkuo-behappy",
+  "author": "cn27529",
   "license": "MIT"
 }

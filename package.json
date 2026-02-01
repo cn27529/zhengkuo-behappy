@@ -17,10 +17,10 @@
     "deploy:netlify": "./scripts/deploy-netlify.sh",
     "db": "node scripts/start-with-db.js",
     "docs": "node scripts/docs-server.js",
-    "start:logger": "cd mongodb-logger && npm start"
+    "start:logs": "cd log-server && npm start"
   },
   "keywords": [],
-  "author": "",
+  "author": "cn27529",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^9.2.1",
