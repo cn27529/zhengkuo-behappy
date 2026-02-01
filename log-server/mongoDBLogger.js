@@ -16,10 +16,15 @@ const app = express();
 // const MONGO_COLLECTION = process.env.MONGO_COLLECTION;
 // const MONGO_PROJECT_ID = process.env.MONGO_PROJECT_ID;
 
+const username = encodeURIComponent("dbo");
+const password = encodeURIComponent("1q2w3e");
+
 // MongoDB 配置
 const MONGO_CONFIG = {
   port: process.env.MONGO_LOGGER_PORT, // 本地MongoDB服務器端口
-  uri: process.env.MONGODB_URI,
+  uri:
+    process.env.MONGODB_URI ||
+    `mongodb+srv://${username}:${password}@cluster0.z2em3hn.mongodb.net/?appName=Cluster0`,
   dbName: process.env.MONGO_DB_NAME,
   collectionName: process.env.MONGO_COLLECTION,
   projectId: process.env.MONGO_PROJECT_ID,
