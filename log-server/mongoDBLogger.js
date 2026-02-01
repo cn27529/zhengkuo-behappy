@@ -146,9 +146,6 @@ app.post("/mongo/logentry/", async (req, res) => {
       serverReceivedAt: new Date().toISOString(),
     };
 
-    // 插入資料
-    const result = await collection.insertOne(preparedLog);
-
     console.log(
       `📝 收到日誌: ${logEntry.method || "GET"} ${logEntry.endpoint || "unknown"} - ${logEntry.status || "unknown"}`,
     );
@@ -405,6 +402,9 @@ async function startServer() {
       `📈 統計資料: http://localhost:${MONGO_CONFIG.port}/mongo/stats`,
     );
   });
+
+  // 啟動定時清理任務
+  startCleanupJob();
 }
 
 // 啟動
@@ -412,3 +412,99 @@ startServer().catch((error) => {
   console.error("💥 啟動失敗:", error);
   process.exit(1);
 });
+
+/**
+ * 啟動定時清理任務（改進版）
+ * 在 startServer() 函數內，app.listen() 之後添加
+ */
+function startCleanupJob() {
+  const CLEANUP_INTERVAL_DAYS = 7;
+  const CLEANUP_RETAIN_DAYS = 90;
+
+  let isCleaning = false; // 防止重複執行
+
+  async function performCleanup() {
+    // 🔒 防重入锁
+    if (isCleaning) {
+      console.log("⚠️ 清理任务正在执行，跳过");
+      return;
+    }
+    isCleaning = true;
+
+    const startTime = Date.now();
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - CLEANUP_RETAIN_DAYS);
+
+    console.log(`⏰ [${new Date().toISOString()}] 開始自動清理...`);
+    console.log(`   保留時間: 最近 ${CLEANUP_RETAIN_DAYS} 天`);
+
+    if (!collection) {
+      console.log("❌ MongoDB 未連接，跳過清理");
+      isCleaning = false;
+      return;
+    }
+
+    try {
+      // 🔧 先統計要刪除的數量
+      const countToDelete = await collection.countDocuments({
+        uploadedAt: { $lt: cutoffDate },
+      });
+
+      if (countToDelete === 0) {
+        console.log("✅ 沒有需要清理的舊日誌");
+        return;
+      }
+
+      // 執行刪除
+      const result = await collection.deleteMany({
+        uploadedAt: { $lt: cutoffDate },
+      });
+
+      const duration = Date.now() - startTime;
+      const savedSpaceMB = (result.deletedCount * 3) / 1024;
+      const remainingCount = await collection.countDocuments();
+
+      // 🔧 詳細的執行日誌
+      console.log(`✅ 清理完成！`);
+      console.log(`   刪除: ${result.deletedCount.toLocaleString()} 筆`);
+      console.log(`   剩餘: ${remainingCount.toLocaleString()} 筆`);
+      console.log(`   節省: 約 ${savedSpaceMB.toFixed(2)} MB`);
+      console.log(`   耗時: ${duration}ms`);
+      console.log(
+        `   下次: ${new Date(Date.now() + CLEANUP_INTERVAL_DAYS * 24 * 60 * 60 * 1000).toLocaleString()}`,
+      );
+    } catch (error) {
+      console.error("❌ 自動清理失敗:", error.message);
+    } finally {
+      isCleaning = false;
+    }
+  }
+
+  // 🔧 改進 1: 啟動時立即執行一次
+  console.log("🔄 執行初始清理檢查...");
+  performCleanup();
+
+  // 🔧 改進 2: 定期執行
+  const intervalId = setInterval(
+    performCleanup,
+    CLEANUP_INTERVAL_DAYS * 24 * 60 * 60 * 1000,
+  );
+
+  console.log(`✅ 已啟用自動清理任務`);
+  console.log(`   清理頻率: 每 ${CLEANUP_INTERVAL_DAYS} 天`);
+  console.log(`   保留時間: ${CLEANUP_RETAIN_DAYS} 天`);
+  console.log(
+    `   下次清理: ${new Date(Date.now() + CLEANUP_INTERVAL_DAYS * 24 * 60 * 60 * 1000).toLocaleString()}`,
+  );
+
+  // 🔧 改進 3: 優雅關閉時清除定時器
+  process.on("SIGINT", () => {
+    clearInterval(intervalId);
+  });
+
+  process.on("SIGTERM", () => {
+    clearInterval(intervalId);
+  });
+
+  return intervalId;
+}
