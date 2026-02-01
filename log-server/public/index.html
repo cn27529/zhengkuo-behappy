@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日誌服務器 - 寺廟管理系統</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🏛️ 日誌服務器</h1>
+    <p class="subtitle">寺廟管理系統 - 日誌收集與管理服務</p>
+    
+    <div class="service-grid">
+      <div class="service-card">
+        <h3>📊 MongoDB 日誌服務</h3>
+        <p>雲端日誌收集、查詢與統計分析</p>
+        <span class="status active">運行中</span>
+        <br><a href="/mongo/">查看詳情 →</a>
+      </div>
+      
+      <div class="service-card">
+        <h3>🔧 其他服務</h3>
+        <p>未來擴展的日誌服務</p>
+        <span class="status">規劃中</span>
+        <br><a href="#" style="color: #95a5a6;">即將推出</a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p><strong>系統狀態:</strong> 正常運行 | <strong>端口:</strong> 3002 | <strong>時間:</strong> <span id="current-time"></span></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('current-time').textContent = new Date().toLocaleString('zh-TW');
+  </script>
+</body>
+</html>

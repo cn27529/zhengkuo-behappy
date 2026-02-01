@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MongoDB 日誌服務 - 寺廟管理系統</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📊 MongoDB 日誌服務</h1>
+    <p class="subtitle">雲端日誌收集、存儲與查詢系統</p>
+    
+    <div class="config-info">
+      <strong>當前配置:</strong><br>
+      資料庫: <span id="db-name">載入中...</span> | 
+      集合: <span id="collection-name">載入中...</span> | 
+      連接狀態: <span id="connection-status">檢查中...</span>
+    </div>
+
+    <h2>🔌 API 端點</h2>
+    <div class="endpoint-grid">
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/mongo/logentry/</span>
+        <div class="desc">接收單筆日誌記錄</div>
+      </div>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/mongo/logentry/batch</span>
+        <div class="desc">批次接收多筆日誌</div>
+      </div>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/mongo/logentry/</span>
+        <div class="desc">查詢日誌記錄</div>
+      </div>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/mongo/stats</span>
+        <div class="desc">統計資料與分析</div>
+      </div>
+      <div class="endpoint">
+        <span class="method delete">DELETE</span>
+        <span class="path">/mongo/cleanup/:days</span>
+        <div class="desc">清理指定天數前的舊日誌</div>
+      </div>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/health</span>
+        <div class="desc">系統健康檢查</div>
+      </div>
+    </div>
+
+    <h2>✨ 主要特色</h2>
+    <ul class="feature-list">
+      <li>自動清理機制 - 每 7 天清理 90 天前的舊日誌</li>
+      <li>智能檢查 - 少於 5 萬筆時跳過清理節省資源</li>
+      <li>防重入保護 - 避免清理任務重複執行</li>
+      <li>詳細統計 - 執行時間、刪除數量、空間節省</li>
+      <li>優雅關閉 - 正確處理程序終止信號</li>
+      <li>索引優化 - 自動建立索引提升查詢效能</li>
+      <li>大型資料截斷 - 自動處理過大的日誌內容</li>
+      <li>CORS 支援 - 允許跨域請求</li>
+    </ul>
+
+    <h2>🔄 自動清理</h2>
+    <p>系統內建智能清理機制，會定期清理舊日誌以節省存儲空間：</p>
+    <ul style="margin-left: 20px;">
+      <li><strong>清理頻率:</strong> 每 7 天執行一次</li>
+      <li><strong>保留時間:</strong> 保留最近 90 天的日誌</li>
+      <li><strong>智能檢查:</strong> 日誌數量少於 5 萬筆時跳過清理</li>
+      <li><strong>詳細報告:</strong> 清理完成後提供詳細的執行報告</li>
+    </ul>
+
+    <div class="footer">
+      <a href="/" class="nav-link">← 返回主頁</a>
+      <span class="right">
+        最後更新: <span id="last-updated"></span>
+      </span>
+    </div>
+  </div>
+
+  <script>
+    // 載入配置資訊
+    fetch('/health')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('connection-status').textContent = data.mongodb === 'connected' ? '已連接' : '未連接';
+      })
+      .catch(() => {
+        document.getElementById('connection-status').textContent = '檢查失敗';
+      });
+
+    document.getElementById('last-updated').textContent = new Date().toLocaleString('zh-TW');
+    document.getElementById('db-name').textContent = '寺廟日誌';
+    document.getElementById('collection-name').textContent = 'logs';
+  </script>
+</body>
+</html>

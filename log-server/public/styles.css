@@ -1,0 +1,212 @@
+/* 日誌服務器通用樣式 */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #f5f5f5;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+h2 {
+  color: #34495e;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 5px;
+}
+
+.subtitle {
+  color: #7f8c8d;
+  margin-bottom: 30px;
+}
+
+/* 服務卡片網格 */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.service-card {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+}
+
+.service-card h3 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+}
+
+.service-card p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.service-card a {
+  display: inline-block;
+  margin-top: 10px;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.service-card a:hover {
+  text-decoration: underline;
+}
+
+/* 狀態標籤 */
+.status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* API 端點網格 */
+.endpoint-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.endpoint {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #27ae60;
+}
+
+.endpoint .method {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.method.post {
+  background: #e74c3c;
+  color: white;
+}
+
+.method.get {
+  background: #3498db;
+  color: white;
+}
+
+.method.delete {
+  background: #e67e22;
+  color: white;
+}
+
+.endpoint .path {
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 13px;
+  color: #2c3e50;
+}
+
+.endpoint .desc {
+  color: #7f8c8d;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* 特色列表 */
+.feature-list {
+  list-style: none;
+  padding: 0;
+}
+
+.feature-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.feature-list li:before {
+  content: "✅ ";
+  margin-right: 8px;
+}
+
+/* 配置資訊框 */
+.config-info {
+  background: #e8f4fd;
+  padding: 15px;
+  border-radius: 6px;
+  margin: 20px 0;
+}
+
+.config-info strong {
+  color: #2980b9;
+}
+
+/* 導航連結 */
+.nav-link {
+  display: inline-block;
+  margin-top: 20px;
+  color: #3498db;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+/* 頁腳 */
+.footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #ecf0f1;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.footer .right {
+  float: right;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  .container {
+    padding: 20px;
+  }
+  
+  .service-grid,
+  .endpoint-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer .right {
+    float: none;
+    margin-top: 10px;
+  }
+}

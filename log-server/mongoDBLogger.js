@@ -45,6 +45,7 @@ const corsOptions = {
 //app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
+app.use(express.static('public'));
 
 // 連接 MongoDB
 async function connectMongoDB() {
@@ -111,6 +112,18 @@ function cleanLogData(log) {
 
   return cleaned;
 }
+
+// 靜態頁面路由
+
+// 根路由 - 主頁面
+app.get("/", (req, res) => {
+  res.sendFile('index.html', { root: 'public' });
+});
+
+// MongoDB 日誌服務說明頁面
+app.get("/mongo/", (req, res) => {
+  res.sendFile('mongo.html', { root: 'public' });
+});
 
 // API 路由
 
