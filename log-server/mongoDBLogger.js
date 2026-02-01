@@ -445,6 +445,13 @@ function startCleanupJob() {
     }
 
     try {
+      // 🔧 檢查總日誌數量，少於 5 萬筆就不清理
+      const totalCount = await collection.countDocuments();
+      if (totalCount < 50000) {
+        console.log(`📊 日誌數量較少 (${totalCount.toLocaleString()} 筆)，跳過清理`);
+        return;
+      }
+
       // 🔧 先統計要刪除的數量
       const countToDelete = await collection.countDocuments({
         uploadedAt: { $lt: cutoffDate },
