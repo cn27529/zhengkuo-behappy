@@ -451,6 +451,7 @@ function startServices(projectRoot) {
   log("  • Directus (port 8055)", "blue");
   log("  • Vue Client (port 5173)", "blue");
   log("  • Rust-Axum (port 3000)", "blue");
+  log("  • Log Server (port 3002)", "blue");
   log("");
 
   log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
@@ -463,12 +464,13 @@ function startServices(projectRoot) {
         "concurrently",
         "--kill-others",
         "--names",
-        "DIRECTUS,CLIENT,RUST",
+        "DIRECTUS,CLIENT,RUST,LOGS",
         "--prefix-colors",
-        "bgBlue.bold,bgMagenta.bold,bgGreen.bold",
+        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold",
         '"npm run start:server"',
         '"npm run start:client"',
         '"npm run start:rust"',
+        '"npm:start:logs"',
       ],
       {
         stdio: "inherit",
