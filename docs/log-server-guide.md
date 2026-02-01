@@ -26,7 +26,7 @@ npm start
 npm run dev
 ```
 
-服務器將在 `http://localhost:8080` 啟動
+服務器將在 `http://localhost:3002` 啟動
 
 ## API 端點
 
@@ -47,7 +47,7 @@ npm run dev
 在 `client/.env` 中設定：
 
 ```bash
-VITE_REMOTE_LOG_URL=http://localhost:8080/mongo/logentry/
+VITE_REMOTE_LOG_URL=http://localhost:3002/mongo/logentry/
 ```
 
 ## 使用範例
@@ -55,36 +55,36 @@ VITE_REMOTE_LOG_URL=http://localhost:8080/mongo/logentry/
 ### 發送單筆日誌
 
 ```javascript
-const response = await fetch('http://localhost:8080/mongo/logentry/', {
-  method: 'POST',
+const response = await fetch("http://localhost:3002/mongo/logentry/", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    endpoint: '/api/items',
-    method: 'GET',
+    endpoint: "/api/items",
+    method: "GET",
     status: 200,
     success: true,
     responseTime: 150,
-    timestamp: new Date().toISOString()
-  })
+    timestamp: new Date().toISOString(),
+  }),
 });
 ```
 
 ### 批次發送日誌
 
 ```javascript
-const response = await fetch('http://localhost:8080/mongo/logentry/batch', {
-  method: 'POST',
+const response = await fetch("http://localhost:3002/mongo/logentry/batch", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
     logs: [
-      { endpoint: '/api/items', method: 'GET', status: 200, success: true },
-      { endpoint: '/api/users', method: 'POST', status: 404, success: false }
-    ]
-  })
+      { endpoint: "/api/items", method: "GET", status: 200, success: true },
+      { endpoint: "/api/users", method: "POST", status: 404, success: false },
+    ],
+  }),
 });
 ```
 
@@ -92,13 +92,19 @@ const response = await fetch('http://localhost:8080/mongo/logentry/batch', {
 
 ```javascript
 // 查詢失敗的日誌
-const response = await fetch('http://localhost:8080/mongo/logentry/?success=false&limit=50');
+const response = await fetch(
+  "http://localhost:3002/mongo/logentry/?success=false&limit=50",
+);
 
 // 查詢特定端點的日誌
-const response = await fetch('http://localhost:8080/mongo/logentry/?endpoint=/api/items');
+const response = await fetch(
+  "http://localhost:3002/mongo/logentry/?endpoint=/api/items",
+);
 
 // 查詢日期範圍內的日誌
-const response = await fetch('http://localhost:8080/mongo/logentry/?dateFrom=2026-01-01&dateTo=2026-01-31');
+const response = await fetch(
+  "http://localhost:3002/mongo/logentry/?dateFrom=2026-01-01&dateTo=2026-01-31",
+);
 ```
 
 ## 特性

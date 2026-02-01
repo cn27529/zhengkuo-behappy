@@ -1,0 +1,28 @@
+curl -X POST http://localhost:3002/mongo/logentry/ \
+ -H "Content-Type: application/json" \
+ -d '{
+"timestamp": "2024-05-17T10:00:00.000Z",
+"endpoint": "https://api.example.com/test",
+"method": "GET",
+"status": 200,
+"success": true,
+"message": "這是一條來自cURL的測試日誌"
+}'
+
+# open browser console enter a script
+
+fetch('http://localhost:3002/mongo/logentry/', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+timestamp: new Date().toISOString(),
+endpoint: window.location.href,
+method: 'TEST',
+status: 200,
+success: true,
+message: '來自瀏覽器的測試日誌'
+})
+})
+.then(r => r.json())
+.then(console.log)
+.catch(console.error);

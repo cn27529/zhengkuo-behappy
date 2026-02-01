@@ -49,6 +49,7 @@ http://localhost:5173/tools/method-diff.html
 ```
 
 **實際應用**：
+
 - 開發 Rust 後端時，確保 API 完整性
 - 遷移過程中追蹤進度
 - Code Review 時快速檢查
@@ -106,8 +107,8 @@ http://localhost:5173/tools/method-diff.html
 
 ### 表格顏色編碼
 
-| 顏色 | 含義 | 說明 |
-|------|------|------|
+| 顏色          | 含義     | 說明                   |
+| ------------- | -------- | ---------------------- |
 | 🟢 **淡綠色** | 兩邊都有 | 方法在兩個文件中都存在 |
 | 🟡 **淡黃色** | 只在左側 | 方法只在左側文件中存在 |
 | 🔴 **淡紅色** | 只在右側 | 方法只在右側文件中存在 |
@@ -162,6 +163,7 @@ http://localhost:5173/tools/method-diff.html
 ```
 
 **解讀**：
+
 - **100%** = 完全一致
 - **80%+** = 高度一致，少量差異
 - **60-80%** = 部分一致，需要關注差異
@@ -245,9 +247,9 @@ http://localhost:5173/tools/method-diff.html
 // vite.config.js
 export default {
   server: {
-    open: '/tools/method-diff.html'  // 啟動時自動打開
-  }
-}
+    open: "/tools/method-diff.html", // 啟動時自動打開
+  },
+};
 ```
 
 ---
@@ -274,12 +276,14 @@ node scripts/check-method-consistency.js
 **比對對象**: activityService.js vs rustActivityService.js
 
 ### 結果
+
 - 共同方法: 20
 - Directus 獨有: 5
 - Rust 獨有: 10
 - 覆蓋率: 67%
 
 ### 待辦事項
+
 - [ ] 補充 Rust 中缺失的 5 個方法
 - [ ] 確認 Rust 特有的 10 個方法是否必要
 ```
@@ -297,13 +301,15 @@ node scripts/check-method-consistency.js
 ### 2. 不適用場景
 
 ❌ **參數類型檢查**：無法檢測參數類型差異
+
 ```javascript
 // 這兩個方法會被認為是相同的
-createActivity(data)           // Directus
-createActivity(data, context)  // Rust (參數不同)
+createActivity(data); // Directus
+createActivity(data, context); // Rust (參數不同)
 ```
 
 ❌ **返回值檢查**：無法檢測返回值差異
+
 ```javascript
 // 這兩個方法會被認為是相同的
 async getActivity(): Activity          // TypeScript
@@ -311,6 +317,7 @@ async getActivity(): Promise<void>     // 返回值不同
 ```
 
 ❌ **方法實現檢查**：無法檢測方法內部邏輯
+
 ```javascript
 // 即使實現完全不同，只要方法名一樣就會標記為相同
 ```
@@ -331,6 +338,7 @@ async getActivity(): Promise<void>     // 返回值不同
 **症狀**：訪問 `/tools/method-diff.html` 顯示 404
 
 **解決方案**：
+
 ```bash
 # 確認文件位置
 ls public/tools/method-diff.html
@@ -340,7 +348,7 @@ npm run dev
 
 # 確認端口號
 # Vite 默認: 5173
-# Vue CLI 默認: 8080
+# Vue CLI 默認: 3002
 # CRA 默認: 3000
 ```
 
@@ -351,11 +359,13 @@ npm run dev
 **症狀**：某些方法沒有出現在比對結果中
 
 **可能原因**：
+
 1. 方法名以下劃線開頭（被過濾）
 2. 不是標準的方法定義格式
 3. 在註解中的代碼
 
 **解決方案**：
+
 ```javascript
 // ✅ 會被識別
 async methodName() { }
@@ -374,6 +384,7 @@ const method = function() {}  // 某些函數表達式
 **症狀**：比對結果與預期不符
 
 **檢查清單**：
+
 - [ ] 確認貼入了完整的代碼（沒有截斷）
 - [ ] 確認沒有貼入註解中的示例代碼
 - [ ] 確認方法定義符合標準格式
@@ -384,11 +395,13 @@ const method = function() {}  // 某些函數表達式
 ## 📚 相關資源
 
 ### 項目文檔
+
 - [Service 架構說明](../docs/service-architecture.md)
 - [API 接口規範](../docs/api-specification.md)
 - [開發指南](../docs/development-guide.md)
 
 ### 相關工具
+
 - `api-tester.html` - API 測試工具（規劃中）
 - `type-checker.html` - 類型檢查工具（規劃中）
 
@@ -397,13 +410,17 @@ const method = function() {}  // 某些函數表達式
 ## 🤝 貢獻與反饋
 
 ### 報告問題
+
 如果發現工具有問題或建議改進，請：
+
 1. 在團隊會議上提出
 2. 發送郵件到開發團隊
 3. 在項目 Issue 中記錄
 
 ### 功能建議
+
 歡迎提出新功能建議：
+
 - 參數數量比對
 - 返回值類型檢查（TypeScript）
 - 導出比對報告（PDF/Markdown）
@@ -414,6 +431,7 @@ const method = function() {}  // 某些函數表達式
 ## 📝 更新日誌
 
 ### v1.0.0 (2025-01-06)
+
 - ✨ 初始版本發布
 - 🎨 表格化展示比對結果
 - 📊 統計分析功能

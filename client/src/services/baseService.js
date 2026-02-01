@@ -89,6 +89,10 @@ export class BaseService {
       await indexedDBLogger.addLog(sanitizedLog);
 
       // 如果配置了遠程日誌服務，也發送一份
+      console.log(
+        "⭐️ 發送日誌到遠程服務器:",
+        import.meta.env.VITE_REMOTE_LOG_URL,
+      );
       if (import.meta.env.VITE_REMOTE_LOG_URL) {
         await this.sendToRemoteLog(sanitizedLog);
       }
@@ -146,14 +150,21 @@ export class BaseService {
         type: "application/json",
       });
 
-      const success = navigator.sendBeacon?.(
-        import.meta.env.VITE_REMOTE_LOG_URL,
+      // ✅ 本地 MongoDB 日誌服務器已啟動: http://localhost:3002
+      // 📡 日誌接收端點: http://localhost:3002/mongo/logentry/
+      // 📊 健康檢查: http://localhost:3002/health
+      // 📈 統計資料: http://localhost:3002/mongo/stats
+      let BASE_URL = `${import.meta.env.VITE_REMOTE_LOG_URL}`;
+      const logServer = navigator.sendBeacon?.(
+        `${BASE_URL}/mongo/logentry/`,
         blob,
       );
 
-      if (!success) {
+      console.log("logServer:", logServer);
+
+      if (!logServer) {
         // fallback 使用 fetch
-        await fetch(import.meta.env.VITE_REMOTE_LOG_URL, {
+        await fetch(`${BASE_URL}/mongo/logentry/`, {
           method: "POST",
           body: JSON.stringify(logEntry),
           headers: { "Content-Type": "application/json" },

@@ -25,11 +25,20 @@ const MONGO_CONFIG = {
   projectId: process.env.MONGO_PROJECT_ID,
 };
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
 let mongoClient = null;
 let collection = null;
 
+const corsOptions = {
+  origin: FRONTEND_URL, // 明确指定你的前端源
+  credentials: true, // 允许接收和发送凭据（如cookies）
+  optionsSuccessStatus: 200, // 对于某些老式浏览器
+};
+
 // 中間件
-app.use(cors());
+//app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
 
 // 連接 MongoDB
@@ -119,6 +128,8 @@ app.post("/mongo/logentry/", async (req, res) => {
       });
     }
 
+    // 本地調用遠程日誌資料請求，準備儲存日誌
+    console.log("本地調用遠程日誌資料請求，準備儲存日誌...");
     const logEntry = req.body;
 
     // 準備資料
