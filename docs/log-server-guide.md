@@ -1,13 +1,13 @@
 # MongoDB 日誌服務器
 
-這個服務器提供 REST API 接口，接收來自 client 端的日誌並存入 MongoDB。
+本地 Node.js 日誌服務器，透過 `mongoDBLogger.js` 啟動，接收來自前端的日誌並存入雲端 MongoDB Atlas。
 
 ## 快速開始
 
 ### 1. 安裝依賴
 
 ```bash
-cd mongodb-logger
+cd log-server
 npm install
 ```
 
@@ -21,9 +21,9 @@ cp .env.example .env
 ### 3. 啟動服務器
 
 ```bash
+node mongoDBLogger.js
+# 或使用 npm script
 npm start
-# 或開發模式 (自動重啟)
-npm run dev
 ```
 
 服務器將在 `http://localhost:3002` 啟動
@@ -42,12 +42,41 @@ npm run dev
 
 - `GET /health` - 健康檢查
 
-## Client 端配置
+## Client 端整合
+
+前端透過 `baseService.js` 和 `baseRustService.js` 的 `sendToRemoteLog` 方法自動發送日誌：
+
+### 環境變數配置
 
 在 `client/.env` 中設定：
 
 ```bash
-VITE_REMOTE_LOG_URL=http://localhost:3002/mongo/logentry/
+VITE_REMOTE_LOG_URL=http://localhost:3002
+```
+
+### 自動日誌發送
+
+前端服務會自動將 API 請求日誌發送到日誌服務器：
+
+```javascript
+// baseService.js 和 baseRustService.js 中的實現
+async sendToRemoteLog(logEntry) {
+  const blob = new Blob([JSON.stringify(logEntry)], {
+    type: "application/json",
+  });
+  
+  const BASE_URL = import.meta.env.VITE_REMOTE_LOG_URL;
+  const success = navigator.sendBeacon(`${BASE_URL}/mongo/logentry/`, blob);
+  
+  if (!success) {
+    // fallback 使用 fetch
+    await fetch(`${BASE_URL}/mongo/logentry/`, {
+      method: "POST",
+      body: JSON.stringify(logEntry),
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
 ```
 
 ## 使用範例

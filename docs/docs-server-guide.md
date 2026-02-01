@@ -42,7 +42,6 @@ npm run docs
 ```
 docs/
 ├── *.md                    # 所有 markdown 文檔
-scripts/
 ├── docs-server.js          # 文檔服務器
 ```
 

@@ -13,11 +13,14 @@
     "start:build:server": "cd server && npm run build",
     "start:build:rust": "cd rust-axum && cargo build",
     "start:rust": "cd rust-axum && cargo run",
+    "start:logs": "cd log-server && node mongoDBLogger.js",
+    "check:logs": "node scripts/check-log-server.js",
+    "test:logs": "cd log-server && node test-complete.js",
     "dev": "concurrently \"npm:start:server\" \"npm:start:client\" \"npm:start:rust\" ",
+    "dev:full": "concurrently \"npm:start:client\" \"npm:start:rust\" \"npm:start:logs\" ",
     "deploy:netlify": "./scripts/deploy-netlify.sh",
     "db": "node scripts/start-with-db.js",
-    "docs": "node scripts/docs-server.js",
-    "start:logs": "cd log-server && npm start"
+    "docs": "node docs/docs-server.js"
   },
   "keywords": [],
   "author": "cn27529",

@@ -19,6 +19,7 @@
 **執行方式**:
 
 ```bash
+cd log-server
 node test-single-log.js
 ```
 
@@ -44,6 +45,7 @@ node test-single-log.js
 **執行方式**:
 
 ```bash
+cd log-server
 # 寫入 10 筆測試資料
 node test-batch-logs.js
 
@@ -77,6 +79,7 @@ node test-batch-logs.js 100
 **執行方式**:
 
 ```bash
+cd log-server
 node test-query-stats.js
 ```
 
@@ -117,6 +120,7 @@ node test-query-stats.js
 **執行方式**:
 
 ```bash
+cd log-server
 node test-complete.js
 ```
 
@@ -162,15 +166,18 @@ node test-complete.js
 
 ```bash
 # 1. 啟動服務器（在一個終端機）
-npm start
+cd log-server
+node mongoDBLogger.js
 
 # 2. 執行完整測試（在另一個終端機）
+cd log-server
 node test-complete.js
 ```
 
 ### 方案 2: 逐步測試（推薦開發除錯）
 
 ```bash
+cd log-server
 # 1. 測試單筆寫入
 node test-single-log.js
 
@@ -184,6 +191,7 @@ node test-query-stats.js
 ### 方案 3: 壓力測試
 
 ```bash
+cd log-server
 # 寫入大量測試資料
 node test-batch-logs.js 100   # 100 筆
 node test-batch-logs.js 500   # 500 筆
@@ -222,7 +230,7 @@ node test-query-stats.js
 
 **解決方案**:
 
-- 確認服務器是否運行 (`npm start`)
+- 確認服務器是否運行 (`cd log-server && node mongoDBLogger.js`)
 - 檢查端口是否正確 (3002)
 
 **問題 2: MongoDB 未連接**

@@ -7,7 +7,7 @@ const { marked } = require("marked");
 
 const app = express();
 const PORT = 3001;
-const DOCS_DIR = path.join(__dirname, "../docs");
+const DOCS_DIR = path.join(__dirname, ".");
 
 // 設置靜態文件服務
 app.use("/static", express.static(path.join(__dirname, "public")));

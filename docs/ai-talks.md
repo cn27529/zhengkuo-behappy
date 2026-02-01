@@ -91,4 +91,6 @@ docs/mock-logEntry-guide.md「操作記錄資料說明文檔」、client/src/dat
 
 我要生成 scripts/start-mongodb-logger.js，它會創建一個nodejs web API 接口，實現對mongo的串接，串接過程可以參考查看 mongodb-logger/usage-example.js 它引用了 mongodb-logger/mongoDBLogger.js, mongodb-logger/indexedDB-enhanced.js，由 start-mongodb-logger.js 產生的運行假設接口 "http://localhost:3002/mongo/logentry/"，那麼我會在 client/ 的環境變數設定 VITE_REMOTE_LOG_URL="http://localhost:3002/mongo/logentry/" 這樣 client/ 就可以調用 VITE_REMOTE_LOG_URL 將 indexedDB 的內容轉送一份到遠程做記錄。你能理解我的思路嗎。
 
-本地日誌服務器 log-server/ 接通了，我們透過 mongoDBLogger.js 啟動本地服務，實現 client/src/services/baseService.js 與 client/src/rustServices/baseRustService.js 的 sendToRemoteLog 方法，透過前端 client/ 環境變數 VITE_REMOTE_LOG_URL 給值後直接調用本地日誌服務器 log-server/ 將 logContext 發送到雲 mongoDB。現在我們檢視 docs/log-server-guide.md, docs/log-test-guide.md 文檔並將文檔做適當的更新。
+開心！！本地日誌服務器 log-server/ 接通了，我們透過 mongoDBLogger.js 啟動本地服務，實現 client/src/services/baseService.js 與 client/src/rustServices/baseRustService.js 的 sendToRemoteLog 方法，透過前端 client/ 環境變數 VITE_REMOTE_LOG_URL 直接調用本地日誌服務器 log-server/ 將 logContext 發送到雲 mongoDB。現在我們檢視 docs/log-server-guide.md, docs/log-test-guide.md 文檔並將文檔做適當的更新。
+
+scripts/docs-server.js 移到 docs/docs-server.js
