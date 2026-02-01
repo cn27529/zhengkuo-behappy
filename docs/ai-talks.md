@@ -94,3 +94,6 @@ docs/mock-logEntry-guide.md「操作記錄資料說明文檔」、client/src/dat
 開心！！本地日誌服務器 log-server/ 接通了，我們透過 mongoDBLogger.js 啟動本地服務，實現 client/src/services/baseService.js 與 client/src/rustServices/baseRustService.js 的 sendToRemoteLog 方法，透過前端 client/ 環境變數 VITE_REMOTE_LOG_URL 直接調用本地日誌服務器 log-server/ 將 logContext 發送到雲 mongoDB。現在我們檢視 docs/log-server-guide.md, docs/log-test-guide.md 文檔並將文檔做適當的更新。
 
 scripts/docs-server.js 移到 docs/docs-server.js
+
+為 client/src/views/ 建構 Apps.vue 頁面，這個 Apps.vue 是連接目前所有服務的入口
+為 log-server/mongoDBLogger.js 的路由，建構 http://localhost:3002/mongodb/ 頁面，在它啟動時可以看到這個app的說明，不然點擊 http://localhost:3002/mongo/ 會沒有東西，在 http://localhost:3002/ 也生成根路由頁面，可以連接到 http://localhost:3002/mongo/ 可以以後會有 http://localhost:3002/other2, http://localhost:3002/other3，如果不知道要說明什麼內容可以參考 docs/log-server-guide.md 文檔，也要好維護。

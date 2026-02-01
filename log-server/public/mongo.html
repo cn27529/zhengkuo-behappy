@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MongoDB 日誌服務 - 寺廟管理系統</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
+
 <body>
   <div class="container">
     <h1>📊 MongoDB 日誌服務</h1>
     <p class="subtitle">雲端日誌收集、存儲與查詢系統</p>
-    
+
     <div class="config-info">
       <strong>當前配置:</strong><br>
-      資料庫: <span id="db-name">載入中...</span> | 
-      集合: <span id="collection-name">載入中...</span> | 
+      資料庫: <span id="db-name">載入中...</span> |
+      集合: <span id="collection-name">載入中...</span> |
       連接狀態: <span id="connection-status">檢查中...</span>
     </div>
 
@@ -97,4 +99,5 @@
     document.getElementById('collection-name').textContent = 'logs';
   </script>
 </body>
+
 </html>
