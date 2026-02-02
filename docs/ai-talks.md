@@ -124,84 +124,74 @@ scripts/docs-server.js 移到 docs/docs-server.js
 我想調適 rust-axum/src/main.rs 的 health_check 方法，
 
 health_check
+
+```json
 {
-"database": {
-"connected": true,
-"size_mb": "1.71 MB",
-"table_count": 32
-},
-"mode": "Read-Only (Shared with Directus)",
-"service": "Rust Axum Data API",
-"status": "healthy",
-"timestamp": "2026-02-02T16:08:47.631818+00:00"
+  "database": {
+    "connected": true,
+    "size_mb": "1.71 MB",
+    "table_count": 32
+  },
+  "mode": "Read-Only (Shared with Directus)",
+  "service": "Rust Axum Data API",
+  "status": "healthy",
+  "timestamp": "2026-02-02T16:08:47.631818+00:00"
 }
+```
 
 server/info
 
+```json
 {
-"name": "Rust Axum Backend",
-"version": "0.1.0",
-"uptime_seconds": 11,
-"database_connected": true,
-"database_type": "SQLite",
-"database_path": "../db/current.db",
-"current_time": "2026-02-02T16:32:53.214178+00:00",
-"architecture": {
-"auth_backend": "Directus",
-"data_backend": "Rust Axum",
-"database": "Shared SQLite"
+  "name": "Rust Axum Backend",
+  "version": "0.1.0",
+  "uptime_seconds": 16,
+  "database_connected": true,
+  "database_type": "SQLite",
+  "database_path": "../db/current.db",
+  "database_stats": {
+    "size_mb": "1.71 MB",
+    "table_count": 32,
+    "tables": [
+      "directus_migrations",
+      "directus_folders",
+      "directus_relations",
+      "directus_files",
+      "directus_fields",
+      "directus_operations",
+      "directus_notifications",
+      "directus_translations",
+      "directus_shares",
+      "directus_versions",
+      "directus_revisions",
+      "directus_users",
+      "directus_extensions",
+      "directus_sessions",
+      "directus_webhooks",
+      "directus_policies",
+      "directus_permissions",
+      "directus_access",
+      "directus_collections",
+      "directus_dashboards",
+      "directus_flows",
+      "directus_panels",
+      "directus_presets",
+      "directus_roles",
+      "directus_comments",
+      "directus_activity",
+      "mydata",
+      "registrationDB",
+      "activityDB",
+      "monthlyDonateDB",
+      "directus_settings",
+      "participationRecordDB"
+    ]
+  },
+  "current_time": "2026-02-02T16:26:49.518301+00:00",
+  "architecture": {
+    "auth_backend": "Directus",
+    "data_backend": "Rust Axum",
+    "database": "Shared SQLite"
+  }
 }
-}
-
-{
-"name": "Rust Axum Backend",
-"version": "0.1.0",
-"uptime_seconds": 16,
-"database_connected": true,
-"database_type": "SQLite",
-"database_path": "../db/current.db",
-"database_stats": {
-"size_mb": "1.71 MB",
-"table_count": 32,
-"tables": [
-"directus_migrations",
-"directus_folders",
-"directus_relations",
-"directus_files",
-"directus_fields",
-"directus_operations",
-"directus_notifications",
-"directus_translations",
-"directus_shares",
-"directus_versions",
-"directus_revisions",
-"directus_users",
-"directus_extensions",
-"directus_sessions",
-"directus_webhooks",
-"directus_policies",
-"directus_permissions",
-"directus_access",
-"directus_collections",
-"directus_dashboards",
-"directus_flows",
-"directus_panels",
-"directus_presets",
-"directus_roles",
-"directus_comments",
-"directus_activity",
-"mydata",
-"registrationDB",
-"activityDB",
-"monthlyDonateDB",
-"directus_settings",
-"participationRecordDB"
-]
-},
-"current_time": "2026-02-02T16:26:49.518301+00:00",
-"architecture": {
-"auth_backend": "Directus",
-"data_backend": "Rust Axum",
-"database": "Shared SQLite"
-}
-}
+```
