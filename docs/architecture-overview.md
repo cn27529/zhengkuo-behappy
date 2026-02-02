@@ -4,6 +4,12 @@
 
 **zhengkuo-behappy** 是一個完整的寺廟管理系統，主要功能包括消災超度登記、每月贊助管理、活動管理與太歲點燈服務。
 
+**專案統計：**
+- 總檔案數：4,410
+- 程式碼行數：17,790
+- 函數數量：354
+- 類別/結構：41
+
 ## 技術架構
 
 ### 整體架構圖
@@ -231,6 +237,11 @@ docs/                   # 文檔目錄
 - **功能**: 太歲點燈登記與管理
 - **特色**: 生肖對應、點燈狀態追蹤
 
+### 5. 牌位系統
+
+- **功能**: 牌位模板設計與PDF生成
+- **特色**: 多種牌位樣式、自動排版
+
 ## 服務適配器模式
 
 **ServiceAdapter** 統一管理多種後端服務：
@@ -281,6 +292,26 @@ npm run dev:full      # 同時啟動前端、Rust 後端、日誌服務器
 - **日誌服務器**: 本地/雲端部署
 - **主資料庫**: SQLite 文件存儲
 - **日誌資料庫**: MongoDB Atlas 雲端存儲
+
+### 部署流程
+
+```bash
+# 切換到部署分支
+git checkout zk-client-netlify
+
+# 重設為與指定版本相同的分支內容
+git reset --hard zk-client-v2-1210
+
+# 推送覆蓋遠端（⚠️ 小心使用）
+git push origin zk-client-netlify --force
+```
+
+### 容器化部署
+
+- **Docker 支援**: `docker-compose.yml` 配置
+- **Directus 容器化**: 完整的 CMS 容器
+- **資料庫持久化**: 數據卷管理
+- **CI/CD**: GitHub Actions 自動化
 
 ## 開發工具與輔助功能
 
@@ -334,8 +365,25 @@ npm run dev:full      # 同時啟動前端、Rust 後端、日誌服務器
 ### 5. 測試腳本
 
 - API 測試腳本 (`./scripts/`)
+  - `test_rust_registration_api.sh` - 登記 API 測試
+  - `test_rust_activity_api.sh` - 活動 API 測試
+  - `test_mydata.sh` - 資料 API 測試
+  - `testMydata.js` - Directus 測試工具
 - 自動化測試工具
 - 資料庫遷移腳本
+
+### 6. 專案結構查看工具
+
+```bash
+# 查看客戶端結構
+tree -L 3 -I "node_modules|.git|dist" ./client > client-tree.txt
+
+# 查看伺服器結構
+tree -L 2 -I "node_modules|.git|dist" ./server > server-tree.txt
+
+# 查看 Rust 結構
+tree -L 3 -I "target|.lock" ./rust-axum > rust-axum-tree.txt
+```
 
 ## 安全性設計
 
@@ -423,3 +471,14 @@ npm run dev:full      # 同時啟動前端、Rust 後端、日誌服務器
    ```
 
 更詳細的部署指南請參考 `deployment-guide.md`。
+
+## 相關資源
+
+### 參考專案
+- [axum-admin](https://github.com/orchid-admin/axum-admin/tree/main)
+- [lingdu1234/axum_admin](https://github.com/lingdu1234/axum_admin)
+- [axum-login 文件](https://docs.rs/axum-login/latest/axum_login/)
+
+---
+
+*此文件整合了專案架構總覽與專案說明，提供完整的系統架構資訊。*

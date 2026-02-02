@@ -1,17 +1,14 @@
 # 检查 Directus 服务是否运行
 curl -s "http://localhost:8055/server/info" | jq '.'
 
-
-
 # 查看 mydata
 curl -s "http://localhost:8055/items/mydata" | jq '.'
 # 帶欄位的
 curl -s "http://localhost:8055/items/mydata?fields=id,formName,state,contact.name,contact.phone" | jq '.'
 curl -s "http://localhost:8055/items/mydata?fields=*,contact.*" | jq '.'
 
-curl -s "http://localhost:8055/items/participationRecordDB?fields=*"  | jq '.'
 
-
+# Directus
 # 祈福登記 - registrationDB
 curl -s "http://localhost:8055/items/registrationDB" | jq '.'
 # 法會活動 - activityDB
@@ -20,6 +17,8 @@ curl -s "http://localhost:8055/items/activityDB" | jq '.'
 curl -s "http://localhost:8055/items/monthlyDonateDB" | jq '.'
 # 參加記錄 - participationRecordDB
 curl -s "http://localhost:8055/items/participationRecordDB" | jq '.'
+curl -s "http://localhost:8055/items/participationRecordDB?fields=*"  | jq '.'
+
 
 # 使用 curl 測試 OPTIONS 請求
 curl -X OPTIONS http://localhost:3000/api/activities \
@@ -29,6 +28,7 @@ curl -X OPTIONS http://localhost:3000/api/activities \
   -v
 
 
+# rust-axum 
 # 法會活動
 curl -s "http://localhost:3000/api/activities?fields=*,contact.*" | jq '.'
 

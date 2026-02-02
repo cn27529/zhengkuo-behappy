@@ -1,11 +1,11 @@
 # 1. 啟動 Directus（假設在 port 8055）
 
-cd directus-project
+cd server
 npx directus start
 
 # 2. 在另一個終端啟動 Rust Axum（port 3000）
 
-cd rust-backend
+cd rust-axum
 cargo run
 
 # 3. 測試 Rust API
