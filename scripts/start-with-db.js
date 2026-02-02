@@ -464,7 +464,7 @@ function startServices(projectRoot) {
         "concurrently",
         "--kill-others",
         "--names",
-        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,🗎DOCS,📦APPS",
+        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS",
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
         "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold",
@@ -474,7 +474,6 @@ function startServices(projectRoot) {
         '"npm run start:logs"',
         '"npm run start:docs"',
         '"npm run start:apps"',
-        
       ],
       {
         stdio: "inherit",

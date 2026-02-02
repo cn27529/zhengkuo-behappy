@@ -17,19 +17,28 @@ export class AuthService {
   async login(username, password) {
     console.log(`登入請求 - 模式: ${this.base.mode}, 用戶: ${username}`);
 
-    // 在控制台輸出警告
-    if (this.base.mode === "mock") {
-      console.warn(
-        "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
-          "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
-          "🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01",
-      );
-
-      return this.mockLogin(username, password);
-    } else if (this.base.mode === "backend") {
-      return this.backendLogin(username, password);
-    } else if (this.base.mode === "directus") {
-      return this.directusLogin(username, password);
+    try {
+      // 在控制台輸出警告
+      if (this.base.mode === "mock") {
+        console.warn(
+          "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
+            "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
+            "🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01",
+        );
+        return this.mockLogin(username, password);
+      } else if (this.base.mode === "backend") {
+        return this.backendLogin(username, password);
+      } else if (this.base.mode === "directus") {
+        return this.directusLogin(username, password);
+      }
+    } catch (error) {
+      console.error("登入過程中發生錯誤:", error);
+      return {
+        success: false,
+        message: "登入過程中發生錯誤",
+        errorCode: "LOGIN_PROCESS_ERROR",
+        details: error.message,
+      };
     }
   }
 
@@ -502,8 +511,6 @@ export class AuthService {
     }
   }
 
-  
-
   async directusValidateToken() {
     try {
       const token = sessionStorage.getItem("auth-token");
@@ -827,7 +834,7 @@ export class AuthService {
     } else {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
     }
-  } 
+  }
 
   getCurrentUser = () => {
     try {
@@ -857,8 +864,6 @@ export class AuthService {
     const user = this.getUserInfo();
     return user ? user.username || user.displayName || "unknown" : "unknown";
   }
-
-     
 }
 
 export const authService = new AuthService();
