@@ -115,7 +115,7 @@ const isPrintRoute = computed(() => route.path && route.path.includes("print"));
 const showUserInfo = computed(() => {
   return (
     showHeader.value &&
-    !isPrintRoute.value &&
+    !isPrintRoute.value &&    
     route.path !== "/login" &&
     route.path !== "/logout"
   );
@@ -124,7 +124,7 @@ const showUserInfo = computed(() => {
 const showLogoutLink = computed(() => {
   return (
     showHeader.value &&
-    !isPrintRoute.value &&
+    !isPrintRoute.value &&    
     route.path !== "/login" &&
     route.path !== "/logout"
   );
@@ -147,11 +147,13 @@ const handleMenuClick = (menuItem) => {
 const computeVisibility = () => {
   const isPrint = route.path && route.path.includes("print");
   const tdClock = route.path && route.path.includes("td-clock");
+  const allApp = route.path && route.path.includes("all-app");
   return {
     header: !isPrint && !tdClock, // 顶部导航栏：非打印页面显示
     sidebar:
       !isPrint &&
       !tdClock &&
+      !allApp &&
       route.path !== "/login" &&
       route.path !== "/logout", // 側邊菜單栏：非打印页面且非登录/登出页面显示
     footer: !isPrint && !tdClock, // 底部：非打印页面显示

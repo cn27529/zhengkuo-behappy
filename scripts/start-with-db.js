@@ -471,7 +471,7 @@ function startServices(projectRoot) {
         '"npm run start:server"',
         '"npm run start:client"',
         '"npm run start:rust"',
-        '"npm:start:logs"',
+        '"npm run start:logs"',
       ],
       {
         stdio: "inherit",

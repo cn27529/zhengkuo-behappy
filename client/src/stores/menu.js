@@ -9,6 +9,17 @@ export const useMenuStore = defineStore("menu", () => {
   // 菜單數據状态
   const menuItems = ref([
     {
+      id: 0,
+      name: "所有服務",
+      path: "/all-app",
+      icon: "🏛️",
+      component: "AllApp",
+      requiredAuth: false,
+      order: 0,
+      enabled: true,
+      publish: true,
+    },
+    {
       id: 1,
       name: "儀表板",
       path: "/dashboard",
@@ -119,13 +130,24 @@ export const useMenuStore = defineStore("menu", () => {
       publish: false,
     },
     {
-      id: 11,
+      id: 69,
       name: "天干地支時鐘",
       path: "/td-clock",
       icon: "🕰️",
       component: "TianganDizhiClock",
       requiredAuth: false,
-      order: 11,
+      order: 69,
+      enabled: true,
+      publish: true,
+    },
+    {
+      id: 96,
+      name: "所有服務入口",
+      path: "/all-app",
+      icon: "🕰️",
+      component: "AllApp",
+      requiredAuth: false,
+      order: 96,
       enabled: true,
       publish: true,
     },
@@ -135,11 +157,12 @@ export const useMenuStore = defineStore("menu", () => {
       path: "/registration-edit", //路徑
       icon: "🔍",
       component: "RegistrationEdit",
-      requiredAuth: true,
-      order: 12,
-      enabled: false,
-      publish: false,
+      requiredAuth: false,
+      order: 13,
+      enabled: true,
+      publish: true,
     },
+   
     {
       id: 99,
       name: "收据管理",

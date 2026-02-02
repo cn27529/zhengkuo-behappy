@@ -1,0 +1,22 @@
+{
+  "name": "docs-server",
+  "version": "1.0.0",
+  "description": "文檔檢視器",
+  "main": "docs-server.js",
+  "scripts": {
+    "start": "node docs-server.js",
+    "dev": "node --watch docs-server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "nodemon": "^3.1.11",
+    "marked": "^12.0.0"
+  },
+  "keywords": [
+    "文檔檢視器"
+  ],
+  "author": "cn27529",
+  "license": "MIT"
+}
