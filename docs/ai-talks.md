@@ -118,3 +118,90 @@ scripts/docs-server.js 移到 docs/docs-server.js
 ## 全棧連接
 
 建構 index.html 頁面，這個 index.html 是連接目前所有服務的入口，用卡片式的頁面佈局展現全部服務入口的連接 每個卡片都有自己的特色風格 如果太麻煩就不必了，所有連接都在 docs\architecture-overview.md 裡的"**訪問應用**"區塊，生成 index.html 後也生成 docs/apps.md。index.html 會運行在根目錄 ./index.html 使用 express 靜態型式運行。
+
+## 調適 health_check, server_info
+
+我想調適 rust-axum/src/main.rs 的 health_check 方法，
+
+health_check
+{
+"database": {
+"connected": true,
+"size_mb": "1.71 MB",
+"table_count": 32
+},
+"mode": "Read-Only (Shared with Directus)",
+"service": "Rust Axum Data API",
+"status": "healthy",
+"timestamp": "2026-02-02T16:08:47.631818+00:00"
+}
+
+server/info
+
+{
+"name": "Rust Axum Backend",
+"version": "0.1.0",
+"uptime_seconds": 11,
+"database_connected": true,
+"database_type": "SQLite",
+"database_path": "../db/current.db",
+"current_time": "2026-02-02T16:32:53.214178+00:00",
+"architecture": {
+"auth_backend": "Directus",
+"data_backend": "Rust Axum",
+"database": "Shared SQLite"
+}
+}
+
+{
+"name": "Rust Axum Backend",
+"version": "0.1.0",
+"uptime_seconds": 16,
+"database_connected": true,
+"database_type": "SQLite",
+"database_path": "../db/current.db",
+"database_stats": {
+"size_mb": "1.71 MB",
+"table_count": 32,
+"tables": [
+"directus_migrations",
+"directus_folders",
+"directus_relations",
+"directus_files",
+"directus_fields",
+"directus_operations",
+"directus_notifications",
+"directus_translations",
+"directus_shares",
+"directus_versions",
+"directus_revisions",
+"directus_users",
+"directus_extensions",
+"directus_sessions",
+"directus_webhooks",
+"directus_policies",
+"directus_permissions",
+"directus_access",
+"directus_collections",
+"directus_dashboards",
+"directus_flows",
+"directus_panels",
+"directus_presets",
+"directus_roles",
+"directus_comments",
+"directus_activity",
+"mydata",
+"registrationDB",
+"activityDB",
+"monthlyDonateDB",
+"directus_settings",
+"participationRecordDB"
+]
+},
+"current_time": "2026-02-02T16:26:49.518301+00:00",
+"architecture": {
+"auth_backend": "Directus",
+"data_backend": "Rust Axum",
+"database": "Shared SQLite"
+}
+}
