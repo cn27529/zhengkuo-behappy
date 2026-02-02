@@ -7,18 +7,7 @@ export const useMenuStore = defineStore("menu", () => {
   const router = useRouter();
 
   // 菜單數據状态
-  const menuItems = ref([
-    {
-      id: 0,
-      name: "所有服務",
-      path: "/all-app",
-      icon: "🏛️",
-      component: "AllApp",
-      requiredAuth: false,
-      order: 0,
-      enabled: true,
-      publish: true,
-    },
+  const menuItems = ref([    
     {
       id: 1,
       name: "儀表板",
@@ -140,17 +129,7 @@ export const useMenuStore = defineStore("menu", () => {
       enabled: true,
       publish: true,
     },
-    {
-      id: 96,
-      name: "所有服務入口",
-      path: "/all-app",
-      icon: "🕰️",
-      component: "AllApp",
-      requiredAuth: false,
-      order: 96,
-      enabled: true,
-      publish: true,
-    },
+    
     {
       id: 12,
       name: "祈福登記編輯",

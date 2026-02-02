@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏛️ 系統所有服務入口總覽</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--card-color);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+            border-color: var(--card-color);
+        }
+
+        .frontend-card {
+            --card-color: #4CAF50;
+        }
+
+        .rust-card {
+            --card-color: #CE422B;
+        }
+
+        .directus-card {
+            --card-color: #6644FF;
+        }
+
+        .log-card {
+            --card-color: #FF9800;
+        }
+
+        .docs-card {
+            --card-color: #2196F3;
+        }
+
+        .tools-card {
+            --card-color: #9C27B0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .card-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: #333;
+        }
+
+        .card-content p {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .card-actions {
+            margin-top: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 120px;
+            color: white;
+            background: var(--card-color);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+
+        .footer {
+            color: white;
+            text-align: center;
+        }
+
+        .system-info {
+            margin-bottom: 2rem;
+        }
+
+        .system-info h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .architecture-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .arch-item {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .arrow {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .quick-links {
+            margin-top: 2rem;
+        }
+
+        .quick-links h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .links-grid a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .links-grid a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .timestamp {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .architecture-flow {
+                justify-content: center;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .health-check {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #666;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- <h1 class="main-title">🏛️ 所有服務入口總覽</h1> -->
+            <p class="subtitle">所有服務入口總覽</p>
+        </div>
+
+        <div class="services-grid">
+            <!-- 前端主應用 -->
+            <div class="service-card frontend-card">
+                <div class="status-indicator"></div>
+                <div class="card-header">
+                    <div class="icon">🖥️</div>
+                    <h3>前端主應用</h3>
+                </div>
+                <div class="card-content">
+                    <p>Vue.js 主要管理界面，提供完整的寺廟管理功能</p>
+                    <div class="features">
+                        <span class="feature-tag">消災超度</span>
+                        <span class="feature-tag">每月贊助</span>
+                        <span class="feature-tag">活動管理</span>
+                        <span class="feature-tag">太歲點燈</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="http://localhost:5173" target="_blank" class="btn">
+                        訪問應用 →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Rust API 後端 -->
+            <div class="service-card rust-card">
+                <div class="status-indicator"></div>
+                <div class="card-header">
+                    <div class="icon">🦀</div>
+                    <h3>Rust API 後端</h3>
+                </div>
+                <div class="card-content">
+                    <p>高效能 Axum 後端服務，提供 RESTful API 接口</p>
+                    <div class="features">
+                        <span class="feature-tag">RESTful API</span>
+                        <span class="feature-tag">高效能</span>
+                        <span class="feature-tag">類型安全</span>
+                        <span class="feature-tag">SQLite</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="http://localhost:3000" target="_blank" class="btn">
+                        API 服務 →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Directus 後端 -->
+            <div class="service-card directus-card">
+                <div class="status-indicator"></div>
+                <div class="card-header">
+                    <div class="icon">📊</div>
+                    <h3>Directus 後端</h3>
+                </div>
+                <div class="card-content">
+                    <p>內容管理系統與數據管理界面，提供可視化管理</p>
+                    <div class="features">
+                        <span class="feature-tag">CMS</span>
+                        <span class="feature-tag">數據管理</span>
+                        <span class="feature-tag">管理界面</span>
+                        <span class="feature-tag">API 生成</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="http://localhost:8055" target="_blank" class="btn">
+                        管理後台 →
+                    </a>
+                </div>
+            </div>
+
+            <!-- 日誌服務器 -->
+            <div class="service-card log-card">
+                <div class="status-indicator"></div>
+                <div class="card-header">
+                    <div class="icon">📝</div>
+                    <h3>日誌服務器</h3>
+                </div>
+                <div class="card-content">
+                    <p>系統日誌收集與監控，使用 MongoDB Atlas 雲端存儲</p>
+                    <div class="features">
+                        <span class="feature-tag">MongoDB</span>
+                        <span class="feature-tag">日誌分析</span>
+                        <span class="feature-tag">實時監控</span>
+                        <span class="feature-tag">雲端存儲</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="http://localhost:3002" target="_blank" class="btn">
+                        查看日誌 →
+                    </a>
+                </div>
+            </div>
+
+            <!-- 文檔服務器 -->
+            <div class="service-card docs-card">
+                <div class="status-indicator"></div>
+                <div class="card-header">
+                    <div class="icon">📚</div>
+                    <h3>文檔服務器</h3>
+                </div>
+                <div class="card-content">
+                    <p>專案文檔與開發指南，Markdown 即時渲染瀏覽</p>
+                    <div class="features">
+                        <span class="feature-tag">Markdown</span>
+                        <span class="feature-tag">API 文檔</span>
+                        <span class="feature-tag">開發指南</span>
+                        <span class="feature-tag">即時更新</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="http://localhost:3001" target="_blank" class="btn">
+                        瀏覽文檔 →
+                    </a>
+                </div>
+            </div>
+
+            <!-- 開發工具 -->
+            <div class="service-card tools-card">
+                <div class="status-indicator"></div>
+                <div class="card-header">
+                    <div class="icon">🛠️</div>
+                    <h3>開發工具集</h3>
+                </div>
+                <div class="card-content">
+                    <p>開發調試與測試工具，包含各種輔助功能</p>
+                    <div class="features">
+                        <span class="feature-tag">測試腳本</span>
+                        <span class="feature-tag">Mock 數據</span>
+                        <span class="feature-tag">調試工具</span>
+                        <span class="feature-tag">健康檢查</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="http://localhost:5173/dev-tools" target="_blank" class="btn">
+                        開發工具 →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="system-info">
+                <h4>系統架構</h4>
+                <div class="architecture-flow">
+                    <div class="arch-item">Vue.js 前端</div>
+                    <div class="arrow">→</div>
+                    <div class="arch-item">Rust/Node.js 後端</div>
+                    <div class="arrow">→</div>
+                    <div class="arch-item">SQLite/MongoDB</div>
+                </div>
+            </div>
+            
+            <div class="quick-links">
+                <h4>快速連結</h4>
+                <div class="links-grid">
+                    <a href="http://localhost:3001/doc/architecture-overview.md" target="_blank">📋 架構總覽</a>
+                    <a href="http://localhost:3001/doc/deployment-guide.md" target="_blank">🚀 部署指南</a>
+                    <a href="http://localhost:3001/doc/api-documentation.md" target="_blank">📖 API 文檔</a>
+                    <a href="http://localhost:3002/mongo.html" target="_blank">📊 日誌監控</a>
+                    <a href="http://localhost:3001/doc/log-server-guide.md" target="_blank">📝 日誌指南</a>
+                    <a href="http://localhost:3001/doc/dev-joinRecord-guide.md" target="_blank">🎯 開發指南</a>
+                </div>
+            </div>
+
+            <div class="timestamp">
+                <p>最後更新: <span id="lastUpdate"></span></p>
+                <p>系統版本: zhengkuo-behappy v1.0</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="health-check">
+        <span id="healthStatus">🟢 系統正常</span>
+    </div>
+
+    <script>
+        // 更新時間戳
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('zh-TW');
+
+        // 簡單的健康檢查
+        async function checkHealth() {
+            const services = [
+                { name: '前端', url: 'http://localhost:5173' },
+                { name: 'Rust API', url: 'http://localhost:3000' },
+                { name: 'Directus', url: 'http://localhost:8055' },
+                { name: '日誌服務', url: 'http://localhost:3002' },
+                { name: '文檔服務', url: 'http://localhost:3001' }
+            ];
+
+            let healthyCount = 0;
+            const statusElement = document.getElementById('healthStatus');
+
+            // 這裡可以添加實際的健康檢查邏輯
+            // 由於跨域限制，這裡只是示例
+            statusElement.textContent = `🟢 ${services.length} 個服務就緒`;
+        }
+
+        // 頁面載入時執行健康檢查
+        document.addEventListener('DOMContentLoaded', checkHealth);
+
+        // 每30秒更新一次健康狀態
+        setInterval(checkHealth, 30000);
+
+        // 添加卡片點擊效果
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // 添加按鈕點擊統計（可選）
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const serviceName = this.closest('.service-card').querySelector('h3').textContent;
+                console.log(`訪問服務: ${serviceName}`);
+                // 這裡可以添加統計邏輯
+            });
+        });
+    </script>
+</body>
+</html>

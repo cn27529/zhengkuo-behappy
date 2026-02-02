@@ -5,7 +5,6 @@ import { usePageStateStore } from "../stores/pageStateStore.js";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
-  { path: "/all-app", component: () => import("../views/AllApp.vue") },
   { path: "/newtab", component: () => import("../views/NewTab.vue") },
   { path: "/dialog", component: () => import("../views/ElDialog.vue") },
   { path: "/empty", component: () => import("../views/Empty.vue") },

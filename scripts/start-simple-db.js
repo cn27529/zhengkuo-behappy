@@ -99,7 +99,7 @@ rl.question("\n選擇: ", (answer) => {
   console.log("\n啟動服務...");
   spawn(
     "npx",
-    ["concurrently", "npm:start:server", "npm:start:client", "npm:start:rust"],
+    ["concurrently", "npm:start:server", "npm:start:client", "npm:start:rust", "npm:start:logs", "npm:start:docs", "npm:start:apps"],
     {
       stdio: "inherit",
       shell: true,

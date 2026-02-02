@@ -114,6 +114,6 @@ scripts/docs-server.js 移到 docs/docs-server.js
 為 log-server/mongoDBLogger.js 的路由，建構 http://localhost:3002/mongodb/ 頁面，在它啟動時可以看到這個app的說明，不然點擊 http://localhost:3002/mongo/ 會沒有東西，在 http://localhost:3002/ 也生成根路由頁面，可以連接到 http://localhost:3002/mongo/ 可以以後會有 http://localhost:3002/other2, http://localhost:3002/other3，如果不知道要說明什麼內容可以參考 docs/log-server-guide.md 文檔，也要好維護。
 
 ## 全棧連接
-為 client/src/views/ 建構 AllApp.vue 頁面，這個 AllApp.vue 是連接目前所有服務的入口，用卡片式的頁面佈局展現全部服務入口的連接 每個卡片都有自己的特色風格 如果太麻煩就不必了，AllApp.vue 不必登入認證，所有連接都在 docs\architecture-overview.md 裡的"開發環境"區塊
+建構 apps.html 頁面，這個 apps.html 是連接目前所有服務的入口，用卡片式的頁面佈局展現全部服務入口的連接 每個卡片都有自己的特色風格 如果太麻煩就不必了，所有連接都在 docs\architecture-overview.md 裡的"**訪問應用**"區塊，生成 apps.html 後也生成 docs/apps.md。apps.html 會運行在根目錄 ./apps.html 使用 express 靜態型式運行。
 
 
