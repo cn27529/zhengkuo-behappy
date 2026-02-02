@@ -9,6 +9,7 @@
 請查找 getIsMock() 方法，查看 ./client/src/stores/ 的全部檔案，確認是否都有套用 getIsMock()，並且 getIsMock() 是 true 的條件下所有資料都是來自 ./client/src/data/mock\_???.json 以及是 true 的條件下都不會往後端的 service層做調用。如果有請告訴我，我必須讓它們一致。
 
 ## 確認環境變數
+
 確認所有使用 import.meta.env.XXX 環境變數的檔案都有適當的使用，避免 truthy 陷阱。檔案有 ./client/src/adapters/serviceAdapter.js, ./client/src/components/DevTools.vue, ./client/src/config/serviceConfig.js, ./client/src/config/supabase.js, ./client/src/rustServices/baseRustService.js, ./client/src/services/baseService.js
 
 接下來要調適 client\src\views\JoinRecord.vue，將　<!-- 已選擇的祈福登記 -->　區塊加入活動管理（）提供使用者單選一個"活動"，將"活動"的 id 綁定activityId，你能理解嗎。
@@ -20,6 +21,7 @@
 目前「活動參加」 ./client/src/views/JoinRecord.vue, ./client/src/stores/joinRecordStore.js 功能己經可以運行了，但是我目前有些信息是缺少的想要添加進來，我想先了解你的思路。在 ./docs/dev-joinRecord-guide.md 是我們對功能的規劃，在 ./client/src/data/mock_participation_records.json 是我們的資料設計， 生成「活動參加」的資料我們會參照的資料來源還有「祈福登記」資料與文件說明 ./client/src/data/mock_registrations.json, ./docs/mock-registrations.md。「活動管理」資料 ./client/src/data/mock_activities.json。「活動參加」是由「祈福登記」資料與「活動管理」資料組成的，我想調適在 ./client/src/stores/joinRecordStore.js 的 const payload 添加 payload.contact 也就是「聯絡人」 registration.contact 記錄當前 registration.contact 這是方便日後查詢用的沒有要追溯過去。在 soruceData 添加地址也就是「祖先」 registration.salvation.address, registration.blessing.address，我明白這可能會影響 activityConfigs 的 source，記錄當前 blessing.address 這是方便日後查詢用的沒有要追溯過去，這些改變也需要改變 participationRecordDB 的 schema。代碼我看了很久哈哈，想先與你確認我們還不用急著執行。你將思路生成 ./docs/dev-joinRecord-modify-guide.md 我來看看分析。
 
 ## 添加 sourceAddress
+
 依據 ./docs/dev-joinRecord-modify-guide.md 的說明，如果 sourceData 照舊我們添加 sourceAddress 是否調適更方便。
 
 我來更動 table schema，你先實現store，「活動參加」、「參加記錄查詢」運行沒問題後我們再接service層，這段期間我會改為mock模式運行，我們需要先將 client/src/data/mock_participation_records.json 內容調適。
@@ -114,6 +116,5 @@ scripts/docs-server.js 移到 docs/docs-server.js
 為 log-server/mongoDBLogger.js 的路由，建構 http://localhost:3002/mongodb/ 頁面，在它啟動時可以看到這個app的說明，不然點擊 http://localhost:3002/mongo/ 會沒有東西，在 http://localhost:3002/ 也生成根路由頁面，可以連接到 http://localhost:3002/mongo/ 可以以後會有 http://localhost:3002/other2, http://localhost:3002/other3，如果不知道要說明什麼內容可以參考 docs/log-server-guide.md 文檔，也要好維護。
 
 ## 全棧連接
-建構 apps.html 頁面，這個 apps.html 是連接目前所有服務的入口，用卡片式的頁面佈局展現全部服務入口的連接 每個卡片都有自己的特色風格 如果太麻煩就不必了，所有連接都在 docs\architecture-overview.md 裡的"**訪問應用**"區塊，生成 apps.html 後也生成 docs/apps.md。apps.html 會運行在根目錄 ./apps.html 使用 express 靜態型式運行。
 
-
+建構 index.html 頁面，這個 index.html 是連接目前所有服務的入口，用卡片式的頁面佈局展現全部服務入口的連接 每個卡片都有自己的特色風格 如果太麻煩就不必了，所有連接都在 docs\architecture-overview.md 裡的"**訪問應用**"區塊，生成 index.html 後也生成 docs/apps.md。index.html 會運行在根目錄 ./index.html 使用 express 靜態型式運行。
