@@ -1,5 +1,5 @@
 {
-  "name": "bc-cch-online-booking",
+  "name": "bc-cch-aotu-booking",
   "version": "1.0.0",
   "description": "員林基督教醫院自動掛號系統",
   "main": "booking.js",
