@@ -1,17 +1,36 @@
 const puppeteer = require("puppeteer");
 const cron = require("node-cron");
+const nodemailer = require("nodemailer");
+require('dotenv').config();
 
 class BCCHBooking {
   constructor() {
     this.config = {
-      doctorName: "黃雅琪", //
-      doctorCode: "0147226", // 劉又綾 0055881, 黃雅琪 0147226, 邱欣玲 0063040
+      doctorName: "邱欣玲", // 劉又綾 0055881, 黃雅琪 0147226, 邱欣玲 0063040
+      doctorCode: "0063040",
       patientId: "P200289819", //P200289819
       birthday: "0706",
       baseUrl:
         "https://bc.cch.org.tw/BCRG/opd/service-e.aspx?id=0900&Page=11&#p",
       autoSubmit: true,
+      sendMailTo: "cn27529@gmail.com",
+      mailSubject: "幫媽媽自動掛號系統",
+      mailFrom: "cn27529@gmail.com",
     };
+
+    // 設置郵件傳送器 (只有在有密碼時才初始化)
+    if (process.env.GMAIL_APP_PASSWORD) {
+      this.transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: this.config.mailFrom,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      });
+    } else {
+      console.log("⚠️  未設定 GMAIL_APP_PASSWORD，將跳過郵件發送功能");
+      this.transporter = null;
+    }
   }
 
   async tryBooking() {
@@ -24,7 +43,9 @@ class BCCHBooking {
 
     console.log("請選擇運行模式:");
     console.log("1. 依日期選擇可用的醫師");
-    console.log("2. 依config自動尋找劉又綾醫師");
+    console.log(
+      `2. 依config自動尋找${this.config.doctorName}醫師${this.config.doctorCode}`,
+    );
 
     const mode = await new Promise((resolve) => {
       rl.question("請輸入選擇 (1 或 2，按 Enter 結束): ", (answer) => {
@@ -112,10 +133,14 @@ class BCCHBooking {
 
               await this.fillBookingForm(page);
 
-              console.log("✅ 已自動填寫表單，請檢查並手動提交");
-              console.log("💡 按 Ctrl+C 可結束程序");
-
-              await new Promise(() => {}); // 無限等待
+              if (this.config.autoSubmit) {
+                console.log("🚀 開始自動提交...");
+                await this.autoSubmitBooking(page);
+              } else {
+                console.log("✅ 已自動填寫表單，請檢查並手動提交");
+                console.log("💡 按 Ctrl+C 可結束程序");
+                await new Promise(() => {}); // 無限等待
+              }
               return true;
             }
           }
@@ -139,11 +164,14 @@ class BCCHBooking {
             // 自動填寫表單
             await this.fillBookingForm(page);
 
-            console.log("✅ 已自動填寫表單，請檢查並手動提交");
-            console.log("💡 按 Ctrl+C 可結束程序");
-
-            // 保持瀏覽器開啟，等待用戶操作
-            await new Promise(() => {}); // 無限等待
+            if (this.config.autoSubmit) {
+              console.log("🚀 開始自動提交...");
+              await this.autoSubmitBooking(page);
+            } else {
+              console.log("✅ 已自動填寫表單，請檢查並手動提交");
+              console.log("💡 按 Ctrl+C 可結束程序");
+              await new Promise(() => {}); // 無限等待
+            }
             return true;
           } else {
             console.log(
@@ -223,6 +251,178 @@ class BCCHBooking {
     } catch {
       return false;
     }
+  }
+
+  async autoSubmitBooking(page) {
+    try {
+      // 先設置 dialog 監聽器，確保自動處理 window.confirm
+      page.on("dialog", async (dialog) => {
+        console.log(`📋 彈窗訊息: ${dialog.message()}`);
+        await dialog.accept();
+        console.log("✅ 已自動確認提交");
+      });
+
+      // 點擊提交按鈕
+      const submitButton = await page.$("#BtOK");
+      if (submitButton) {
+        console.log("🚀 點擊提交按鈕...");
+        await submitButton.click();
+        console.log("✅ 已點擊提交按鈕");
+
+        // 等待結果頁面載入
+        await page.waitForTimeout(3000);
+
+        // 檢查是否有 Table7 結果
+        const table7 = await page.$("#Table7");
+        if (table7) {
+          console.log("📊 找到結果表格，正在解析...");
+          const bookingResult = await this.parseBookingResult(page);
+          await this.sendNotificationEmail(bookingResult);
+        } else {
+          console.log("❌ 未找到結果表格");
+        }
+      } else {
+        console.log("❌ 未找到提交按鈕 #BtOK");
+      }
+    } catch (error) {
+      console.error("自動提交過程發生錯誤:", error);
+    }
+  }
+
+  async parseBookingResult(page) {
+    try {
+      const result = await page.evaluate(() => {
+        const table = document.getElementById("Table7");
+        if (!table) return null;
+
+        const data = {};
+
+        // 解析各個欄位
+        const rid1 = document.getElementById("Rid1");
+        if (rid1) data.身份證 = rid1.textContent.trim();
+
+        const rid2 = document.getElementById("Rid2");
+        if (rid2) data.病歷號碼 = rid2.textContent.trim();
+
+        const rrname = document.getElementById("Rrname");
+        if (rrname) data.民眾姓名 = rrname.textContent.trim();
+
+        const rdname = document.getElementById("Rdname");
+        if (rdname) data.醫師姓名 = rdname.textContent.trim();
+
+        const rregdate = document.getElementById("Rregdate");
+        if (rregdate) data.預約時間 = rregdate.textContent.trim();
+
+        const showShift1 = document.getElementById("ShowShift1");
+        if (showShift1) data.看診時段 = showShift1.textContent.trim();
+
+        const rresult = document.getElementById("Rresult");
+        if (rresult) data.預約結果 = rresult.textContent.trim();
+
+        const loclb = document.getElementById("loclb");
+        if (loclb) data.診間位置 = loclb.textContent.trim();
+
+        return data;
+      });
+
+      console.log("📋 解析結果:", result);
+      return result;
+    } catch (error) {
+      console.error("解析結果時發生錯誤:", error);
+      return null;
+    }
+  }
+
+  async sendNotificationEmail(bookingData) {
+    if (!bookingData) {
+      console.log("❌ 無掛號資料，跳過郵件發送");
+      return;
+    }
+
+    // 檢查是否已經掛號成功或重複掛號
+    if (bookingData.預約結果 && (bookingData.預約結果.includes("已預約為") || bookingData.預約結果.includes("重覆掛號"))) {
+      if (bookingData.預約結果.includes("已預約為")) {
+        console.log("🎉 掛號成功！預約結果：", bookingData.預約結果);
+        console.log("✅ 已成功掛號，程序即將退出");
+      } else if (bookingData.預約結果.includes("重覆掛號")) {
+        console.log("⚠️  重複掛號！預約結果：", bookingData.預約結果);
+        console.log("✅ 已重複掛號，程序即將退出");
+      }
+      
+      // 發送通知郵件後退出
+      if (this.config.sendMailTo && process.env.GMAIL_APP_PASSWORD) {
+        try {
+          const emailBody = this.formatEmailBody(bookingData);
+          const subject = bookingData.預約結果.includes("已預約為") ? 
+            `${this.config.mailSubject} - 掛號成功通知 ✅` : 
+            `${this.config.mailSubject} - 重複掛號通知 ⚠️`;
+          
+          const mailOptions = {
+            from: this.config.mailFrom,
+            to: this.config.sendMailTo,
+            subject: subject,
+            html: emailBody,
+          };
+          const info = await this.transporter.sendMail(mailOptions);
+          console.log("📧 通知郵件已發送:", info.messageId);
+        } catch (error) {
+          console.error("郵件發送失敗:", error);
+        }
+      }
+      
+      process.exit(0); // 掛號成功或重複掛號後退出程序
+    }
+
+    // 檢查所有必要條件
+    if (!this.config.autoSubmit || !this.config.sendMailTo || !process.env.GMAIL_APP_PASSWORD) {
+      console.log("📧 郵件功能未完全啟用，掛號結果：");
+      if (!this.config.autoSubmit) console.log("   - autoSubmit 未啟用");
+      if (!this.config.sendMailTo) console.log("   - sendMailTo 未設定");
+      if (!process.env.GMAIL_APP_PASSWORD) console.log("   - GMAIL_APP_PASSWORD 未設定");
+      
+      console.log("身份證：", bookingData.身份證 || '');
+      console.log("病歷號碼：", bookingData.病歷號碼 || '');
+      console.log("民眾姓名：", bookingData.民眾姓名 || '');
+      console.log("醫師姓名：", bookingData.醫師姓名 || '');
+      console.log("預約時間：", bookingData.預約時間 || '');
+      console.log("看診時段：", bookingData.看診時段 || '');
+      console.log("預約結果：", bookingData.預約結果 || '');
+      console.log("診間位置：", bookingData.診間位置 || '');
+      return;
+    }
+
+    try {
+      const emailBody = this.formatEmailBody(bookingData);
+
+      const mailOptions = {
+        from: this.config.mailFrom,
+        to: this.config.sendMailTo,
+        subject: `${this.config.mailSubject} - 掛號結果通知`,
+        html: emailBody,
+      };
+
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log("📧 郵件發送成功:", info.messageId);
+    } catch (error) {
+      console.error("郵件發送失敗:", error);
+    }
+  }
+
+  formatEmailBody(data) {
+    return `
+      <h2>🏥 掛號結果通知</h2>
+      <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">
+        <tr><td><strong>身份證：</strong></td><td>${data.身份證 || ""}</td></tr>
+        <tr><td><strong>病歷號碼：</strong></td><td>${data.病歷號碼 || ""}</td></tr>
+        <tr><td><strong>民眾姓名：</strong></td><td>${data.民眾姓名 || ""}</td></tr>
+        <tr><td><strong>醫師姓名：</strong></td><td>${data.醫師姓名 || ""}</td></tr>
+        <tr><td><strong>預約時間：</strong></td><td>${data.預約時間 || ""}</td></tr>
+        <tr><td><strong>看診時段：</strong></td><td>${data.看診時段 || ""}</td></tr>
+        <tr><td><strong>預約結果：</strong></td><td>${data.預約結果 || ""}</td></tr>
+        <tr><td><strong>診間位置：</strong></td><td>${data.診間位置 || ""}</td></tr>
+      </table>
+      <p><small>此郵件由自動掛號系統發送 - ${new Date().toLocaleString()}</small></p>
+    `;
   }
 
   startScheduler() {

@@ -3,13 +3,16 @@ const puppeteer = require("puppeteer");
 class DoctorFinder {
   constructor() {
     this.config = {
-      doctorName: "劉又綾",
-      doctorCode: "0055881", //劉又綾
-      //doctorCode: "0147226", //黃雅琪
-      patientId: "P200289819",
+      doctorName: "黃雅琪", //
+      doctorCode: "0147226", // 劉又綾 0055881, 黃雅琪 0147226, 邱欣玲 0063040
+      patientId: "P200289819", //P200289819
       birthday: "0706",
       baseUrl:
         "https://bc.cch.org.tw/BCRG/opd/service-e.aspx?id=0900&Page=11&#p",
+      autoSubmit: true,
+      sendMailTo: "cn27529@gmail.com",
+      mailSubject: "幫媽媽自動掛號系統",
+      mailFrom: "cn27529@gmail.com",
     };
   }
 
