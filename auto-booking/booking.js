@@ -4,12 +4,13 @@ const cron = require("node-cron");
 class BCCHBooking {
   constructor() {
     this.config = {
-      doctorName: "劉又綾",
-      doctorCode: "0055881", // 劉又綾醫師的正確代碼
-      patientId: "P200289819",
+      doctorName: "黃雅琪", //
+      doctorCode: "0147226", // 劉又綾 0055881, 黃雅琪 0147226, 邱欣玲 0063040
+      patientId: "P200289819", //P200289819
       birthday: "0706",
       baseUrl:
         "https://bc.cch.org.tw/BCRG/opd/service-e.aspx?id=0900&Page=11&#p",
+      autoSubmit: true,
     };
   }
 

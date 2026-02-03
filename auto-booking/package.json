@@ -8,7 +8,7 @@
     "install-deps": "npm install"
   },
   "dependencies": {
-    "puppeteer": "^21.0.0",
+    "puppeteer": "21.11.0",
     "node-cron": "^3.0.3"
   }
 }
