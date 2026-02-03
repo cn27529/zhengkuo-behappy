@@ -1,13 +1,13 @@
 const puppeteer = require("puppeteer");
 const cron = require("node-cron");
 const nodemailer = require("nodemailer");
-require('dotenv').config();
+require("dotenv").config();
 
 class BCCHBooking {
   constructor() {
     this.config = {
-      doctorName: "邱欣玲", // 劉又綾 0055881, 黃雅琪 0147226, 邱欣玲 0063040
-      doctorCode: "0063040",
+      doctorName: "劉又綾", // 劉又綾 0055881, 黃雅琪 0147226, 邱欣玲 0063040
+      doctorCode: "0055881",
       patientId: "P200289819", //P200289819
       birthday: "0706",
       baseUrl:
@@ -340,7 +340,11 @@ class BCCHBooking {
     }
 
     // 檢查是否已經掛號成功或重複掛號
-    if (bookingData.預約結果 && (bookingData.預約結果.includes("已預約為") || bookingData.預約結果.includes("重覆掛號"))) {
+    if (
+      bookingData.預約結果 &&
+      (bookingData.預約結果.includes("已預約為") ||
+        bookingData.預約結果.includes("重覆掛號"))
+    ) {
       if (bookingData.預約結果.includes("已預約為")) {
         console.log("🎉 掛號成功！預約結果：", bookingData.預約結果);
         console.log("✅ 已成功掛號，程序即將退出");
@@ -348,15 +352,15 @@ class BCCHBooking {
         console.log("⚠️  重複掛號！預約結果：", bookingData.預約結果);
         console.log("✅ 已重複掛號，程序即將退出");
       }
-      
+
       // 發送通知郵件後退出
       if (this.config.sendMailTo && process.env.GMAIL_APP_PASSWORD) {
         try {
           const emailBody = this.formatEmailBody(bookingData);
-          const subject = bookingData.預約結果.includes("已預約為") ? 
-            `${this.config.mailSubject} - 掛號成功通知 ✅` : 
-            `${this.config.mailSubject} - 重複掛號通知 ⚠️`;
-          
+          const subject = bookingData.預約結果.includes("已預約為")
+            ? `${this.config.mailSubject} - 掛號成功通知 ✅`
+            : `${this.config.mailSubject} - 重複掛號通知 ⚠️`;
+
           const mailOptions = {
             from: this.config.mailFrom,
             to: this.config.sendMailTo,
@@ -369,25 +373,30 @@ class BCCHBooking {
           console.error("郵件發送失敗:", error);
         }
       }
-      
+
       process.exit(0); // 掛號成功或重複掛號後退出程序
     }
 
     // 檢查所有必要條件
-    if (!this.config.autoSubmit || !this.config.sendMailTo || !process.env.GMAIL_APP_PASSWORD) {
+    if (
+      !this.config.autoSubmit ||
+      !this.config.sendMailTo ||
+      !process.env.GMAIL_APP_PASSWORD
+    ) {
       console.log("📧 郵件功能未完全啟用，掛號結果：");
       if (!this.config.autoSubmit) console.log("   - autoSubmit 未啟用");
       if (!this.config.sendMailTo) console.log("   - sendMailTo 未設定");
-      if (!process.env.GMAIL_APP_PASSWORD) console.log("   - GMAIL_APP_PASSWORD 未設定");
-      
-      console.log("身份證：", bookingData.身份證 || '');
-      console.log("病歷號碼：", bookingData.病歷號碼 || '');
-      console.log("民眾姓名：", bookingData.民眾姓名 || '');
-      console.log("醫師姓名：", bookingData.醫師姓名 || '');
-      console.log("預約時間：", bookingData.預約時間 || '');
-      console.log("看診時段：", bookingData.看診時段 || '');
-      console.log("預約結果：", bookingData.預約結果 || '');
-      console.log("診間位置：", bookingData.診間位置 || '');
+      if (!process.env.GMAIL_APP_PASSWORD)
+        console.log("   - GMAIL_APP_PASSWORD 未設定");
+
+      console.log("身份證：", bookingData.身份證 || "");
+      console.log("病歷號碼：", bookingData.病歷號碼 || "");
+      console.log("民眾姓名：", bookingData.民眾姓名 || "");
+      console.log("醫師姓名：", bookingData.醫師姓名 || "");
+      console.log("預約時間：", bookingData.預約時間 || "");
+      console.log("看診時段：", bookingData.看診時段 || "");
+      console.log("預約結果：", bookingData.預約結果 || "");
+      console.log("診間位置：", bookingData.診間位置 || "");
       return;
     }
 
