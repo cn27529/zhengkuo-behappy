@@ -177,3 +177,5 @@ server/info
 ✅ 已複製: zk.db -> current.db
 -------------------
 家裡的macos 沒有報錯如何調適,請協助。
+
+改善 Windows 符號連結權限問題, scripts\windows-symlink-helper.js, docs\db-symlink-windows-guide.md
