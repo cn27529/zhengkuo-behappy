@@ -1,0 +1,14 @@
+{
+  "name": "bc-cch-online-booking",
+  "version": "1.0.0",
+  "description": "員林基督教醫院自動掛號系統",
+  "main": "booking.js",
+  "scripts": {
+    "start": "node booking.js",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0",
+    "node-cron": "^3.0.3"
+  }
+}

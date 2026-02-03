@@ -152,7 +152,7 @@ server/info
   "database_stats": {
     "size_mb": "1.71 MB",
     "table_count": 32,
-    "tables": [      
+    "tables": [
       "registrationDB",
       "activityDB",
       "monthlyDonateDB",
@@ -171,11 +171,14 @@ server/info
 ```
 
 # Windows 環境 建立連結失敗
+
 🏯切換到:鎮國寺
 ❌ 建立連結失敗: EPERM: operation not permitted, symlink 'zk.db' -> 'D:\Git\repository\zhengkuo-behappy\db\current.db'
 ⚠️ Windows 環境，嘗試使用複製...
 ✅ 已複製: zk.db -> current.db
--------------------
+
+---
+
 家裡的macos 沒有報錯如何調適,請協助。
 
 改善 Windows 符號連結權限問題, scripts\windows-symlink-helper.js, docs\db-symlink-windows-guide.md
