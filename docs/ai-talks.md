@@ -152,39 +152,13 @@ server/info
   "database_stats": {
     "size_mb": "1.71 MB",
     "table_count": 32,
-    "tables": [
-      "directus_migrations",
-      "directus_folders",
-      "directus_relations",
-      "directus_files",
-      "directus_fields",
-      "directus_operations",
-      "directus_notifications",
-      "directus_translations",
-      "directus_shares",
-      "directus_versions",
-      "directus_revisions",
-      "directus_users",
-      "directus_extensions",
-      "directus_sessions",
-      "directus_webhooks",
-      "directus_policies",
-      "directus_permissions",
-      "directus_access",
-      "directus_collections",
-      "directus_dashboards",
-      "directus_flows",
-      "directus_panels",
-      "directus_presets",
-      "directus_roles",
-      "directus_comments",
-      "directus_activity",
-      "mydata",
+    "tables": [      
       "registrationDB",
       "activityDB",
       "monthlyDonateDB",
       "directus_settings",
-      "participationRecordDB"
+      "participationRecordDB",
+      "..."
     ]
   },
   "current_time": "2026-02-02T16:26:49.518301+00:00",
@@ -195,3 +169,11 @@ server/info
   }
 }
 ```
+
+# Windows 環境 建立連結失敗
+🏯切換到:鎮國寺
+❌ 建立連結失敗: EPERM: operation not permitted, symlink 'zk.db' -> 'D:\Git\repository\zhengkuo-behappy\db\current.db'
+⚠️ Windows 環境，嘗試使用複製...
+✅ 已複製: zk.db -> current.db
+-------------------
+家裡的macos 沒有報錯如何調適,請協助。

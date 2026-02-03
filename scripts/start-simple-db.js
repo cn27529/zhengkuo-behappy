@@ -95,14 +95,14 @@ rl.question("\n選擇: ", (answer) => {
     execSync("ls -l db/current.db", { stdio: "inherit" });
   } catch {}
 
-  // 啟動服務
-  console.log("\n啟動服務...");
-  spawn(
-    "npx",
-    ["concurrently", "npm:start:server", "npm:start:client", "npm:start:rust", "npm:start:logs", "npm:start:docs", "npm:start:apps"],
-    {
-      stdio: "inherit",
-      shell: true,
-    },
-  );
+  // // 啟動服務
+  // console.log("\n啟動服務...");
+  // spawn(
+  //   "npx",
+  //   ["concurrently", "npm:start:server", "npm:start:client", "npm:start:rust", "npm:start:logs", "npm:start:docs", "npm:start:apps"],
+  //   {
+  //     stdio: "inherit",
+  //     shell: true,
+  //   },
+  // );
 });

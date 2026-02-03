@@ -6,7 +6,7 @@
   "scripts": {
     "test:mydata": "node scripts/testMydata.js",
     "test:mydata-create": "node scripts/testMydata.js --create",
-    "test:hash": "node scripts/testGitHash.js",
+    "check:symlink": "node scripts/windows-symlink-helper.js",
     "start:server": "cd server && npm run dev",
     "start:client": "cd client && npm run dev",
     "start:build:client": "cd client && npm run build:analyze",
@@ -20,7 +20,8 @@
     "start:docs": "cd docs && npm run dev",
     "dev": "concurrently \"npm:start:server\" \"npm:start:client\" \"npm:start:rust\" \"npm:start:logs\" \"npm:start:docs\" \"npm:start:apps\" ",
     "deploy:netlify": "./scripts/deploy-netlify.sh",
-    "db": "node scripts/start-with-db.js"    
+    "db": "node scripts/start-with-db.js",
+    "all": "npm run db && node scripts/start-all.js"
   },
   "keywords": [],
   "author": "cn27529",
