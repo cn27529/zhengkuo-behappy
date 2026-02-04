@@ -437,14 +437,14 @@ class BCCHBooking {
       this.tryBooking();
     });
 
-    // 立即執行一次
-    this.tryBooking().then((result) => {
-      if (!result) {
-        // 如果沒找到可掛號時段，結束程序
-        console.log("👋 自動掛號系統已停止");
-        process.exit(0);
-      }
-    });
+    // // 立即執行一次
+    // this.tryBooking().then((result) => {
+    //   if (!result) {
+    //     // 如果沒找到可掛號時段，結束程序
+    //     console.log("👋 自動掛號系統已停止");
+    //     process.exit(0);
+    //   }
+    // });
   }
 }
 
