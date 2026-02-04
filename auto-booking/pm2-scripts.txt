@@ -85,4 +85,5 @@ pm2 show 0
 
 輸出會顯示類似：
 ```
-script args      : 2                                  
+script args      : 2
+
