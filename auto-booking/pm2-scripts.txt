@@ -67,3 +67,22 @@ pm2 info 0
 
 # 運行 booking-auto.js
 pm2 start booking-auto.js --name "booking mode 2" -- 2
+
+pm2 start 文件名.js --name "進程名稱" -- 參數1 參數2 參數3
+                                      ↑
+                                  兩個減號分隔符
+
+pm2 start 文件名.js --name "進程名稱" -- 參數1 參數2 參數3
+                                      ↑
+                                  兩個減號分隔符
+
+# 查看詳細信息（包括傳入的參數）
+pm2 show "醫院掛號系統"
+
+# 或使用 ID
+pm2 show 0
+```
+
+輸出會顯示類似：
+```
+script args      : 2                                  
