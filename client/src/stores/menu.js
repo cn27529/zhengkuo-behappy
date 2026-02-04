@@ -7,7 +7,7 @@ export const useMenuStore = defineStore("menu", () => {
   const router = useRouter();
 
   // 菜單數據状态
-  const menuItems = ref([    
+  const menuItems = ref([
     {
       id: 1,
       name: "儀表板",
@@ -105,7 +105,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 9,
       enabled: true,
-      publish: false,
+      publish: true,
     },
     {
       id: 10,
@@ -129,7 +129,7 @@ export const useMenuStore = defineStore("menu", () => {
       enabled: true,
       publish: true,
     },
-    
+
     {
       id: 12,
       name: "祈福登記編輯",
@@ -141,7 +141,7 @@ export const useMenuStore = defineStore("menu", () => {
       enabled: true,
       publish: true,
     },
-   
+
     {
       id: 99,
       name: "收据管理",
