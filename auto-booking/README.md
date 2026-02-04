@@ -7,7 +7,7 @@
 ### 1. 安裝依賴
 
 ```bash
-cd bc-cch
+cd auto-booking
 npm install
 ```
 
