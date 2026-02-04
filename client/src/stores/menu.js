@@ -116,7 +116,7 @@ export const useMenuStore = defineStore("menu", () => {
       requiredAuth: true,
       order: 10,
       enabled: true,
-      publish: false,
+      publish: true,
     },
     {
       id: 69,
@@ -126,8 +126,8 @@ export const useMenuStore = defineStore("menu", () => {
       component: "TianganDizhiClock",
       requiredAuth: false,
       order: 69,
-      enabled: true,
-      publish: true,
+      enabled: false,
+      publish: false,
     },
 
     {
@@ -138,8 +138,8 @@ export const useMenuStore = defineStore("menu", () => {
       component: "RegistrationEdit",
       requiredAuth: false,
       order: 13,
-      enabled: true,
-      publish: true,
+      enabled: false,
+      publish: false,
     },
 
     {
