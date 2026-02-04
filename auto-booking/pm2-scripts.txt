@@ -1,0 +1,89 @@
+# 1. 全局安裝 PM2
+npm install -g pm2
+
+# 2. 使用 PM2 啟動程序
+pm2 start booking.js --name "醫院掛號系統"
+
+# 3. 設定開機自動啟動
+pm2 startup
+pm2 save
+
+# 4. 查看運行狀態
+pm2 status
+
+# 5. 查看日誌
+pm2 logs
+
+# 6. 停止程序
+pm2 stop "醫院掛號系統"
+
+# 7. 重啟程序
+pm2 restart "醫院掛號系統"
+
+
+[PM2] Applying action stopProcessId on app [0](ids: [ '0' ])
+[PM2] [quick-醫院掛號系統](0) ✓
+┌────┬─────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name            │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼─────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 1  │ booking         │ default     │ 1.0.0   │ fork    │ 16740    │ 22s    │ 0    │ online    │ 0%       │ 52.4mb   │ abc      │ disabled │
+│ 0  │ quick-醫院掛號系統    │ default     │ 1.0.0   │ fork    │ 0        │ 0      │ 3    │ stopped   │ 0%       │ 0b       │ abc      │ disabled │      
+└────┴─────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+abc@DESKTOP-KVUVPHE MINGW64 /repository/zhengkuo-behappy/auto-booking (zk-client-rustaxum)
+$ pm2 delete 0
+[PM2] Applying action deleteProcessId on app [0](ids: [ '0' ])
+[PM2] [quick-醫院掛號系統](0) ✓
+┌────┬────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 1  │ booking    │ default     │ 1.0.0   │ fork    │ 16740    │ 37s    │ 0    │ online    │ 0%       │ 52.7mb   │ abc      │ disabled │
+└────┴────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+# 只看最後 100 行日誌
+pm2 logs 0 --lines 100
+
+# 只看最後 50 行
+pm2 logs 0 --lines 50
+
+# 實時追蹤日誌（類似 tail -f）
+pm2 logs 0 --raw
+
+# 只看錯誤日誌
+pm2 logs 0 --err
+
+# 只看標準輸出日誌
+pm2 logs 0 --out
+
+# 清空所有日誌
+pm2 flush
+
+# 清空特定進程的日誌
+pm2 flush 0
+
+# 查看 PM2 信息（包含日誌文件路徑）
+pm2 info 0
+
+
+# 運行 booking-auto.js
+pm2 start booking-auto.js --name "booking mode 2" -- 2
+
+pm2 start 文件名.js --name "進程名稱" -- 參數1 參數2 參數3
+                                      ↑
+                                  兩個減號分隔符
+
+pm2 start 文件名.js --name "進程名稱" -- 參數1 參數2 參數3
+                                      ↑
+                                  兩個減號分隔符
+
+# 查看詳細信息（包括傳入的參數）
+pm2 show "醫院掛號系統"
+
+# 或使用 ID
+pm2 show 0
+```
+
+輸出會顯示類似：
+```
+script args      : 2
+
