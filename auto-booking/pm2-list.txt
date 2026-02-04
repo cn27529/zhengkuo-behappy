@@ -63,3 +63,7 @@ pm2 flush 0
 
 # 查看 PM2 信息（包含日誌文件路徑）
 pm2 info 0
+
+
+# 運行 booking-auto.js
+pm2 start booking-auto.js --name "booking mode 2" -- 2
