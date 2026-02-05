@@ -436,22 +436,22 @@ class BCCHBooking {
 
   startScheduler() {
     console.log("🚀 啟動自動掛號系統...");
-    console.log("⏰ 每天 08:00, 12:00, 18:00 自動檢查掛號");
+    console.log("⏰ 每天 1,3,5,7,9,11,13,15,17,19,21,23 自動檢查掛號");
 
     // 每天 8:00, 12:00, 18:00 執行
-    cron.schedule("0 8,12,18 * * *", () => {
+    cron.schedule("0 1,3,5,7,9,11,13,15,17,19,21,23 * * *", () => {
       console.log(`\n[${new Date().toLocaleString()}] 開始自動掛號檢查...`);
       this.tryBooking();
     });
 
-    // 立即執行一次
-    this.tryBooking().then((result) => {
-      if (!result) {
-        // 如果沒找到可掛號時段，結束程序
-        console.log("👋 自動掛號系統已停止");
-        process.exit(0);
-      }
-    });
+    // // 立即執行一次
+    // this.tryBooking().then((result) => {
+    //   if (!result) {
+    //     // 如果沒找到可掛號時段，結束程序
+    //     console.log("👋 自動掛號系統已停止");
+    //     process.exit(0);
+    //   }
+    // });
   }
 }
 

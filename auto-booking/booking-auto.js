@@ -37,12 +37,14 @@ class BCCHBooking {
   async tryBooking() {
     // 不再詢問模式，直接使用構造函數傳入的模式
     const mode = this.mode;
-    
+
     console.log(`\n🎯 使用模式 ${mode}:`);
     if (mode === "1") {
       console.log("   - 依日期選擇可用的醫師（互動模式）");
     } else {
-      console.log(`   - 自動尋找 ${this.config.doctorName} 醫師 (${this.config.doctorCode})`);
+      console.log(
+        `   - 自動尋找 ${this.config.doctorName} 醫師 (${this.config.doctorCode})`,
+      );
     }
 
     const browser = await puppeteer.launch({
@@ -72,9 +74,11 @@ class BCCHBooking {
         // 選擇日期
         await page.select("select", date.value);
         // 等待醫師連結出現，表示頁面已刷新
-        await page.waitForSelector('a[href*="dr_no="]', { timeout: 5000 }).catch(() => {
-          console.log("此日期無可用醫師");
-        });
+        await page
+          .waitForSelector('a[href*="dr_no="]', { timeout: 5000 })
+          .catch(() => {
+            console.log("此日期無可用醫師");
+          });
 
         // 列出所有醫師連結
         const doctorLinks = await page.$$eval('a[href*="dr_no="]', (links) =>
@@ -427,12 +431,14 @@ class BCCHBooking {
   }
 
   startScheduler() {
-    console.log("🚀 啟動自動掛號系統...");    
-    console.log(`📋 運行模式: ${this.mode === "1" ? "互動選擇醫師" : "自動尋找指定醫師"}, 你選的是:${this.mode}`);
-    console.log("⏰ 每天 08:00, 12:00, 18:00 自動檢查掛號");
+    console.log("🚀 啟動自動掛號系統...");
+    console.log(
+      `📋 運行模式: ${this.mode === "1" ? "互動選擇醫師" : "自動尋找指定醫師"}, 你選的是:${this.mode}`,
+    );
 
-    // 每天 8:00, 12:00, 18:00 執行
-    cron.schedule("0 8,12,18 * * *", () => {
+    // 每天執行
+    console.log("⏰ 每天 1,3,5,7,9,11,13,15,17,19,21,23 自動檢查掛號");
+    cron.schedule("0 1,3,5,7,9,11,13,15,17,19,21,23 * * *", () => {
       console.log(`\n[${new Date().toLocaleString()}] 開始自動掛號檢查...`);
       this.tryBooking();
     });

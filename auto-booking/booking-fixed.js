@@ -438,12 +438,12 @@ class BCCHBooking {
   startScheduler() {
     console.log("🚀 啟動自動掛號系統...");
     console.log(`📋 運行模式: ${this.mode === "1" ? "互動選擇醫師" : "自動尋找指定醫師"}`);
-    console.log("⏰ 每天 08:00, 12:00, 18:00 自動檢查掛號");
+    console.log("⏰ 每天 01:00, 03:00, 05:00, 07:00, 09:00, 11:00, 13:00, 15:00, 17:00, 19:00, 21:00, 23:00 自動檢查掛號");
     console.log("💡 掛號成功後將停止後續排程，但保持程序運行");
     console.log("⏳ 等待下次排程時間...");
 
-    // 每天 8:00, 12:00, 18:00 執行
-    cron.schedule("0 8,12,18 * * *", () => {
+    // 每天 1,3,5,7,9,11,13,15,17,19,21,23 點執行
+    cron.schedule("0 1,3,5,7,9,11,13,15,17,19,21,23 * * *", () => {
       if (this.isBookingSuccess) {
         console.log(`\n[${new Date().toLocaleString()}] ✅ 已成功掛號，跳過本次排程`);
         return;
@@ -454,24 +454,57 @@ class BCCHBooking {
 
     console.log("✅ 排程已啟動，程序將在背景持續運行");
   }
+
+  // 第一次執行（可選）
+  async startFirstRun(){
+    console.log("\n▶️  立即執行第一次掛號檢查...");
+    const result = await this.tryBooking();
+    
+    if (result) {
+      console.log("✅ 首次執行完成，已找到可掛號時段並處理");
+      // process.exit(0); //不退出，繼續等待排程
+    } else {
+      console.log("⏰ 首次執行未找到可掛號時段，將等待下次排程時間");
+      // process.exit(0); //不退出，繼續等待排程
+    }
+  }
+
 }
 
 // 從命令行參數獲取模式
 const args = process.argv.slice(2);
-const mode = args[0] || "2"; // 默認使用模式 2
+
+// 解析具名參數
+let mode = "2"; // 默認使用模式 2
+let runOne = "0"; // 要不要第一次執行,默認使用模式 0
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === "--mode" && args[i + 1]) {
+    mode = args[i + 1];
+  }
+
+  if (args[i] === "--one" && args[i + 1]) {
+    runOne = args[i + 1];
+  }
+}
 
 // 驗證模式參數
 if (mode !== "1" && mode !== "2") {
   console.error("❌ 錯誤: 模式參數必須是 1 或 2");
   console.log("使用方法:");
-  console.log("  node booking.js 1  (互動模式 - 手動選擇醫師)");
-  console.log("  node booking.js 2  (自動模式 - 自動尋找指定醫師，預設)");
+  console.log("  node booking.js --mode 1  (互動模式 - 手動選擇醫師)");
+  console.log("  node booking.js --mode 2  (自動模式 - 自動尋找指定醫師，預設)");
+  console.log("  node booking.js           (使用默認模式 2)");
   process.exit(1);
 }
 
 // 啟動自動掛號系統
 const booking = new BCCHBooking(mode);
 booking.startScheduler();
+
+if(runOne === "1"){
+  booking.startFirstRun();
+}
 
 // 保持程序運行
 process.on("SIGINT", () => {
