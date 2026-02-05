@@ -13,7 +13,7 @@
     "start:build:server": "cd server && npm run build",
     "start:build:rust": "cd rust-axum && cargo build",
     "start:rust": "cd rust-axum && cargo run",
-    "start:logs": "cd log-server && node mongoDBLogger.js",    
+    "start:logs": "cd log-server && node mongoDBLogger.js",
     "start:apps": "node --watch apps-server.js",
     "check:logs": "node scripts/check-log-server.js",
     "test:logs": "cd log-server && node test-complete.js",
@@ -28,7 +28,10 @@
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^9.2.1",
-    "express": "^4.18.2",
+    "express": "^4.22.1",
     "marked": "^12.0.0"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7"
   }
 }
