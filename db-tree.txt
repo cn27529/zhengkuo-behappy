@@ -1,7 +1,10 @@
 ./db
-├── current.db
+├── CREATE-INDEX-BASE-chatgpt.sql
+├── CREATE-INDEX-BASE-deepseek.sql
+├── current.db -> zk.db
 ├── data.db
 ├── databases.json
+├── participationRecordDB-to-6tables-.sql
 └── zk.db
 
-1 directory, 4 files
+1 directory, 7 files

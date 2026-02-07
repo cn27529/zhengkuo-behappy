@@ -463,6 +463,146 @@
 
 ---
 
+## 參加記錄 API
+
+### 獲取所有參加記錄
+
+#### GET `/api/participation-records`
+
+**查詢參數：**
+
+- `registration_id` (integer, optional) - 關聯報名 ID
+- `activity_id` (string, optional) - 活動 ID 篩選
+- `state` (string, optional) - 狀態篩選 (`confirmed`, `pending`, `cancelled`)
+- `payment_state` (string, optional) - 付款狀態 (`paid`, `partial`, `unpaid`, `waived`)
+- `sort` (string, optional) - 排序欄位
+- `limit` (integer, optional) - 每頁數量
+- `offset` (integer, optional) - 偏移量
+
+**回應：**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "registrationId": 1,
+      "activityId": "w4x5y6z",
+      "state": "confirmed",
+      "items": [
+        {
+          "type": "chaodu",
+          "label": "超度/超薦",
+          "price": 1000,
+          "quantity": 2,
+          "subtotal": 2000,
+          "source": "salvation.ancestors",
+          "sourceData": [
+            { "id": 1, "surname": "王", "notes": "祖父" },
+            { "id": 2, "surname": "王", "notes": "祖母" }
+          ],
+          "sourceAddress": "台北市信義區"
+        },
+        {
+          "type": "diandeng",
+          "label": "點燈",
+          "price": 600,
+          "quantity": 1,
+          "subtotal": 600,
+          "source": "blessing.persons",
+          "sourceData": [
+            { "id": 1, "name": "王小明", "zodiac": "龍" }
+          ],
+          "sourceAddress": "台北市信義區",
+          "lampDetails": [
+            {
+              "personId": 1,
+              "personName": "王小明",
+              "lampType": "guangming",
+              "lampTypeLabel": "光明燈",
+              "price": 600
+            }
+          ]
+        }
+      ],
+      "contact": {
+        "name": "王小明",
+        "phone": "02-12345678",
+        "mobile": "0912345678"
+      },
+      "totalAmount": 2600,
+      "discountAmount": 0,
+      "finalAmount": 2600,
+      "paidAmount": 2600,
+      "needReceipt": true,
+      "receiptNumber": "R2025010001",
+      "receiptIssued": true,
+      "receiptIssuedAt": "2026-01-21T10:00:00Z",
+      "receiptIssuedBy": "admin",
+      "paymentState": "paid",
+      "paymentMethod": "cash",
+      "paymentDate": "2026-01-21T09:30:00Z",
+      "accountingState": "reconciled",
+      "accountingDate": "2026-01-21T15:00:00Z",
+      "accountingBy": "admin",
+      "notes": "",
+      "createdAt": "2026-01-21T09:00:00Z",
+      "createdUser": "admin"
+    }
+  ],
+  "meta": {
+    "total": 1,
+    "limit": 100,
+    "offset": 0
+  }
+}
+```
+
+### 創建參加記錄
+
+#### POST `/api/participation-records`
+
+**請求體：**
+
+```json
+{
+  "registrationId": 1,
+  "activityId": "w4x5y6z",
+  "state": "confirmed",
+  "items": [
+    {
+      "type": "chaodu",
+      "label": "超度/超薦",
+      "price": 1000,
+      "quantity": 2,
+      "subtotal": 2000,
+      "source": "salvation.ancestors",
+      "sourceData": [...],
+      "sourceAddress": "台北市信義區"
+    }
+  ],
+  "contact": {
+    "name": "王小明",
+    "phone": "02-12345678"
+  },
+  "totalAmount": 2000,
+  "notes": ""
+}
+```
+
+### 其他參加記錄 API
+
+- `GET /api/participation-records/{id}` - 獲取單一記錄
+- `PUT /api/participation-records/{id}` - 更新記錄
+- `DELETE /api/participation-records/{id}` - 刪除記錄
+- `GET /api/participation-records/registration/{registration_id}` - 按報名 ID 獲取
+- `POST /api/participation-records/{id}/payment` - 記錄付款
+- `POST /api/participation-records/{id}/receipt` - 開立收據
+- `POST /api/participation-records/{id}/accounting` - 會計沖帳
+
+---
+
 ## 認證 API
 
 ### 登入

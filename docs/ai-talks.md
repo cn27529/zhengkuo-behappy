@@ -212,3 +212,7 @@ cd rust-axum && cargo build
 詳見 docs/test-stress-test-wal.md，scripts/stress-test-wal.js
 
 如何確保所有連接都已釋放
+
+# 兩份文件也要一併更新
+
+docs/architecture-overview.md 的 **核心模組：** 還缺少 client/src/stores/joinRecordStore.js 的描述，更多對「參加記錄」功能的信息說明在 docs/dev-joinRecord-guide.md。docs/api-documentation.md 及 docs/business-logic.md 兩份文件也要一併更新

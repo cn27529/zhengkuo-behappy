@@ -87,7 +87,12 @@ client/src/
    - `ActivityService` - API 服務
    - `ActivityList.vue` - 主要頁面
 
-4. **Auth Module** - 認證系統
+4. **JoinRecord Module** - 參加記錄
+   - `JoinRecordStore` - 狀態管理
+   - `JoinRecordService` - API 服務
+   - `JoinRecord.vue` - 主要頁面
+
+5. **Auth Module** - 認證系統
    - `AuthStore` - 認證狀態
    - `AuthService` - 認證服務
    - 支援 Mock、Directus、Supabase 多種認證方式

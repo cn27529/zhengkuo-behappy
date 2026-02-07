@@ -260,7 +260,273 @@ monthlyStats = {
 
 ---
 
-## 4. 太歲點燈系統
+## 4. 參加記錄系統
+
+### 業務概念
+
+參加記錄是寺廟管理系統中的核心功能，用於記錄信眾參加各種宗教活動的詳細資訊，包括超度、消災、點燈等項目的選擇、費用計算、收據開立及帳務處理。
+
+### 業務流程
+
+```
+選擇祈福登記表 → 選擇活動項目 → 費用計算 → 保存記錄 → 開立收據 → 帳務處理
+```
+
+#### 4.1 參加記錄結構
+
+**基本資訊：**
+
+- `id` - 記錄唯一識別碼
+- `registrationId` - 對應的祈福登記表 ID
+- `activityId` - 活動 ID
+- `state` - 狀態 (`confirmed`, `pending`, `cancelled`)
+- `contact` - 聯絡人資訊（來自祈福登記表）
+
+**項目清單 (items)：**
+
+每個參加項目包含：
+
+- `type` - 項目類型（chaodu, survivors, diandeng, qifu, xiaozai, pudu）
+- `label` - 項目名稱
+- `price` - 單價
+- `quantity` - 數量
+- `subtotal` - 小計
+- `source` - 資料來源（salvation.ancestors, salvation.survivors, blessing.persons）
+- `sourceData` - 具體選擇的人員/祖先資料
+- `sourceAddress` - 對應的地址（消災地址或超度地址）
+
+**費用資訊：**
+
+- `totalAmount` - 總金額
+- `discountAmount` - 折扣金額
+- `finalAmount` - 最終金額
+- `paidAmount` - 已付金額
+
+**收據資訊：**
+
+- `needReceipt` - 是否需要收據
+- `receiptNumber` - 收據號碼（格式：RYYYYMMNNNN）
+- `receiptIssued` - 收據是否已開立
+- `receiptIssuedAt` - 收據開立日期
+- `receiptIssuedBy` - 收據開立者
+
+**付款資訊：**
+
+- `paymentState` - 付款狀態 (`paid`, `partial`, `unpaid`, `waived`)
+- `paymentMethod` - 付款方式 (`cash`, `transfer`)
+- `paymentDate` - 付款日期
+- `paymentNotes` - 付款備註
+
+**會計資訊：**
+
+- `accountingState` - 會計狀態 (`pending`, `reconciled`)
+- `accountingDate` - 沖帳日期
+- `accountingBy` - 沖帳者
+- `accountingNotes` - 沖帳備註
+
+#### 4.2 活動項目類型
+
+系統支援以下活動項目：
+
+| 項目代碼 | 項目名稱   | 單價 | 資料來源            | 說明                           |
+| -------- | ---------- | ---- | ------------------- | ------------------------------ |
+| chaodu   | 超度/超薦 | 1000 | salvation.ancestors | 祖先超度                       |
+| survivors | 陽上人    | 0    | salvation.survivors | 陽上人登記（免費）             |
+| qifu     | 消災祈福   | 300  | blessing.persons    | 消災祈福                       |
+| diandeng | 點燈       | 600  | blessing.persons    | 點燈祈福，含燈種記錄           |
+| xiaozai  | 固定消災   | 100  | blessing.persons    | 固定消災                       |
+| pudu     | 中元普度   | 1200 | blessing.persons    | 中元普度法會                   |
+
+**點燈燈種選項：**
+
+| 燈種代碼 | 燈種名稱 | 價格 | 說明                       |
+| -------- | -------- | ---- | -------------------------- |
+| guangming | 光明燈  | 600  | 記錄用途，統一價格 $600    |
+| taisui   | 太歲燈   | 800  | 記錄用途，統一價格 $800    |
+| yuanchen | 元辰燈   | 1000 | 記錄用途，統一價格 $1000   |
+
+**點燈業務規則：**
+
+- 每位人員可選擇不同燈種
+- 燈種選擇記錄在 `lampDetails` 中
+- 總價格為所有人員選擇燈種價格的總和
+- 支援個別人員的燈種查詢和統計
+
+#### 4.3 費用計算邏輯
+
+**基本計算：**
+
+```javascript
+// 單項小計
+subtotal = price * quantity;
+
+// 總金額
+totalAmount = sum(items.map((item) => item.subtotal));
+
+// 最終金額
+finalAmount = totalAmount - discountAmount;
+```
+
+**點燈特殊計算：**
+
+```javascript
+// 點燈總價格
+let totalPrice = 0;
+sourceData.forEach((person) => {
+  const lampType = getPersonLampType(person.id);
+  const lampConfig = config.lampTypes[lampType];
+  totalPrice += lampConfig.price;
+});
+```
+
+#### 4.4 收據管理
+
+**收據號碼生成規則：**
+
+- 格式：`RYYYYMMNNNN`
+- R：收據前綴
+- YYYY：年份
+- MM：月份
+- NNNN：當月流水號（4 位數）
+
+**開立收據流程：**
+
+```javascript
+issueReceipt(record) {
+  record.receiptNumber = generateReceiptNumber();
+  record.receiptIssued = true;
+  record.receiptIssuedAt = new Date().toISOString();
+  record.receiptIssuedBy = getCurrentUser();
+}
+```
+
+#### 4.5 付款處理
+
+**付款狀態轉換：**
+
+```
+unpaid → partial → paid
+   ↓
+waived (免付)
+```
+
+**付款記錄邏輯：**
+
+```javascript
+recordPayment(record, method, amount, notes) {
+  record.paidAmount += amount;
+  record.paymentMethod = method;
+  record.paymentDate = new Date().toISOString();
+
+  // 更新付款狀態
+  if (record.paidAmount >= record.finalAmount) {
+    record.paymentState = 'paid';
+  } else if (record.paidAmount > 0) {
+    record.paymentState = 'partial';
+  }
+}
+```
+
+#### 4.6 會計沖帳
+
+**沖帳流程：**
+
+```javascript
+reconcileAccounting(record, accountingBy, notes) {
+  record.accountingState = 'reconciled';
+  record.accountingDate = new Date().toISOString();
+  record.accountingBy = accountingBy;
+  record.accountingNotes = notes;
+}
+```
+
+**業務規則：**
+
+- 只有已付款的記錄才能沖帳
+- 沖帳後不可修改金額
+- 沖帳記錄需保留審計追蹤
+
+#### 4.7 資料關聯
+
+**與祈福登記表的關聯：**
+
+- 通過 `registrationId` 關聯
+- 自動帶入聯絡人資訊
+- 根據登記表資料動態生成可選項目
+
+**與活動的關聯：**
+
+- 通過 `activityId` 關聯
+- 支援無活動的獨立記錄（activityId = -1）
+- 活動統計包含參加記錄資料
+
+### 用戶介面特色
+
+#### 4.8 響應式設計
+
+- **桌面版**：左右分欄佈局（70%/30%）
+- **平板版**：垂直堆疊佈局
+- **手機版**：單欄顯示，活動項目改為單列
+
+#### 4.9 浮動金額統計
+
+- 固定在頁面右下角
+- 即時顯示選擇項目和總金額
+- 支援多種位置配置
+
+#### 4.10 互動體驗
+
+- 點擊活動標題可全選/取消全選
+- 選擇狀態即時反饋
+- 載入狀態提示
+
+### 搜尋功能
+
+支援以下欄位的模糊搜尋：
+
+- 聯絡人姓名
+- 手機號碼
+- 電話號碼
+- 地址
+- 人員姓名
+- 生肖
+- 備註
+
+### 資料驗證
+
+#### 4.11 必要檢查
+
+```javascript
+// 必須選擇祈福登記表
+if (!selectedRegistration.value) {
+  errors.push("請選擇祈福登記表");
+}
+
+// 至少選擇一個活動項目
+const hasSelectedItems = Object.values(selections.value).some(
+  (items) => items.length > 0,
+);
+if (!hasSelectedItems) {
+  errors.push("請至少選擇一個活動項目");
+}
+
+// 金額計算正確性
+if (totalAmount !== calculateTotalAmount(items)) {
+  errors.push("金額計算錯誤");
+}
+```
+
+#### 4.12 業務規則驗證
+
+- 超度項目僅在有祖先資料時顯示
+- 陽上人項目價格為 0（免費）
+- 點燈項目每位人員可選擇燈種
+- 燈種選擇不影響價格統一性
+- 各項目根據對應的人員資料動態生成
+
+---
+
+## 5. 太歲點燈系統
 
 ### 業務概念
 
@@ -268,7 +534,7 @@ monthlyStats = {
 
 ### 太歲邏輯
 
-#### 4.1 生肖與太歲對應
+#### 5.1 生肖與太歲對應
 
 **十二生肖循環：**
 鼠、牛、虎、兔、龍、蛇、馬、羊、猴、雞、狗、豬
@@ -280,7 +546,7 @@ monthlyStats = {
 - 刑太歲 - 相刑生肖
 - 害太歲 - 相害生肖
 
-#### 4.2 點燈管理
+#### 5.2 點燈管理
 
 **點燈資訊：**
 
@@ -291,11 +557,11 @@ monthlyStats = {
 
 ---
 
-## 5. 認證與權限系統
+## 6. 認證與權限系統
 
 ### 認證機制
 
-#### 5.1 多重認證支援
+#### 6.1 多重認證支援
 
 **認證方式：**
 
@@ -303,7 +569,7 @@ monthlyStats = {
 2. **Directus 認證** - 基於 Directus 的用戶系統
 3. **Supabase 認證** - 雲端認證服務
 
-#### 5.2 權限控制
+#### 6.2 權限控制
 
 **用戶角色：**
 
@@ -327,21 +593,22 @@ if (userRole !== "admin") {
 
 ---
 
-## 6. 資料同步與狀態管理
+## 7. 資料同步與狀態管理
 
 ### 前端狀態管理
 
-#### 6.1 Pinia Store 架構
+#### 7.1 Pinia Store 架構
 
 **Store 分工：**
 
 - `registrationStore` - 報名表單狀態
 - `monthlyDonateStore` - 贊助記錄狀態
 - `activityStore` - 活動管理狀態
+- `joinRecordStore` - 參加記錄狀態
 - `authStore` - 認證狀態
 - `configStore` - 系統配置
 
-#### 6.2 資料同步機制
+#### 7.2 資料同步機制
 
 **雙向同步：**
 
@@ -367,7 +634,7 @@ watch(
 
 ### 後端資料處理
 
-#### 6.3 JSON 欄位處理
+#### 7.3 JSON 欄位處理
 
 **複雜資料結構：**
 
@@ -392,35 +659,43 @@ fn deserialize_json_string<T: DeserializeOwned>(json_str: &str) -> T {
 
 ---
 
-## 7. 業務流程整合
+## 8. 業務流程整合
 
 ### 完整業務流程
 
-#### 7.1 新信眾服務流程
+#### 8.1 新信眾服務流程
 
 ```
 1. 信眾到訪 → 2. 填寫報名表 → 3. 選擇服務項目 → 4. 設定贊助計畫 → 5. 完成登記
 ```
 
-#### 7.2 定期服務管理
+#### 8.2 定期服務管理
 
 ```
 1. 活動規劃 → 2. 開放報名 → 3. 參與者管理 → 4. 活動執行 → 5. 統計分析
 ```
 
-#### 7.3 資料關聯邏輯
+#### 8.3 參加記錄完整流程
+
+```
+1. 選擇祈福登記表 → 2. 選擇活動項目 → 3. 費用計算 → 4. 保存記錄 → 5. 記錄付款 → 6. 開立收據 → 7. 會計沖帳
+```
+
+#### 8.4 資料關聯邏輯
 
 **關聯關係：**
 
 - 報名記錄 ↔ 每月贊助（通過 registrationId）
 - 報名記錄 ↔ 活動參與（通過 registrationId）
+- 報名記錄 ↔ 參加記錄（通過 registrationId）
+- 參加記錄 ↔ 活動（通過 activityId）
 - 用戶 ↔ 所有記錄（通過 user_created）
 
 ---
 
-## 8. 特殊業務規則
+## 9. 特殊業務規則
 
-### 8.1 驗證規則
+### 9.1 驗證規則
 
 **聯絡人資訊驗證：**
 
@@ -538,7 +813,7 @@ if (!hasBlessing && !hasAncestors) {
 }
 ```
 
-### 8.2 資料完整性
+### 9.2 資料完整性
 
 **自動補全：**
 
@@ -554,9 +829,9 @@ if (!hasBlessing && !hasAncestors) {
 
 ---
 
-## 9. 錯誤處理與異常情況
+## 10. 錯誤處理與異常情況
 
-### 9.1 常見業務異常
+### 10.1 常見業務異常
 
 **資料不一致：**
 
@@ -570,7 +845,7 @@ if (!hasBlessing && !hasAncestors) {
 - 自動修復機制
 - 錯誤日誌記錄
 
-### 9.2 業務邏輯異常
+### 10.2 業務邏輯異常
 
 **處理原則：**
 
@@ -581,9 +856,9 @@ if (!hasBlessing && !hasAncestors) {
 
 ---
 
-## 10. 業務擴展性
+## 11. 業務擴展性
 
-### 10.1 模組化設計
+### 11.1 模組化設計
 
 **新功能擴展：**
 
@@ -591,7 +866,7 @@ if (!hasBlessing && !hasAncestors) {
 - 新增統計維度（如：地區分析）
 - 新增通知機制（如：簡訊提醒）
 
-### 10.2 客製化支援
+### 11.2 客製化支援
 
 **可配置項目：**
 

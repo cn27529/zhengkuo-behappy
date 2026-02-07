@@ -10,8 +10,8 @@
 │   ├── tools
 │   │   ├── README.md
 │   │   ├── cros.html
-│   │   ├── method-diff.html
-│   │   └── method-diff2.html
+│   │   ├── method-diff-v2.html
+│   │   └── method-diff.html
 │   ├── vite.svg
 │   ├── vue.svg
 │   └── 牌位001.jpg
@@ -43,23 +43,22 @@
 │   │   ├── card-template-zk02a.png
 │   │   ├── card-template-zk02b.png
 │   │   ├── card-template-zk03a.png
-│   │   ├── mock2.json
 │   │   ├── mock_activities.json
-│   │   ├── mock_logs.json
+│   │   ├── mock_logEntry.json
+│   │   ├── mock_logEntrys.json
 │   │   ├── mock_monthlyDonates.json
 │   │   ├── mock_participation_records.json
 │   │   ├── mock_registrations.json
-│   │   ├── mock_registrations.md
-│   │   ├── mock_registrations_2data.json
-│   │   ├── submit-success.json
-│   │   └── 每月贊助.md
+│   │   └── submit-success.json
 │   ├── main.js
 │   ├── router
 │   │   └── index.js
 │   ├── rustServices
+│   │   ├── README.md
 │   │   ├── baseRustService.js
 │   │   ├── rustActivityService.js
 │   │   ├── rustAuthService.js
+│   │   ├── rustJoinRecordService.js
 │   │   ├── rustMonthlyDonateService.js
 │   │   └── rustRegistrationService.js
 │   ├── services
@@ -75,6 +74,7 @@
 │   │   ├── authStore.js
 │   │   ├── cardStore.js
 │   │   ├── configStore.js
+│   │   ├── joinRecordQueryStore.js
 │   │   ├── joinRecordStore.js
 │   │   ├── menu.js
 │   │   ├── monthlyDonateStore.js
@@ -88,6 +88,7 @@
 │   │   ├── dateUtils.js
 │   │   ├── generateGitHash.js
 │   │   ├── generateGitHashAsync.js
+│   │   ├── indexedDB-with-backend.js
 │   │   ├── indexedDB.js
 │   │   └── mockDataHelper.js
 │   └── views
@@ -101,8 +102,8 @@
 │       ├── Env.vue
 │       ├── HashCode.vue
 │       ├── JoinRecord.vue
-│       ├── JoinRecord2.vue
-│       ├── JoinRecord3.vue
+│       ├── JoinRecordList.vue
+│       ├── JoinRecordPrint.vue
 │       ├── LogViewPage.vue
 │       ├── Login.vue
 │       ├── Logout.vue
@@ -112,7 +113,6 @@
 │       ├── MydataList.vue
 │       ├── NewTab.vue
 │       ├── Placeholder.vue
-│       ├── Registration copy.vue
 │       ├── Registration.vue
 │       ├── RegistrationEdit.vue
 │       ├── RegistrationList.vue
