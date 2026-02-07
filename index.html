@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +35,7 @@
             font-size: 3rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .subtitle {
@@ -54,7 +55,7 @@
             background: white;
             border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             border: 2px solid transparent;
             position: relative;
@@ -73,7 +74,7 @@
 
         .service-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
             border-color: var(--card-color);
         }
 
@@ -179,9 +180,11 @@
             0% {
                 box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
             }
+
             70% {
                 box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
             }
+
             100% {
                 box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
             }
@@ -211,7 +214,7 @@
         }
 
         .arch-item {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             padding: 0.5rem 1rem;
             border-radius: 8px;
             font-weight: 500;
@@ -240,7 +243,7 @@
         }
 
         .links-grid a {
-            color: rgba(255,255,255,0.9);
+            color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
             padding: 0.5rem;
             border-radius: 4px;
@@ -248,7 +251,7 @@
         }
 
         .links-grid a:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
         }
 
@@ -262,20 +265,20 @@
             body {
                 padding: 1rem;
             }
-            
+
             .main-title {
                 font-size: 2rem;
             }
-            
+
             .services-grid {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
             }
-            
+
             .architecture-flow {
                 justify-content: center;
             }
-            
+
             .links-grid {
                 grid-template-columns: 1fr;
             }
@@ -285,15 +288,16 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.8rem;
             color: #666;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -352,7 +356,7 @@
             <div class="service-card directus-card">
                 <div class="status-indicator"></div>
                 <div class="card-header">
-                    <div class="icon">📊</div>
+                    <div class="icon">🐇</div>
                     <h3>Directus 後端</h3>
                 </div>
                 <div class="card-content">
@@ -362,6 +366,7 @@
                         <span class="feature-tag">數據管理</span>
                         <span class="feature-tag">管理界面</span>
                         <span class="feature-tag">API 生成</span>
+                        <span class="feature-tag">數據表設計</span>
                     </div>
                 </div>
                 <div class="card-actions">
@@ -421,21 +426,22 @@
             <div class="service-card tools-card">
                 <div class="status-indicator"></div>
                 <div class="card-header">
-                    <div class="icon">🛠️</div>
-                    <h3>開發工具集</h3>
+                    <div class="icon">📊</div>
+                    <h3>數據庫</h3>
                 </div>
                 <div class="card-content">
-                    <p>開發調試與測試工具，包含各種輔助功能</p>
+                    <p>快速查看數據庫</p>
                     <div class="features">
-                        <span class="feature-tag">測試腳本</span>
-                        <span class="feature-tag">Mock 數據</span>
-                        <span class="feature-tag">調試工具</span>
-                        <span class="feature-tag">健康檢查</span>
+                        <span class="feature-tag">數據庫腳本</span>
+                        <span class="feature-tag">數據</span>
+                        <span class="feature-tag">Viewer</span>
+                        <span class="feature-tag">Tables</span>
+                        <span class="feature-tag">Database</span>
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="http://localhost:5173/dev-tools" target="_blank" class="btn">
-                        開發工具 →
+                    <a href="http://localhost:9000" target="_blank" class="btn">
+                        查看數據庫 →
                     </a>
                 </div>
             </div>
@@ -452,7 +458,7 @@
                     <div class="arch-item">SQLite/MongoDB</div>
                 </div>
             </div>
-            
+
             <div class="quick-links">
                 <h4>快速連結</h4>
                 <div class="links-grid">
@@ -487,7 +493,8 @@
                 { name: 'Rust API', url: 'http://localhost:3000' },
                 { name: 'Directus', url: 'http://localhost:8055' },
                 { name: '日誌服務', url: 'http://localhost:3002' },
-                { name: '文檔服務', url: 'http://localhost:3001' }
+                { name: '文檔服務', url: 'http://localhost:3001' },
+                { name: '數據庫服務', url: 'http://localhost:9000' }
             ];
 
             let healthyCount = 0;
@@ -506,18 +513,18 @@
 
         // 添加卡片點擊效果
         document.querySelectorAll('.service-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
+            card.addEventListener('mouseenter', function () {
                 this.style.transform = 'translateY(-8px) scale(1.02)';
             });
-            
-            card.addEventListener('mouseleave', function() {
+
+            card.addEventListener('mouseleave', function () {
                 this.style.transform = 'translateY(0) scale(1)';
             });
         });
 
         // 添加按鈕點擊統計（可選）
         document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const serviceName = this.closest('.service-card').querySelector('h3').textContent;
                 console.log(`訪問服務: ${serviceName}`);
                 // 這裡可以添加統計邏輯
@@ -525,4 +532,5 @@
         });
     </script>
 </body>
+
 </html>

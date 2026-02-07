@@ -13,7 +13,7 @@ services:
 
       # 資料庫配置 - 使用 SQLite
       DB_CLIENT: "sqlite3"
-      DB_FILENAME: "data.db"
+      DB_FILENAME: "current.db"
 
       # 安全設定
       KEY: "your-random-key-here"
@@ -38,7 +38,7 @@ services:
     volumes:
       - ./logs:/directus/logs
       # 掛載 SQLite 資料庫檔案
-      - ../db/data.db:/directus/data.db
+      - ../db/current.db:/directus/current.db
       # 掛載上傳檔案目錄
       - ./uploads:/directus/uploads
       # 掛載擴展目錄

@@ -29,6 +29,7 @@ app.get("/api/tables", (req, res) => {
 // 獲取表結構
 app.get("/api/schema/:table", (req, res) => {
   db.all(`PRAGMA table_info(${req.params.table})`, (err, rows) => {
+    console.log(`獲取 ${req.params.table} 表結構`);
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -41,7 +42,6 @@ app.get("/api/schema/:table", (req, res) => {
 app.get("/api/data/:table", (req, res) => {
   const limit = req.query.limit || 100;
   const offset = req.query.offset || 0;
-
   db.all(
     `SELECT * FROM ${req.params.table} LIMIT ? OFFSET ?`,
     [limit, offset],
@@ -58,7 +58,6 @@ app.get("/api/data/:table", (req, res) => {
 // 執行自定義查詢
 app.post("/api/query", (req, res) => {
   const { sql } = req.body;
-
   db.all(sql, (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
@@ -146,6 +145,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🌐 數據庫服務器運行在: http://localhost:${PORT}`);
+  console.log(`數據庫服務器運行在: http://localhost:${PORT}`);
   console.log(`📊 數據庫文件: ${DB_PATH}`);
 });

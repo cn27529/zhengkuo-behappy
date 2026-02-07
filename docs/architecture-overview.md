@@ -5,6 +5,7 @@
 **zhengkuo-behappy** 是一個完整的寺廟管理系統，主要功能包括消災超度登記、每月贊助管理、活動管理與太歲點燈服務。
 
 **專案統計：**
+
 - 總檔案數：4,410
 - 程式碼行數：17,790
 - 函數數量：354
@@ -161,7 +162,7 @@ docs/                   # 文檔目錄
 
 ### 資料庫設計
 
-#### 主要資料庫 - SQLite (`data.db`)
+#### 主要資料庫 - SQLite (`current.db`)
 
 **主要表格：**
 
@@ -324,17 +325,20 @@ git push origin zk-client-netlify --force
 ### 2. 日誌系統
 
 #### 前端日誌收集
+
 - **IndexedDB 本地存儲** (`IndexedDBLogger`)
 - **自動遠程發送** (`sendToRemoteLog`)
 - **API 請求追蹤** (baseService.js, baseRustService.js)
 
 #### 日誌服務器
+
 - **本地 Node.js 服務** (`mongoDBLogger.js`)
 - **雲端 MongoDB Atlas 存儲**
 - **RESTful API 接口**
 - **批次處理支援**
 
 #### 日誌功能
+
 - 單筆/批次日誌寫入
 - 日誌查詢與過濾
 - 統計資料分析
@@ -344,12 +348,14 @@ git push origin zk-client-netlify --force
 ### 3. 文檔系統
 
 #### 文檔服務器
+
 - **Express.js 服務** (`docs-server.js`)
 - **Markdown 即時渲染**
 - **文檔瀏覽界面**
 - **自動文檔掃描**
 
 #### 文檔功能
+
 - 專案架構說明
 - API 使用指南
 - 部署操作手冊
@@ -388,6 +394,7 @@ tree -L 3 -I "target|.lock" ./rust-axum > rust-axum-tree.txt
 ## 安全性設計
 
 ### 認證機制
+
 - JWT Token 認證
 - Session 管理
 
@@ -447,7 +454,7 @@ tree -L 3 -I "target|.lock" ./rust-axum > rust-axum-tree.txt
    ```bash
    # 啟動全棧開發（前端 + Rust 後端）
    npm run dev:full
-   
+
    # 啟動日誌服務器（另開終端機）
    cd log-server && node mongoDBLogger.js
    ```
@@ -460,6 +467,7 @@ tree -L 3 -I "target|.lock" ./rust-axum > rust-axum-tree.txt
    - 文檔服務器: http://localhost:3001
 
 5. **查看專案文檔**
+
    ```bash
    npm run docs
    ```
@@ -475,10 +483,11 @@ tree -L 3 -I "target|.lock" ./rust-axum > rust-axum-tree.txt
 ## 相關資源
 
 ### 參考專案
+
 - [axum-admin](https://github.com/orchid-admin/axum-admin/tree/main)
 - [lingdu1234/axum_admin](https://github.com/lingdu1234/axum_admin)
 - [axum-login 文件](https://docs.rs/axum-login/latest/axum_login/)
 
 ---
 
-*此文件整合了專案架構總覽與專案說明，提供完整的系統架構資訊。*
+_此文件整合了專案架構總覽與專案說明，提供完整的系統架構資訊。_

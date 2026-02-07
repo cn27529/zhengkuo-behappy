@@ -35,8 +35,6 @@ function warning(message) {
   log(`⚠️ ${message}`, "yellow");
 }
 
-
-
 // 獲取專案根目錄
 const projectRoot = path.resolve(__dirname, "..");
 log(`📁 專案根目錄: ${projectRoot}`, "cyan");
@@ -49,11 +47,13 @@ function startServices(projectRoot) {
   log(`${"=".repeat(50)}\n`, "cyan");
 
   log("📦 服務列表:", "cyan");
-  log("  • Directus (port 8055)", "blue");
-  log("  • Vue Client (port 5173)", "blue");
-  log("  • Rust-Axum (port 3000)", "blue");
-  log("  • Log Server (port 3002)", "blue");
-  log("  • 服務入口總覽 (port 8080)", "blue");
+  log("  • 🐇Directus (port 8055)", "blue");
+  log("  • 🌍Vue Client (port 5173)", "blue");
+  log("  • 🦀Rust-Axum (port 3000)", "blue");
+  log("  • 🌱Log Server (port 3002)", "blue");
+  log("  • 📚文檔服務 (port 3001)", "blue");
+  log("  • 📦服務入口總覽 (port 8080)", "blue");
+  log("  • 📊數據庫文件 (port 9000)", "blue");
   log("");
 
   log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
@@ -66,16 +66,17 @@ function startServices(projectRoot) {
         "concurrently",
         "--kill-others",
         "--names",
-        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS",
+        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS,📊SQLITE",
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
-        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold",
+        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold,bgRed.bold",
         '"npm run start:server"',
         '"npm run start:client"',
         '"npm run start:rust"',
         '"npm run start:logs"',
         '"npm run start:docs"',
         '"npm run start:apps"',
+        '"npm run sqlite:viewer"',
       ],
       {
         stdio: "inherit",

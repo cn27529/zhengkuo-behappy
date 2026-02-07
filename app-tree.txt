@@ -117,7 +117,6 @@
 ├── rust-axum
 │   ├── Cargo.lock
 │   ├── Cargo.toml
-│   ├── data.db
 │   ├── migrations
 │   │   ├── directus_participationRecordDB_collection.json
 │   │   ├── mydata.sql
@@ -156,7 +155,6 @@
 │           └── mod.rs
 └── server
     ├── Dockerfile
-    ├── data.db
     ├── extensions
     ├── package-windows.json
     ├── package.json
