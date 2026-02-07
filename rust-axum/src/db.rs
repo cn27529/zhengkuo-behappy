@@ -96,8 +96,11 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
 pub async fn graceful_shutdown(pool: SqlitePool) -> Result<(), sqlx::Error> {
     tracing::info!("🔄🦀 [Rust] 開始優雅關閉數據庫...");
     
-    // 先關閉連接池，釋放所有連接
+    // 關閉連接池並等待所有連接釋放
     pool.close().await;
+    
+    // 給予短暫時間確保連接完全釋放
+    tokio::time::sleep(Duration::from_millis(100)).await;
     tracing::info!("✅🦀 [Rust] 數據庫連接池已關閉");
     
     // 重新建立單一連接執行 checkpoint
@@ -106,12 +109,24 @@ pub async fn graceful_shutdown(pool: SqlitePool) -> Result<(), sqlx::Error> {
     
     match sqlx::SqliteConnection::connect(&database_url).await {
         Ok(mut conn) => {
+            // 先嘗試 TRUNCATE，失敗則降級為 RESTART
             match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
                 .execute(&mut conn)
                 .await
             {
-                Ok(_) => tracing::info!("✅🦀 [Rust] WAL checkpoint 完成"),
-                Err(e) => tracing::warn!("⚠️🦀 [Rust] WAL checkpoint 失敗: {}", e),
+                Ok(result) => {
+                    tracing::info!("✅🦀 [Rust] WAL checkpoint(TRUNCATE) 完成: {:?}", result);
+                }
+                Err(e) => {
+                    tracing::warn!("⚠️🦀 [Rust] TRUNCATE 失敗，嘗試 RESTART: {}", e);
+                    match sqlx::query("PRAGMA wal_checkpoint(RESTART)")
+                        .execute(&mut conn)
+                        .await
+                    {
+                        Ok(_) => tracing::info!("✅🦀 [Rust] WAL checkpoint(RESTART) 完成"),
+                        Err(e2) => tracing::error!("❌🦀 [Rust] WAL checkpoint 完全失敗: {}", e2),
+                    }
+                }
             }
             conn.close().await.ok();
         }
