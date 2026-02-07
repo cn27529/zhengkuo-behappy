@@ -45,7 +45,7 @@ const corsOptions = {
 //app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
-app.use(express.static('public'));
+app.use(express.static("public"));
 
 // 連接 MongoDB
 async function connectMongoDB() {
@@ -117,12 +117,12 @@ function cleanLogData(log) {
 
 // 根路由 - 主頁面
 app.get("/", (req, res) => {
-  res.sendFile('index.html', { root: 'public' });
+  res.sendFile("index.html", { root: "public" });
 });
 
 // MongoDB 日誌服務說明頁面
 app.get("/mongo/", (req, res) => {
-  res.sendFile('mongo.html', { root: 'public' });
+  res.sendFile("mongo.html", { root: "public" });
 });
 
 // API 路由
@@ -158,6 +158,9 @@ app.post("/mongo/logentry/", async (req, res) => {
       projectId: MONGO_CONFIG.projectId,
       serverReceivedAt: new Date().toISOString(),
     };
+
+    // 插入資料
+    const result = await collection.insertOne(preparedLog);
 
     console.log(
       `📝 收到日誌: ${logEntry.method || "GET"} ${logEntry.endpoint || "unknown"} - ${logEntry.status || "unknown"}`,
@@ -417,8 +420,12 @@ async function startServer() {
     console.log(
       `   🔍 查詢日誌: http://localhost:${MONGO_CONFIG.port}/mongo/logentry/`,
     );
-    console.log(`   📊 統計資料: http://localhost:${MONGO_CONFIG.port}/mongo/stats`);
-    console.log(`   🗑️ 清理日誌: http://localhost:${MONGO_CONFIG.port}/mongo/cleanup/:days`);
+    console.log(
+      `   📊 統計資料: http://localhost:${MONGO_CONFIG.port}/mongo/stats`,
+    );
+    console.log(
+      `   🗑️ 清理日誌: http://localhost:${MONGO_CONFIG.port}/mongo/cleanup/:days`,
+    );
     console.log(`   💚 健康檢查: http://localhost:${MONGO_CONFIG.port}/health`);
   });
 
@@ -467,7 +474,9 @@ function startCleanupJob() {
       // 🔧 檢查總日誌數量，少於 5 萬筆就不清理
       const totalCount = await collection.countDocuments();
       if (totalCount < 50000) {
-        console.log(`📊 日誌數量較少 (${totalCount.toLocaleString()} 筆)，跳過清理`);
+        console.log(
+          `📊 日誌數量較少 (${totalCount.toLocaleString()} 筆)，跳過清理`,
+        );
         return;
       }
 
