@@ -180,5 +180,35 @@ server/info
 ---
 
 家裡的macos 沒有報錯如何調適,請協助。
-
 改善 Windows 符號連結權限問題, scripts\windows-symlink-helper.js, docs\db-symlink-windows-guide.md
+
+## 關閉服務後發現 WAL 檔案還存在
+
+scripts/start-with-db.js 選擇1，current.db 連接到 db/zk.db，關閉服務後發現 WAL 檔案還存在，是否 rust-axum/src/db.rs 的 "PRAGMA wal_checkpoint(TRUNCATE)" 沒有啟作用。
+
+問題原因：
+
+- 原本的 graceful_shutdown 在連接池還有活躍連接時執行 PRAGMA wal_checkpoint(TRUNCATE)
+- SQLite 的 TRUNCATE 模式需要獨佔訪問，如果連接池還有其他連接，checkpoint 會失敗或降級為 PASSIVE 模式
+- PASSIVE 模式不會刪除 WAL 檔案
+
+解決方案：
+
+1. 先關閉連接池 (pool.close().await)，釋放所有連接
+2. 重新建立一個獨立的單一連接
+3. 用這個獨立連接執行 PRAGMA wal_checkpoint(TRUNCATE)
+4. 這樣可以確保沒有其他連接干擾，TRUNCATE 能成功執行並清理 WAL 檔案
+
+重新編譯並測試：
+
+bash
+cd rust-axum && cargo build
+
+然後用 scripts/start-with-db.js 啟動服務，關閉後應該就不會再有殘留的 WAL 檔案了。
+
+# 頻繁寫入，驗證 WAL 機制
+
+生成一個script 調用 scripts/testMydata.js 頻繁寫入，然後我停止服務來驗證 WAL 機制是否生效
+詳見 docs/test-stress-test-wal.md，scripts/stress-test-wal.js
+
+如何確保所有連接都已釋放

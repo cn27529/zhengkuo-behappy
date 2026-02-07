@@ -1,5 +1,6 @@
 // src/db.rs
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePool, SqlitePoolOptions, SqliteSynchronous};
+use sqlx::Connection;
 use std::str::FromStr;
 use std::time::Duration;
 
@@ -95,18 +96,27 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
 pub async fn graceful_shutdown(pool: SqlitePool) -> Result<(), sqlx::Error> {
     tracing::info!("🔄🦀 [Rust] 開始優雅關閉數據庫...");
     
-    // 執行 WAL checkpoint(TRUNCATE 模式會清理 WAL 檔案)
-    match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
-        .execute(&pool)
-        .await
-    {
-        Ok(_) => tracing::info!("✅🦀 [Rust] WAL checkpoint 完成"),
-        Err(e) => tracing::warn!("⚠️🦀 [Rust] WAL checkpoint 失敗: {}", e),
-    }
-    
-    // 關閉連接池
+    // 先關閉連接池，釋放所有連接
     pool.close().await;
     tracing::info!("✅🦀 [Rust] 數據庫連接池已關閉");
+    
+    // 重新建立單一連接執行 checkpoint
+    let database_url = std::env::var("DATABASE_URL")
+        .expect("DATABASE_URL 必須在 .env 文件中設置");
+    
+    match sqlx::SqliteConnection::connect(&database_url).await {
+        Ok(mut conn) => {
+            match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+                .execute(&mut conn)
+                .await
+            {
+                Ok(_) => tracing::info!("✅🦀 [Rust] WAL checkpoint 完成"),
+                Err(e) => tracing::warn!("⚠️🦀 [Rust] WAL checkpoint 失敗: {}", e),
+            }
+            conn.close().await.ok();
+        }
+        Err(e) => tracing::warn!("⚠️🦀 [Rust] 無法建立 checkpoint 連接: {}", e),
+    }
     
     Ok(())
 }

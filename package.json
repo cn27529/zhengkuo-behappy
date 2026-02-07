@@ -6,6 +6,7 @@
   "scripts": {
     "test:mydata": "node scripts/testMydata.js",
     "test:mydata-create": "node scripts/testMydata.js --create",
+    "test:wal": "node scripts/stress-test-wal.js",
     "check:symlink": "node scripts/windows-symlink-helper.js",
     "start:server": "cd server && npm run dev",
     "start:client": "cd client && npm run dev",
