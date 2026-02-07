@@ -8,6 +8,7 @@ const { execSync } = require("child_process");
 
 const dbDir = path.join(__dirname, "..", "db");
 const currentDb = path.join(dbDir, "current.db");
+let targetDb = "";
 
 console.log("🔍 檢查資料庫鎖定狀態\n");
 
@@ -17,6 +18,7 @@ if (fs.existsSync(currentDb)) {
   if (stats.isSymbolicLink()) {
     const target = fs.readlinkSync(currentDb);
     console.log(`🔗 current.db -> ${target}`);
+    targetDb = target;
   } else {
     console.log(`📄 current.db (實體檔案)`);
   }
@@ -28,7 +30,8 @@ if (fs.existsSync(currentDb)) {
 // 2. 檢查 WAL 相關檔案
 console.log("\n📊 WAL 檔案狀態:");
 ["-wal", "-shm", "-journal"].forEach((suffix) => {
-  const file = currentDb + suffix;
+  //const file = path.join(dbDir, currentDb + suffix);
+  const file = path.join(dbDir, targetDb + suffix);
   if (fs.existsSync(file)) {
     const stats = fs.statSync(file);
     const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
@@ -60,7 +63,7 @@ console.log("\n🔍 相關進程:");
 try {
   const processes = execSync(
     `ps aux | grep -E "(directus|rust-axum|cargo run)" | grep -v grep || true`,
-    { encoding: "utf8" }
+    { encoding: "utf8" },
   );
   if (processes.trim()) {
     console.log(processes);
