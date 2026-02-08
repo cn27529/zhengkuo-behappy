@@ -3,3 +3,4 @@ pub mod activity;
 pub mod registration;
 pub mod monthly_donate;
 pub mod participation_record;
+pub mod my_data;

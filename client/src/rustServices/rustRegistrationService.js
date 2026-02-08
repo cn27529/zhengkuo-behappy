@@ -29,7 +29,7 @@ export class RustRegistrationService {
         service: this.serviceName,
         operation: "createRegistration",
         ...context,
-      }
+      },
     );
   }
 
@@ -74,7 +74,7 @@ export class RustRegistrationService {
       {
         operation: "getAllRegistrations",
         ...context,
-      }
+      },
     );
   }
 
@@ -91,7 +91,7 @@ export class RustRegistrationService {
         operation: "getRegistrationById",
         id,
         ...context,
-      }
+      },
     );
   }
 
@@ -116,7 +116,7 @@ export class RustRegistrationService {
         operation: "updateRegistration",
         id,
         ...context,
-      }
+      },
     );
   }
 
@@ -134,7 +134,7 @@ export class RustRegistrationService {
         operation: "deleteRegistration",
         id,
         ...context,
-      }
+      },
     );
   }
 
@@ -149,7 +149,7 @@ export class RustRegistrationService {
         operation: "getRegistrationsByFormId",
         formId,
         ...context,
-      }
+      },
     );
   }
 
@@ -164,7 +164,7 @@ export class RustRegistrationService {
         operation: "getRegistrationsByState",
         state,
         ...context,
-      }
+      },
     );
   }
 
@@ -179,7 +179,7 @@ export class RustRegistrationService {
         operation: "getRegistrationsByUser",
         userId,
         ...context,
-      }
+      },
     );
   }
 
@@ -200,7 +200,7 @@ export class RustRegistrationService {
         operation: "submitRegistration",
         id,
         ...context,
-      }
+      },
     );
   }
 
@@ -221,7 +221,7 @@ export class RustRegistrationService {
         operation: "completeRegistration",
         id,
         ...context,
-      }
+      },
     );
   }
 
@@ -242,7 +242,7 @@ export class RustRegistrationService {
         operation: "saveDraft",
         id,
         ...context,
-      }
+      },
     );
   }
 
@@ -260,7 +260,7 @@ export class RustRegistrationService {
         operation: "batchOperations",
         count: operations.length,
         ...context,
-      }
+      },
     );
   }
 
@@ -278,7 +278,7 @@ export class RustRegistrationService {
         operation: "searchRegistrations",
         query,
         ...context,
-      }
+      },
     );
   }
 
@@ -295,7 +295,7 @@ export class RustRegistrationService {
         operation: "exportRegistrations",
         format,
         ...context,
-      }
+      },
     );
   }
 

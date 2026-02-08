@@ -216,3 +216,11 @@ cd rust-axum && cargo build
 # 兩份文件也要一併更新
 
 docs/architecture-overview.md 的 **核心模組：** 還缺少 client/src/stores/joinRecordStore.js 的描述，更多對「參加記錄」功能的信息說明在 docs/dev-joinRecord-guide.md。docs/api-documentation.md 及 docs/business-logic.md 兩份文件也要一併更新
+
+# 生成 rust-axum/ 項目中 myData
+
+生成 rust-axum/ 專案的 myData CRUD API 項目 ，資料結構在 rust-axum/migrations/sqlite_myData_table.sql，請依照目前 rust-axum/src/handlers, rust-axum/src/models, rust-axum/src/routes 所規劃的編程模式進行生成，可參考 rust-axum/src/models/monthly_donate.rs 的設計，也要注意JSON 字段的處理。
+
+生成 myData 的測試，如同 scripts/test_rust_activity_api.sh
+
+生成 rustMyDataService.js，如同 client/src/rustServices/rustMonthlyDonateService.js，方法名稱比照 client/src/services/mydataService.js，為什麼要比照 因為之後還需要結合到 client/src/adapters/serviceAdapter.js 之中使用。

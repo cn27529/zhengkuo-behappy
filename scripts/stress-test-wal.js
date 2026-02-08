@@ -6,8 +6,8 @@ const https = require("https");
 const http = require("http");
 
 const DIRECTUS_URL = process.env.DIRECTUS_URL || "http://localhost:8055";
-const INTERVAL_MS = parseInt(process.env.INTERVAL_MS) || 500; // 預設 500ms 寫入一次
-const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 1; // 每次寫入筆數
+const INTERVAL_MS = parseInt(process.env.INTERVAL_MS) || 3000; // 預設 500ms 寫入一次
+const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 2; // 每次寫入筆數
 
 let writeCount = 0;
 let errorCount = 0;
@@ -68,14 +68,20 @@ async function writeData() {
 
     if (result.status === 200) {
       writeCount++;
-      process.stdout.write(`\r✅ 已寫入: ${writeCount} 筆 | 錯誤: ${errorCount} 筆`);
+      process.stdout.write(
+        `\r✅ 已寫入: ${writeCount} 筆 | 錯誤: ${errorCount} 筆`,
+      );
     } else {
       errorCount++;
-      process.stdout.write(`\r❌ 寫入失敗 (${result.status}) | 已寫入: ${writeCount} 筆 | 錯誤: ${errorCount} 筆`);
+      process.stdout.write(
+        `\r❌ 寫入失敗 (${result.status}) | 已寫入: ${writeCount} 筆 | 錯誤: ${errorCount} 筆`,
+      );
     }
   } catch (error) {
     errorCount++;
-    process.stdout.write(`\r❌ 錯誤: ${error.message.slice(0, 30)} | 已寫入: ${writeCount} 筆 | 錯誤: ${errorCount} 筆`);
+    process.stdout.write(
+      `\r❌ 錯誤: ${error.message.slice(0, 30)} | 已寫入: ${writeCount} 筆 | 錯誤: ${errorCount} 筆`,
+    );
   }
 }
 
