@@ -37,6 +37,7 @@
     "marked": "^12.0.0"
   },
   "dependencies": {
+    "better-sqlite3": "^12.6.2",
     "sqlite3": "^5.1.7"
   }
 }
