@@ -224,3 +224,7 @@ docs/architecture-overview.md 的 **核心模組：** 還缺少 client/src/store
 生成 myData 的測試，如同 scripts/test_rust_activity_api.sh
 
 生成 rustMyDataService.js，如同 client/src/rustServices/rustMonthlyDonateService.js，方法名稱比照 client/src/services/mydataService.js，為什麼要比照 因為之後還需要結合到 client/src/adapters/serviceAdapter.js 之中使用。
+
+需要script測一下, 如同 scripts/stress-test-wal.js，我做查詢，用 http://localhost:3000/api/my-data
+
+scripts/stress-test-wal.js 與 scripts/stress-test-mydata-query.js 一起運行好像沒有出現 db locks 耶 哈哈，我有運行 scripts/check-db-locks.js 查看 XD。
