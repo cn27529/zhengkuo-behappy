@@ -8,8 +8,8 @@
     "test:mydata-create": "node scripts/testMydata.js --create",
     "test:wal": "node scripts/stress-test-wal.js",
     "test:query": "node scripts/stress-test-mydata-query.js",
-    "test:rw": "concurrently \"npm:test:wal\" \"npm:test:query\" ",
-    "check:db-locks": "node scripts/check-db-locks.js",
+    "stress:test": "concurrently \"npm:test:wal\" \"npm:test:query\" ",
+    "check:db-locks": "node scripts/check-db-locks-detailed.js",
     "check:symlink": "node scripts/windows-symlink-helper.js",
     "start:server": "cd server && npm run dev",
     "start:client": "cd client && npm run dev",
@@ -26,7 +26,7 @@
     "deploy:netlify": "./scripts/deploy-netlify.sh",
     "db": "node scripts/start-with-db.js",
     "sqlite:viewer": "node scripts/sqlite-viewer.js",
-    "all": "npm run db && node scripts/start-all.js"
+    "all": "node scripts/start-all.js"
   },
   "keywords": [],
   "author": "cn27529",
