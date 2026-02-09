@@ -4,6 +4,37 @@ const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
 
+// 顏色輸出
+const colors = {
+  reset: "\x1b[0m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  red: "\x1b[31m",
+  cyan: "\x1b[36m",
+  blue: "\x1b[34m",
+  magenta: "\x1b[35m",
+};
+
+function log(message, color = "reset") {
+  console.log(`${colors[color]}${message}${colors.reset}`);
+}
+
+function error(message) {
+  log(`❌ ${message}`, "red");
+}
+
+function success(message) {
+  log(`✅ ${message}`, "green");
+}
+
+function info(message) {
+  log(`ℹ️ ${message}`, "cyan");
+}
+
+function warning(message) {
+  log(`⚠️ ${message}`, "yellow");
+}
+
 console.log("🏯 資料庫切換工具");
 console.log("==================");
 
@@ -105,4 +136,82 @@ rl.question("\n選擇: ", (answer) => {
   //     shell: true,
   //   },
   // );
+
+  // 啟動服務
+  startServices(null);
 });
+
+function startServices(projectRoot) {
+  log(`\n${"=".repeat(50)}`, "cyan");
+  log(`${colors.bold}${colors.green}🚀 啟動所有服務...${colors.reset}`);
+  log(`${"=".repeat(50)}\n`, "cyan");
+
+  log("📦 服務列表:", "cyan");
+  log("  • Directus (port 8055)", "blue");
+  log("  • Vue Client (port 5173)", "blue");
+  log("  • Rust-Axum (port 3000)", "blue");
+  log("  • Log Server (port 3002)", "blue");
+  log("  • 服務入口總覽 (port 8080)", "blue");
+  log("");
+
+  log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
+
+  try {
+    // 使用 concurrently 啟動所有服務
+    const processes = spawn(
+      "npx",
+      [
+        "concurrently",
+        "--kill-others",
+        "--names",
+        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS",
+        //"🐇,🌍,🦀,🌱",
+        "--prefix-colors",
+        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold",
+        '"npm run start:server"',
+        '"npm run start:client"',
+        '"npm run start:rust"',
+        '"npm run start:logs"',
+        '"npm run start:docs"',
+        '"npm run start:apps"',
+      ],
+      {
+        stdio: "inherit",
+        shell: true,
+      },
+    );
+
+    // 處理進程退出
+    processes.on("close", (code) => {
+      if (code === 0) {
+        log(`\n✅ 所有服務正常結束`, "green");
+      } else {
+        log(`\n⚠️  服務結束，退出碼: ${code}`, "yellow");
+      }
+    });
+
+    // 處理錯誤
+    processes.on("error", (error) => {
+      log(`\n❌ 啟動服務時發生錯誤: ${error.message}`, "red");
+      process.exit(1);
+    });
+
+    // 處理 Ctrl+C
+    process.on("SIGINT", () => {
+      log(`\n\n👋 收到中斷信號，正在停止所有服務...`, "yellow");
+      processes.kill("SIGINT");
+    });
+
+    process.on("SIGTERM", () => {
+      log(`\n\n👋 收到終止信號，正在停止所有服務...`, "yellow");
+      processes.kill("SIGTERM");
+    });
+  } catch (error) {
+    log(`\n❌ 啟動失敗: ${error.message}`, "red");
+    log(`\n💡 請確認:`, "yellow");
+    log(`   1. 已安裝所有依賴: npm install`, "yellow");
+    log(`   2. concurrently 已安裝`, "yellow");
+    log(`   3. server、client、rust-axum 目錄都存在`, "yellow");
+    process.exit(1);
+  }
+}
