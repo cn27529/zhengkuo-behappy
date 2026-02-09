@@ -8,7 +8,7 @@
     "test:mydata-create": "node scripts/testMydata.js --create",
     "test:wal": "node scripts/stress-test-wal.js",
     "test:query": "node scripts/stress-test-mydata-query.js",
-    "test:rw": "concurrently \"npm:test:wal\" \"npm:test:query\" ",
+    "stress:test": "concurrently \"npm:test:wal\" \"npm:test:query\" ",
     "check:db-locks": "node scripts/check-db-locks.js",
     "check:symlink": "node scripts/windows-symlink-helper.js",
     "start:server": "cd server && npm run dev",
