@@ -5,8 +5,8 @@
 const http = require("http");
 
 const RUST_URL = process.env.RUST_URL || "http://localhost:3000";
-const INTERVAL_MS = parseInt(process.env.INTERVAL_MS) || 1000; // 預設 100ms 查詢一次
-const CONCURRENT = parseInt(process.env.CONCURRENT) || 2; // 並發請求數
+const INTERVAL_MS = parseInt(process.env.INTERVAL_MS) || 100; // 預設 100ms 查詢一次
+const CONCURRENT = parseInt(process.env.CONCURRENT) || 5; // 並發請求數
 
 let queryCount = 0;
 let errorCount = 0;
