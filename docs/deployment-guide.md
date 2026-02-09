@@ -251,16 +251,7 @@ docker run -d -p 3000:3000 zhengkuo-rust:latest
 
 #### 手動部署流程
 
-```bash
-# 1. 切換到部署分支
-git checkout zk-client-netlify
-
-# 2. 重設為目標版本
-git reset --hard zk-client-v2-1210
-
-# 3. 推送到遠端 (觸發自動部署)
-git push origin zk-client-netlify --force
-```
+詳見 scripts/deploy-netlify.sh
 
 ### 2. 後端部署 (VPS/雲端服務器)
 
