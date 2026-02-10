@@ -2,6 +2,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { serviceAdapter } from "../adapters/serviceAdapter.js";
+import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
 import mockParticipationRecords from "../data/mock_participation_records.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
@@ -137,6 +138,33 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     }
   };
 
+  // 刪除參加記錄
+  const deleteParticipationRecord = async (recordId) => {
+    if (!recordId) {
+      return { success: false, message: "缺少記錄 ID" };
+    }
+
+    try {
+      const result =
+        await joinRecordService.deleteParticipationRecord(recordId);
+
+      if (result?.success) {
+        searchResults.value = searchResults.value.filter(
+          (record) => record.id !== recordId,
+        );
+        resetPagination();
+      }
+
+      return result;
+    } catch (error) {
+      console.error("刪除參加記錄失敗:", error);
+      return {
+        success: false,
+        message: error?.message || "刪除參加記錄失敗",
+      };
+    }
+  };
+
   const getFilteredData = (queryData, data) => {
     console.log("🎯 開始過濾參加記錄數據...");
 
@@ -147,7 +175,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
     let filteredData = [...data];
 
-    if (queryData.activityId && (typeof queryData.activityId === 'number' || queryData.activityId > 0)) {
+    if (
+      queryData.activityId &&
+      (typeof queryData.activityId === "number" || queryData.activityId > 0)
+    ) {
       const activityIdQuery = parseInt(queryData.activityId);
       console.log("🔍 activityId過濾:", activityIdQuery);
       filteredData = filteredData.filter((item) => {
@@ -349,6 +380,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     itemsFilter.value = items;
   };
 
+  const resetPagination = () => {
+    currentPage.value = 1;
+  };
+
   const isMobile = () => {
     if (
       authStore.isMobileDevice() ||
@@ -379,6 +414,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
     // 方法
     queryJoinRecordData,
+    deleteParticipationRecord,
     clearSearch,
     setSearchQuery,
     setStateFilter,
@@ -393,8 +429,6 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     setPageSize: (size) => {
       pageSize.value = size;
     },
-    resetPagination: () => {
-      currentPage.value = 1;
-    },
+    resetPagination,
   };
 });

@@ -553,7 +553,7 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="handleSubmitRecord"
+            @click="handleSubmitForm"
             :disabled="isLoading || totalAmount === 0"
           >
             {{ isLoading ? "提交中..." : "提交參加記錄" }}
@@ -930,7 +930,7 @@ const handleReset = async () => {
 };
 
 // 提交參加記錄
-const handleSubmitRecord = async () => {
+const handleSubmitForm = async () => {
   if (!selectedRegistration.value) {
     ElMessage.warning("請選擇祈福登記");
     return;
