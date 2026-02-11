@@ -227,14 +227,32 @@
                   {{ record.contact?.name || "未填聯絡人" }}
                 </div>
                 <div class="list-meta">
-                  <el-tag
-                    type="warning"
-                    size="small"
-                    style="margin-right: 5px"
-                    v-for="item in record.items"
-                  >
-                    {{ item.label }}
-                  </el-tag>
+                  <span v-for="item in record.items">
+                    
+                    <el-badge
+                      :value="item.quantity"
+                      class="item"
+                      color="lightblue"
+                      size="small"
+                      style="margin-right: 13px"
+                      v-if="false"
+                    >
+                    <el-button
+                      size="small"
+                      type="primary"
+                      
+                      >{{ item.label }}</el-button
+                    >
+                  </el-badge>
+
+                    <el-button v-if="item.label!=='陽上人'"
+                      size="small"
+                      type="warning"
+                      style="margin-right: 13px"
+                      >{{ item.label }}</el-button
+                    >
+                  </span>
+
                   {{ record.totalAmount }} 元 ·
                   {{ formatDate(record.createdAt || record.date_created) }}
                 </div>
@@ -256,6 +274,16 @@ import { computed, onMounted } from "vue";
 import { useDashboardStore } from "../stores/dashboardStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import AnimatedNumber from "../components/AnimatedNumber.vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import {
+  Refresh,
+  Plus,
+  Edit,
+  Check,
+  Delete,
+  View,
+  Search,
+} from "@element-plus/icons-vue";
 
 const dashboardStore = useDashboardStore();
 
