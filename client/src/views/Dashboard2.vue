@@ -228,7 +228,7 @@
                 </div>
                 <div class="list-meta">
                   <el-tag
-                    type="info"
+                    type="warning"
                     size="small"
                     style="margin-right: 5px"
                     v-for="item in record.items"
