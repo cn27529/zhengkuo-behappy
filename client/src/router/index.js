@@ -47,6 +47,20 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/join-record-states",
+    title: "參加記錄狀態控制台",
+    name: "JoinRecordStatesControl",
+    component: () => import("../views/JoinRecordStatesControl.vue"),
+    beforeEnter: (to, from, next) => {
+      console.log("🚪 進入 JoinRecordStatesControl 路由");
+      const pageStateStore = usePageStateStore();
+      pageStateStore.clearPageState("joinRecordStates");
+      console.log("🚪 清除頁面狀態");
+      next();
+    },
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/animated-number",
     component: () => import("../views/AnimatedNumber.vue"),
   },

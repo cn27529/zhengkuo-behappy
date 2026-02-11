@@ -234,4 +234,4 @@ scripts/stress-test-wal.js 與 scripts/stress-test-mydata-query.js 一起運行�
 你對 docs/business-logic.md 文件的理解，我想聽聽你的說法，你認為 client/src/views/Dashboard.vue 資訊牆頁面，還需要什麼信息可以幫助操作這個系統的使用者
 
 # 參加記錄狀態控制台
-我正在規劃"參加記錄"的狀態控制台，這個控制台是可以查詢所有"參加記錄", 可以做單筆及多單的操作將
+我正在規劃"參加記錄"的狀態控制台，這個控制台是可以查詢所有"參加記錄", 可以做單筆及多單的操作將 會計狀態(accountingState), 收據狀態 (receiptIssued), 付款狀態 (paymentState), 記錄狀態 (state), 付款方式 (paymentMethod) 做統一調適, 比如發現如果 記錄狀態 (state) 有不對的時候就直接在那一筆資料做 記錄狀態 (state) 的改變 然後"保存", 目前狀態的欄位有5個, 你覺的要如何設計這個狀態控制台, 我們將這個狀態控制台命名為 client\src\views\JoinRecordStatesControl.vue, 也依據目前 stores 架構的用法進行編程. 你有什麼想法嗎
