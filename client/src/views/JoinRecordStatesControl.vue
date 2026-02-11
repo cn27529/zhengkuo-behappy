@@ -224,10 +224,10 @@
               <el-tag
                 v-for="(item, index) in row.items"
                 :key="index"
-                size="small"
-                style="margin: 2px"
+                size="large"
+                class="stat-badge"
               >
-                {{ item.label }} x{{ item.quantity }}
+                {{ item.label }} {{ item.quantity }}
               </el-tag>
             </div>
           </template>
@@ -606,6 +606,14 @@ const clearBatchUpdates = () => {
 </script>
 
 <style scoped>
+.stat-badge {
+  padding: 4px 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
 .page-subtitle {
   color: #666;
   margin-top: 0.5rem;

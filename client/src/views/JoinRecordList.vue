@@ -168,8 +168,12 @@
                 class="item-tag"
               >
                 <div class="item-header">
-                  <span class="item-label">{{ item.label }}</span>
-                  <span class="item-quantity">x{{ item.quantity }}</span>
+                  <el-tag size="large" class="stat-badge">
+                    {{ item.label }} {{ item.quantity }}
+                  </el-tag>
+
+                  <!-- <span class="item-label">{{ item.label }}</span>
+                  <span class="item-quantity">x{{ item.quantity }}</span> -->
                   <span class="item-amount"
                     >{{ appConfig.dollarTitle }}{{ item.subtotal }}</span
                   >
@@ -516,6 +520,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.stat-badge {
+  padding: 4px 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
 .results-header {
   display: flex;
   justify-content: space-between;
