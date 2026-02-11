@@ -13,7 +13,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋姓名、手機、電話、地址、關係、參加項目、備註"
+              placeholder="搜尋姓名、手機、電話、地址、關係、備註"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -50,6 +50,10 @@
               清空
             </el-button>
           </div>
+          <p class="search-hint">
+            💡 提示:
+            可依項目類型或關鍵字（聯絡人、參加者、地址、備註）搜尋相關記錄
+          </p>
         </div>
       </div>
 
@@ -173,7 +177,7 @@
         <!-- 記錄ID -->
         <el-table-column
           prop="id"
-          label="記錄ID"
+          label="參加ID"
           width="80"
           align="center"
           fixed
@@ -189,6 +193,7 @@
           label="活動ID"
           width="80"
           align="center"
+          v-if="false"
         >
           <template #default="{ row }">
             <span>{{ row.activityId || "-" }}</span>
@@ -213,7 +218,7 @@
         </el-table-column>
 
         <!-- 參加項目 -->
-        <el-table-column label="參加項目" min-width="200">
+        <el-table-column label="參加項目" min-width="120">
           <template #default="{ row }">
             <div class="items-summary">
               <el-tag
@@ -229,7 +234,12 @@
         </el-table-column>
 
         <!-- 記錄狀態 -->
-        <el-table-column label="記錄狀態" width="130" align="center">
+        <el-table-column
+          label="記錄狀態"
+          width="100"
+          align="center"
+          v-if="false"
+        >
           <template #default="{ row }">
             <el-select
               v-model="row.state"
@@ -247,7 +257,7 @@
         </el-table-column>
 
         <!-- 付款狀態 -->
-        <el-table-column label="付款狀態" width="130" align="center">
+        <el-table-column label="付款狀態" width="100" align="center">
           <template #default="{ row }">
             <el-select
               v-model="row.paymentState"
@@ -265,7 +275,7 @@
         </el-table-column>
 
         <!-- 收據狀態 -->
-        <el-table-column label="收據狀態" width="130" align="center">
+        <el-table-column label="收據狀態" width="100" align="center">
           <template #default="{ row }">
             <el-select
               v-model="row.receiptIssued"
@@ -283,7 +293,7 @@
         </el-table-column>
 
         <!-- 會計狀態 -->
-        <el-table-column label="會計狀態" width="130" align="center">
+        <el-table-column label="會計狀態" width="100" align="center">
           <template #default="{ row }">
             <el-select
               v-model="row.accountingState"
@@ -301,7 +311,7 @@
         </el-table-column>
 
         <!-- 付款方式 -->
-        <el-table-column label="付款方式" width="130" align="center">
+        <el-table-column label="付款方式" width="100" align="center">
           <template #default="{ row }">
             <el-select
               v-model="row.paymentMethod"
@@ -552,7 +562,7 @@ const handleBatchUpdate = async () => {
         confirmButtonText: "確定更新",
         cancelButtonText: "取消",
         type: "warning",
-      }
+      },
     );
 
     // 過濾掉空值

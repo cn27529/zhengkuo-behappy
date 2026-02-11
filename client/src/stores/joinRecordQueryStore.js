@@ -419,8 +419,8 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     receiptIssued: {
       label: "收據狀態",
       options: [
-        { value: false, label: "未開立" },
-        { value: true, label: "已開立" },
+        { value: "false", label: "未開立" },
+        { value: "true", label: "已開立" },
       ],
     },
     accountingState: {

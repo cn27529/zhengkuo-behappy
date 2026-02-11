@@ -16,7 +16,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋姓名、手機、電話、地址、關係、參加項目、備註"
+              placeholder="搜尋姓名、手機、電話、地址、關係、備註"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -113,7 +113,7 @@
         <el-table-column label="圖標" min-width="50" align="center">
           <template #default="{ row }">
             <div>
-              <el-tooltip :content="`記錄ID: ${row.id}`" placement="top">
+              <el-tooltip :content="`參加ID: ${row.id}`" placement="top">
                 <span class="record-icon">📋</span>
               </el-tooltip>
             </div>

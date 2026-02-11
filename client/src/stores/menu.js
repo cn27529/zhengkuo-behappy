@@ -109,7 +109,7 @@ export const useMenuStore = defineStore("menu", () => {
     },
     {
       id: 10,
-      name: "參加記錄查詢",
+      name: "記錄查詢",
       path: "/join-record-list",
       icon: "🔍",
       component: "JoinRecordList",
@@ -121,7 +121,7 @@ export const useMenuStore = defineStore("menu", () => {
     {
       id: 11,
       name: "狀態控制台",
-      path: "/join-record-states",
+      path: "/states-control",
       icon: "⚙️",
       component: "JoinRecordStatesControl",
       requiredAuth: true,

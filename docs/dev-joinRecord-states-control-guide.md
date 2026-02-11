@@ -10,22 +10,24 @@
 
 控制台支援管理以下 5 個狀態欄位：
 
-| 欄位 | 說明 | 可選值 |
-|------|------|--------|
-| `state` | 記錄狀態 | pending(待處理)、confirmed(已確認)、completed(已完成) |
-| `paymentState` | 付款狀態 | unpaid(未付款)、paid(已付款) |
-| `receiptIssued` | 收據狀態 | false(未開立)、true(已開立) |
-| `accountingState` | 會計狀態 | pending(待處理)、reconciled(已對帳) |
-| `paymentMethod` | 付款方式 | 空(未選擇)、cash(現金)、transfer(銀行轉帳)、card(信用卡) |
+| 欄位              | 說明     | 可選值                                                   |
+| ----------------- | -------- | -------------------------------------------------------- |
+| `state`           | 記錄狀態 | pending(待處理)、confirmed(已確認)、completed(已完成)    |
+| `paymentState`    | 付款狀態 | unpaid(未付款)、paid(已付款)                             |
+| `receiptIssued`   | 收據狀態 | false(未開立)、true(已開立)                              |
+| `accountingState` | 會計狀態 | pending(待處理)、reconciled(已對帳)                      |
+| `paymentMethod`   | 付款方式 | 空(未選擇)、cash(現金)、transfer(銀行轉帳)、card(信用卡) |
 
 ### 2. 操作模式
 
 #### 單筆操作
+
 - 在表格中直接修改狀態下拉選單
 - 點擊該行的「保存」按鈕儲存變更
 - 修改後按鈕會從「已保存」變為「保存」狀態
 
 #### 批量操作
+
 - 使用表格左側的多選框選擇多筆記錄
 - 在批量操作區設定要更新的狀態
 - 點擊「批量保存」一次更新所有選中的記錄
@@ -33,6 +35,7 @@
 ### 3. 查詢功能
 
 支援以下查詢條件：
+
 - 關鍵字搜尋（姓名、手機、電話、地址、關係、參加項目、備註）
 - 項目類型篩選（超度/超薦、點燈、消災祈福等）
 
@@ -109,12 +112,12 @@ JoinRecordStatesControl.vue
 // Mock 模式更新
 if (serviceAdapter.getIsMock()) {
   // 更新本地 searchResults
-  const index = searchResults.value.findIndex(r => r.id === recordId);
+  const index = searchResults.value.findIndex((r) => r.id === recordId);
   if (index !== -1) {
     searchResults.value[index] = {
       ...searchResults.value[index],
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
   }
   return { success: true, message: "狀態更新成功 (Mock 模式)" };
@@ -127,11 +130,16 @@ if (serviceAdapter.getIsMock()) {
 
 ```javascript
 // 單筆更新
-const result = await joinRecordService.updateParticipationRecord(recordId, updates);
+const result = await joinRecordService.updateParticipationRecord(
+  recordId,
+  updates,
+);
 
 // 批量更新（並行調用）
 const results = await Promise.all(
-  recordIds.map(id => joinRecordService.updateParticipationRecord(id, updates))
+  recordIds.map((id) =>
+    joinRecordService.updateParticipationRecord(id, updates),
+  ),
 );
 ```
 
@@ -139,7 +147,7 @@ const results = await Promise.all(
 
 ```javascript
 {
-  path: "/join-record-states",
+  path: "/states-control",
   title: "參加記錄狀態控制台",
   name: "JoinRecordStatesControl",
   component: () => import("../views/JoinRecordStatesControl.vue"),
@@ -158,7 +166,7 @@ const results = await Promise.all(
 {
   id: 11,
   name: "狀態控制台",
-  path: "/join-record-states",
+  path: "/states-control",
   icon: "⚙️",
   component: "JoinRecordStatesControl",
   requiredAuth: true,
@@ -175,7 +183,7 @@ const results = await Promise.all(
 ```javascript
 // 未來可擴展的權限檢查
 const canEditAccountingState = computed(() => {
-  return authStore.hasRole('accountant') || authStore.hasRole('admin');
+  return authStore.hasRole("accountant") || authStore.hasRole("admin");
 });
 ```
 

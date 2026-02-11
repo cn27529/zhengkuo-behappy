@@ -238,3 +238,8 @@ scripts/stress-test-wal.js 與 scripts/stress-test-mydata-query.js 一起運行�
 # 參加記錄狀態控制台
 
 我正在規劃"參加記錄"的狀態控制台，這個控制台是可以查詢所有"參加記錄", 可以做單筆及多單的操作將 會計狀態(accountingState), 收據狀態 (receiptIssued), 付款狀態 (paymentState), 記錄狀態 (state), 付款方式 (paymentMethod) 做統一調適, 比如發現如果 記錄狀態 (state) 有不對的時候就直接在那一筆資料做 記錄狀態 (state) 的改變 然後"保存", 目前狀態的欄位有5個, 你覺的要如何設計這個狀態控制台, 我們將這個狀態控制台命名為 client\src\views\JoinRecordStatesControl.vue, 也依據目前 stores 架構的用法進行編程. 你有什麼想法嗎
+
+## "id": 47 沒有點燈
+
+client/src/views/JoinRecordStatesControl.vue 列表的"收據狀態"的選取項目沒有顯示出label值
+client/src/views/JoinRecordPrint.vue 要加上活動詳情的顯示，不然看不來是參加哪場活動

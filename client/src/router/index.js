@@ -47,7 +47,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/join-record-states",
+    path: "/states-control",
     title: "參加記錄狀態控制台",
     name: "JoinRecordStatesControl",
     component: () => import("../views/JoinRecordStatesControl.vue"),

@@ -17,30 +17,9 @@
       <div class="print-header">
         <h1>{{ printContent.contact?.name || "未填寫" }}-活動參加記錄表</h1>
         <div class="print-meta">
-          <span>參加編號：{{ printContent.id || "未分配" }}、</span>
-          <span>活動編號：{{ printContent.activityId || "未分配" }}、</span>
-          <span>登記編號：{{ printContent.registrationId || "未分配" }}</span>
-        </div>
-      </div>
-
-      <!-- 活動資訊 -->
-      <div class="print-section" v-if="activityInfo">
-        <h2 class="section-title">活動資訊</h2>
-        <div class="section-content">
-          <table class="info-table">
-            <tbody>
-              <tr>
-                <td width="25%"><strong>活動名稱：</strong></td>
-                <td width="75%" colspan="3">
-                  {{ activityInfo?.name || "未填寫" }}
-                </td>
-              </tr>
-              <tr v-if="activityInfo?.date">
-                <td><strong>活動日期：</strong></td>
-                <td colspan="3">{{ activityInfo.date }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <span>參加ID：{{ printContent.id || "未分配" }}、</span>
+          <span>活動ID：{{ printContent.activityId || "未分配" }}、</span>
+          <span>登記ID：{{ printContent.registrationId || "未分配" }}</span>
         </div>
       </div>
 
@@ -100,7 +79,7 @@
               <thead>
                 <tr>
                   <th width="5%">序號</th>
-                  <th width="15%">參加項目</th>
+                  <th width="15%">項目名稱</th>
                   <th width="5%">數量</th>
                   <th width="15%">小計</th>
                   <th width="35%">地址</th>
@@ -110,12 +89,7 @@
               <tbody>
                 <tr v-for="(item, index) in printContent.items" :key="index">
                   <td class="text-center">{{ index + 1 }}</td>
-                  <td class="text-center">
-                    {{ item.label || "未填寫" }}
-                    <!-- <p v-if="item.lampDetails" v-for="lamp in item.lampDetails">
-                      {{ lamp.lampTypeLabel }}
-                    </p> -->
-                  </td>
+                  <td class="text-center">{{ item.label || "未填寫" }}</td>
                   <td class="text-center">{{ item.quantity || 0 }}</td>
                   <td class="text-center">
                     {{ appConfig.dollarTitle }}{{ item.subtotal || 0 }}
@@ -202,8 +176,8 @@ import { ElMessage } from "element-plus";
 import { appConfig } from "../config/appConfig.js";
 import { useActivityStore } from "../stores/activityStore.js";
 
-const activityStore = useActivityStore();
 const router = useRouter();
+const activityStore = useActivityStore();
 const printContent = ref({});
 const isPrinting = ref(false);
 const printTime = ref("");
@@ -213,7 +187,7 @@ const printId = ref("");
 const activityInfo = computed(() => {
   const activityId = printContent.value.activityId;
   if (!activityId) return null;
-  return activityStore.allActivities.find((a) => a.id === activityId);
+  return activityStore.activities.find((a) => a.id === activityId);
 });
 
 // 獲取參加者姓名列表
@@ -327,7 +301,7 @@ const afterPrint = () => (isPrinting.value = false);
 onMounted(async () => {
   setPrintTime();
   loadPrintData();
-  await activityStore.getAllActivities();
+
   window.addEventListener("beforeprint", beforePrint);
   window.addEventListener("afterprint", afterPrint);
 });
