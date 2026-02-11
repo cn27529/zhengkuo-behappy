@@ -228,3 +228,7 @@ docs/architecture-overview.md 的 **核心模組：** 還缺少 client/src/store
 需要script測一下, 如同 scripts/stress-test-wal.js，我做查詢，用 http://localhost:3000/api/my-data
 
 scripts/stress-test-wal.js 與 scripts/stress-test-mydata-query.js 一起運行好像沒有出現 db locks 耶 哈哈，我有運行 scripts/check-db-locks.js 查看 XD。
+
+
+# renew dashboard
+你對 docs/business-logic.md 文件的理解，我想聽聽你的說法，你認為 client/src/views/Dashboard.vue 資訊牆頁面，還需要什麼信息可以幫助操作這個系統的使用者
