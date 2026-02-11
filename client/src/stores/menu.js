@@ -119,6 +119,17 @@ export const useMenuStore = defineStore("menu", () => {
       publish: true,
     },
     {
+      id: 11,
+      name: "狀態控制台",
+      path: "/join-record-states",
+      icon: "⚙️",
+      component: "JoinRecordStatesControl",
+      requiredAuth: true,
+      order: 11,
+      enabled: true,
+      publish: true,
+    },
+    {
       id: 69,
       name: "天干地支時鐘",
       path: "/td-clock",

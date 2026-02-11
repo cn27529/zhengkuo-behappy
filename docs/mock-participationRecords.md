@@ -115,6 +115,11 @@
 - `unpaid`: 未付款
 - `paid`: 已付款
 
+### 收據狀態 (receiptIssued)
+
+- `false`: 未開立
+- `true`: 已開立
+
 ### 會計狀態 (accountingState)
 
 - `pending`: 待處理
