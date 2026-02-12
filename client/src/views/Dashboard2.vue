@@ -228,7 +228,6 @@
                 </div>
                 <div class="list-meta">
                   <span v-for="item in record.items">
-                    
                     <el-badge
                       :value="item.quantity"
                       class="item"
@@ -237,20 +236,14 @@
                       style="margin-right: 13px"
                       v-if="false"
                     >
-                    <el-button
-                      size="small"
-                      type="primary"
-                      
-                      >{{ item.label }}</el-button
-                    >
-                  </el-badge>
+                      <el-button size="small">{{
+                        item.label
+                      }}</el-button>
+                    </el-badge>                  
 
-                    <el-button v-if="item.label!=='陽上人'"
-                      size="small"
-                      type="warning"
-                      style="margin-right: 13px"
-                      >{{ item.label }}</el-button
-                    >
+                    <span v-if="item.label !== '陽上人'" class="stat-badge">
+                      {{ item.label }}
+                    </span>
                   </span>
 
                   {{ record.totalAmount }} 元 ·
@@ -337,6 +330,15 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.stat-badge {
+  padding: 4px 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-right: 10px
+}
+
 .dashboard2 {
   padding: 1.5rem 2rem 2.5rem;
 }

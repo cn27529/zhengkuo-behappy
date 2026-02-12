@@ -386,6 +386,7 @@ onMounted(async () => {
   color: white;
   border-radius: 4px;
   font-size: 0.75rem;
+  margin-right: 10px
 }
 
 .record-amount {

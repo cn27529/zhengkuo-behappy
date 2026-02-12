@@ -526,6 +526,7 @@ onMounted(() => {
   color: white;
   border-radius: 4px;
   font-size: 0.75rem;
+  margin-right: 10px
 }
 
 .results-header {
