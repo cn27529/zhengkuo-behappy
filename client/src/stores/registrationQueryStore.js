@@ -133,151 +133,91 @@ export const useQueryStore = defineStore("registrationQuery", () => {
     }
   };
 
-  const getFilteredData = (queryData, data) => {
-    console.log("🎯 開始過濾數據...");
-    //console.log("查詢條件:", queryData);
-    //console.log("原始數據:", data);
+  // 輔助函式：處理電話模糊匹配
+  const fuzzyPhoneMatch = (target, query) => {
+    if (!target || !query) return false;
+    const cleanTarget = target.replace(/\D/g, "");
+    const cleanQuery = query.replace(/\D/g, "");
+    return cleanQuery !== ""
+      ? cleanTarget.includes(cleanQuery)
+      : target.includes(query);
+  };
 
-    if (!queryData || !queryData.query || !queryData.query.trim()) {
-      console.log("🔍 無查詢條件，返回所有數據");
-      return data;
-    }
+  const getFilteredData = (queryData, data) => {
+    if (!queryData || !queryData.query || !queryData.query.trim()) return data;
+    if (!data || !Array.isArray(data)) return [];
 
     const query = queryData.query.trim().toLowerCase();
-    console.log("🔍 搜索關鍵字:", query);
 
-    if (!data || !Array.isArray(data)) {
-      console.warn("⚠️ 數據不是陣列或為空");
-      return [];
-    }
-
-    let filteredData = data.filter((item, index) => {
-      console.log(`--- 檢查第 ${index} 筆資料 ---`);
-      console.log("資料內容:", item);
-
+    return data.filter((item) => {
       let matchFound = false;
 
-      // 檢查聯絡人
+      // 檢查 registrationId
+      if (
+        item.registrationId &&
+        item.registrationId.toString().includes(query)
+      ) {
+        console.log("✅ 匹配登記ID");
+        matchFound = true;
+      }
+
       if (item.contact) {
-        console.log("檢查聯絡人:", item.contact);
-        if (
-          item.contact.name &&
-          item.contact.name.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人姓名");
-          matchFound = true;
-        }
-        // 匹配資料表屬性
-        if (
-          item.contact.relationship &&
-          item.contact.relationship.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人關係");
-          matchFound = true;
-        }
-        if (
-          item.contact.relationship &&
-          item.contact.relationship.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人關係");
-          matchFound = true;
-        }
-        if (
-          item.contact.otherRelationship &&
-          item.contact.otherRelationship.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人關係其它");
+        // 姓名與關係比對
+        if (item.contact.name?.toLowerCase().includes(query)) {
+          console.log("✅ 匹配聯絡人姓名:", item.contact.name);
           matchFound = true;
         }
 
-        if (
-          item.contact.mobile &&
-          item.contact.mobile.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人手機");
+        if (item.contact.relationship?.toLowerCase().includes(query)) {
+          console.log("✅ 匹配聯絡人關係:", item.contact.relationship);
           matchFound = true;
         }
-        if (
-          item.contact.phone &&
-          item.contact.phone.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配聯絡人電話");
+        if (item.contact.otherRelationship?.toLowerCase().includes(query)) {
+          console.log("✅ 匹配聯絡人其他關係:", item.contact.otherRelationship);
           matchFound = true;
         }
+
+        // ✅ 電話模糊比對優化
+        if (!matchFound && fuzzyPhoneMatch(item.contact.mobile, query))
+          console.log("✅ 匹配聯絡人手機:", item.contact.mobile);
+        matchFound = true;
+        if (!matchFound && fuzzyPhoneMatch(item.contact.phone, query))
+          console.log("✅ 匹配聯絡人電話:", item.contact.phone);
+        matchFound = true;
       }
 
-      // 檢查消災信息
-      if (item.blessing && !matchFound) {
-        console.log("檢查消災信息:", item.blessing);
-        if (
-          item.blessing.address &&
-          item.blessing.address.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配消災地址");
+      // 消災信息
+      if (!matchFound && item.blessing) {
+        if (item.blessing.address?.toLowerCase().includes(query))
           matchFound = true;
-        }
-        if (item.blessing.persons) {
-          console.log("檢查消災人員:", item.blessing.persons);
-          item.blessing.persons.forEach((person, i) => {
-            if (
-              person &&
-              person.name &&
-              person.name.toLowerCase().includes(query)
-            ) {
-              console.log(`✅ 匹配消災人員 ${i}:`, person.name);
-              matchFound = true;
-            }
-          });
-        }
+        if (
+          item.blessing.persons?.some((p) =>
+            p.name?.toLowerCase().includes(query),
+          )
+        )
+          matchFound = true;
       }
 
-      // 檢查超度信息
-      if (item.salvation && !matchFound) {
-        console.log("檢查超度信息:", item.salvation);
-        if (
-          item.salvation.address &&
-          item.salvation.address.toLowerCase().includes(query)
-        ) {
-          console.log("✅ 匹配超度地址");
+      // 超度信息
+      if (!matchFound && item.salvation) {
+        if (item.salvation.address?.toLowerCase().includes(query))
           matchFound = true;
-        }
-        if (item.salvation.ancestors) {
-          console.log("檢查祖先:", item.salvation.ancestors);
-          item.salvation.ancestors.forEach((ancestor, i) => {
-            if (
-              ancestor &&
-              ancestor.surname &&
-              ancestor.surname.toLowerCase().includes(query)
-            ) {
-              console.log(`✅ 匹配祖先 ${i}:`, ancestor.surname);
-              matchFound = true;
-            }
-          });
-        }
-        if (item.salvation.survivors) {
-          console.log("檢查陽上人:", item.salvation.survivors);
-          item.salvation.survivors.forEach((survivor, i) => {
-            if (
-              survivor &&
-              survivor.name &&
-              survivor.name.toLowerCase().includes(query)
-            ) {
-              console.log(`✅ 匹配陽上人 ${i}:`, survivor.name);
-              matchFound = true;
-            }
-          });
-        }
+        if (
+          item.salvation.ancestors?.some((a) =>
+            a.surname?.toLowerCase().includes(query),
+          )
+        )
+          matchFound = true;
+        if (
+          item.salvation.survivors?.some((s) =>
+            s.name?.toLowerCase().includes(query),
+          )
+        )
+          matchFound = true;
       }
 
-      console.log(
-        `第 ${index} 筆資料匹配結果:`,
-        matchFound ? "✅ 匹配" : "❌ 不匹配",
-      );
       return matchFound;
     });
-
-    console.log("🎯 過濾完成，結果:", filteredData);
-    return filteredData;
   };
 
   // 狀態管理方法
