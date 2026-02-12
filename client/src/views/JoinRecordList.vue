@@ -48,6 +48,7 @@
               size="large"
               style="width: 150px"
               clearable
+              v-if="false"
             >
               <el-option
                 v-for="option in itemTypeOptions"
@@ -526,7 +527,7 @@ onMounted(() => {
   color: white;
   border-radius: 4px;
   font-size: 0.75rem;
-  margin-right: 10px
+  margin-right: 10px;
 }
 
 .results-header {
