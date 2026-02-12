@@ -168,7 +168,7 @@
                 class="item-tag"
               >
                 <div class="item-header">
-                  <el-tag size="large" class="stat-badge">
+                  <el-tag class="stat-badge">
                     {{ item.label }} {{ item.quantity }}
                   </el-tag>
 
@@ -526,6 +526,7 @@ onMounted(() => {
   color: white;
   border-radius: 4px;
   font-size: 0.75rem;
+  margin-right: 10px
 }
 
 .results-header {
