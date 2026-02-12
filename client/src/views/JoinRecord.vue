@@ -241,7 +241,7 @@
                   class="selected-count"
                   v-if="selections.chaodu.length > 0"
                 >
-                  (已選 {{ selections.chaodu.length }} 位)
+                  (已選 {{ selections.chaodu.length }} )
                 </span>
                 <span class="price-tag"
                   >每位 {{ appConfig.dollarTitle
@@ -325,7 +325,7 @@
                 }}</span>
 
                 <span class="selected-count" v-if="selections.qifu.length > 0">
-                  (已選 {{ selections.qifu.length }} 位)
+                  (已選 {{ selections.qifu.length }} )
                 </span>
                 <span class="price-tag"
                   >每位 {{ appConfig.dollarTitle
@@ -386,7 +386,7 @@
                   class="selected-count"
                   v-if="selections.diandeng.length > 0"
                 >
-                  (已選 {{ selections.diandeng.length }} 位)
+                  (已選 {{ selections.diandeng.length }} )
                 </span>
 
                 <span class="price-tag"
@@ -473,7 +473,7 @@
                   class="selected-count"
                   v-if="selections.xiaozai.length > 0"
                 >
-                  (已選 {{ selections.xiaozai.length }} 位)
+                  (已選 {{ selections.xiaozai.length }} )
                 </span>
 
                 <span class="price-tag"
@@ -532,7 +532,7 @@
                 }}</span>
 
                 <span class="selected-count" v-if="selections.pudu.length > 0">
-                  (已選 {{ selections.pudu.length }} 位)
+                  (已選 {{ selections.pudu.length }} )
                 </span>
 
                 <span class="price-tag"
