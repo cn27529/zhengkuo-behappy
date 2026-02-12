@@ -6,6 +6,7 @@ import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
 import mockParticipationRecords from "../data/mock_participation_records.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
+import { PhoneMatch } from "../utils/phoneMatchUtils.js";
 
 // 活動參加記錄查詢的 Pinia store，管理查詢狀態與操作。
 export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
@@ -165,16 +166,6 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     }
   };
 
-  // 輔助函式：處理電話模糊匹配
-  const fuzzyPhoneMatch = (target, query) => {
-    if (!target || !query) return false;
-    const cleanTarget = target.replace(/\D/g, "");
-    const cleanQuery = query.replace(/\D/g, "");
-    return cleanQuery !== ""
-      ? cleanTarget.includes(cleanQuery)
-      : target.includes(query);
-  };
-
   const getFilteredData = (queryData, data) => {
     console.log("🎯 開始過濾參加記錄數據...");
 
@@ -244,30 +235,46 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
         // 檢查聯絡人資訊
         if (item.contact) {
-          if (item.contact.name?.toLowerCase().includes(query)) {
+          if (
+            item.contact.name &&
+            item.contact.name.toLowerCase().includes(query)
+          ) {
             console.log("✅ 匹配聯絡人姓名:", item.contact.name);
             matchFound = true;
           }
-
-          if (item.contact.relationship?.toLowerCase().includes(query)) {
+          if (
+            item.contact.mobile &&
+            //item.contact.mobile.includes(query)
+            PhoneMatch.fuzzyPhoneMatch(item.contact.mobile, query)
+          ) {
+            console.log("✅ 匹配聯絡人手機:", item.contact.mobile);
+            matchFound = true;
+          }
+          if (
+            item.contact.phone &&
+            //item.contact.phone.includes(query)
+            PhoneMatch.fuzzyPhoneMatch(item.contact.phone, query)
+          ) {
+            console.log("✅ 匹配聯絡人電話:", item.contact.phone);
+            matchFound = true;
+          }
+          if (
+            item.contact.relationship &&
+            item.contact.relationship.toLowerCase().includes(query)
+          ) {
             console.log("✅ 匹配聯絡人關係:", item.contact.relationship);
             matchFound = true;
           }
-          if (item.contact.otherRelationship?.toLowerCase().includes(query)) {
+          if (
+            item.contact.otherRelationship &&
+            item.contact.otherRelationship.toLowerCase().includes(query)
+          ) {
             console.log(
               "✅ 匹配聯絡人其他關係:",
               item.contact.otherRelationship,
             );
             matchFound = true;
           }
-
-          // ✅ 電話模糊比對優化
-          if (!matchFound && fuzzyPhoneMatch(item.contact.mobile, query))
-            console.log("✅ 匹配聯絡人手機:", item.contact.mobile);
-          matchFound = true;
-          if (!matchFound && fuzzyPhoneMatch(item.contact.phone, query))
-            console.log("✅ 匹配聯絡人電話:", item.contact.phone);
-          matchFound = true;
         }
 
         // 檢查項目內容

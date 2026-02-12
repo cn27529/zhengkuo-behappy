@@ -8,3 +8,7 @@ const fuzzyPhoneMatch = (target, query) => {
     ? cleanTarget.includes(cleanQuery)
     : target.includes(query);
 };
+
+export const PhoneMatch = Object.freeze({
+  fuzzyPhoneMatch,
+});
