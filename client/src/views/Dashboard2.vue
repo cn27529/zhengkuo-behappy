@@ -242,7 +242,7 @@
                     </el-badge>                  
 
                     <span v-if="item.label !== '陽上人'" class="stat-badge">
-                      {{ item.label }}
+                      {{ item.label }} {{ item.quantity }}
                     </span>
                   </span>
 

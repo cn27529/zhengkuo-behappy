@@ -229,9 +229,14 @@
                   :indeterminate.prop="isIndeterminate('chaodu')"
                   @click.stop="toggleActivity('chaodu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.chaodu.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.chaodu.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.chaodu.length > 0"
@@ -311,9 +316,14 @@
                   :indeterminate.prop="isIndeterminate('qifu')"
                   @click.stop="toggleActivity('qifu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.qifu.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.qifu.label
                 }}</span>
+
                 <span class="selected-count" v-if="selections.qifu.length > 0">
                   (已選 {{ selections.qifu.length }} 位)
                 </span>
@@ -364,9 +374,14 @@
                   :indeterminate.prop="isIndeterminate('diandeng')"
                   @click.stop="toggleActivity('diandeng')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.diandeng.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.diandeng.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.diandeng.length > 0"
@@ -446,9 +461,14 @@
                   :indeterminate.prop="isIndeterminate('xiaozai')"
                   @click.stop="toggleActivity('xiaozai')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.xiaozai.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.xiaozai.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.xiaozai.length > 0"
@@ -503,9 +523,14 @@
                   :indeterminate.prop="isIndeterminate('pudu')"
                   @click.stop="toggleActivity('pudu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.pudu.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.pudu.label
                 }}</span>
+
                 <span class="selected-count" v-if="selections.pudu.length > 0">
                   (已選 {{ selections.pudu.length }} 位)
                 </span>
@@ -1041,6 +1066,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
+.stat-badge {
+  padding: 4px 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-right: 10px
+}
+
 .form-section,
 .search-section,
 .results-section {

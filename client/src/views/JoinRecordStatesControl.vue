@@ -224,7 +224,6 @@
               <el-tag
                 v-for="(item, index) in row.items"
                 :key="index"
-                size="large"
                 class="stat-badge"
               >
                 {{ item.label }} {{ item.quantity }}

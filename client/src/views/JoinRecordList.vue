@@ -168,7 +168,7 @@
                 class="item-tag"
               >
                 <div class="item-header">
-                  <el-tag size="large" class="stat-badge">
+                  <el-tag class="stat-badge">
                     {{ item.label }} {{ item.quantity }}
                   </el-tag>
 
