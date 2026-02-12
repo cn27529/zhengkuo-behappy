@@ -243,3 +243,7 @@ scripts/stress-test-wal.js 與 scripts/stress-test-mydata-query.js 一起運行�
 
 client/src/views/JoinRecordStatesControl.vue 列表的"收據狀態"的選取項目沒有顯示出label值
 client/src/views/JoinRecordPrint.vue 要加上活動詳情的顯示，不然看不來是參加哪場活動
+
+##
+
+實現 client/src/views/JoinRecord.vue 將 const filteredRegistrations 移到 joinRecordStore，確認移過去沒問題以後將 joinRecordStore 的 const filteredRegistrations 調用 client/src/stores/registrationQueryStore.js 的 const getFilteredData，因為 client/src/stores/registrationQueryStore.js 的 const getFilteredData 己經具有很好的過濾功能。你覺的可行性如何呢，你分析一下。

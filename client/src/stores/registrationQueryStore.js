@@ -194,7 +194,7 @@ export const useQueryStore = defineStore("registrationQuery", () => {
         if (
           item.contact.mobile &&
           //item.contact.mobile.toLowerCase().includes(query)
-          PhoneMatch.fuzzyPhoneMatch(item.contact.mobile,query)
+          PhoneMatch.fuzzyPhoneMatch(item.contact.mobile, query)
         ) {
           console.log("✅ 匹配聯絡人手機");
           matchFound = true;
@@ -202,7 +202,7 @@ export const useQueryStore = defineStore("registrationQuery", () => {
         if (
           item.contact.phone &&
           //item.contact.phone.toLowerCase().includes(query)
-          PhoneMatch.fuzzyPhoneMatch(item.contact.phone,query)
+          PhoneMatch.fuzzyPhoneMatch(item.contact.phone, query)
         ) {
           console.log("✅ 匹配聯絡人電話");
           matchFound = true;
@@ -230,6 +230,14 @@ export const useQueryStore = defineStore("registrationQuery", () => {
               console.log(`✅ 匹配消災人員 ${i}:`, person.name);
               matchFound = true;
             }
+            if (
+              person &&
+              person.notes &&
+              person.notes.toLowerCase().includes(query)
+            ) {
+              console.log(`✅ 匹配消災人員備註 ${i}:`, person.notes);
+              matchFound = true;
+            }
           });
         }
       }
@@ -255,6 +263,14 @@ export const useQueryStore = defineStore("registrationQuery", () => {
               console.log(`✅ 匹配祖先 ${i}:`, ancestor.surname);
               matchFound = true;
             }
+            if (
+              ancestor &&
+              ancestor.notes &&
+              ancestor.notes.toLowerCase().includes(query)
+            ) {
+              console.log(`✅ 匹配祖先備註 ${i}:`, ancestor.notes);
+              matchFound = true;
+            }
           });
         }
         if (item.salvation.survivors) {
@@ -266,6 +282,14 @@ export const useQueryStore = defineStore("registrationQuery", () => {
               survivor.name.toLowerCase().includes(query)
             ) {
               console.log(`✅ 匹配陽上人 ${i}:`, survivor.name);
+              matchFound = true;
+            }
+            if (
+              survivor &&
+              survivor.notes &&
+              survivor.notes.toLowerCase().includes(query)
+            ) {
+              console.log(`✅ 匹配陽上人備註 ${i}:`, survivor.notes);
               matchFound = true;
             }
           });

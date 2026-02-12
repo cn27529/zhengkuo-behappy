@@ -714,7 +714,6 @@ const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
 
 // 狀態管理
-const searchKeyword = ref("");
 const isDev = computed(() => authService.getCurrentDev());
 const selectedActivityId = ref(null);
 
@@ -726,6 +725,8 @@ const {
   allRegistrations,
   savedRecords,
   totalAmount,
+  searchKeyword,
+  filteredRegistrations,
 } = storeToRefs(joinRecordStore);
 
 const { activities: allActivities, loading: activitiesLoading } =
@@ -847,41 +848,6 @@ const hasValidAncestors = (registration) => {
 
   return hasAddress && hasValidAncestorNames;
 };
-
-// 計算篩選後的祈福登記
-const filteredRegistrations = computed(() => {
-  if (!searchKeyword.value) {
-    return allRegistrations.value;
-  }
-
-  const keyword = searchKeyword.value.toLowerCase();
-  return allRegistrations.value.filter((reg) => {
-    return (
-      reg.formSource.toLowerCase().includes(keyword) ||
-      reg.formName.toLowerCase().includes(keyword) ||
-      reg.contact.name.toLowerCase().includes(keyword) ||
-      reg.contact.mobile.includes(keyword) ||
-      (reg.contact.phone && reg.contact.phone.includes(keyword)) ||
-      reg.contact.relationship.toLowerCase().includes(keyword) ||
-      // 消災地址
-      reg.blessing.address.toLowerCase().includes(keyword) ||
-      reg.blessing.persons.some(
-        (person) =>
-          person.name.toLowerCase().includes(keyword) ||
-          person.zodiac.toLowerCase().includes(keyword) ||
-          person.notes.toLowerCase().includes(keyword),
-      ) ||
-      // 超度地址
-      reg.salvation.address.toLowerCase().includes(keyword) ||
-      reg.salvation.survivors.some(
-        (survivor) =>
-          survivor.name.toLowerCase().includes(keyword) ||
-          survivor.zodiac.toLowerCase().includes(keyword) ||
-          survivor.notes.toLowerCase().includes(keyword),
-      )
-    );
-  });
-});
 
 // 獲取資料來源
 const getSourceData = (activityKey) => {
