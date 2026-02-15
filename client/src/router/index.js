@@ -65,6 +65,13 @@ const routes = [
     title: "參加記錄報表",
     name: "JoinRecordReportControl",
     component: () => import("../views/JoinRecordReportControl.vue"),
+    beforeEnter: (to, from, next) => {
+      console.log("🚪 進入 JoinRecordReportControl 路由");
+      const pageStateStore = usePageStateStore();
+      pageStateStore.clearPageState("joinRecordReport");
+      console.log("🚪 清除頁面狀態");
+      next();
+    },
     meta: { requiresAuth: true },
   },
   {
