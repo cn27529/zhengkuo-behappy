@@ -3,6 +3,7 @@ const { execSync, spawn } = require("child_process");
 const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
+const { createSymlink, provideWindowsAdvice } = require("./windows-symlink-helper");
 
 // 顏色輸出
 const colors = {
@@ -333,31 +334,38 @@ function showDatabaseMenu(config, projectRoot, activeDb) {
           return;
         }
 
-        // 建立符號連結
-        fs.symlinkSync(targetFile, currentLink);
-        success(`✅ 已建立連結: current.db -> ${targetFile}`);
-      } catch (err) {
-        error(`❌ 建立連結失敗: ${err.message}`);
-
-        if (err.code === "EEXIST") {
-          error(`💡 檔案已存在，嘗試強制刪除...`);
-          try {
-            fs.unlinkSync(currentLink);
-            fs.symlinkSync(targetFile, currentLink);
-            success(`✅ 已強制重新建立連結`);
-          } catch (forceErr) {
-            error(`❌ 強制重建失敗: ${forceErr.message}`);
+        // 使用輔助工具建立符號連結
+        const result = createSymlink(targetFile, currentLink);
+        
+        if (result.success) {
+          if (result.warning) {
+            warning(`⚠️  ${result.warning}`);
           }
-        } else if (process.platform === "win32") {
-          // Windows 備用方案
-          warning("Windows 環境，嘗試使用複製...");
-          try {
-            fs.copyFileSync(targetPath, currentLink);
-            success(`✅ 已複製: ${targetFile} -> current.db`);
-          } catch (copyErr) {
-            error(`❌ 複製失敗: ${copyErr.message}`);
+          
+          // 顯示使用的方法
+          const methodNames = {
+            'symlink': '符號連結',
+            'nodejs-symlink': 'Node.js 符號連結',
+            'mklink': 'Windows mklink',
+            'copy': '文件複製'
+          };
+          info(`使用方法: ${methodNames[result.method] || result.method}`);
+        } else {
+          error(`❌ 建立連結失敗: ${result.error}`);
+          
+          // 提供 Windows 特定建議
+          if (process.platform === 'win32') {
+            console.log();
+            provideWindowsAdvice();
           }
+          
+          rl2.close();
+          return;
         }
+      } catch (err) {
+        error(`❌ 處理資料庫連結時發生錯誤: ${err.message}`);
+        rl2.close();
+        return;
       }
     }
 
@@ -399,7 +407,7 @@ function showDatabaseMenu(config, projectRoot, activeDb) {
     cleanupWalFiles();
 
     // 啟動服務
-    startServices(projectRoot);
+    //startServices(projectRoot);
   });
 }
 
@@ -452,6 +460,7 @@ function startServices(projectRoot) {
   log("  • Vue Client (port 5173)", "blue");
   log("  • Rust-Axum (port 3000)", "blue");
   log("  • Log Server (port 3002)", "blue");
+  log("  • 服務入口總覽 (port 8080)", "blue");
   log("");
 
   log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
@@ -464,14 +473,16 @@ function startServices(projectRoot) {
         "concurrently",
         "--kill-others",
         "--names",
-        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS",
+        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS",
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
-        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold",
+        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold",
         '"npm run start:server"',
         '"npm run start:client"',
         '"npm run start:rust"',
-        '"npm:start:logs"',
+        '"npm run start:logs"',
+        '"npm run start:docs"',
+        '"npm run start:apps"',
       ],
       {
         stdio: "inherit",

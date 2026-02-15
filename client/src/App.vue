@@ -66,7 +66,7 @@
     </div>
     <!-- 底部-->
     <footer v-if="layoutReady && showFooter">
-      <p>© 2025 {{ appTitle }} | 弘扬佛法、服务众生</p>
+      <p>© 2026 {{ appTitle }} | 弘扬佛法、服务众生</p>
     </footer>
     <!-- <DevTools /> -->
   </div>
@@ -147,6 +147,7 @@ const handleMenuClick = (menuItem) => {
 const computeVisibility = () => {
   const isPrint = route.path && route.path.includes("print");
   const tdClock = route.path && route.path.includes("td-clock");
+
   return {
     header: !isPrint && !tdClock, // 顶部导航栏：非打印页面显示
     sidebar:

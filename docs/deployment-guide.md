@@ -69,7 +69,7 @@ VITE_ENABLE_MOCK=false
 
 ```bash
 # rust-axum/.env
-DATABASE_URL=sqlite:../db/data.db
+DATABASE_URL=sqlite:../db/current.db
 RUST_LOG=debug
 SERVER_HOST=0.0.0.0
 SERVER_PORT=3000
@@ -84,7 +84,7 @@ JWT_SECRET=your-jwt-secret-key
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your-secure-password
 DB_CLIENT=sqlite3
-DB_FILENAME=../db/data.db
+DB_FILENAME=../db/current.db
 KEY=your-random-key-here
 SECRET=your-random-secret-here
 ACCESS_TOKEN_TTL=24h
@@ -102,12 +102,12 @@ mkdir -p db
 
 # 執行資料庫遷移 (Rust 後端)
 cd rust-axum
-sqlx migrate run --database-url sqlite:../db/data.db
+sqlx migrate run --database-url sqlite:../db/current.db
 
 # 或使用提供的 SQL 腳本
-sqlite3 ../db/data.db < migrations/sqlite_registrationDB_table.sql
-sqlite3 ../db/data.db < migrations/sqlite_activityDB_table.sql
-sqlite3 ../db/data.db < migrations/sqlite_monthlyDonateDB_table.sql
+sqlite3 ../db/current.db < migrations/sqlite_registrationDB_table.sql
+sqlite3 ../db/current.db < migrations/sqlite_activityDB_table.sql
+sqlite3 ../db/current.db < migrations/sqlite_monthlyDonateDB_table.sql
 ```
 
 ### 4. 啟動開發服務
@@ -251,16 +251,7 @@ docker run -d -p 3000:3000 zhengkuo-rust:latest
 
 #### 手動部署流程
 
-```bash
-# 1. 切換到部署分支
-git checkout zk-client-netlify
-
-# 2. 重設為目標版本
-git reset --hard zk-client-v2-1210
-
-# 3. 推送到遠端 (觸發自動部署)
-git push origin zk-client-netlify --force
-```
+詳見 scripts/deploy-netlify.sh
 
 ### 2. 後端部署 (VPS/雲端服務器)
 
@@ -367,7 +358,7 @@ WorkingDirectory=/opt/zhengkuo-behappy/rust-axum
 ExecStart=/opt/zhengkuo-behappy/rust-axum/target/release/rust-axum
 Restart=always
 RestartSec=10
-Environment=DATABASE_URL=sqlite:../db/data.db
+Environment=DATABASE_URL=sqlite:../db/current.db
 Environment=RUST_LOG=info
 
 [Install]
@@ -425,7 +416,7 @@ sudo journalctl -u zhengkuo-rust -f
 # scripts/backup-db.sh
 
 BACKUP_DIR="/opt/backups/zhengkuo"
-DB_PATH="/opt/zhengkuo-behappy/db/data.db"
+DB_PATH="/opt/zhengkuo-behappy/db/current.db"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 # 創建備份目錄
@@ -457,13 +448,13 @@ crontab -e
 
 ```bash
 # 匯出資料
-sqlite3 /path/to/old/data.db ".dump" > backup.sql
+sqlite3 /path/to/old/current.db ".dump" > backup.sql
 
 # 匯入到新資料庫
-sqlite3 /path/to/new/data.db < backup.sql
+sqlite3 /path/to/new/current.db < backup.sql
 
 # 驗證資料完整性
-sqlite3 /path/to/new/data.db "PRAGMA integrity_check;"
+sqlite3 /path/to/new/current.db "PRAGMA integrity_check;"
 ```
 
 ---
@@ -502,7 +493,7 @@ sqlite3 /path/to/new/data.db "PRAGMA integrity_check;"
 curl -f http://localhost:3000/health || echo "API health check failed"
 
 # 檢查資料庫連接
-sqlite3 /opt/zhengkuo-behappy/db/data.db "SELECT 1;" || echo "Database check failed"
+sqlite3 /opt/zhengkuo-behappy/db/current.db "SELECT 1;" || echo "Database check failed"
 
 # 檢查磁碟空間
 df -h | awk '$5 > 80 {print "Disk usage warning: " $0}'
@@ -561,11 +552,11 @@ sudo ufw status
 
 ```bash
 # 檢查資料庫文件權限
-ls -la /opt/zhengkuo-behappy/db/data.db
+ls -la /opt/zhengkuo-behappy/db/current.db
 
 # 修正權限
-sudo chown www-data:www-data /opt/zhengkuo-behappy/db/data.db
-sudo chmod 664 /opt/zhengkuo-behappy/db/data.db
+sudo chown www-data:www-data /opt/zhengkuo-behappy/db/current.db
+sudo chmod 664 /opt/zhengkuo-behappy/db/current.db
 ```
 
 #### 3. Nginx 配置錯誤
@@ -588,7 +579,7 @@ sudo systemctl stop zhengkuo-rust
 sudo systemctl stop nginx
 
 # 恢復資料庫備份
-cp /opt/backups/zhengkuo/latest_backup.db /opt/zhengkuo-behappy/db/data.db
+cp /opt/backups/zhengkuo/latest_backup.db /opt/zhengkuo-behappy/db/current.db
 
 # 重啟服務
 sudo systemctl start zhengkuo-rust
@@ -639,8 +630,8 @@ echo "0 12 * * * /usr/bin/certbot renew --quiet" | sudo crontab -
 
 ```bash
 # 設定資料庫文件權限
-sudo chmod 600 /opt/zhengkuo-behappy/db/data.db
-sudo chown www-data:www-data /opt/zhengkuo-behappy/db/data.db
+sudo chmod 600 /opt/zhengkuo-behappy/db/current.db
+sudo chown www-data:www-data /opt/zhengkuo-behappy/db/current.db
 ```
 
 ---

@@ -5,7 +5,7 @@
       <h2>儀表板</h2>
       <p style="display: none">查看登記情況和統計數據</p>
       <div style="" class="total-participants">
-        法會總參與人次&nbsp;
+        總參與人次&nbsp;
         <AnimatedNumber
           :value="totalParticipants"
           :duration="2500"

@@ -1,0 +1,43 @@
+./rust-axum
+├── Cargo.lock
+├── Cargo.toml
+├── README.md
+├── for-rustaxum.txt
+├── migrations
+│   ├── directus_participationRecordDB_collection.json
+│   ├── mydata.sql
+│   ├── sqlite_activityDB_table.sql
+│   ├── sqlite_logEntryDB_table.sql
+│   ├── sqlite_monthlyDonateDB_table.sql
+│   ├── sqlite_participationRecordDB_table_v2.sql
+│   ├── sqlite_participationRecordDB_testdata_v2.sql
+│   └── sqlite_registrationDB_table.sql
+├── package.json
+└── src
+    ├── db.rs
+    ├── handlers
+    │   ├── activity.rs
+    │   ├── mod.rs
+    │   ├── monthly_donate.rs
+    │   ├── participation_record.rs
+    │   └── registration.rs
+    ├── main.rs
+    ├── middleware
+    │   └── mod.rs
+    ├── models
+    │   ├── activity.rs
+    │   ├── api_response.rs
+    │   ├── mod.rs
+    │   ├── monthly_donate.rs
+    │   ├── participation_record.rs
+    │   └── registration.rs
+    ├── routes
+    │   ├── activity.rs
+    │   ├── mod.rs
+    │   ├── monthly_donate.rs
+    │   ├── participation_record.rs
+    │   └── registration.rs
+    └── utils
+        └── mod.rs
+
+8 directories, 33 files

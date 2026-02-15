@@ -4,10 +4,18 @@ cn27529@hotmail.com
 
 ## look tree
 
-tree -L 3 -I "node_modules|.git|dist|docs|.md" ./client > client-tree.txt
-tree -L 2 -I "node_modules|.git|dist|docs|.md" ./server > server-tree.txt
-tree -L 3 -I "target|.lock|docs|.md" ./rust-axum > rust-axum-tree.txt
+tree -L 3 -I "node_modules|.git|dist|docs|*.md" ./client > client-tree.txt
+tree -L 2 -I "node_modules|.git|dist|docs|*.md" ./server > server-tree.txt
+tree -L 3 -I "target|.lock|docs|*.md" ./rust-axum > rust-axum-tree.txt
 
 tree -L 5 -I "node_modules|target|public|requitements|results|scripts|docs|db|docker|dist|docs|.lock|.git|.kiro|.github|*.md|*.txt|*.log|*.yaml" ./ > app-tree.txt
 
-tree -L 3 -I "node_modules|.git|dist|docs|.md" ./db > db-tree.txt
+tree -L 3 -I "node_modules|.git|dist|docs|*.md" ./db > db-tree.txt
+
+tree -L 3 -I "node_modules|.git|dist" ./docs > docs-tree.txt
+tree -L 3 -I "node_modules|.git|dist|*.md" ./log-server > logs-tree.txt
+
+tree -L 3 -I "node_modules|.git|dist|*.md" ./docker > docker-tree.txt
+
+
+tree -L 5 -I "node_modules|target|dist|.lock|.git|.kiro|.github|*.md|*.txt|*.log|*.yaml" ./ > all-tree.txt

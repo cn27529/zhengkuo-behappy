@@ -251,7 +251,7 @@
                     <el-tooltip content="編輯活動" placement="top">
                       <el-button
                         circle
-                        @click="editActivity(row)"
+                        @click="handleEditShowModel(row)"
                         type="primary"
                       >
                         📝
@@ -261,7 +261,7 @@
                     <el-tooltip content="標記完成" placement="top">
                       <el-button
                         circle
-                        @click="completeActivity(row.id)"
+                        @click="handleComplete(row.id)"
                         type="success"
                       >
                         <el-icon><Check /></el-icon>
@@ -271,7 +271,7 @@
                     <el-tooltip content="刪除活動" placement="top">
                       <el-button
                         circle
-                        @click="deleteActivity(row)"
+                        @click="handleDelete(row)"
                         type="danger"
                       >
                         刪
@@ -408,7 +408,7 @@
                     <el-tooltip content="編輯活動" placement="top">
                       <el-button
                         circle
-                        @click="editActivity(row)"
+                        @click="handleEditShowModel(row)"
                         type="primary"
                       >
                         📝
@@ -418,7 +418,7 @@
                     <el-tooltip v-if="false" content="刪除活動" placement="top">
                       <el-button
                         circle
-                        @click="deleteActivity(row)"
+                        @click="handleDelete(row)"
                         type="danger"
                       >
                         刪
@@ -535,7 +535,7 @@
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
           <el-button
             type="primary"
-            @click="handleNewActivity"
+            @click="handleSubmitForm"
             :loading="submitting"
           >
             新增活動
@@ -638,11 +638,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
-          <el-button
-            type="primary"
-            @click="handleEditActivity"
-            :loading="submitting"
-          >
+          <el-button type="primary" @click="handleUpdate" :loading="submitting">
             更新活動
           </el-button>
         </span>
@@ -679,7 +675,7 @@
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
           <el-button
             type="primary"
-            @click="submitParticipantsUpdate"
+            @click="handleParticipantsUpdate"
             :loading="submitting"
           >
             更新人次
@@ -687,7 +683,7 @@
           <!-- 依參加記錄更新人次，實現`submitByParticipantRecordsUpdate`方法，以`activity.id`取得`參加記錄查詢`的數量進行更新人次 -->
           <el-button
             type="success"
-            @click="submitByParticipantRecordsUpdate"
+            @click="handleParticipantRecordsUpdate"
             :loading="submitting"
             >依參加記錄
           </el-button>
@@ -940,7 +936,7 @@ const showUpdateParticipants = (activity) => {
   showParticipantsModal.value = true;
 };
 
-const editActivity = (activity) => {
+const handleEditShowModel = (activity) => {
   // 處理 mock 數據的類型轉換
   editingActivity.value = {
     ...activity,
@@ -949,7 +945,7 @@ const editActivity = (activity) => {
   showEditModal.value = true;
 };
 
-const completeActivity = async (activityId) => {
+const handleComplete = async (activityId) => {
   try {
     await ElMessageBox.confirm("確定要標記此活動為已完成嗎？", "確認操作", {
       confirmButtonText: "確定",
@@ -972,7 +968,7 @@ const completeActivity = async (activityId) => {
   }
 };
 
-const deleteActivity = async (activity) => {
+const handleDelete = async (activity) => {
   try {
     await ElMessageBox.confirm(
       `確定要刪除活動 "${activity.name}" 嗎？⚠️ 此操作無法復原。`,
@@ -1022,7 +1018,7 @@ const closeModal = () => {
   submitting.value = false;
 };
 
-const handleNewActivity = async () => {
+const handleSubmitForm = async () => {
   submitting.value = true;
 
   try {
@@ -1067,7 +1063,8 @@ const handleNewActivity = async () => {
   }
 };
 
-const handleEditActivity = async () => {
+// 更新活動
+const handleUpdate = async () => {
   if (!editingActivity.value) return;
 
   submitting.value = true;
@@ -1119,7 +1116,7 @@ const handleEditActivity = async () => {
   }
 };
 
-const submitParticipantsUpdate = async () => {
+const handleParticipantsUpdate = async () => {
   if (!selectedActivity.value) return;
 
   submitting.value = true;
@@ -1145,7 +1142,7 @@ const submitParticipantsUpdate = async () => {
 };
 
 // 依參加記錄更新人次，實現`submitByParticipantRecordsUpdate`方法，以`activity.id`取得`參加記錄查詢`的數量進行更新人次
-const submitByParticipantRecordsUpdate = async () => {
+const handleParticipantRecordsUpdate = async () => {
   if (!selectedActivity.value) return;
 
   submitting.value = true;

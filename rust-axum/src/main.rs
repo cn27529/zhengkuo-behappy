@@ -34,6 +34,7 @@ struct ServerInfo {
     database_connected: bool,
     database_type: String,
     database_path: String,
+    database_stats: Option<serde_json::Value>, // 必須是這個類型才能接收 json! 宏的結果,
     current_time: String,
     architecture: Architecture,
 }
@@ -142,6 +143,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let registration_routes = routes::registration::create_routes();
     let monthly_donate_routes = routes::monthly_donate::create_routes();
     let participation_record_routes = routes::participation_record::create_routes();
+    let my_data_routes = routes::my_data::create_routes();
     
     // ✅ 創建 SqliteProvider(DatabaseProvider 的實現)
     let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
@@ -157,7 +159,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(activity_routes)
         .merge(registration_routes)
         .merge(monthly_donate_routes)
-        .merge(participation_record_routes)        
+        .merge(participation_record_routes)
+        .merge(my_data_routes)        
         // Add the SQL viewer at /sql-viewer
         .merge(sql_viewer_router)
         .layer(cors)
@@ -186,6 +189,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /api/registrations          - 祈福登記列表");
     tracing::info!("  GET    /api/monthly-donates        - 每月捐款列表");
     tracing::info!("  GET    /api/participation-records  - 參與記錄列表");
+    tracing::info!("  GET    /api/my-data                - MyData 列表");
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");
 
@@ -238,12 +242,33 @@ async fn root_handler() -> Json<Value> {
     }))
 }
 
-async fn health_check() -> Json<Value> {
+async fn health_check(Extension(pool): Extension<sqlx::SqlitePool>) -> Json<Value> {
+
+    // 1. 測試數據庫連線
+    let is_connected = db::test_connection(&pool).await.is_ok();
+    
+    // 2. 獲取數據庫統計 (利用你 db.rs 寫好的函數)
+    let db_stats = match db::get_db_stats(&pool).await {
+        Ok(stats) => json!({
+            "connected": is_connected,
+            "table_count": stats.table_count,
+            "size_mb": format!("{:.2} MB", stats.size_mb),
+            // "tables": stats.table_names // 如果不想暴露表名可以註解掉
+        }),
+        Err(e) => json!({
+            "connected": is_connected,
+            "error": e.to_string()
+        }),
+    };
+
     Json(json!({
-        "status": "OK",
+        "status": if is_connected { "healthy" } else { "unhealthy" },
         "timestamp": chrono::Utc::now().to_rfc3339(),
-        "service": "Rust Axum Data API"
+        "database": db_stats,
+        "service": "Rust Axum Data API",
+        "mode": "Read-Only (Shared with Directus)"
     }))
+
 }
 
 async fn db_test(Extension(pool): Extension<sqlx::SqlitePool>) -> Json<Value> {
@@ -270,24 +295,58 @@ async fn db_test(Extension(pool): Extension<sqlx::SqlitePool>) -> Json<Value> {
 
 // Server Info 端點
 async fn server_info(Extension(state): Extension<Arc<AppState>>) -> Json<ServerInfo> {
-    // 計算運行時間
+    // // 計算運行時間
+    // let uptime = chrono::Utc::now() - state.start_time;
+
+    // // 檢查數據庫連接 - 使用 db.rs 中的函數
+    // let db_connected = db::test_connection(&state.pool).await.is_ok();
+
+    // // 獲取數據庫路徑
+    // let database_url = std::env::var("DATABASE_URL")
+    //     .unwrap_or_else(|_| "未知".to_string())
+    //     .replace("sqlite:", "");
+
+    // let info = ServerInfo {
+    //     name: "Rust Axum Backend".to_string(),
+    //     version: state.version.clone(),
+    //     uptime_seconds: uptime.num_seconds(),
+    //     database_connected: db_connected,
+    //     database_type: "SQLite".to_string(),
+    //     database_path: database_url,
+    //     current_time: chrono::Utc::now().to_rfc3339(),
+    //     architecture: Architecture {
+    //         auth_backend: "Directus".to_string(),
+    //         data_backend: "Rust Axum".to_string(),
+    //         database: "Shared SQLite".to_string(),
+    //     },
+    // };
+
+    // Json(info)
+
+
+    // 1. 計算運行時間
     let uptime = chrono::Utc::now() - state.start_time;
 
-    // 檢查數據庫連接 - 使用 db.rs 中的函數
-    let db_connected = db::test_connection(&state.pool).await.is_ok();
+    // 2. 獲取數據庫統計信息 (調用 db.rs 中的函數)
+    // 注意：因為 pool 是在 AppState 裡，所以用 state.pool
+    let db_stats = db::get_db_stats(&state.pool).await.ok(); 
 
-    // 獲取數據庫路徑
-    let database_url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "未知".to_string())
-        .replace("sqlite:", "");
-
+    // 3. 構建響應結構
     let info = ServerInfo {
         name: "Rust Axum Backend".to_string(),
         version: state.version.clone(),
         uptime_seconds: uptime.num_seconds(),
-        database_connected: db_connected,
+        database_connected: db_stats.is_some(),
         database_type: "SQLite".to_string(),
-        database_path: database_url,
+        database_path: std::env::var("DATABASE_URL")
+            .unwrap_or_else(|_| "未知".to_string())
+            .replace("sqlite:", ""),
+        // 將 DbStats 轉換為 JSON Value
+        database_stats: db_stats.map(|s| json!({
+            "table_count": s.table_count,
+            "size_mb": format!("{:.2} MB", s.size_mb), // 格式化輸出
+            "tables": s.table_names,
+        })),
         current_time: chrono::Utc::now().to_rfc3339(),
         architecture: Architecture {
             auth_backend: "Directus".to_string(),
@@ -297,6 +356,7 @@ async fn server_info(Extension(state): Extension<Arc<AppState>>) -> Json<ServerI
     };
 
     Json(info)
+
 }
 
 // Server Ping 端點

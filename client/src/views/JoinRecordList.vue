@@ -16,7 +16,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋姓名、手機、電話、地址、關係、參加項目、備註"
+              placeholder="搜尋姓名、手機、電話、地址、關係、備註"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -48,6 +48,7 @@
               size="large"
               style="width: 150px"
               clearable
+              v-if="false"
             >
               <el-option
                 v-for="option in itemTypeOptions"
@@ -113,7 +114,7 @@
         <el-table-column label="圖標" min-width="50" align="center">
           <template #default="{ row }">
             <div>
-              <el-tooltip :content="`記錄ID: ${row.id}`" placement="top">
+              <el-tooltip :content="`參加ID: ${row.id}`" placement="top">
                 <span class="record-icon">📋</span>
               </el-tooltip>
             </div>
@@ -121,13 +122,13 @@
         </el-table-column>
 
         <el-table-column
-          prop="registrationId"
-          label="登記ID"
+          prop="activityId"
+          label="活動ID"
           min-width="50"
           align="center"
         >
           <template #default="{ row }">
-            <strong>{{ row.registrationId || "-" }}</strong>
+            <strong>{{ row.activityId || "-" }}</strong>
           </template>
         </el-table-column>
 
@@ -168,8 +169,12 @@
                 class="item-tag"
               >
                 <div class="item-header">
-                  <span class="item-label">{{ item.label }}</span>
-                  <span class="item-quantity">x{{ item.quantity }}</span>
+                  <el-tag class="stat-badge">
+                    {{ item.label }} {{ item.quantity }}
+                  </el-tag>
+
+                  <!-- <span class="item-label">{{ item.label }}</span>
+                  <span class="item-quantity">x{{ item.quantity }}</span> -->
                   <span class="item-amount"
                     >{{ appConfig.dollarTitle }}{{ item.subtotal }}</span
                   >
@@ -224,12 +229,7 @@
               </el-button>
             </el-tooltip>
             <el-tooltip content="刪除記錄" placement="top">
-              <el-button
-                type="danger"
-                circle
-                @click="handleDelete(row)"
-                disabled
-              >
+              <el-button type="danger" circle @click="handleDelete(row)">
                 🗑️
               </el-button>
             </el-tooltip>
@@ -447,7 +447,6 @@ const handlePrint = (item) => {
   }
 };
 
-// 刪除記錄 (暫未實作)
 const handleDelete = async (item) => {
   try {
     await ElMessageBox.confirm(
@@ -460,9 +459,21 @@ const handleDelete = async (item) => {
       },
     );
 
-    ElMessage.info(`刪除功能尚未實作 - 記錄ID: ${item.id}`);
-  } catch {
-    ElMessage.info("已取消刪除");
+    const result = await queryStore.deleteParticipationRecord(item.id);
+
+    if (result?.success) {
+      searchResults.value = searchResults.value.filter(
+        (record) => record.id !== item.id,
+      );
+      queryStore.resetPagination();
+      ElMessage.success("✅ 記錄已刪除");
+    } else {
+      throw new Error(result?.message || "刪除失敗");
+    }
+  } catch (error) {
+    if (error !== "cancel") {
+      ElMessage.error(error?.message || "刪除失敗");
+    }
   }
 };
 
@@ -510,6 +521,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.stat-badge {
+  padding: 4px 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-right: 10px;
+}
+
 .results-header {
   display: flex;
   justify-content: space-between;

@@ -1,0 +1,49 @@
+./docs
+├── README.md
+├── ai-talks.md
+├── api-documentation.md
+├── architecture-overview.md
+├── business-logic.md
+├── data-activity.md
+├── data-logEntry.md
+├── data-monthlyDonates.md
+├── data-participationRecords.md
+├── data-registrations.md
+├── db-check-symlinks.md
+├── db-init-database-guide.md
+├── db-start-with-db-guide.md
+├── db-symlink-database-impact.md
+├── db-symlink-windows-guide.md
+├── deploy-netlify-guide.md
+├── deployment-guide.md
+├── dev-AnimatedNumber-guide.md
+├── dev-activity-guide.md
+├── dev-joinRecord-activity-selection-guide.md
+├── dev-joinRecord-guide.md
+├── dev-joinRecord-list-guide.md
+├── dev-joinRecord-list-modify-guide.md
+├── dev-joinRecord-modify-guide.md
+├── dev-joinRecord-print-guide.md
+├── dev-joinRecordService-guide.md
+├── dev-menu-guide.md
+├── dev-monthly-donate-guide.md
+├── dev-registration-guide.md
+├── docs-server-guide.md
+├── docs-server.js
+├── log-cleanup-strategy.md
+├── log-server-guide.md
+├── log-test-guide.md
+├── package.json
+├── public
+│   ├── document.html
+│   ├── index.html
+│   └── styles.css
+├── templates.js
+├── test-stress-test-wal.md
+├── user-story-activity.md
+├── user-story-joinRecord.md
+├── user-story-monthlyDonate.md
+├── user-story-registration.md
+└── zk-vlogs.md
+
+2 directories, 45 files

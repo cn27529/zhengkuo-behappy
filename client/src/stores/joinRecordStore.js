@@ -6,6 +6,7 @@ import { DateUtils } from "../utils/dateUtils.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
 import { authService } from "../services/authService.js";
+import { useQueryStore } from "./registrationQueryStore.js";
 import mockRegistrationData from "../data/mock_registrations.json";
 import mockJoinRecordData from "../data/mock_participation_records.json";
 
@@ -292,6 +293,16 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const error = ref(null);
   const allJoinRecords = ref(mockJoinRecordData || []); // 所有參加記錄
   const savedRecords = ref([]); // 獲取已保存的參加記錄
+  const searchKeyword = ref(""); // 搜尋關鍵字
+
+  // 使用 registrationQueryStore 的過濾功能
+  const filteredRegistrations = computed(() => {
+    const queryStore = useQueryStore();
+    return queryStore.getFilteredData(
+      { query: searchKeyword.value },
+      allRegistrations.value,
+    );
+  });
 
   // 取得所有參加記錄
   const getAllJoinRecords = async (params) => {
@@ -345,15 +356,10 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       if (result.success) {
         console.log(`✅ 成功獲取 ${result.data.length} 筆祈福登記資料`);
         return result.data;
-      } else {
-        console.warn("獲取祈福登記資料失敗，使用 Mock 資料");
-        allRegistrations.value = mockRegistrationData;
-        return mockRegistrationData;
       }
     } catch (error) {
       console.error("取得所有祈福登記資料失敗:", error);
-      allRegistrations.value = mockRegistrationData; // 失敗時回退到 Mock 資料
-      return mockRegistrationData; // 失敗時回退到 Mock 資料
+      return allRegistrations.value;
     } finally {
       isLoading.value = false;
     }
@@ -504,9 +510,11 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     allRegistrations,
     allJoinRecords,
     savedRecords,
+    searchKeyword,
 
     // Getters
     totalAmount,
+    filteredRegistrations,
     // Actions
     setRegistration,
     resetSelections,

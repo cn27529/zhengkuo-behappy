@@ -1,5 +1,4 @@
 // test_logger.js
-import fetch from "node-fetch";
 
 const SERVER_URL = "http://localhost:3002/mongo/logentry/";
 

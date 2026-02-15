@@ -271,7 +271,7 @@
                       :loading="loading"
                       :disabled="loading"
                     >
-                      刪
+                      🗑️
                     </el-button>
                   </el-tooltip>
 
@@ -284,8 +284,9 @@
     type="danger"
     :loading="loading"
     :disabled="loading"
+    
   >
-    刪
+    🗑️
   </el-button>
 </el-tooltip>
 -->
@@ -416,7 +417,7 @@
           <el-tooltip content="新增贊助人" placement="top">
             <el-button
               type="primary"
-              @click="handleSubmitDonator"
+              @click="handleSubmitForm"
               :loading="submitting"
               :disabled="newDonator.selectedMonths.length === 0"
             >
@@ -626,7 +627,7 @@
                   size="small"
                   @click="deleteDonateItem(selectedDonator, row)"
                 >
-                  刪
+                  🗑️
                 </el-button>
               </template>
             </el-table-column>
@@ -1177,7 +1178,7 @@ const closeModal = () => {
 };
 
 // 新增贊助人
-const handleSubmitDonator = async () => {
+const handleSubmitForm = async () => {
   submitting.value = true;
 
   try {

@@ -4,6 +4,7 @@ import { authService as directusAuth } from "../services/authService.js";
 import { registrationService as directusRegistration } from "../services/registrationService.js";
 import { monthlyDonateService as directusMonthlyDonate } from "../services/monthlyDonateService.js";
 import { joinRecordService as directusJoinRecord } from "../services/joinRecordService.js";
+import { mydataService as directusMydata } from "../services/mydataService.js";
 
 // Rust 服務（延遲加載，避免初始化錯誤）
 let rustServices = null;
@@ -18,12 +19,14 @@ async function loadRustServices() {
       { rustRegistrationService },
       { rustMonthlyDonateService },
       { rustJoinRecordService },
+      { rustMyDataService },
     ] = await Promise.all([
       import("../rustServices/rustActivityService.js"),
       import("../rustServices/rustAuthService.js"),
       import("../rustServices/rustRegistrationService.js"),
       import("../rustServices/rustMonthlyDonateService.js"),
       import("../rustServices/rustJoinRecordService.js"),
+      import("../rustServices/rustMyDataService.js"),
     ]);
 
     rustServices = {
@@ -32,6 +35,7 @@ async function loadRustServices() {
       registration: rustRegistrationService,
       monthlyDonate: rustMonthlyDonateService,
       joinRecord: rustJoinRecordService,
+      mydata: rustMyDataService,
     };
 
     console.log("✅ Rust 服務加載完成");
@@ -66,6 +70,7 @@ class ServiceAdapter {
       registration: directusRegistration,
       monthlyDonate: directusMonthlyDonate,
       joinRecord: directusJoinRecord,
+      mydata: directusMydata,
     };
 
     // 錯誤計數器
@@ -313,6 +318,24 @@ class ServiceAdapter {
       this[method] = (...args) =>
         this.callServiceMethod("joinRecord", method, ...args);
     });
+
+    // Mydata 方法
+    const mydataMethods = [
+      "getAllMydata",
+      "getMydataById",
+      "createMydata",
+      "updateMydata",
+      "deleteMydata",
+      "getMydataByFormName",
+      "getMydataByState",
+      "searchMydata",
+      "handleMydataDirectusError",
+    ];
+
+    mydataMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("mydata", method, ...args);
+    });
   }
 
   /**
@@ -472,6 +495,34 @@ class ServiceAdapter {
     methods.forEach((method) => {
       proxy[method] = (...args) =>
         this.callServiceMethod("joinRecord", method, ...args);
+    });
+
+    return proxy;
+  }
+
+  get mydataService() {
+    const proxy = {
+      getCurrentMode: () => this.getCurrentMode(),
+      setMode: (mode) => this.setMode(mode),
+      getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
+    };
+
+    const methods = [
+      "getAllMydata",
+      "getMydataById",
+      "createMydata",
+      "updateMydata",
+      "deleteMydata",
+      "getMydataByFormName",
+      "getMydataByState",
+      "searchMydata",
+      "handleMydataDirectusError",
+    ];
+
+    methods.forEach((method) => {
+      proxy[method] = (...args) =>
+        this.callServiceMethod("mydata", method, ...args);
     });
 
     return proxy;

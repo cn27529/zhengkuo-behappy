@@ -25,6 +25,7 @@ export class BaseRustService {
       registrations: "/api/registrations",
       monthlyDonates: "/api/monthly-donates",
       participationRecords: "/api/participation-records",
+      myData: "/api/my-data",
       users: "/api/users",
       health: "/health",
       dbTest: "/db-test",

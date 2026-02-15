@@ -6,6 +6,7 @@ import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 import mockRegistrations from "../data/mock_registrations.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
+import { PhoneMatch } from "../utils/phoneMatchUtils.js";
 
 // 祈福登記查詢表單的 Pinia store，管理查詢表單的狀態與操作。
 export const useQueryStore = defineStore("registrationQuery", () => {
@@ -192,14 +193,16 @@ export const useQueryStore = defineStore("registrationQuery", () => {
 
         if (
           item.contact.mobile &&
-          item.contact.mobile.toLowerCase().includes(query)
+          //item.contact.mobile.toLowerCase().includes(query)
+          PhoneMatch.fuzzyPhoneMatch(item.contact.mobile, query)
         ) {
           console.log("✅ 匹配聯絡人手機");
           matchFound = true;
         }
         if (
           item.contact.phone &&
-          item.contact.phone.toLowerCase().includes(query)
+          //item.contact.phone.toLowerCase().includes(query)
+          PhoneMatch.fuzzyPhoneMatch(item.contact.phone, query)
         ) {
           console.log("✅ 匹配聯絡人電話");
           matchFound = true;
@@ -227,6 +230,14 @@ export const useQueryStore = defineStore("registrationQuery", () => {
               console.log(`✅ 匹配消災人員 ${i}:`, person.name);
               matchFound = true;
             }
+            if (
+              person &&
+              person.notes &&
+              person.notes.toLowerCase().includes(query)
+            ) {
+              console.log(`✅ 匹配消災人員備註 ${i}:`, person.notes);
+              matchFound = true;
+            }
           });
         }
       }
@@ -252,6 +263,14 @@ export const useQueryStore = defineStore("registrationQuery", () => {
               console.log(`✅ 匹配祖先 ${i}:`, ancestor.surname);
               matchFound = true;
             }
+            if (
+              ancestor &&
+              ancestor.notes &&
+              ancestor.notes.toLowerCase().includes(query)
+            ) {
+              console.log(`✅ 匹配祖先備註 ${i}:`, ancestor.notes);
+              matchFound = true;
+            }
           });
         }
         if (item.salvation.survivors) {
@@ -263,6 +282,14 @@ export const useQueryStore = defineStore("registrationQuery", () => {
               survivor.name.toLowerCase().includes(query)
             ) {
               console.log(`✅ 匹配陽上人 ${i}:`, survivor.name);
+              matchFound = true;
+            }
+            if (
+              survivor &&
+              survivor.notes &&
+              survivor.notes.toLowerCase().includes(query)
+            ) {
+              console.log(`✅ 匹配陽上人備註 ${i}:`, survivor.notes);
               matchFound = true;
             }
           });

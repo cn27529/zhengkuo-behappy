@@ -2,9 +2,11 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { serviceAdapter } from "../adapters/serviceAdapter.js";
+import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
 import mockParticipationRecords from "../data/mock_participation_records.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
+import { PhoneMatch } from "../utils/phoneMatchUtils.js";
 
 // 活動參加記錄查詢的 Pinia store，管理查詢狀態與操作。
 export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
@@ -137,6 +139,33 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     }
   };
 
+  // 刪除參加記錄
+  const deleteParticipationRecord = async (recordId) => {
+    if (!recordId) {
+      return { success: false, message: "缺少記錄 ID" };
+    }
+
+    try {
+      const result =
+        await joinRecordService.deleteParticipationRecord(recordId);
+
+      if (result?.success) {
+        searchResults.value = searchResults.value.filter(
+          (record) => record.id !== recordId,
+        );
+        resetPagination();
+      }
+
+      return result;
+    } catch (error) {
+      console.error("刪除參加記錄失敗:", error);
+      return {
+        success: false,
+        message: error?.message || "刪除參加記錄失敗",
+      };
+    }
+  };
+
   const getFilteredData = (queryData, data) => {
     console.log("🎯 開始過濾參加記錄數據...");
 
@@ -147,7 +176,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
     let filteredData = [...data];
 
-    if (queryData.activityId && (typeof queryData.activityId === 'number' || queryData.activityId > 0)) {
+    if (
+      queryData.activityId &&
+      (typeof queryData.activityId === "number" || queryData.activityId > 0)
+    ) {
       const activityIdQuery = parseInt(queryData.activityId);
       console.log("🔍 activityId過濾:", activityIdQuery);
       filteredData = filteredData.filter((item) => {
@@ -210,11 +242,19 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
             console.log("✅ 匹配聯絡人姓名:", item.contact.name);
             matchFound = true;
           }
-          if (item.contact.mobile && item.contact.mobile.includes(query)) {
+          if (
+            item.contact.mobile &&
+            //item.contact.mobile.includes(query)
+            PhoneMatch.fuzzyPhoneMatch(item.contact.mobile, query)
+          ) {
             console.log("✅ 匹配聯絡人手機:", item.contact.mobile);
             matchFound = true;
           }
-          if (item.contact.phone && item.contact.phone.includes(query)) {
+          if (
+            item.contact.phone &&
+            //item.contact.phone.includes(query)
+            PhoneMatch.fuzzyPhoneMatch(item.contact.phone, query)
+          ) {
             console.log("✅ 匹配聯絡人電話:", item.contact.phone);
             matchFound = true;
           }
@@ -349,6 +389,10 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     itemsFilter.value = items;
   };
 
+  const resetPagination = () => {
+    currentPage.value = 1;
+  };
+
   const isMobile = () => {
     if (
       authStore.isMobileDevice() ||
@@ -362,39 +406,203 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     }
   };
 
-  return {
-    // 狀態
-    searchResults,
-    searchQuery,
-    isLoading,
-    hasSearched,
-    currentPage,
-    pageSize,
-    stateFilter,
-    itemsFilter,
+  // ===== 狀態控制台相關 =====
 
-    // 計算屬性
-    stateOptions,
-    itemTypeOptions,
+  // 狀態欄位配置
+  const stateConfigs = computed(() => ({
+    state: {
+      label: "記錄狀態",
+      options: [
+        { value: "pending", label: "待處理" },
+        { value: "confirmed", label: "已確認" },
+        { value: "completed", label: "已完成" },
+      ],
+    },
+    paymentState: {
+      label: "付款狀態",
+      options: [
+        { value: "unpaid", label: "未付款" },
+        { value: "paid", label: "已付款" },
+      ],
+    },
+    receiptIssued: {
+      label: "收據狀態",
+      options: [
+        { value: "false", label: "未開立" },
+        { value: "true", label: "已開立" },
+      ],
+    },
+    accountingState: {
+      label: "會計狀態",
+      options: [
+        { value: "pending", label: "待處理" },
+        { value: "reconciled", label: "已對帳" },
+      ],
+    },
+    paymentMethod: {
+      label: "付款方式",
+      options: [
+        { value: "", label: "未選擇" },
+        { value: "cash", label: "現金" },
+        { value: "transfer", label: "銀行轉帳" },
+        { value: "card", label: "信用卡" },
+      ],
+    },
+  }));
 
-    // 方法
-    queryJoinRecordData,
-    clearSearch,
-    setSearchQuery,
-    setStateFilter,
-    setItemsFilter,
-    getFilteredData,
-    isMobile,
+  // 批量更新單筆記錄狀態
+  const updateRecordStates = async (recordId, updates) => {
+    try {
+      if (serviceAdapter.getIsMock()) {
+        console.warn("⚠️ Mock 模式：模擬更新狀態", { recordId, updates });
 
-    // 分頁方法
-    setCurrentPage: (page) => {
-      currentPage.value = page;
-    },
-    setPageSize: (size) => {
-      pageSize.value = size;
-    },
-    resetPagination: () => {
-      currentPage.value = 1;
-    },
+        // 更新本地數據
+        const index = searchResults.value.findIndex((r) => r.id === recordId);
+        if (index !== -1) {
+          searchResults.value[index] = {
+            ...searchResults.value[index],
+            ...updates,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+
+        return {
+          success: true,
+          message: "狀態更新成功 (Mock 模式)",
+          data: searchResults.value[index],
+        };
+      }
+
+      // TODO: 實際 API 調用
+      const result = await joinRecordService.updateParticipationRecord(
+        recordId,
+        updates,
+      );
+
+      if (result.success) {
+        // 更新本地數據
+        const index = searchResults.value.findIndex((r) => r.id === recordId);
+        if (index !== -1) {
+          searchResults.value[index] = {
+            ...searchResults.value[index],
+            ...updates,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error("更新記錄狀態失敗:", error);
+      return {
+        success: false,
+        message: error.message || "更新失敗",
+      };
+    }
   };
-});
+
+  // 批量更新多筆記錄狀態
+  const batchUpdateRecordStates = async (recordIds, updates) => {
+    try {
+      if (serviceAdapter.getIsMock()) {
+        console.warn("⚠️ Mock 模式：批量更新狀態", { recordIds, updates });
+
+        // 批量更新本地數據
+        recordIds.forEach((recordId) => {
+          const index = searchResults.value.findIndex((r) => r.id === recordId);
+          if (index !== -1) {
+            searchResults.value[index] = {
+              ...searchResults.value[index],
+              ...updates,
+              updatedAt: new Date().toISOString(),
+            };
+          }
+        });
+
+        return {
+          success: true,
+          message: `成功更新 ${recordIds.length} 筆記錄 (Mock 模式)`,
+          data: { count: recordIds.length },
+        };
+      }
+
+      // TODO: 實際 API 批量調用
+      const results = await Promise.all(
+        recordIds.map((id) =>
+          joinRecordService.updateParticipationRecord(id, updates),
+        ),
+      );
+
+      const successCount = results.filter((r) => r.success).length;
+
+      // 更新本地數據
+      recordIds.forEach((recordId) => {
+        const index = searchResults.value.findIndex((r) => r.id === recordId);
+        if (index !== -1) {
+          searchResults.value[index] = {
+            ...searchResults.value[index],
+            ...updates,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+      });
+
+      return {
+        success: successCount === recordIds.length,
+        message: `成功更新 ${successCount}/${recordIds.length} 筆記錄`,
+        data: { count: successCount },
+      };
+    } catch (error) {
+      console.error("批量更新記錄狀態失敗:", error);
+      return {
+        success: false,
+        message: error.message || "批量更新失敗",
+      };
+    }
+  };
+
+  // ===== 狀態控制台相關 =====
+
+  // 狀態欄位配置
+  const stateConfigs = computed(() => ({
+    state: {
+      label: "記錄狀態",
+      options: [
+        { value: "pending", label: "待處理" },
+        { value: "confirmed", label: "已確認" },
+        { value: "completed", label: "已完成" },
+      ],
+    },
+    paymentState: {
+      label: "付款狀態",
+      options: [
+        { value: "unpaid", label: "未付款" },
+        { value: "paid", label: "已付款" },
+      ],
+    },
+    receiptIssued: {
+      label: "收據狀態",
+      options: [
+        { value: "false", label: "未開立" },
+        { value: "true", label: "已開立" },
+      ],
+    },
+    accountingState: {
+      label: "會計狀態",
+      options: [
+        { value: "pending", label: "待處理" },
+        { value: "reconciled", label: "已對帳" },
+      ],
+    },
+    paymentMethod: {
+      label: "付款方式",
+      options: [
+        { value: "", label: "未選擇" },
+        { value: "cash", label: "現金" },
+        { value: "transfer", label: "銀行轉帳" },
+        { value: "card", label: "信用卡" },
+      ],
+    },
+  }));
+
+  // 批量更新單筆記錄狀態

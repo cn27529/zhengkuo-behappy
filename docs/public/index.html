@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專案文檔</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📚 專案文檔</h1>
+        <div class="stats">
+            <strong>共 {{fileCount}} 個文檔</strong>
+        </div>
+        <div class="file-list" id="file-list">
+            <!-- 文檔列表將由 JavaScript 動態生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 獲取文檔列表數據
+        async function loadDocuments() {
+            try {
+                const response = await fetch('/api/documents');
+                const data = await response.json();
+                
+                // 更新統計
+                document.querySelector('.stats strong').textContent = `共 ${data.files.length} 個文檔`;
+                
+                // 生成文檔列表
+                const fileList = document.getElementById('file-list');
+                fileList.innerHTML = data.files.map(file => `
+                    <div class="file-item">
+                        <a href="/doc/${encodeURIComponent(file.path)}">${file.title}</a>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-date">📅 ${file.formattedDate}</div>
+                        <div class="file-description">${file.description}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('載入文檔列表失敗:', error);
+                document.getElementById('file-list').innerHTML = '<p>載入文檔列表失敗</p>';
+            }
+        }
+
+        // 頁面載入時執行
+        document.addEventListener('DOMContentLoaded', loadDocuments);
+    </script>
+</body>
+</html>

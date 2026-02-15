@@ -1,7 +1,22 @@
 ./
+├── 404.html
+├── apps-server.js
 ├── client
 │   ├── index.html
 │   ├── package.json
+│   ├── public
+│   │   ├── ban1.png
+│   │   ├── card-template-001.jpg
+│   │   ├── card-template-zk01a.png
+│   │   ├── card-template-zk02a.png
+│   │   ├── temple-icon.png
+│   │   ├── tools
+│   │   │   ├── cros.html
+│   │   │   ├── method-diff-v2.html
+│   │   │   └── method-diff.html
+│   │   ├── vite.svg
+│   │   ├── vue.svg
+│   │   └── 牌位001.jpg
 │   ├── src
 │   │   ├── App.vue
 │   │   ├── adapters
@@ -31,12 +46,10 @@
 │   │   │   ├── card-template-zk02b.png
 │   │   │   ├── card-template-zk03a.png
 │   │   │   ├── mock_activities.json
+│   │   │   ├── mock_logEntry.json
 │   │   │   ├── mock_logEntrys.json
-│   │   │   ├── mock_logs.json
 │   │   │   ├── mock_monthlyDonates.json
-│   │   │   ├── mock_participation_records-db.json
 │   │   │   ├── mock_participation_records.json
-│   │   │   ├── mock_participation_records.json.backup
 │   │   │   ├── mock_registrations.json
 │   │   │   └── submit-success.json
 │   │   ├── main.js
@@ -76,6 +89,7 @@
 │   │   │   ├── dateUtils.js
 │   │   │   ├── generateGitHash.js
 │   │   │   ├── generateGitHashAsync.js
+│   │   │   ├── indexedDB-with-backend.js
 │   │   │   ├── indexedDB.js
 │   │   │   └── mockDataHelper.js
 │   │   └── views
@@ -112,12 +126,64 @@
 │   │       └── TianganDizhiClock24.vue
 │   ├── stats.html
 │   └── vite.config.js
+├── db
+│   ├── CREATE-INDEX-BASE-chatgpt.sql
+│   ├── CREATE-INDEX-BASE-deepseek.sql
+│   ├── current.db -> zk.db
+│   ├── data.db
+│   ├── databases.json
+│   ├── participationRecordDB-to-6tables-.sql
+│   └── zk.db
+├── docker
+│   ├── docker-compose.yml
+│   ├── extensions
+│   └── logs
+├── docs
+│   ├── docs-server.js
+│   ├── package.json
+│   ├── public
+│   │   ├── document.html
+│   │   ├── index.html
+│   │   └── styles.css
+│   └── templates.js
+├── index.html
+├── log-server
+│   ├── capacity-monitor.js
+│   ├── mongoDBLogger-with-schedule.js
+│   ├── mongoDBLogger.js
+│   ├── package.json
+│   ├── public
+│   │   ├── index.html
+│   │   ├── mongo.html
+│   │   └── styles.css
+│   ├── test-batch-logs.js
+│   ├── test-complete.js
+│   ├── test-logger.js
+│   ├── test-query-stats.js
+│   └── test-single-log.js
 ├── netlify.toml
 ├── package.json
+├── requitements
+│   ├── 12zodiac.jpg
+│   ├── 12zodiac2.png
+│   ├── 2024消災超度登記表.pdf
+│   ├── 2025清明超度收據.jpg
+│   ├── 2025清明超度登記表.png
+│   ├── 收1錢-螢幕擷取畫面 2025-10-12 134156_0.jpg
+│   ├── 收2超-螢幕擷取畫面 2025-10-12 134226_0.jpg
+│   ├── 收3點-螢幕擷取畫面 2025-10-12 134236_0.jpg
+│   ├── 收4祈-螢幕擷取畫面 2025-10-12 134246_0.jpg
+│   ├── 收4消-螢幕擷取畫面 2025-10-12 134257_0.jpg
+│   ├── 廣小明5張表範例.jpg
+│   ├── 黃色超度中牌_2版基本款.jpg
+│   ├── 黃色超度中牌_2版空白款.jpg
+│   └── 程式做不到的部份人來配合.jpg
+├── results
+│   ├── 廣小明 - 消災超度登記表.pdf
+│   └── 王大明2026-活動參加記錄表.pdf
 ├── rust-axum
 │   ├── Cargo.lock
 │   ├── Cargo.toml
-│   ├── data.db
 │   ├── migrations
 │   │   ├── directus_participationRecordDB_collection.json
 │   │   ├── mydata.sql
@@ -154,12 +220,33 @@
 │       │   └── registration.rs
 │       └── utils
 │           └── mod.rs
+├── scripts
+│   ├── analyze-services.js
+│   ├── check-db-locks.js
+│   ├── check-log-server.js
+│   ├── check-symlinks.js
+│   ├── deploy-netlify.sh
+│   ├── init-database.js
+│   ├── sqlite-viewer.js
+│   ├── start-all.js
+│   ├── start-simple-db.js
+│   ├── start-with-db.js
+│   ├── stress-test-wal.js
+│   ├── testGitHash.js
+│   ├── testMydata.js
+│   ├── test_dual_backend_joinrecord.sh
+│   ├── test_mydata.sh
+│   ├── test_rust_activity_api.sh
+│   ├── test_rust_participation_record_api.sh
+│   ├── test_rust_registration_api.sh
+│   ├── test_rust_registration_api_mockdata.sh
+│   ├── test_rust_registration_with_user_created.sh
+│   └── windows-symlink-helper.js
 └── server
     ├── Dockerfile
-    ├── data.db
     ├── extensions
     ├── package-windows.json
     ├── package.json
     └── uploads
 
-24 directories, 139 files
+37 directories, 213 files

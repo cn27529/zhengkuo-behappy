@@ -229,14 +229,19 @@
                   :indeterminate.prop="isIndeterminate('chaodu')"
                   @click.stop="toggleActivity('chaodu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.chaodu.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.chaodu.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.chaodu.length > 0"
                 >
-                  (已選 {{ selections.chaodu.length }} 位)
+                  (已選 {{ selections.chaodu.length }} )
                 </span>
                 <span class="price-tag"
                   >每位 {{ appConfig.dollarTitle
@@ -311,11 +316,16 @@
                   :indeterminate.prop="isIndeterminate('qifu')"
                   @click.stop="toggleActivity('qifu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.qifu.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.qifu.label
                 }}</span>
+
                 <span class="selected-count" v-if="selections.qifu.length > 0">
-                  (已選 {{ selections.qifu.length }} 位)
+                  (已選 {{ selections.qifu.length }} )
                 </span>
                 <span class="price-tag"
                   >每位 {{ appConfig.dollarTitle
@@ -364,14 +374,19 @@
                   :indeterminate.prop="isIndeterminate('diandeng')"
                   @click.stop="toggleActivity('diandeng')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.diandeng.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.diandeng.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.diandeng.length > 0"
                 >
-                  (已選 {{ selections.diandeng.length }} 位)
+                  (已選 {{ selections.diandeng.length }} )
                 </span>
 
                 <span class="price-tag"
@@ -446,14 +461,19 @@
                   :indeterminate.prop="isIndeterminate('xiaozai')"
                   @click.stop="toggleActivity('xiaozai')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.xiaozai.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.xiaozai.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.xiaozai.length > 0"
                 >
-                  (已選 {{ selections.xiaozai.length }} 位)
+                  (已選 {{ selections.xiaozai.length }} )
                 </span>
 
                 <span class="price-tag"
@@ -503,11 +523,16 @@
                   :indeterminate.prop="isIndeterminate('pudu')"
                   @click.stop="toggleActivity('pudu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.pudu.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.pudu.label
                 }}</span>
+
                 <span class="selected-count" v-if="selections.pudu.length > 0">
-                  (已選 {{ selections.pudu.length }} 位)
+                  (已選 {{ selections.pudu.length }} )
                 </span>
 
                 <span class="price-tag"
@@ -553,7 +578,7 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="handleSubmitRecord"
+            @click="handleSubmitForm"
             :disabled="isLoading || totalAmount === 0"
           >
             {{ isLoading ? "提交中..." : "提交參加記錄" }}
@@ -689,7 +714,6 @@ const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
 
 // 狀態管理
-const searchKeyword = ref("");
 const isDev = computed(() => authService.getCurrentDev());
 const selectedActivityId = ref(null);
 
@@ -701,6 +725,8 @@ const {
   allRegistrations,
   savedRecords,
   totalAmount,
+  searchKeyword,
+  filteredRegistrations,
 } = storeToRefs(joinRecordStore);
 
 const { activities: allActivities, loading: activitiesLoading } =
@@ -823,41 +849,6 @@ const hasValidAncestors = (registration) => {
   return hasAddress && hasValidAncestorNames;
 };
 
-// 計算篩選後的祈福登記
-const filteredRegistrations = computed(() => {
-  if (!searchKeyword.value) {
-    return allRegistrations.value;
-  }
-
-  const keyword = searchKeyword.value.toLowerCase();
-  return allRegistrations.value.filter((reg) => {
-    return (
-      reg.formSource.toLowerCase().includes(keyword) ||
-      reg.formName.toLowerCase().includes(keyword) ||
-      reg.contact.name.toLowerCase().includes(keyword) ||
-      reg.contact.mobile.includes(keyword) ||
-      (reg.contact.phone && reg.contact.phone.includes(keyword)) ||
-      reg.contact.relationship.toLowerCase().includes(keyword) ||
-      // 消災地址
-      reg.blessing.address.toLowerCase().includes(keyword) ||
-      reg.blessing.persons.some(
-        (person) =>
-          person.name.toLowerCase().includes(keyword) ||
-          person.zodiac.toLowerCase().includes(keyword) ||
-          person.notes.toLowerCase().includes(keyword),
-      ) ||
-      // 超度地址
-      reg.salvation.address.toLowerCase().includes(keyword) ||
-      reg.salvation.survivors.some(
-        (survivor) =>
-          survivor.name.toLowerCase().includes(keyword) ||
-          survivor.zodiac.toLowerCase().includes(keyword) ||
-          survivor.notes.toLowerCase().includes(keyword),
-      )
-    );
-  });
-});
-
 // 獲取資料來源
 const getSourceData = (activityKey) => {
   if (!selectedRegistration.value) return [];
@@ -930,7 +921,7 @@ const handleReset = async () => {
 };
 
 // 提交參加記錄
-const handleSubmitRecord = async () => {
+const handleSubmitForm = async () => {
   if (!selectedRegistration.value) {
     ElMessage.warning("請選擇祈福登記");
     return;
@@ -1041,6 +1032,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
+.stat-badge {
+  padding: 4px 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-right: 10px
+}
+
 .form-section,
 .search-section,
 .results-section {
