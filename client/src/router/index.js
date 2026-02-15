@@ -61,6 +61,13 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/report-control",
+    title: "參加記錄報表",
+    name: "JoinRecordReportControl",
+    component: () => import("../views/JoinRecordReportControl.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/animated-number",
     component: () => import("../views/AnimatedNumber.vue"),
   },

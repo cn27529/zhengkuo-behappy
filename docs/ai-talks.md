@@ -244,6 +244,10 @@ scripts/stress-test-wal.js 與 scripts/stress-test-mydata-query.js 一起運行�
 client/src/views/JoinRecordStatesControl.vue 列表的"收據狀態"的選取項目沒有顯示出label值
 client/src/views/JoinRecordPrint.vue 要加上活動詳情的顯示，不然看不來是參加哪場活動
 
-##
+## 修正重覆的查詢方法
 
 實現 client/src/views/JoinRecord.vue 將 const filteredRegistrations 移到 joinRecordStore，確認移過去沒問題以後將 joinRecordStore 的 const filteredRegistrations 調用 client/src/stores/registrationQueryStore.js 的 const getFilteredData，因為 client/src/stores/registrationQueryStore.js 的 const getFilteredData 己經具有很好的過濾功能。你覺的可行性如何呢，你分析一下。
+
+## 參加報表
+
+我正在規劃"參加記錄"的報表，這個報表是可以查詢所有"參加記錄", 可以操作多選的狀態如 某日期區間的 某活動、某登記表、會計狀態(accountingState)，收據狀態 (receiptIssued)， 付款狀態 (paymentState)， 記錄狀態 (state)， 付款方式 (paymentMethod) 做查詢條件, 可以選擇欄位，匯出 csv, txt, 你覺的要如何設計這個報表控制台, 我們將這個報表控制台命名為 client\src\views\JoinRecordReportControl.vue, 也依據目前 stores 架構的用法進行編程，我們己經有一個 client/src/stores/joinRecordQueryStore.js 就使用這個擴展， 你有什麼想法嗎

@@ -130,6 +130,18 @@ export const useMenuStore = defineStore("menu", () => {
       publish: false,
     },
     {
+      id: 12,
+      name: "參加記錄報表",
+      path: "/report-control",
+      icon: "📊",
+      component: "JoinRecordReportControl",
+      requiredAuth: true,
+      order: 12,
+      enabled: true,
+      publish: false,
+    },
+
+    {
       id: 69,
       name: "天干地支時鐘",
       path: "/td-clock",
@@ -142,7 +154,7 @@ export const useMenuStore = defineStore("menu", () => {
     },
 
     {
-      id: 12,
+      id: 13,
       name: "祈福登記編輯",
       path: "/registration-edit", //路徑
       icon: "🔍",

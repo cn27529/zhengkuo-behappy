@@ -561,43 +561,48 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     }
   };
 
-  return {
-    // 狀態
-    searchResults,
-    searchQuery,
-    isLoading,
-    hasSearched,
-    currentPage,
-    pageSize,
-    stateFilter,
-    itemsFilter,
+  // ===== 狀態控制台相關 =====
 
-    // 計算屬性
-    stateOptions,
-    itemTypeOptions,
-    stateConfigs,
-
-    // 方法
-    queryJoinRecordData,
-    deleteParticipationRecord,
-    clearSearch,
-    setSearchQuery,
-    setStateFilter,
-    setItemsFilter,
-    getFilteredData,
-    isMobile,
-
-    // 狀態控制台方法
-    updateRecordStates,
-    batchUpdateRecordStates,
-
-    // 分頁方法
-    setCurrentPage: (page) => {
-      currentPage.value = page;
+  // 狀態欄位配置
+  const stateConfigs = computed(() => ({
+    state: {
+      label: "記錄狀態",
+      options: [
+        { value: "pending", label: "待處理" },
+        { value: "confirmed", label: "已確認" },
+        { value: "completed", label: "已完成" },
+      ],
     },
-    setPageSize: (size) => {
-      pageSize.value = size;
+    paymentState: {
+      label: "付款狀態",
+      options: [
+        { value: "unpaid", label: "未付款" },
+        { value: "paid", label: "已付款" },
+      ],
     },
-    resetPagination,
-  };
-});
+    receiptIssued: {
+      label: "收據狀態",
+      options: [
+        { value: "false", label: "未開立" },
+        { value: "true", label: "已開立" },
+      ],
+    },
+    accountingState: {
+      label: "會計狀態",
+      options: [
+        { value: "pending", label: "待處理" },
+        { value: "reconciled", label: "已對帳" },
+      ],
+    },
+    paymentMethod: {
+      label: "付款方式",
+      options: [
+        { value: "", label: "未選擇" },
+        { value: "cash", label: "現金" },
+        { value: "transfer", label: "銀行轉帳" },
+        { value: "card", label: "信用卡" },
+      ],
+    },
+  }));
+
+  // 批量更新單筆記錄狀態
