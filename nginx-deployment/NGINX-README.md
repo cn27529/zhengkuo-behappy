@@ -1,17 +1,17 @@
-# 正國寺廟管理系統 - Nginx 部署套件
+# 鎮國寺廟管理系統 - Nginx 部署套件
 
-這個套件包含了將正國寺廟管理系統部署到生產環境所需的所有配置文件和腳本。
+這個套件包含了將鎮國寺廟管理系統部署到生產環境所需的所有配置文件和腳本。
 
 ## 📁 文件說明
 
-| 文件 | 說明 |
-|------|------|
-| `nginx-config.conf` | Nginx 主配置文件 |
+| 文件                   | 說明                  |
+| ---------------------- | --------------------- |
+| `nginx-config.conf`    | Nginx 主配置文件      |
 | `nginx-setup-guide.md` | 完整的設置指南 (必讀) |
-| `docker-compose.yml` | Docker 容器編排配置 |
-| `.env.example` | 環境變數範例 |
-| `quick-start.sh` | 快速啟動腳本 |
-| `README.md` | 本文件 |
+| `docker-compose.yml`   | Docker 容器編排配置   |
+| `.env.example`         | 環境變數範例          |
+| `quick-start.sh`       | 快速啟動腳本          |
+| `README.md`            | 本文件                |
 
 ## 🚀 快速開始
 
@@ -126,13 +126,13 @@ sudo tail -f /var/log/nginx/zhengkuo-error.log
 
 ## 📊 服務端口映射
 
-| 服務 | 內部端口 | 外部訪問 |
-|------|---------|---------|
-| 前端 | 5173 | / |
-| Rust API | 3000 | /api/ |
-| Directus | 8055 | /directus/ |
-| 日誌服務 | 3002 | /logs/ |
-| 文檔服務 | 3001 | /docs/ |
+| 服務     | 內部端口 | 外部訪問   |
+| -------- | -------- | ---------- |
+| 前端     | 5173     | /          |
+| Rust API | 3000     | /api/      |
+| Directus | 8055     | /directus/ |
+| 日誌服務 | 3002     | /logs/     |
+| 文檔服務 | 3001     | /docs/     |
 
 ## 🔒 安全建議
 
@@ -155,12 +155,14 @@ sudo tail -f /var/log/nginx/zhengkuo-error.log
 ## 🐛 故障排除
 
 ### Nginx 無法啟動
+
 ```bash
 sudo nginx -t
 sudo journalctl -u nginx -n 50
 ```
 
 ### 502 Bad Gateway
+
 ```bash
 # 檢查後端服務
 ./quick-start.sh status
@@ -171,6 +173,7 @@ sudo journalctl -u nginx -n 50
 ```
 
 ### SSL 證書問題
+
 ```bash
 sudo certbot renew
 sudo certbot certificates
@@ -179,6 +182,7 @@ sudo certbot certificates
 ## 📞 支援
 
 如需幫助，請：
+
 1. 查閱 `nginx-setup-guide.md`
 2. 檢查系統日誌
 3. 聯繫技術支援

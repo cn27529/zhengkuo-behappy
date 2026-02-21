@@ -1,4 +1,4 @@
-# Nginx 設置指南 - 正國寺廟管理系統
+# Nginx 設置指南 - 鎮國寺廟管理系統
 
 ## 📋 目錄
 
@@ -16,20 +16,24 @@
 ## 系統需求
 
 ### 硬體需求
+
 - CPU: 2核心以上
 - RAM: 4GB 以上
 - 硬碟: 20GB 以上可用空間
 
 ### 軟體需求
+
 - Ubuntu 20.04 / 22.04 或 CentOS 7 / 8
-- Nginx 1.18+ 
+- Nginx 1.18+
 - Node.js 16+
 - Rust 1.70+
 - SQLite 3
 - MongoDB (日誌服務器用)
 
 ### 端口需求
+
 確保以下端口可用：
+
 - 80 (HTTP)
 - 443 (HTTPS)
 - 3000 (Rust Backend)
@@ -129,12 +133,12 @@ server {
     server_name your-domain.com;
 
     # SSL 配置...
-    
+
     # 前端靜態文件
     location / {
         root /var/www/zhengkuo-behappy/dist;
         try_files $uri $uri/ /index.html;
-        
+
         # 緩存靜態資源
         location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
             expires 1y;
@@ -169,11 +173,13 @@ sudo nginx -t
 #### 1. 安裝 Certbot
 
 **Ubuntu / Debian:**
+
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
 ```
 
 **CentOS / RHEL:**
+
 ```bash
 sudo yum install certbot python3-certbot-nginx -y
 ```
@@ -235,7 +241,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}正在啟動正國寺廟管理系統...${NC}"
+echo -e "${GREEN}正在啟動鎮國寺廟管理系統...${NC}"
 
 # 啟動 Rust 後端
 echo -e "${YELLOW}啟動 Rust 後端 (Port 3000)...${NC}"
@@ -419,6 +425,7 @@ sudo ss -tlnp | grep -E '80|443|3000|3001|3002|5173|8055'
 ```
 
 預期輸出：
+
 ```
 tcp  LISTEN  0  511  *:80      *:*     users:(("nginx",pid=...))
 tcp  LISTEN  0  511  *:443     *:*     users:(("nginx",pid=...))
@@ -497,6 +504,7 @@ sudo journalctl -u nginx -n 50
 原因：後端服務未啟動或無法連接
 
 解決：
+
 ```bash
 # 檢查後端服務
 ps aux | grep -E 'cargo|node'
@@ -524,6 +532,7 @@ sudo certbot renew --force-renewal
 ### Q4: 靜態文件 404
 
 檢查文件路徑和權限：
+
 ```bash
 # 檢查文件是否存在
 ls -la /var/www/zhengkuo-behappy/dist
@@ -536,6 +545,7 @@ sudo chmod -R 755 /var/www/zhengkuo-behappy
 ### Q5: CORS 錯誤
 
 在 Nginx 配置中添加 CORS 標頭：
+
 ```nginx
 add_header Access-Control-Allow-Origin * always;
 add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
@@ -733,7 +743,7 @@ sudo sysctl -p
 
 ## 總結
 
-按照本指南，您應該能夠成功設置並運行正國寺廟管理系統。記得：
+按照本指南，您應該能夠成功設置並運行鎮國寺廟管理系統。記得：
 
 1. ✅ 定期更新系統和套件
 2. ✅ 監控服務狀態和日誌
