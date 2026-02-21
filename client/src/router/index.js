@@ -47,6 +47,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/join-record-receipt",
+    title: "收據打印",
+    component: () => import("../views/JoinRecordReceipt.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/states-control",
     title: "參加記錄狀態控制台",
     name: "JoinRecordStatesControl",

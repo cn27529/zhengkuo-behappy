@@ -228,6 +228,11 @@
                 🖨️
               </el-button>
             </el-tooltip>
+            <el-tooltip content="收據打印" placement="top">
+              <el-button type="primary" circle @click="handleReceipt(row)">
+                📄
+              </el-button>
+            </el-tooltip>
             <el-tooltip content="刪除記錄" placement="top">
               <el-button type="danger" circle @click="handleDelete(row)">
                 🗑️
@@ -444,6 +449,24 @@ const handlePrint = (item) => {
   } catch (error) {
     console.error("導航到列印頁面失敗:", error);
     ElMessage.error("導航到列印頁面失敗");
+  }
+};
+
+// 收據打印
+const handleReceipt = (item) => {
+  try {
+    const printData = JSON.stringify(item);
+    const printId = `receipt_${item.id}_${Date.now()}`;
+
+    sessionStorage.setItem(printId, printData);
+
+    router.push({
+      path: "/join-record-receipt",
+      query: { print_id: printId },
+    });
+  } catch (error) {
+    console.error("導航到收據頁面失敗:", error);
+    ElMessage.error("導航到收據頁面失敗");
   }
 };
 
