@@ -62,7 +62,9 @@ export const useDashboardStore3 = defineStore("dashboard3", () => {
         return date >= start && date <= end;
       })
       .reduce((sum, r) => {
-        return sum + (r.blessing?.persons?.filter((p) => p.name?.trim()).length || 0);
+        return (
+          sum + (r.blessing?.persons?.filter((p) => p.name?.trim()).length || 0)
+        );
       }, 0);
   });
 
@@ -75,7 +77,10 @@ export const useDashboardStore3 = defineStore("dashboard3", () => {
         return date >= start && date <= end;
       })
       .reduce((sum, r) => {
-        return sum + (r.salvation?.ancestors?.filter((a) => a.surname?.trim()).length || 0);
+        return (
+          sum +
+          (r.salvation?.ancestors?.filter((a) => a.surname?.trim()).length || 0)
+        );
       }, 0);
   });
 
@@ -93,26 +98,29 @@ export const useDashboardStore3 = defineStore("dashboard3", () => {
   // 待收款項
   const pendingPayments = computed(() => {
     return joinRecords.value
-      .filter((r) => r.paymentState === "unpaid" || r.paymentState === "partial")
+      .filter(
+        (r) => r.paymentState === "unpaid" || r.paymentState === "partial",
+      )
       .reduce((sum, r) => sum + (r.finalAmount - r.paidAmount || 0), 0);
   });
 
   // 待收款記錄數
   const pendingPaymentCount = computed(() => {
     return joinRecords.value.filter(
-      (r) => r.paymentState === "unpaid" || r.paymentState === "partial"
+      (r) => r.paymentState === "unpaid" || r.paymentState === "partial",
     ).length;
   });
 
   // 待開收據數
   const pendingReceiptCount = computed(() => {
-    return joinRecords.value.filter((r) => r.needReceipt && !r.receiptIssued).length;
+    return joinRecords.value.filter((r) => r.needReceipt && !r.receiptIssued)
+      .length;
   });
 
   // 待沖帳數
   const pendingAccountingCount = computed(() => {
     return joinRecords.value.filter(
-      (r) => r.paymentState === "paid" && r.accountingState === "pending"
+      (r) => r.paymentState === "paid" && r.accountingState === "pending",
     ).length;
   });
 
@@ -143,7 +151,7 @@ export const useDashboardStore3 = defineStore("dashboard3", () => {
   const recentJoinRecords = computed(() => {
     return [...joinRecords.value]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .slice(0, 5);
+      .slice(0, 6);
   });
 
   return {

@@ -198,16 +198,16 @@
                   {{
                     registration.contact?.mobile || registration.contact?.phone
                   }}
-                  {{ registration.contact?.relationship }}
-                  ·
-                  {{
-                    formatDate(
+                  {{ registration.contact?.relationship }}，於{{
+                    formatDateTime(
                       registration.createdAt || registration.date_created,
                     )
                   }}
                 </div>
               </div>
-              <div class="list-value">{{ registration.state || "-" }}</div>
+              <div v-if="false" class="list-value">
+                {{ registration.state || "-" }}
+              </div>
             </div>
           </div>
           <div v-else class="list-empty">暫無登記資料</div>
@@ -236,21 +236,19 @@
                       style="margin-right: 13px"
                       v-if="false"
                     >
-                      <el-button size="small">{{
-                        item.label
-                      }}</el-button>
-                    </el-badge>                  
+                      <el-button size="small">{{ item.label }}</el-button>
+                    </el-badge>
 
                     <span v-if="item.label !== '陽上人'" class="stat-badge">
                       {{ item.label }} {{ item.quantity }}
                     </span>
                   </span>
-
-                  {{ record.totalAmount }} 元 ·
-                  {{ formatDate(record.createdAt || record.date_created) }}
+                  {{ record.totalAmount }} 元，於{{
+                    formatDateTime(record.createdAt || record.date_created)
+                  }}
                 </div>
               </div>
-              <div class="list-value">
+              <div v-if="false" class="list-value">
                 {{ formatCurrency(record.finalAmount) }}
               </div>
             </div>
@@ -336,7 +334,7 @@ onMounted(async () => {
   color: white;
   border-radius: 4px;
   font-size: 0.75rem;
-  margin-right: 10px
+  margin-right: 10px;
 }
 
 .dashboard2 {
