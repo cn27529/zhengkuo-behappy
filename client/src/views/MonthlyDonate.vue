@@ -227,28 +227,27 @@
               label="操作"
               fixed="right"
               align="center"
-              width="150"
+              width="180"
             >
               <template #default="{ row }">
                 <div class="action-buttons">
-                  <el-tooltip content="查看贊助項目詳情" placement="top">
-                    <el-button
-                      style="display: none"
-                      circle
-                      @click="handleViewDonatorDetail(row)"
-                      type="info"
-                    >
-                      <el-icon><View /></el-icon>
-                    </el-button>
-                  </el-tooltip>
-
                   <el-tooltip content="新增贊助項目" placement="top">
                     <el-button
                       circle
                       @click="handleAddDonateToDonator(row)"
-                      type="primary"
+                      type="info"
                     >
                       <el-icon><Plus /></el-icon>
+                    </el-button>
+                  </el-tooltip>
+
+                  <el-tooltip content="查看詳情" placement="top">
+                    <el-button
+                      type="primary"
+                      circle
+                      @click="handleViewDonatorDetail(row)"
+                    >
+                      👁️
                     </el-button>
                   </el-tooltip>
 

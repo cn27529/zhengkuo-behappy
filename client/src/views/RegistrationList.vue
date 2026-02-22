@@ -145,16 +145,18 @@
 
         <el-table-column label="操作" width="200" fixed="right" align="center">
           <template #default="{ row }">
+            <el-tooltip content="查看詳情" placement="top">
+              <el-button type="primary" circle @click="handlePrint(row)">
+                👁️
+              </el-button>
+            </el-tooltip>
+
             <el-tooltip content="編輯表單" placement="top">
-              <el-button circle @click="handleEdit(row)" type="primary">
+              <el-button circle @click="handleEdit(row)" type="info">
                 📝
               </el-button>
             </el-tooltip>
-            <el-tooltip content="列印表單" placement="top">
-              <el-button type="success" circle @click="handlePrint(row)"
-                >🖨️</el-button
-              >
-            </el-tooltip>
+
             <el-tooltip content="卡片設計" placement="right">
               <el-button circle @click="handleCardDesign(row)" v-if="false"
                 >💳</el-button

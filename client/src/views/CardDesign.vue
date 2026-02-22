@@ -104,7 +104,7 @@
             onDragStart(
               $event,
               'blessingAddress',
-              cardStore.cardData.blessingAddress
+              cardStore.cardData.blessingAddress,
             )
           "
           @dragend="onDragEnd"
@@ -136,7 +136,7 @@
             onDragStart(
               $event,
               'salvationAddress',
-              cardStore.cardData.salvationAddress
+              cardStore.cardData.salvationAddress,
             )
           "
           @dragend="onDragEnd"
@@ -415,7 +415,7 @@ const onDragStart = (event, type, content = null) => {
     JSON.stringify({
       type: dragState.draggedItemType,
       content: dragState.draggedItemContent,
-    })
+    }),
   );
   event.dataTransfer.effectAllowed = "copy";
 
@@ -573,7 +573,7 @@ const onMouseMove = (event) => {
   const elementWidth = 150; // 固定寬度
   const elementHeight =
     cardStore.droppedItems.find(
-      (item) => item.id === itemDragState.draggingItemId
+      (item) => item.id === itemDragState.draggingItemId,
     )?.content?.length * 30 || 80;
 
   // 限制在卡片範圍內
@@ -983,7 +983,9 @@ h1 {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
   border: 1px dashed #aaaaaa;
   cursor: grab;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .data-item:hover {

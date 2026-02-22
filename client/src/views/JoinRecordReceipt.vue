@@ -1,46 +1,47 @@
 <template>
   <div class="print-wrapper">
-    <div id="receipt-canvas" class="receipt-canvas">
-      <h1 class="title">感謝狀</h1>
+    <div id="receipt-content" class="receipt-content">
+      <div id="receipt-canvas" class="receipt-canvas">
+        <h1 class="title">感謝狀</h1>
 
-      <div class="content-section">
-        <div class="donor-info">
-          兹收到 <span class="highlight">{{ contactName }}</span>
+        <div class="content-section">
+          <div class="donor-info">
+            兹收到 <span class="highlight">{{ contactName }}</span>
+          </div>
+
+          <div class="items-detail">
+            功德項目：
+            <span
+              v-for="(item, idx) in record.items"
+              :key="idx"
+              class="highlight"
+            >
+              {{ item.label }}({{ appConfig.dollarTitle }}{{ item.subtotal }})
+            </span>
+          </div>
+
+          <div class="total-amount">
+            共計新台幣：<span class="highlight">{{ totalAmountChinese }}</span>
+          </div>
+
+          <div v-if="contactAddress" class="address-info">
+            住址：<span class="highlight">{{ contactAddress }}</span>
+          </div>
+
+          <div class="blessing">功德無量，特此致謝</div>
         </div>
 
-        <div class="items-detail">
-          功德項目：
-          <span
-            v-for="(item, idx) in record.items"
-            :key="idx"
-            class="highlight"
-          >
-            {{ item.label }}({{ appConfig.dollarTitle }}{{ item.subtotal }})
-          </span>
+        <div class="temple-info">
+          <span class="highlight">財團法人鎮國基金會</span><br />
+          會址：南投縣集集鎮廣明里鎮國巷101號<br />
+          電話：(049) 2762726<br />
+          董事長：釋廣心（游天木）<br />
+          經手人：釋徹空
         </div>
 
-        <div class="total-amount">
-          共計新台幣：<span class="highlight">{{ totalAmountChinese }}</span>
+        <div class="footer-info">
+          中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
         </div>
-
-        <div v-if="contactAddress" class="address-info">
-          住址：<span class="highlight">{{ contactAddress }}</span>
-        </div>
-
-        <div class="blessing">功德無量，特此致謝</div>
-      </div>
-
-      <div class="temple-info">
-        <span class="highlight">財團法人鎮國基金會</span><br />
-        地址：南投縣集集鎮廣明里鎮國巷101號<br />
-        會址：南投縣集集鎮廣明里鎮國巷101號<br />
-        電話：(049) 2762726<br />
-        董事長：釋廣心（游天木）<br />
-        經手人：釋徹空
-      </div>
-
-      <div class="footer-info">
-        中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
       </div>
     </div>
 
@@ -54,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { appConfig } from "../config/appConfig.js";
@@ -63,6 +64,7 @@ import printJS from "print-js";
 const route = useRoute();
 const router = useRouter();
 const record = ref({});
+const printing = ref(false);
 
 const contactName = computed(() => record.value.contact?.name || "未知");
 const contactAddress = computed(() => {
@@ -103,26 +105,86 @@ const convertToChinese = (num) => {
   return result.replace(/零+$/, "");
 };
 
-const handlePrint = () => {
-  printJS({
-    printable: "receipt-canvas",
-    type: "html",
-    targetStyles: ["*"],
-    style: `
-      @page { size: 130mm 181mm; margin: 5mm; }
-      .receipt-canvas {
-        width: 130mm;
-        height: 181mm;
-        padding: 15mm;
-        box-sizing: border-box;
-        position: relative;
-        font-family: "Kaiti", "STKaiti", "標楷體", "DFKai-SB", serif;
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-        line-height: 2;
-      }
+const handlePrint = async () => {
+  try {
+    printing.value = true;
+
+    // 使用 Element Plus 消息提示
+    ElMessage({
+      message: "正在生成收據，請稍候...",
+      type: "info",
+      duration: 2000,
+    });
+
+    // // 檢查是否已載入 html2canvas
+    // if (typeof window.html2canvas === "undefined") {
+    //   // 動態載入 html2canvas（與 RegistrationPrint.vue 相同的方式）
+    //   await loadHtml2Canvas();
+    // }
+
+    // 等待下一個渲染周期確保所有元素都已渲染
+    await nextTick();
+
+    // // 方法1：直接捕捉卡片背景區域（最準確）
+    // const printElement = document.querySelector(".receipt-content");
+
+    // console.log("開始捕捉收據...", printElement);
+
+    // const canvas = await window.html2canvas(printElement, {
+    //   backgroundColor: null, // 設置為null以保持透明背景
+    //   scale: 2, // 提高分辨率
+    //   useCORS: true,
+    //   allowTaint: true,
+    //   logging: true, // 開啟日誌
+    //   removeContainer: true,
+    //   width: printElement.clientWidth,
+    //   height: printElement.clientHeight,
+    //   x: 0,
+    //   y: 0,
+    //   scrollX: 0,
+    //   scrollY: 0,
+    //   ignoreElements: (element) => {
+    //     // 忽略不需要的元素
+    //     return element.classList.contains("print-actions");
+    //   },
+    // });
+
+    // // 創建下載鏈接
+    // const link = document.createElement("a");
+    // link.download = `收據_${new Date().toISOString().slice(0, 10)}.png`;
+    // link.href = canvas.toDataURL("image/png");
+    // link.click();
+
+    ElMessage({
+      message: "收據已下載成功！",
+      type: "success",
+      duration: 3000,
+    });
+
+    printJS({
+      printable: "receipt-content",
+      type: "html",
+      targetStyles: ["*"],
+      style: `
+      @page { size: 128mm 182mm; margin: 0 auto; }
     `,
-  });
+    });
+  } catch (error) {
+    console.error("生成圖片時出錯:", error);
+
+    let errorMessage = "生成圖片時出錯，請重試";
+    if (error.message === "html2canvas 加載失敗") {
+      errorMessage = "html2canvas 庫加載失敗，請檢查網絡連接";
+    }
+
+    ElMessage({
+      message: errorMessage,
+      type: "error",
+      duration: 3000,
+    });
+  } finally {
+    printing.value = false;
+  }
 };
 
 const handleClose = () => {
@@ -158,6 +220,31 @@ onMounted(() => {
     router.back();
   }
 });
+
+// 動態加載 html2canvas（與 RegistrationPrint.vue 相同的方式）
+const loadHtml2Canvas = () => {
+  return new Promise((resolve, reject) => {
+    // 檢查是否已經加載
+    if (typeof window.html2canvas !== "undefined") {
+      resolve();
+      return;
+    }
+
+    // 創建 script 元素動態加載
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+    script.onload = () => {
+      console.log("html2canvas 加載成功");
+      resolve();
+    };
+    script.onerror = (error) => {
+      console.error("html2canvas 加載失敗:", error);
+      reject(new Error("html2canvas 加載失敗"));
+    };
+    document.head.appendChild(script);
+  });
+};
 </script>
 
 <style scoped>
@@ -168,16 +255,23 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 30px;
   }
 
   .receipt-canvas {
     background: #ffe6f0;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
+    padding-top: 10mm;
+    box-shadow: 0 0 0px rgba(0, 0, 0, 0.2);
+    border: #333 solid 1px;
+  }
+
+  .receipt-content {
+    background: #ffe6f0;
+    padding: 5mm;
   }
 
   .print-actions {
+    margin-top: 30px;
     display: flex;
     gap: 1rem;
   }
@@ -185,7 +279,7 @@ onMounted(() => {
 
 @media print {
   @page {
-    size: 130mm 181mm;
+    size: 128mm 182mm;
     margin: 5mm;
   }
 
@@ -207,15 +301,20 @@ onMounted(() => {
 }
 
 .receipt-canvas {
-  width: 130mm;
-  height: 181mm;
-  padding: 8mm;
-  box-sizing: border-box;
+  width: 128mm;
+  height: 182mm;
+  padding-top: 10mm;
   position: relative;
   font-family: "Kaiti", "STKaiti", "標楷體", "DFKai-SB", serif;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   line-height: 2;
+  border: #333 solid 1px;
+}
+
+.receipt-content {
+  background: #ffe6f0;
+  padding: 5mm;
 }
 
 .title {
@@ -251,19 +350,20 @@ onMounted(() => {
 
 .temple-info {
   position: absolute;
-  left: 15mm;
-  top: 70%;
-  transform: translateY(-50%);
+  left: 13mm;
+  bottom: 30mm;
+  /* transform: translateY(-50%); */
   font-size: 8pt;
   border-right: 1px solid #333;
-  padding-right: 8mm;
-  line-height: 1.8;
+  /* padding-right: 4mm;
+  line-height: 1.8; */
+  max-height: 300px;
 }
 
 .footer-info {
   position: absolute;
+  left: 13mm;
   bottom: 10mm;
-  left: 10mm;
   writing-mode: horizontal-tb;
   font-size: 8pt;
 }

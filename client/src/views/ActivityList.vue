@@ -252,7 +252,7 @@
                       <el-button
                         circle
                         @click="handleEditShowModel(row)"
-                        type="primary"
+                        type="info"
                       >
                         📝
                       </el-button>
@@ -274,7 +274,7 @@
                         @click="handleDelete(row)"
                         type="danger"
                       >
-                        刪
+                        🗑️
                       </el-button>
                     </el-tooltip>
                   </div>

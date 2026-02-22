@@ -111,17 +111,8 @@
         :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
         v-loading="isLoading"
       >
-        <el-table-column label="圖標" min-width="50" align="center">
-          <template #default="{ row }">
-            <div>
-              <el-tooltip :content="`參加ID: ${row.id}`" placement="top">
-                <span class="record-icon">📋</span>
-              </el-tooltip>
-            </div>
-          </template>
-        </el-table-column>
-
         <el-table-column
+          v-if="false"
           prop="activityId"
           label="活動ID"
           min-width="50"
@@ -132,7 +123,30 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="聯絡人" min-width="120" align="center">
+        <el-table-column label="資料屬性" min-width="50" align="center">
+          <template #default="{ row }">
+            <div>
+              <el-tooltip :content="`參加ID: ${row.id}`" placement="top">
+                <el-tag
+                  v-if="row.contact?.relationship"
+                  class="other-relationship"
+                  size="mini"
+                >
+                  {{ row.contact.relationship }}
+
+                  <span
+                    v-if="false && row.contact?.otherRelationship"
+                    class="other-relationship"
+                  >
+                    ({{ row.contact.otherRelationship }})
+                  </span>
+                </el-tag>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="聯絡人" min-width="150" align="center">
           <template #default="{ row }">
             <div class="contact-info">
               <div class="contact-name">
@@ -144,10 +158,7 @@
               >
                 {{ row.contact?.mobile || row.contact?.phone }}
               </div>
-              <div
-                class="contact-relationship"
-                v-if="row.contact?.relationship"
-              >
+              <div v-if="false" class="contact-relationship">
                 {{ row.contact?.relationship }}
                 <span
                   v-if="row.contact?.otherRelationship"
@@ -160,10 +171,19 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="參加項目" min-width="250">
+        <el-table-column label="參加項目" min-width="150">
           <template #default="{ row }">
-            <div class="items-list">
+            <div class="items-summary">
+              <el-tag
+                v-for="(item, index) in row.items"
+                :key="index"
+                class="stat-badge"
+              >
+                {{ item.label }} {{ item.quantity }}
+              </el-tag>
+
               <div
+                v-if="false"
                 v-for="(item, index) in row.items"
                 :key="index"
                 class="item-tag"
@@ -175,20 +195,22 @@
 
                   <!-- <span class="item-label">{{ item.label }}</span>
                   <span class="item-quantity">x{{ item.quantity }}</span> -->
-                  <span class="item-amount"
+                  <span v-if="false" class="item-amount"
                     >{{ appConfig.dollarTitle }}{{ item.subtotal }}</span
                   >
                 </div>
-                <div class="item-address" v-if="item.sourceAddress">
+                <div v-if="false" class="item-address">
                   <!-- <span class="address-label">地址：</span> -->
-                  <span class="address-text">{{ item.sourceAddress }}</span>
+                  <span v-if="item.sourceAddress" class="address-text">{{
+                    item.sourceAddress
+                  }}</span>
                 </div>
-                <div
-                  class="item-participants"
-                  v-if="item.sourceData && item.sourceData.length > 0"
-                >
+                <div v-if="false" class="item-participants">
                   <!-- <span class="participants-label">參加者：</span> -->
-                  <span class="participants-list">
+                  <span
+                    v-if="item.sourceData && item.sourceData.length > 0"
+                    class="participants-list"
+                  >
                     {{ getParticipantNames(item.sourceData).join("、") }}
                   </span>
                 </div>
@@ -221,18 +243,20 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="150" fixed="right" align="center">
+        <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
-            <el-tooltip content="列印表單" placement="top">
-              <el-button type="success" circle @click="handlePrint(row)">
+            <el-tooltip content="查看詳情" placement="top">
+              <el-button type="primary" circle @click="handlePrint(row)">
+                👁️
+              </el-button>
+            </el-tooltip>
+
+            <el-tooltip content="收據打印" placement="top">
+              <el-button type="success" circle @click="handleReceipt(row)">
                 🖨️
               </el-button>
             </el-tooltip>
-            <el-tooltip content="收據打印" placement="top">
-              <el-button type="primary" circle @click="handleReceipt(row)">
-                📄
-              </el-button>
-            </el-tooltip>
+
             <el-tooltip content="刪除記錄" placement="top">
               <el-button type="danger" circle @click="handleDelete(row)">
                 🗑️
@@ -544,6 +568,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 項目摘要 */
+.items-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 .stat-badge {
   padding: 4px 8px;
   background: var(--primary-color);
@@ -674,6 +705,7 @@ onMounted(() => {
 .other-relationship {
   color: #666;
   font-style: italic;
+  margin-left: 4px;
 }
 
 .amount {
