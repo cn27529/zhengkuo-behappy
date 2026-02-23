@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div class="print-actions">
+    <div class="print-controls">
       <el-button type="primary" @click="handlePrintWithHtmlToImage" size="large">
         🖨️ 收據打印
       </el-button>
@@ -102,7 +102,7 @@ const handlePrintWithHtmlToImage = async () => {
     // 使用 html-to-image 生成 PNG
     // pixelRatio 設為 3 以確保 300dpi 以上的打印質量
     const dataUrl = await htmlToImage.toPng(node, {
-      pixelRatio: 3, 
+      pixelRatio: 6, 
       //backgroundColor: '#ffe6f0',
       backgroundColor: '#ffffff',
       cacheBust: true,
@@ -158,7 +158,7 @@ onMounted(() => {
   }
 }
 
-/* 針對 13cm x 18.1cm 的物理尺寸進行嚴格定義 */
+/* 針對 128mm x 182mm 的物理尺寸進行嚴格定義 */
 .receipt-canvas {
   width: 128mm;
   height: 182mm;
@@ -209,7 +209,7 @@ onMounted(() => {
   font-weight: bold;
 }
 
-.print-actions {
+.print-controls {
   margin-top: 25px;
   display: flex;
   gap: 15px;
