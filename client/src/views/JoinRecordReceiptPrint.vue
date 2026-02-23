@@ -11,7 +11,11 @@
 
           <div class="items-detail">
             功德項目：
-            <span v-for="(item, idx) in record.items" :key="idx" class="highlight">
+            <span
+              v-for="(item, idx) in record.items"
+              :key="idx"
+              class="highlight"
+            >
               {{ item.label }}({{ appConfig.dollarTitle }}{{ item.subtotal }})
             </span>
           </div>
@@ -38,11 +42,18 @@
         <div class="footer-info">
           中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
         </div>
+        <div class="print-meta">
+          <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+        </div>
       </div>
     </div>
 
     <div class="print-controls">
-      <el-button type="primary" @click="handlePrintWithHtmlToImage" size="large">
+      <el-button
+        type="success"
+        @click="handlePrintWithHtmlToImage"
+        size="large"
+      >
         🖨️ 收據打印
       </el-button>
       <el-button @click="handleClose" size="large">關閉</el-button>
@@ -55,13 +66,13 @@ import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElLoading } from "element-plus";
 import { appConfig } from "../config/appConfig.js";
-import * as htmlToImage from 'html-to-image'; // 需安裝：npm install html-to-image
+import * as htmlToImage from "html-to-image"; // 需安裝：npm install html-to-image
 import printJS from "print-js";
 
 const route = useRoute();
 const router = useRouter();
 const record = ref({});
-
+const printTime = ref("");
 
 // 數據綁定邏輯 (保持與 JoinRecordReceipt.vue 一致)
 const contactName = computed(() => record.value.contact?.name || "未知");
@@ -76,6 +87,19 @@ const totalAmountChinese = computed(() => {
 const rocYear = computed(() => new Date().getFullYear() - 1911);
 const currentMonth = computed(() => new Date().getMonth() + 1);
 const currentDay = computed(() => new Date().getDate());
+
+// 設置列印時間
+const setPrintTime = () => {
+  const now = new Date();
+  printTime.value = now.toLocaleString("zh-TW", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+};
 
 const convertToChinese = (num) => {
   const digits = ["零", "壹", "貳", "參", "肆", "伍", "陸", "柒", "捌", "玖"];
@@ -94,40 +118,44 @@ const convertToChinese = (num) => {
 };
 
 const handlePrintWithHtmlToImage = async () => {
-  const node = document.getElementById('receipt-capture-area');
-  const loading = ElLoading.service({ text: '正在生成高清收據圖像...', background: 'rgba(255, 255, 255, 0.8)' });
-  
-  try {    
+  const node = document.getElementById("receipt-capture-area");
+  const loading = ElLoading.service({
+    text: "正在生成高清收據圖像...",
+    background: "rgba(255, 255, 255, 0.8)",
+  });
 
+  try {
     // 使用 html-to-image 生成 PNG
     // pixelRatio 設為 3 以確保 300dpi 以上的打印質量
     const dataUrl = await htmlToImage.toPng(node, {
-      pixelRatio: 6, 
+      pixelRatio: 6,
       //backgroundColor: '#ffe6f0',
-      backgroundColor: '#ffffff',
+      backgroundColor: "#ffffff",
       cacheBust: true,
     });
 
     // 透過 Print.js 進行圖片打印
     printJS({
       printable: dataUrl,
-      type: 'image',
-      style: '@page { size: 128mm 182mm; margin: 0 auto;  } img { width: 100%; height: 100%; }',
-      imageStyle: 'width:100%;'
+      type: "image",
+      style:
+        "@page { size: 128mm 182mm; margin: 0 auto;  } img { width: 100%; height: 100%; }",
+      imageStyle: "width:100%;",
     });
 
     ElMessage.success("收據生成成功");
   } catch (error) {
-    console.error('html-to-image 出錯:', error);
+    console.error("html-to-image 出錯:", error);
     ElMessage.error("收據轉換失敗，請檢查瀏覽器兼容性");
   } finally {
-    loading.close();    
+    loading.close();
   }
 };
 
 const handleClose = () => router.back();
 
 onMounted(() => {
+  setPrintTime();
   const printData = route.query.print_data;
   if (printData) {
     try {
@@ -203,15 +231,36 @@ onMounted(() => {
 .footer-info {
   position: absolute;
   left: 10mm;
-  bottom: 10mm;
+  bottom: 8mm;
   writing-mode: horizontal-tb;
-  font-size: 11pt;
+  font-size: 10pt;
   font-weight: bold;
 }
 
+.print-meta {
+  position: absolute;
+  left: 10mm;
+  bottom: 5mm;
+  writing-mode: horizontal-tb;
+  color: #666;
+  font-size: 6px;
+}
+
 .print-controls {
-  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  /* background: #f5f5f5; */
+  border-radius: 5px;
+  gap: 15px;
+}
+
+.print-controls {
+  margin-top: 20px;
   display: flex;
   gap: 15px;
+  justify-content: center;
 }
 </style>

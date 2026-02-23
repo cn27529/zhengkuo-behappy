@@ -1,8 +1,6 @@
 <!-- src/views/JoinRecordPrint.vue -->
 <template>
   <div class="print-join-record">
-    
-
     <!-- 列印內容 -->
     <div class="print-content" id="print-content">
       <!-- 表頭 -->
@@ -187,11 +185,13 @@
 
     <!-- 列印控制欄（僅在預覽時顯示） -->
     <div class="print-controls" v-if="!isPrinting">
-      <div class="controls-left">
-        <button @click="handleBack" class="back-btn">← 返回</button>
+      <div class="controls">
+        <el-button type="primary" @click="handlePrint" size="large"
+          >🖨️ 列印詳情</el-button
+        >
       </div>
-      <div class="controls-right">
-        <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
+      <div class="controls">
+        <el-button @click="handleBack" size="large">關閉</el-button>
       </div>
     </div>
   </div>
@@ -474,13 +474,20 @@ onUnmounted(() => {
 
   .print-controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     padding: 15px;
-    background: #f5f5f5;
+    /* background: #f5f5f5; */
     border-radius: 5px;
     gap: 15px;
+  }
+
+  .print-controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
   }
 
   .controls-left {

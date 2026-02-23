@@ -983,28 +983,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.print-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  /* 
-  padding: 15px;
-  background: #f5f5f5; */
-  border-radius: 5px;
-  gap: 10px;
-}
-
-.controls-left {
-  display: flex;
-  align-items: center;
-}
-
-.controls-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
 .back-btn {
   padding: 10px 20px;
@@ -1416,16 +1394,6 @@ select:focus {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .print-controls {
-    /* flex-direction: column;
-    gap: 10px; */
-  }
-
-  .controls-left,
-  .controls-right {
-    /* width: 100%; */
-    justify-content: center;
-  }
 
   .print-tips {
     text-align: center;

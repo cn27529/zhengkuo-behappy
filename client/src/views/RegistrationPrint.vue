@@ -1,7 +1,6 @@
 <!-- src/views/PrintRegistration.vue -->
 <template>
   <div class="print-registration">
-
     <!-- 列印內容 -->
     <div class="print-content" id="print-content">
       <!-- 表頭 -->
@@ -207,10 +206,7 @@
 
     <!-- 列印控制欄（僅在預覽時顯示） -->
     <div class="print-controls" v-if="!isPrinting">
-      <div class="controls-left">
-        <button @click="handleBack" class="back-btn">← 返回</button>
-      </div>
-      <div class="controls-right">
+      <div class="controls">
         <div class="download-dropdown" style="display: none">
           <button @click="toggleDownloadMenu" class="download-btn">
             📥 下載
@@ -234,7 +230,14 @@
             </button>
           </div>
         </div>
-        <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
+      </div>
+      <div class="controls">
+        <el-button type="primary" @click="handlePrint" size="large"
+          >🖨️ 列印詳情</el-button
+        >
+      </div>
+      <div class="controls">
+        <el-button @click="handleBack" size="large">關閉</el-button>
       </div>
     </div>
   </div>
@@ -258,25 +261,25 @@ const loading = ref(false);
 // 計算屬性：過濾有效數據
 const availableBlessingPersons = computed(() => {
   return (printContent.value.blessing?.persons || []).filter(
-    (person) => person.name && person.name.trim() !== ""
+    (person) => person.name && person.name.trim() !== "",
   );
 });
 
 const availableAncestors = computed(() => {
   return (printContent.value.salvation?.ancestors || []).filter(
-    (ancestor) => ancestor.surname && ancestor.surname.trim() !== ""
+    (ancestor) => ancestor.surname && ancestor.surname.trim() !== "",
   );
 });
 
 const availableSurvivors = computed(() => {
   return (printContent.value.salvation?.survivors || []).filter(
-    (survivor) => survivor.name && survivor.name.trim() !== ""
+    (survivor) => survivor.name && survivor.name.trim() !== "",
   );
 });
 
 const currentHouseholdHeadsCount = computed(() => {
   return availableBlessingPersons.value.filter(
-    (person) => person.isHouseholdHead
+    (person) => person.isHouseholdHead,
   ).length;
 });
 
@@ -822,12 +825,18 @@ onUnmounted(() => {
 
   .print-controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     padding: 15px;
-    background: #f5f5f5;
+    /* background: #f5f5f5; */
     border-radius: 5px;
+    gap: 15px;
+  }
+
+  .print-controls {
+    margin-top: 20px;
+    display: flex;
     gap: 15px;
   }
 
@@ -1019,17 +1028,6 @@ onUnmounted(() => {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .print-controls {
-    /* flex-direction: column;
-    gap: 10px; */
-  }
-
-  .controls-left,
-  .controls-right {
-    /* width: 100%; */
-    justify-content: center;
-  }
-
   .print-tips {
     text-align: center;
     order: -1;

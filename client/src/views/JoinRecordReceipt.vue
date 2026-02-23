@@ -47,7 +47,7 @@
 
     <div class="print-controls">
       <el-button type="primary" @click="handlePrint" size="large"
-        >🖨️ 打印</el-button
+        >🖨️ 收據打印</el-button
       >
       <el-button @click="handleClose" size="large">關閉</el-button>
     </div>
@@ -274,6 +274,7 @@ const loadHtml2Canvas = () => {
     margin-top: 30px;
     display: flex;
     gap: 1rem;
+    justify-content: center;
   }
 }
 
