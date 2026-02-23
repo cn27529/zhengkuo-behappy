@@ -1,3 +1,6 @@
+/* 在 style 開頭引入 */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap");
+
 * {
   margin: 0;
   padding: 0;
@@ -215,7 +218,9 @@ select:focus {
   padding: 10px 18px;
   border-radius: 6px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
   opacity: 1;
 }
 

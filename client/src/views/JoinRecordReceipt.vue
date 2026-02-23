@@ -263,6 +263,8 @@ const loadHtml2Canvas = () => {
     padding-top: 10mm;
     box-shadow: 0 0 0px rgba(0, 0, 0, 0.2);
     border: #333 solid 1px;
+    /* 如果找不到系統楷體，則使用思源宋體，至少保持莊重感 */
+    font-family: "標楷體", "DFKai-SB", "Kaiti TC", "Noto Serif TC", serif;
   }
 
   .receipt-content {
@@ -306,7 +308,8 @@ const loadHtml2Canvas = () => {
   height: 182mm;
   padding-top: 10mm;
   position: relative;
-  font-family: "Kaiti", "STKaiti", "標楷體", "DFKai-SB", serif;
+  /* 如果找不到系統楷體，則使用思源宋體，至少保持莊重感 */
+  font-family: "標楷體", "DFKai-SB", "Kaiti TC", "Noto Serif TC", serif;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   line-height: 2;

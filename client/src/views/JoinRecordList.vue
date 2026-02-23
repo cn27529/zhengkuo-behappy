@@ -485,10 +485,8 @@ const handleReceipt = (item) => {
     sessionStorage.setItem(printId, printData);
 
     router.push({
-      path: "/join-record-receipt",
-      query: { print_id: printId,
-        print_data: printData
-       },
+      path: "/join-record-receipt-print",
+      query: { print_id: printId, print_data: printData },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);

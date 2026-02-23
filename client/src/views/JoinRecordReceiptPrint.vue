@@ -1,7 +1,7 @@
 <template>
   <div class="print-wrapper">
     <div id="receipt-capture-area" class="receipt-content">
-      <div class="receipt-canvas">
+      <div class="receipt-canvas font-kaiti">
         <h1 class="title">感謝狀</h1>
 
         <div class="content-section">
@@ -119,16 +119,21 @@ const convertToChinese = (num) => {
 
 const handlePrintWithHtmlToImage = async () => {
   const node = document.getElementById("receipt-capture-area");
+
+  // 使用 Element Plus 消息提示
   const loading = ElLoading.service({
     text: "正在生成高清收據圖像...",
     background: "rgba(255, 255, 255, 0.8)",
   });
 
   try {
+    // 關鍵：等待所有字體下載完成
+    await document.fonts.ready;
+
     // 使用 html-to-image 生成 PNG
     // pixelRatio 設為 3 以確保 300dpi 以上的打印質量
     const dataUrl = await htmlToImage.toPng(node, {
-      pixelRatio: 6,
+      pixelRatio: 3,
       //backgroundColor: '#ffe6f0',
       backgroundColor: "#ffffff",
       cacheBust: true,
@@ -160,6 +165,15 @@ onMounted(() => {
   if (printData) {
     try {
       record.value = JSON.parse(printData);
+
+      const contactName = (record.value.contact?.name || "未填寫")
+        .toString()
+        .trim();
+
+      // 生成收據編號格式：2602 + recordId + A + activityId + R + registrationId
+      const receiptNumber = `${record.value.id}A${record.value.activityId}R${record.value.registrationId}`;
+      // 設置動態頁面標題
+      document.title = `${contactName}-${receiptNumber}`;
     } catch (e) {
       ElMessage.error("數據解析失敗");
     }
@@ -167,6 +181,37 @@ onMounted(() => {
   if (!record.value.id) router.back();
 });
 </script>
+
+<style>
+/* 1. 外部字體引入 */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap");
+
+/* 2. 跨平台字體定義 (全局避免 Scoped 雜湊影響渲染) */
+.font-kaiti {
+  /* 確保 Mac 優先使用 Kaiti TC */
+  font-family:
+    "Kaiti TC",
+    /* macOS 優先 */ "STKaiti",
+    /* 舊版 Mac 備援 */ "標楷體",
+    /* Windows */ "DFKai-SB",
+    "Noto Serif TC",
+    serif !important;
+
+  /* 在 Mac 上，楷體通常需要設為 500 或 600 才會有實體感 */
+  font-weight: 500;
+}
+
+/* 專門給感謝狀畫布使用的字體設定 */
+.receipt-canvas {
+  font-family:
+    "Kaiti TC",
+    /* macOS 優先 */ "STKaiti",
+    /* 舊版 Mac 備援 */ "標楷體",
+    /* Windows */ "DFKai-SB",
+    "Noto Serif TC",
+    /* 您引入的 Google 字型 (作為強大的最後防線) */ serif; /* 襯線體備援 */
+}
+</style>
 
 <style scoped>
 @media screen {
@@ -184,20 +229,38 @@ onMounted(() => {
     padding: 5mm;
     border: #333 solid 0px;
   }
+
+  .receipt-canvas {
+    width: 128mm;
+    height: 182mm;
+    padding: 10mm 10mm;
+    box-sizing: border-box;
+    position: relative;
+    /* 傳統直向排版核心 */
+    writing-mode: vertical-rl;
+    -webkit-writing-mode: vertical-rl;
+    /* 如果找不到系統楷體，則使用思源宋體，至少保持莊重感 */
+    font-family:
+      "標楷體", "DFKai-SB", "Kaiti TC", "STKaiti", "Noto Serif TC", serif !important;
+    border: 0.5pt solid #333; /* 模擬照片中的細外框 */
+  }
 }
 
 /* 針對 128mm x 182mm 的物理尺寸進行嚴格定義 */
+/* 感謝狀主畫布 */
 .receipt-canvas {
   width: 128mm;
   height: 182mm;
-  padding: 12mm 12mm;
+  padding: 10mm 10mm;
   box-sizing: border-box;
   position: relative;
   /* 傳統直向排版核心 */
   writing-mode: vertical-rl;
   -webkit-writing-mode: vertical-rl;
-  font-family: "標楷體", "DFKai-SB", serif;
-  border: #333 solid 1px;
+  /* 如果找不到系統楷體，則使用思源宋體，至少保持莊重感 */
+  font-family:
+    "標楷體", "DFKai-SB", "Kaiti TC", "STKaiti", "Noto Serif TC", serif !important;
+  border: 0.5pt solid #333; /* 模擬照片中的細外框 */
 }
 
 .title {
