@@ -83,7 +83,7 @@ const convertToChinese = (num) => {
   const str = num.toString();
   let result = "";
   let len = str.length;
-  for (let i = 0; i < len; i++) {
+  for (let i = 0; i <script len; i++) {
     const digit = parseInt(str[i]);
     const unit = units[len - i - 1];
     if (digit !== 0) { result += digits[digit] + unit; } 
@@ -144,9 +144,37 @@ const loadHtml2Canvas = () => {
 const handleClose = () => router.back();
 
 onMounted(() => {
+
+  //ElLoading.service({ text: '正在加載數據...', background: 'rgba(0, 0, 0, 0.7)' });
+
+  const printId = route.query.print_id;
   const printData = route.query.print_data;
-  if (printData) record.value = JSON.parse(printData);
-  //if (!record.value.id) router.back();
+
+  if (printData) {
+    try {
+      record.value = JSON.parse(printData);
+    } catch (error) {
+      console.error("解析打印數據失敗:", error);
+      ElMessage.error("無法載入收據數據");
+    }
+  } else if (printId) {
+    const data = sessionStorage.getItem(printId);
+    if (data) {
+      try {
+        record.value = JSON.parse(data);
+        sessionStorage.removeItem(printId);
+      } catch (error) {
+        console.error("解析打印數據失敗:", error);
+        ElMessage.error("無法載入收據數據");
+      }
+    }
+  }
+
+  if (!record.value.id) {
+    ElMessage.error("無效的收據數據");
+    router.back();
+  }
+
 });
 </script>
 
