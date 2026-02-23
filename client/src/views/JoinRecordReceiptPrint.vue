@@ -16,7 +16,7 @@
               :key="idx"
               class="highlight"
             >
-              {{ item.label }}({{ appConfig.dollarTitle }}{{ item.subtotal }})
+              {{ item.label }}({{ item.subtotal }})、
             </span>
           </div>
 
@@ -120,15 +120,17 @@ const convertToChinese = (num) => {
 const handlePrintWithHtmlToImage = async () => {
   const node = document.getElementById("receipt-capture-area");
 
-  // 使用 Element Plus 消息提示
   const loading = ElLoading.service({
-    text: "正在生成高清收據圖像...",
-    background: "rgba(255, 255, 255, 0.8)",
+    text: "正在處理字體與渲染圖像...",
+    background: "rgba(255, 255, 255, 0.9)",
   });
 
   try {
-    // 關鍵：等待所有字體下載完成
+    // 強制等待字體完全載入
     await document.fonts.ready;
+
+    // 額外等待 300ms 確保 Mac 渲染引擎反應過來
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     // 使用 html-to-image 生成 PNG
     // pixelRatio 設為 3 以確保 300dpi 以上的打印質量
@@ -137,6 +139,8 @@ const handlePrintWithHtmlToImage = async () => {
       //backgroundColor: '#ffe6f0',
       backgroundColor: "#ffffff",
       cacheBust: true,
+      // 建議加入此設定，這會強制將所有樣式內聯
+      includeGraphics: true,
     });
 
     // 透過 Print.js 進行圖片打印
@@ -183,33 +187,13 @@ onMounted(() => {
 </script>
 
 <style>
-/* 1. 外部字體引入 */
+/* 1. 確保字體在全域層次定義 */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap");
 
-/* 2. 跨平台字體定義 (全局避免 Scoped 雜湊影響渲染) */
 .font-kaiti {
-  /* 確保 Mac 優先使用 Kaiti TC */
+  /* 在 Mac 上，Kaiti TC 是關鍵 */
   font-family:
-    "Kaiti TC",
-    /* macOS 優先 */ "STKaiti",
-    /* 舊版 Mac 備援 */ "標楷體",
-    /* Windows */ "DFKai-SB",
-    "Noto Serif TC",
-    serif !important;
-
-  /* 在 Mac 上，楷體通常需要設為 500 或 600 才會有實體感 */
-  font-weight: 500;
-}
-
-/* 專門給感謝狀畫布使用的字體設定 */
-.receipt-canvas {
-  font-family:
-    "Kaiti TC",
-    /* macOS 優先 */ "STKaiti",
-    /* 舊版 Mac 備援 */ "標楷體",
-    /* Windows */ "DFKai-SB",
-    "Noto Serif TC",
-    /* 您引入的 Google 字型 (作為強大的最後防線) */ serif; /* 襯線體備援 */
+    "Kaiti TC", "Apple LiSung", "標楷體", "DFKai-SB", "Noto Serif TC", serif !important;
 }
 </style>
 
@@ -241,7 +225,7 @@ onMounted(() => {
     -webkit-writing-mode: vertical-rl;
     /* 如果找不到系統楷體，則使用思源宋體，至少保持莊重感 */
     font-family:
-      "標楷體", "DFKai-SB", "Kaiti TC", "STKaiti", "Noto Serif TC", serif !important;
+      "標楷體", "DFKai-SB", "Kaiti TC", "STKaiti", "Noto Serif TC", inherit !important;
     border: 0.5pt solid #333; /* 模擬照片中的細外框 */
   }
 }
@@ -259,7 +243,7 @@ onMounted(() => {
   -webkit-writing-mode: vertical-rl;
   /* 如果找不到系統楷體，則使用思源宋體，至少保持莊重感 */
   font-family:
-    "標楷體", "DFKai-SB", "Kaiti TC", "STKaiti", "Noto Serif TC", serif !important;
+    "標楷體", "DFKai-SB", "Kaiti TC", "STKaiti", "Noto Serif TC", inherit !important;
   border: 0.5pt solid #333; /* 模擬照片中的細外框 */
 }
 
