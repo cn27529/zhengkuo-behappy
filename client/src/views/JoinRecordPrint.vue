@@ -1,15 +1,7 @@
 <!-- src/views/JoinRecordPrint.vue -->
 <template>
   <div class="print-join-record">
-    <!-- 列印控制欄（僅在預覽時顯示） -->
-    <div class="print-controls" v-if="!isPrinting">
-      <div class="controls-left">
-        <button @click="handleBack" class="back-btn">← 返回</button>
-      </div>
-      <div class="controls-right">
-        <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
-      </div>
-    </div>
+    
 
     <!-- 列印內容 -->
     <div class="print-content" id="print-content">
@@ -190,6 +182,16 @@
         <div class="print-meta">
           <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
         </div>
+      </div>
+    </div>
+
+    <!-- 列印控制欄（僅在預覽時顯示） -->
+    <div class="print-controls" v-if="!isPrinting">
+      <div class="controls-left">
+        <button @click="handleBack" class="back-btn">← 返回</button>
+      </div>
+      <div class="controls-right">
+        <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
       </div>
     </div>
   </div>

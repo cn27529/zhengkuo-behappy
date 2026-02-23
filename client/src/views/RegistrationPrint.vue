@@ -1,38 +1,6 @@
 <!-- src/views/PrintRegistration.vue -->
 <template>
   <div class="print-registration">
-    <!-- 列印控制欄（僅在預覽時顯示） -->
-    <div class="print-controls" v-if="!isPrinting">
-      <div class="controls-left">
-        <button @click="handleBack" class="back-btn">← 返回</button>
-      </div>
-      <div class="controls-right">
-        <div class="download-dropdown" style="display: none">
-          <button @click="toggleDownloadMenu" class="download-btn">
-            📥 下載
-            <span class="dropdown-arrow">▼</span>
-          </button>
-          <div v-if="showDownloadMenu" class="download-menu">
-            <button @click="handleDownloadPDF" class="download-option">
-              📄 下載為 PDF
-            </button>
-            <button @click="handleDownloadExcel" class="download-option">
-              📊 下載為 Excel
-            </button>
-            <button @click="handleDownloadJSON" class="download-option">
-              ⚙️ 下載為 JSON
-            </button>
-            <button @click="handleDownloadImage" class="download-option">
-              🖼️ 下載為圖片
-            </button>
-            <button @click="handleDownloadText" class="download-option">
-              📝 下載為文字檔
-            </button>
-          </div>
-        </div>
-        <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
-      </div>
-    </div>
 
     <!-- 列印內容 -->
     <div class="print-content" id="print-content">
@@ -234,6 +202,39 @@
         <div class="print-meta">
           <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
         </div>
+      </div>
+    </div>
+
+    <!-- 列印控制欄（僅在預覽時顯示） -->
+    <div class="print-controls" v-if="!isPrinting">
+      <div class="controls-left">
+        <button @click="handleBack" class="back-btn">← 返回</button>
+      </div>
+      <div class="controls-right">
+        <div class="download-dropdown" style="display: none">
+          <button @click="toggleDownloadMenu" class="download-btn">
+            📥 下載
+            <span class="dropdown-arrow">▼</span>
+          </button>
+          <div v-if="showDownloadMenu" class="download-menu">
+            <button @click="handleDownloadPDF" class="download-option">
+              📄 下載為 PDF
+            </button>
+            <button @click="handleDownloadExcel" class="download-option">
+              📊 下載為 Excel
+            </button>
+            <button @click="handleDownloadJSON" class="download-option">
+              ⚙️ 下載為 JSON
+            </button>
+            <button @click="handleDownloadImage" class="download-option">
+              🖼️ 下載為圖片
+            </button>
+            <button @click="handleDownloadText" class="download-option">
+              📝 下載為文字檔
+            </button>
+          </div>
+        </div>
+        <button @click="handlePrint" class="print-btn">🖨️ 列印</button>
       </div>
     </div>
   </div>

@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    <div class="print-actions">
+    <div class="print-controls">
       <el-button type="primary" @click="handlePrint" size="large"
         >🖨️ 打印</el-button
       >
@@ -145,7 +145,7 @@ const handlePrint = async () => {
     //   scrollY: 0,
     //   ignoreElements: (element) => {
     //     // 忽略不需要的元素
-    //     return element.classList.contains("print-actions");
+    //     return element.classList.contains("print-controls");
     //   },
     // });
 
@@ -270,7 +270,7 @@ const loadHtml2Canvas = () => {
     padding: 5mm;
   }
 
-  .print-actions {
+  .print-controls {
     margin-top: 30px;
     display: flex;
     gap: 1rem;
