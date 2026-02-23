@@ -103,7 +103,8 @@ const handlePrintWithHtmlToImage = async () => {
     // pixelRatio 設為 3 以確保 300dpi 以上的打印質量
     const dataUrl = await htmlToImage.toPng(node, {
       pixelRatio: 3, 
-      backgroundColor: '#ffe6f0',
+      //backgroundColor: '#ffe6f0',
+      backgroundColor: '#ffffff',
       cacheBust: true,
     });
 
@@ -150,10 +151,10 @@ onMounted(() => {
     align-items: center;
   }
   .receipt-content {
-    /* background: #ffe6f0; */
-    background: #fff;
-    /* border: 1px solid #000; */
-    /* padding: 5mm; */
+    background: #ffe6f0;
+    /* background: #fff; */
+    padding: 5mm;
+    border: #333 solid 0px;
   }
 }
 
@@ -161,7 +162,7 @@ onMounted(() => {
 .receipt-canvas {
   width: 128mm;
   height: 182mm;
-  padding: 15mm 12mm;
+  padding: 12mm 12mm;
   box-sizing: border-box;
   position: relative;
   /* 傳統直向排版核心 */
@@ -175,14 +176,14 @@ onMounted(() => {
   font-size: 28pt; /* 略微加大以匹配您的需求 */
   font-weight: bold;
   text-align: center;
-  letter-spacing: 15px;
-  margin-left: 0mm;
+  letter-spacing: 10px;
+  margin-left: 5mm;
 }
 
 .content-section {
   font-size: 15pt;
   line-height: 1.5;
-  margin-right: 5mm;
+  margin-right: 0mm;
 }
 
 .highlight {
@@ -191,7 +192,7 @@ onMounted(() => {
 
 .temple-info {
   position: absolute;
-  left: 15mm;
+  left: 10mm;
   bottom: 25mm;
   font-size: 9.5pt;
   border-right: 1.5px solid #000;
@@ -201,8 +202,8 @@ onMounted(() => {
 
 .footer-info {
   position: absolute;
-  left: 15mm;
-  bottom: 12mm;
+  left: 10mm;
+  bottom: 10mm;
   writing-mode: horizontal-tb;
   font-size: 11pt;
   font-weight: bold;
