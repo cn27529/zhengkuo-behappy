@@ -49,7 +49,7 @@ const routes = [
   {
     path: "/join-record-receipt",
     title: "收據打印",
-    component: () => import("../views/JoinRecordReceipt.vue"),
+    component: () => import("../views/JoinRecordReceipt3.vue"),
     meta: { requiresAuth: true },
   },
   {

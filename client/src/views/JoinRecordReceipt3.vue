@@ -1,7 +1,7 @@
 <template>
   <div class="print-wrapper">
-    <div id="receipt-container" class="receipt-content">
-      <div id="receipt-canvas" class="receipt-canvas">
+    <div id="receipt-capture-area" class="receipt-content">
+      <div class="receipt-canvas">
         <h1 class="title">感謝狀</h1>
 
         <div class="content-section">
@@ -41,9 +41,9 @@
       </div>
     </div>
 
-    <div class="print-controls">
-      <el-button type="primary" @click="handlePrintImage" :loading="printing" size="large">
-        🖨️ 生成圖片並列印
+    <div class="print-actions">
+      <el-button type="primary" @click="handlePrintWithHtmlToImage" size="large">
+        🖨️ 收據打印
       </el-button>
       <el-button @click="handleClose" size="large">關閉</el-button>
     </div>
@@ -51,18 +51,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElLoading } from "element-plus";
 import { appConfig } from "../config/appConfig.js";
+import * as htmlToImage from 'html-to-image'; // 需安裝：npm install html-to-image
 import printJS from "print-js";
 
 const route = useRoute();
 const router = useRouter();
 const record = ref({});
-const printing = ref(false);
 
-// 數據處理邏輯 (保持不變)
+
+// 數據綁定邏輯 (保持與 JoinRecordReceipt.vue 一致)
 const contactName = computed(() => record.value.contact?.name || "未知");
 const contactAddress = computed(() => {
   const items = record.value.items || [];
@@ -83,142 +84,105 @@ const convertToChinese = (num) => {
   const str = num.toString();
   let result = "";
   let len = str.length;
-  for (let i = 0; i <script len; i++) {
+  for (let i = 0; i < len; i++) {
     const digit = parseInt(str[i]);
     const unit = units[len - i - 1];
-    if (digit !== 0) { result += digits[digit] + unit; } 
-    else if (result && !result.endsWith("零")) { result += "零"; }
+    if (digit !== 0) result += digits[digit] + unit;
+    else if (result && !result.endsWith("零")) result += "零";
   }
   return result.replace(/零+$/, "");
 };
 
-// 核心列印邏輯：轉圖片後列印
-const handlePrintImage = async () => {
-  const loading = ElLoading.service({ text: '正在渲染高解析度圖像...', background: 'rgba(0, 0, 0, 0.7)' });
-  try {
-    printing.value = true;
-    await loadHtml2Canvas();
-    await nextTick();
+const handlePrintWithHtmlToImage = async () => {
+  const node = document.getElementById('receipt-capture-area');
+  const loading = ElLoading.service({ text: '正在生成高清收據圖像...', background: 'rgba(255, 255, 255, 0.8)' });
+  
+  try {    
 
-    const element = document.getElementById("receipt-canvas");
-    
-    // 將 DOM 轉為 Canvas
-    const canvas = await window.html2canvas(element, {
-      scale: 3, // 提高縮放倍率以確保打印字體不模糊
-      useCORS: true,
-      backgroundColor: "#ffe6f0", // 確保背景色被捕捉
-      logging: false,
+    // 使用 html-to-image 生成 PNG
+    // pixelRatio 設為 3 以確保 300dpi 以上的打印質量
+    const dataUrl = await htmlToImage.toPng(node, {
+      pixelRatio: 3, 
+      backgroundColor: '#ffe6f0',
+      cacheBust: true,
     });
 
-    const imageData = canvas.toDataURL("image/png");
-
-    // 使用 Print.js 打印生成的圖片
+    // 透過 Print.js 進行圖片打印
     printJS({
-      printable: imageData,
+      printable: dataUrl,
       type: 'image',
-      style: '@page { size: 128mm 182mm; margin: 0; } img { width: 100%; }',
+      style: '@page { size: 128mm 182mm; margin: 0 auto;  } img { width: 100%; height: 100%; }',
       imageStyle: 'width:100%;'
     });
 
-    ElMessage.success("渲染完成，請於彈窗確認列印設定");
+    ElMessage.success("收據生成成功");
   } catch (error) {
-    console.error("列印失敗:", error);
-    ElMessage.error("圖像渲染失敗，請重試");
+    console.error('html-to-image 出錯:', error);
+    ElMessage.error("收據轉換失敗，請檢查瀏覽器兼容性");
   } finally {
-    loading.close();
-    printing.value = false;
+    loading.close();    
   }
-};
-
-const loadHtml2Canvas = () => {
-  return new Promise((resolve, reject) => {
-    if (window.html2canvas) return resolve();
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
 };
 
 const handleClose = () => router.back();
 
 onMounted(() => {
-
-  //ElLoading.service({ text: '正在加載數據...', background: 'rgba(0, 0, 0, 0.7)' });
-
-  const printId = route.query.print_id;
   const printData = route.query.print_data;
-
   if (printData) {
     try {
       record.value = JSON.parse(printData);
-    } catch (error) {
-      console.error("解析打印數據失敗:", error);
-      ElMessage.error("無法載入收據數據");
-    }
-  } else if (printId) {
-    const data = sessionStorage.getItem(printId);
-    if (data) {
-      try {
-        record.value = JSON.parse(data);
-        sessionStorage.removeItem(printId);
-      } catch (error) {
-        console.error("解析打印數據失敗:", error);
-        ElMessage.error("無法載入收據數據");
-      }
+    } catch (e) {
+      ElMessage.error("數據解析失敗");
     }
   }
-
-  if (!record.value.id) {
-    ElMessage.error("無效的收據數據");
-    router.back();
-  }
-
+  if (!record.value.id) router.back();
 });
 </script>
 
 <style scoped>
-/* 螢幕預覽樣式 */
 @media screen {
   .print-wrapper {
-    background: #525659;
+    background: #e0e0e0;
     min-height: 100vh;
-    padding: 40px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
   .receipt-content {
-    background: white;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    /* background: #ffe6f0; */
+    background: #fff;
+    /* border: 1px solid #000; */
+    /* padding: 5mm; */
   }
 }
 
-/* 核心畫布樣式 - 嚴格遵守 128x182mm */
+/* 針對 13cm x 18.1cm 的物理尺寸進行嚴格定義 */
 .receipt-canvas {
   width: 128mm;
   height: 182mm;
-  background: #ffe6f0; /* 粉紅色底紙 */
+  padding: 15mm 12mm;
   box-sizing: border-box;
   position: relative;
-  font-family: "標楷體", "DFKai-SB", serif;
+  /* 傳統直向排版核心 */
   writing-mode: vertical-rl;
   -webkit-writing-mode: vertical-rl;
-  padding: 15mm 10mm;
+  font-family: "標楷體", "DFKai-SB", serif;
+  border: #333 solid 1px;
 }
 
 .title {
-  font-size: 28pt; /* 這裡的 28pt 會在轉圖片時被固定 */
+  font-size: 28pt; /* 略微加大以匹配您的需求 */
   font-weight: bold;
-  letter-spacing: 12px;
-  margin-left: 15mm;
   text-align: center;
+  letter-spacing: 15px;
+  margin-left: 0mm;
 }
 
 .content-section {
   font-size: 15pt;
-  line-height: 2.2;
+  line-height: 1.5;
+  margin-right: 5mm;
 }
 
 .highlight {
@@ -228,24 +192,25 @@ onMounted(() => {
 .temple-info {
   position: absolute;
   left: 15mm;
-  bottom: 35mm;
-  font-size: 9pt;
-  border-right: 1px solid #333;
-  padding-right: 3mm;
-  line-height: 1.6;
+  bottom: 25mm;
+  font-size: 9.5pt;
+  border-right: 1.5px solid #000;
+  padding-right: 4mm;
+  line-height: 1.8;
 }
 
 .footer-info {
   position: absolute;
   left: 15mm;
-  bottom: 10mm;
+  bottom: 12mm;
   writing-mode: horizontal-tb;
-  font-size: 10pt;
+  font-size: 11pt;
+  font-weight: bold;
 }
 
-.print-controls {
-  margin-top: 20px;
+.print-actions {
+  margin-top: 25px;
   display: flex;
-  gap: 10px;
+  gap: 15px;
 }
 </style>
