@@ -6,9 +6,7 @@
         <div v-if="activeTemplate === 'standard'" class="receipt-canvas font-kaiti">
           <h1 class="title">感謝狀</h1>
           <div class="content-section">
-            <div class="donor-info">
-              兹收到 <span class="highlight">{{ contactName }}</span>
-            </div>
+            <div class="donor-info">茲收到 <span class="highlight">{{ contactName }}</span> </div>
             <div class="items-detail">
               功德項目：
               <span v-for="(item, idx) in record.items" :key="idx" class="highlight">
@@ -24,41 +22,50 @@
             <div class="blessing">功德無量，特此致謝</div>
           </div>
           <div class="temple-info">
-            <span class="highlight">財團法人鎮國基金會</span><br />
-            會址：南投縣集集鎮廣明里鎮國巷101號<br />
-            電話：(049) 2762726<br />
-            董事長：釋廣心（游天木）<br />
+            <span class="temple-subtitle highlight">鎮國寺</span><br />
+            地址：南投縣集集鎮廣明里鎮國巷101號<br />
+            電話：(O四九) 二七六二七二六<br />
             經手人：釋徹空
           </div>
           <div class="footer-info">
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+            <p>本表單由系統自動生成(收執聯)，列印時間：{{ printTime }}</p>
           </div>
         </div>
 
         <div v-else class="receipt-canvas font-kaiti stamp-layout">
-          <h2 class="subtitle">收據明細 (印章版)</h2>
+          <h2 class="title">收據</h2>
           <div class="content-section">
             <div class="donor-info">茲收到 <span class="highlight">{{ contactName }}</span> 大德</div>
             <div class="items-detail">
               功德項目：
-              <span v-for="(item, idx) in record.items" :key="idx">
+              <span v-for="(item, idx) in record.items" :key="idx" class="highlight">
                 {{ item.label }}({{ item.subtotal }})、
               </span>
             </div>
-            <div class="total-amount">金額：{{ totalAmountChinese }}</div>
-            
-            <div class="seal-container">
-              <div class="seal-box">財團法人<br/>印信處</div>
+            <div class="total-amount">共計新台幣：<span class="highlight">{{ totalAmountChinese }}</span></div>
+            <div v-if="contactAddress" class="address-info">
+              住址：<span class="highlight">{{ contactAddress }}</span>
             </div>
+            <div class="blessing">功德無量，特此致謝</div>
+            <div class="seal-container">
+              <div class="seal-box">財團法人鎮國基金會印信處</div>
+            </div>
+            <div class="temple-info">
+            <span class="temple-subtitle highlight">財團法人鎮國基金會</span><br />
+            會址：南投縣集集鎮廣明里鎮國巷101號<br />
+            電話：(O四九) 二七六二七二六<br />
+            董事長：釋廣心（游天木）<br />
+            經手人：釋徹空
+          </div>
           </div>
           <div class="footer-info">
-            日期：{{ rocYear }}/{{ currentMonth }}/{{ currentDay }}
+            中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p>列印時間：{{ printTime }}</p>
+            <p>本表單由系統自動生成(收執聯)，列印時間：{{ printTime }}</p>
           </div>
         </div>
 
@@ -71,7 +78,7 @@
       </div>
       
       <div class="config-body">
-        <p class="label">選擇模板樣式：</p>
+        <p class="label">選擇模板：</p>
         <el-radio-group v-model="activeTemplate" class="template-radio">
           <el-radio label="standard" border>📜 感謝狀</el-radio>
           <el-radio label="stamp" border>🛡️ 印章版</el-radio>
@@ -79,16 +86,17 @@
 
         <el-divider />
 
-        <div class="mac-tips">
-          <p><strong>Mac Chrome 提醒：</strong></p>
+        <div class="print-tips">
+          <p><strong>提醒：</strong></p>
           <ul>
-            <li>紙張：JIS B6 (128x182mm)</li>
+            <li>紙張：JIS B6 (寛128mm x 高182mm)與國際標準 ISO 216 的 B6 (125mm x 176mm) 略有不同</li>
             <li>縮放：100%</li>
             <li>邊距：無 (None)</li>
           </ul>
         </div>
       </div>
 
+      <el-divider />
       <div class="config-footer">
         <el-button type="success" @click="handlePrintWithHtmlToImage" :loading="printing" size="large" class="full-width">
           開始打印
@@ -244,7 +252,7 @@ onMounted(() => {
 }
 
 .config-body {
-  flex: 1;
+  /* flex: 1; */
   margin-top: 20px;
 }
 
@@ -255,12 +263,14 @@ onMounted(() => {
 }
 
 .template-radio {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* 桌面版 2 列 */
+            gap: 1rem;
 }
 
-.mac-tips {
+.print-tips {
   background: #fdf6ec;
   border: 1px solid #faecd8;
   padding: 12px;
@@ -297,23 +307,16 @@ onMounted(() => {
   writing-mode: vertical-rl;
   -webkit-writing-mode: vertical-rl;
   border: 0.5pt solid #333;
-  background-color: #fff;
+  background-color: #f56c6c0d; /* 淡紅色背景，增加印章感覺 */
 }
 
 /* 印章模板特別樣式 */
-.subtitle {
-  font-size: 24pt;
-  margin-left: 8mm;
-  text-align: center;
-  font-weight: bold;
-}
-
 .seal-container {
   position: absolute;
-  left: 15mm;
-  bottom: 25mm;
+  left: 10mm;
+  top: 55mm;
 }
-
+/* 印信處 */
 .seal-box {
   width: 35mm;
   height: 35mm;
@@ -324,7 +327,7 @@ onMounted(() => {
   justify-content: center;
   text-align: center;
   font-size: 14pt;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 /* 元素細部樣式 */
@@ -346,6 +349,7 @@ onMounted(() => {
   font-weight: bold;
 }
 
+/* 寺廟資訊 */
 .temple-info {
   position: absolute;
   left: 10mm;
@@ -356,12 +360,20 @@ onMounted(() => {
   line-height: 1.6;
 }
 
+.temple-subtitle {
+  font-size: 14pt;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 5px;  
+}
+
+/* 頁腳資訊 */
 .footer-info {
   position: absolute;
   left: 10mm;
   bottom: 10mm;
   writing-mode: horizontal-tb;
-  font-size: 10.5pt;
+  font-size: 10pt;
   font-weight: bold;
 }
 
