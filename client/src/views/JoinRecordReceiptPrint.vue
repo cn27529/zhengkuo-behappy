@@ -6,7 +6,11 @@
           v-if="activeTemplate === 'standard'"
           class="receipt-canvas font-kaiti"
         >
-          <h1 class="title">感謝狀</h1>
+          <div class="title-group">
+            <h1 class="title">感謝狀</h1>
+            <div class="receipt-serial">佛字第 {{ receiptSerialNum }} 號</div>
+          </div>
+
           <div class="content-section">
             <div class="donor-info">
               茲收到 <span class="highlight">{{ contactName }}</span>
@@ -46,7 +50,11 @@
         </div>
 
         <div v-else class="receipt-canvas font-kaiti stamp-layout">
-          <h2 class="title">收據</h2>
+          <div class="title-group">
+            <h1 class="title">收據</h1>
+            <div class="receipt-serial">佛字第 {{ receiptSerialNum }} 號</div>
+          </div>
+
           <div class="content-section">
             <div class="donor-info">
               茲收到 <span class="highlight">{{ contactName }}</span> 大德
@@ -154,6 +162,13 @@ const router = useRouter();
 const record = ref({});
 const printTime = ref("");
 
+// 模擬收據字號（可改為從 API 獲取 record.id 或特定的編號規則）
+const receiptSerialNum = computed(() => {
+  return record.value.id
+    ? `${record.value.id}A${record.value.activityId}R${record.value.registrationId}`
+    : "00000000";
+});
+
 // 數據邏輯 (保持您的原始配置)
 const contactName = computed(() => record.value.contact?.name || "未知");
 const contactAddress = computed(() => {
@@ -242,8 +257,7 @@ onMounted(() => {
     try {
       record.value = JSON.parse(printData);
       const name = (record.value.contact?.name || "未填寫").toString().trim();
-      const receiptNumber = `${record.value.id}A${record.value.activityId}R${record.value.registrationId}`;
-      document.title = `${name}-${receiptNumber}`;
+      document.title = `${name}-${receiptSerialNum.value}`;
     } catch (e) {
       ElMessage.error("數據解析失敗");
     }
@@ -378,13 +392,31 @@ onMounted(() => {
   padding: 5px;
 }
 
-/* 元素細部樣式 */
+/* 修改標題群組佈局 */
+.title-group {
+  display: grid;
+  flex-direction: column; /* 在直書模式下，這會處理水平方向的排列 */
+  align-items: center; /* 確保兩者在垂直軸線上對齊 */
+  justify-content: flex-start;
+  margin-left: 10mm; /* 調整整組標題與左側內容的間距 */
+  height: 100%; /* 讓它撐滿高度以方便置中 */
+}
+
 .title {
   font-size: 28pt;
   font-weight: bold;
   text-align: center;
   letter-spacing: 12px;
-  margin-left: 5mm;
+  margin-top: 0mm; /* 控制標題距離頂部的距離 */
+  margin-left: 0; /* 移除原本的 margin-left 避免偏移 */
+}
+
+/* 調整字號樣式 */
+.receipt-serial {
+  font-size: 10pt;
+  margin-top: 100mm; /* 這會控制「標題」與「字號」之間的間距 */
+  letter-spacing: 2px;
+  /* 移除原本的 position: absolute; */
 }
 
 .content-section {
