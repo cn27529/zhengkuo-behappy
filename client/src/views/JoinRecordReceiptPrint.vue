@@ -1,62 +1,100 @@
 <template>
-  <div class="print-wrapper">
-    <div id="receipt-capture-area" class="receipt-content">
-      <div class="receipt-canvas font-kaiti">
-        <h1 class="title">感謝狀</h1>
-
-        <div class="content-section">
-          <div class="donor-info">
-            兹收到 <span class="highlight">{{ contactName }}</span>
+  <div class="print-page-container">
+    <div class="preview-section">
+      <div id="receipt-capture-area" class="receipt-content">
+        
+        <div v-if="activeTemplate === 'standard'" class="receipt-canvas font-kaiti">
+          <h1 class="title">感謝狀</h1>
+          <div class="content-section">
+            <div class="donor-info">
+              兹收到 <span class="highlight">{{ contactName }}</span>
+            </div>
+            <div class="items-detail">
+              功德項目：
+              <span v-for="(item, idx) in record.items" :key="idx" class="highlight">
+                {{ item.label }}({{ item.subtotal }})、
+              </span>
+            </div>
+            <div class="total-amount">
+              共計新台幣：<span class="highlight">{{ totalAmountChinese }}</span>
+            </div>
+            <div v-if="contactAddress" class="address-info">
+              住址：<span class="highlight">{{ contactAddress }}</span>
+            </div>
+            <div class="blessing">功德無量，特此致謝</div>
           </div>
-
-          <div class="items-detail">
-            功德項目：
-            <span
-              v-for="(item, idx) in record.items"
-              :key="idx"
-              class="highlight"
-            >
-              {{ item.label }}({{ item.subtotal }})、
-            </span>
+          <div class="temple-info">
+            <span class="highlight">財團法人鎮國基金會</span><br />
+            會址：南投縣集集鎮廣明里鎮國巷101號<br />
+            電話：(049) 2762726<br />
+            董事長：釋廣心（游天木）<br />
+            經手人：釋徹空
           </div>
-
-          <div class="total-amount">
-            共計新台幣：<span class="highlight">{{ totalAmountChinese }}</span>
+          <div class="footer-info">
+            中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
-
-          <div v-if="contactAddress" class="address-info">
-            住址：<span class="highlight">{{ contactAddress }}</span>
+          <div class="print-meta">
+            <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
           </div>
-
-          <div class="blessing">功德無量，特此致謝</div>
         </div>
 
-        <div class="temple-info">
-          <span class="highlight">財團法人鎮國基金會</span><br />
-          會址：南投縣集集鎮廣明里鎮國巷101號<br />
-          電話：(049) 2762726<br />
-          董事長：釋廣心（游天木）<br />
-          經手人：釋徹空
+        <div v-else class="receipt-canvas font-kaiti stamp-layout">
+          <h2 class="subtitle">收據明細 (印章版)</h2>
+          <div class="content-section">
+            <div class="donor-info">茲收到 <span class="highlight">{{ contactName }}</span> 大德</div>
+            <div class="items-detail">
+              功德項目：
+              <span v-for="(item, idx) in record.items" :key="idx">
+                {{ item.label }}({{ item.subtotal }})、
+              </span>
+            </div>
+            <div class="total-amount">金額：{{ totalAmountChinese }}</div>
+            
+            <div class="seal-container">
+              <div class="seal-box">財團法人<br/>印信處</div>
+            </div>
+          </div>
+          <div class="footer-info">
+            日期：{{ rocYear }}/{{ currentMonth }}/{{ currentDay }}
+          </div>
+          <div class="print-meta">
+            <p>列印時間：{{ printTime }}</p>
+          </div>
         </div>
 
-        <div class="footer-info">
-          中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
-        </div>
-        <div class="print-meta">
-          <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
-        </div>
       </div>
     </div>
 
-    <div class="print-controls">
-      <el-button
-        type="success"
-        @click="handlePrintWithHtmlToImage"
-        size="large"
-      >
-        🖨️ 收據打印
-      </el-button>
-      <el-button @click="handleClose" size="large">關閉</el-button>
+    <div class="config-sidebar">
+      <div class="config-header">
+        <h3>🖨️ 打印配置</h3>
+      </div>
+      
+      <div class="config-body">
+        <p class="label">選擇模板樣式：</p>
+        <el-radio-group v-model="activeTemplate" class="template-radio">
+          <el-radio label="standard" border>📜 感謝狀</el-radio>
+          <el-radio label="stamp" border>🛡️ 印章版</el-radio>
+        </el-radio-group>
+
+        <el-divider />
+
+        <div class="mac-tips">
+          <p><strong>Mac Chrome 提醒：</strong></p>
+          <ul>
+            <li>紙張：JIS B6 (128x182mm)</li>
+            <li>縮放：100%</li>
+            <li>邊距：無 (None)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="config-footer">
+        <el-button type="success" @click="handlePrintWithHtmlToImage" :loading="printing" size="large" class="full-width">
+          開始打印
+        </el-button>
+        <el-button @click="handleClose" size="large" class="full-width">關閉頁面</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -65,16 +103,19 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElLoading } from "element-plus";
-import { appConfig } from "../config/appConfig.js";
-import * as htmlToImage from "html-to-image"; // 需安裝：npm install html-to-image
+import * as htmlToImage from "html-to-image";
 import printJS from "print-js";
+
+// 模板切換狀態
+const activeTemplate = ref('standard');
+const printing = ref(false);
 
 const route = useRoute();
 const router = useRouter();
 const record = ref({});
 const printTime = ref("");
 
-// 數據綁定邏輯 (保持與 JoinRecordReceipt.vue 一致)
+// 數據邏輯 (保持您的原始配置)
 const contactName = computed(() => record.value.contact?.name || "未知");
 const contactAddress = computed(() => {
   const items = record.value.items || [];
@@ -88,16 +129,11 @@ const rocYear = computed(() => new Date().getFullYear() - 1911);
 const currentMonth = computed(() => new Date().getMonth() + 1);
 const currentDay = computed(() => new Date().getDate());
 
-// 設置列印時間
 const setPrintTime = () => {
   const now = new Date();
   printTime.value = now.toLocaleString("zh-TW", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
   });
 };
 
@@ -119,45 +155,34 @@ const convertToChinese = (num) => {
 
 const handlePrintWithHtmlToImage = async () => {
   const node = document.getElementById("receipt-capture-area");
-
-  const loading = ElLoading.service({
-    text: "正在處理字體與渲染圖像...",
-    background: "rgba(255, 255, 255, 0.9)",
-  });
+  const loading = ElLoading.service({ text: "正在渲染高清圖像...", background: "rgba(255, 255, 255, 0.9)" });
 
   try {
-    // 強制等待字體完全載入
+    printing.value = true;
     await document.fonts.ready;
+    await new Promise((resolve) => setTimeout(resolve, 400)); // 增加等待時間確保 Mac 渲染
 
-    // 額外等待 300ms 確保 Mac 渲染引擎反應過來
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    // 使用 html-to-image 生成 PNG
-    // pixelRatio 設為 3 以確保 300dpi 以上的打印質量
     const dataUrl = await htmlToImage.toPng(node, {
       pixelRatio: 3,
-      //backgroundColor: '#ffe6f0',
       backgroundColor: "#ffffff",
       cacheBust: true,
-      // 建議加入此設定，這會強制將所有樣式內聯
       includeGraphics: true,
     });
 
-    // 透過 Print.js 進行圖片打印
     printJS({
       printable: dataUrl,
       type: "image",
-      style:
-        "@page { size: 128mm 182mm; margin: 0 auto;  } img { width: 100%; height: 100%; }",
+      style: "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
       imageStyle: "width:100%;",
     });
 
     ElMessage.success("收據生成成功");
   } catch (error) {
-    console.error("html-to-image 出錯:", error);
-    ElMessage.error("收據轉換失敗，請檢查瀏覽器兼容性");
+    console.error("列印失敗:", error);
+    ElMessage.error("轉換失敗，請重新嘗試");
   } finally {
     loading.close();
+    printing.value = false;
   }
 };
 
@@ -169,15 +194,9 @@ onMounted(() => {
   if (printData) {
     try {
       record.value = JSON.parse(printData);
-
-      const contactName = (record.value.contact?.name || "未填寫")
-        .toString()
-        .trim();
-
-      // 生成收據編號格式：2602 + recordId + A + activityId + R + registrationId
+      const name = (record.value.contact?.name || "未填寫").toString().trim();
       const receiptNumber = `${record.value.id}A${record.value.activityId}R${record.value.registrationId}`;
-      // 設置動態頁面標題
-      document.title = `${contactName}-${receiptNumber}`;
+      document.title = `${name}-${receiptNumber}`;
     } catch (e) {
       ElMessage.error("數據解析失敗");
     }
@@ -187,78 +206,140 @@ onMounted(() => {
 </script>
 
 <style>
-/* 1. 確保字體在全域層次定義 */
+/* 全域字體定義 */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap");
 
 .font-kaiti {
-  /* 在 Mac 上，Kaiti TC 是關鍵 */
-  font-family:
-    "Kaiti TC", "Apple LiSung", "標楷體", "DFKai-SB", "Noto Serif TC", serif !important;
+  font-family: "Kaiti TC", "Apple LiSung", "標楷體", "DFKai-SB", "Noto Serif TC", serif !important;
 }
 </style>
 
 <style scoped>
-@media screen {
-  .print-wrapper {
-    background: #e0e0e0;
-    min-height: 100vh;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .receipt-content {
-    background: #ffe6f0;
-    /* background: #fff; */
-    padding: 5mm;
-    border: #333 solid 0px;
-  }
-
-  .receipt-canvas {
-    width: 128mm;
-    height: 182mm;
-    padding: 10mm 10mm;
-    box-sizing: border-box;
-    position: relative;
-    /* 傳統直向排版核心 */
-    writing-mode: vertical-rl;
-    -webkit-writing-mode: vertical-rl;
-    /* 如果找不到系統楷體，則使用思源宋體，至少保持莊重感 */
-    font-family:
-      "標楷體", "DFKai-SB", "Kaiti TC", "STKaiti", "Noto Serif TC", inherit !important;
-    border: 0.5pt solid #333; /* 模擬照片中的細外框 */
-  }
+/* 頁面容器佈局 */
+.print-page-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f0f2f5;
 }
 
-/* 針對 128mm x 182mm 的物理尺寸進行嚴格定義 */
-/* 感謝狀主畫布 */
+/* 左側預覽區 */
+.preview-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+/* 右側側邊欄 */
+.config-sidebar {
+  width: 320px;
+  background: #fff;
+  border-left: 1px solid #dcdfe6;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.05);
+}
+
+.config-body {
+  flex: 1;
+  margin-top: 20px;
+}
+
+.label {
+  font-size: 14px;
+  color: #606266;
+  margin-bottom: 12px;
+}
+
+.template-radio {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mac-tips {
+  background: #fdf6ec;
+  border: 1px solid #faecd8;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #e6a23c;
+  line-height: 1.6;
+}
+
+.config-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.full-width {
+  width: 100%;
+  margin-left: 0 !important;
+}
+
+/* 核心畫布區域 */
+.receipt-content {
+  background: #ffffff;
+  padding: 0;
+  line-height: 0;
+}
+
 .receipt-canvas {
   width: 128mm;
   height: 182mm;
-  padding: 10mm 10mm;
+  padding: 12mm 10mm;
   box-sizing: border-box;
   position: relative;
-  /* 傳統直向排版核心 */
   writing-mode: vertical-rl;
   -webkit-writing-mode: vertical-rl;
-  /* 如果找不到系統楷體，則使用思源宋體，至少保持莊重感 */
-  font-family:
-    "標楷體", "DFKai-SB", "Kaiti TC", "STKaiti", "Noto Serif TC", inherit !important;
-  border: 0.5pt solid #333; /* 模擬照片中的細外框 */
+  border: 0.5pt solid #333;
+  background-color: #fff;
 }
 
+/* 印章模板特別樣式 */
+.subtitle {
+  font-size: 24pt;
+  margin-left: 8mm;
+  text-align: center;
+  font-weight: bold;
+}
+
+.seal-container {
+  position: absolute;
+  left: 15mm;
+  bottom: 25mm;
+}
+
+.seal-box {
+  width: 35mm;
+  height: 35mm;
+  border: 2px dashed #f56c6c;
+  color: #f56c6c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14pt;
+  opacity: 0.7;
+}
+
+/* 元素細部樣式 */
 .title {
-  font-size: 28pt; /* 略微加大以匹配您的需求 */
+  font-size: 28pt;
   font-weight: bold;
   text-align: center;
-  letter-spacing: 10px;
+  letter-spacing: 12px;
   margin-left: 5mm;
 }
 
 .content-section {
   font-size: 15pt;
-  line-height: 1.5;
-  margin-right: 0mm;
+  line-height: 1.8;
+  margin-right: 2mm;
 }
 
 .highlight {
@@ -268,19 +349,19 @@ onMounted(() => {
 .temple-info {
   position: absolute;
   left: 10mm;
-  bottom: 25mm;
+  bottom: 28mm;
   font-size: 9.5pt;
   border-right: 1.5px solid #000;
-  padding-right: 4mm;
-  line-height: 1.8;
+  padding-right: 3mm;
+  line-height: 1.6;
 }
 
 .footer-info {
   position: absolute;
   left: 10mm;
-  bottom: 8mm;
+  bottom: 10mm;
   writing-mode: horizontal-tb;
-  font-size: 10pt;
+  font-size: 10.5pt;
   font-weight: bold;
 }
 
@@ -289,25 +370,7 @@ onMounted(() => {
   left: 10mm;
   bottom: 5mm;
   writing-mode: horizontal-tb;
-  color: #666;
-  font-size: 6px;
-}
-
-.print-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  /* background: #f5f5f5; */
-  border-radius: 5px;
-  gap: 15px;
-}
-
-.print-controls {
-  margin-top: 20px;
-  display: flex;
-  gap: 15px;
-  justify-content: center;
+  color: #909399;
+  font-size: 8px;
 }
 </style>
