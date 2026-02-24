@@ -381,8 +381,8 @@ onMounted(() => {
 .seal-box {
   width: 35mm;
   height: 35mm;
-  border: 0.5pt dashed #f56c6c;
-  color: #f56c6c;
+  border: 0.5pt dashed #f6a7a7;
+  color: #f6a7a7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -399,6 +399,7 @@ onMounted(() => {
   align-items: center; /* 確保兩者在垂直軸線上對齊 */
   justify-content: flex-start;
   margin-left: 10mm; /* 調整整組標題與左側內容的間距 */
+  margin-right: 5mm;
   height: 100%; /* 讓它撐滿高度以方便置中 */
 }
 
