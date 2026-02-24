@@ -23,11 +23,10 @@
         />
       </div>
 
-      <div style="display: none" class="form-group">
-        <label class="checkbox-label">
-          <input type="checkbox" v-model="rememberMe" />
-          <span>記住我（在此電腦保持登入狀態）</span>
-        </label>
+      <div class="form-group">
+        <div class="form-options">
+          <el-checkbox v-model="rememberMe" label="記住用戶名" size="large" />
+        </div>
       </div>
 
       <button
@@ -131,6 +130,13 @@ const handleLogin = async () => {
   try {
     await authStore.login(loginForm.username, loginForm.password);
 
+    // 處理「記住我」邏輯
+    if (rememberMe.value) {
+      localStorage.setItem("remembered_username", loginForm.username);
+    } else {
+      localStorage.removeItem("remembered_username");
+    }
+
     ElMessage.success("登录成功！正在跳转至主页...👍👍");
 
     // 模拟跳转延迟
@@ -148,8 +154,12 @@ const handleLogin = async () => {
 };
 
 onMounted(() => {
-  // // 檢查用戶是否已經確認過提示
-  // const hasConfirmed = sessionStorage.getItem('device-warning-confirmed');
+  // 讀取 localStorage
+  const savedUsername = localStorage.getItem("remembered_username");
+  if (savedUsername) {
+    loginForm.username = savedUsername;
+    rememberMe.value = true;
+  }
 
   if (authStore.isMobileDevice() || authStore.detectDeviceType() === "mobile") {
     // 延迟显示，确保页面加载完成
@@ -195,6 +205,26 @@ onMounted(() => {
 /* 自訂對話框樣式 */
 :deep(.custom-dialog .el-dialog__title) {
   color: white !important;
+}
+
+.form-options {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-left: 2px;
+}
+
+.btn-block {
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+}
+
+/* 讓 Checkbox 的文字顏色更柔和 */
+:deep(.el-checkbox__label) {
+  color: #606266;
+  font-weight: 400;
 }
 
 /* 響應式設計 */
