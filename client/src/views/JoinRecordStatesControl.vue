@@ -13,7 +13,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋姓名、手機、電話、地址、關係、備註"
+              placeholder="搜尋姓名、手機、電話、地址、關係、備註、收據號碼"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -22,6 +22,7 @@
             </el-input>
 
             <el-select
+              v-if="false"
               v-model="itemsFilter"
               placeholder="選擇項目類型"
               size="large"
@@ -52,7 +53,7 @@
           </div>
           <p class="search-hint">
             💡 提示:
-            可依項目類型或關鍵字（聯絡人、參加者、地址、備註）搜尋相關記錄
+            可依項目類型或關鍵字（聯絡人、參加者、地址、備註、收據號碼）搜尋相關記錄
           </p>
         </div>
       </div>
@@ -252,6 +253,13 @@
                 :value="option.value"
               />
             </el-select>
+          </template>
+        </el-table-column>
+
+        <!-- 收據號碼 -->
+        <el-table-column label="收據號碼" width="100" align="center">
+          <template #default="{ row }">
+            <div class="receipt-number">{{ row.receiptNumber || "-" }}</div>
           </template>
         </el-table-column>
 
@@ -605,13 +613,19 @@ const clearBatchUpdates = () => {
 </script>
 
 <style scoped>
+.receipt-number {
+  font-weight: 500;
+  color: var(--el-color-primary);
+  font-size: 0.75rem;
+}
+
 .stat-badge {
   padding: 4px 8px;
   background: var(--primary-color);
   color: white;
   border-radius: 4px;
   font-size: 0.75rem;
-  margin-right: 10px
+  margin-right: 10px;
 }
 
 .page-subtitle {

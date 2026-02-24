@@ -7,51 +7,61 @@
 ## Dashboard 版本比較
 
 ### Dashboard.vue（原版）
+
 **定位：** 活動統計儀表板
 
 **展示內容：**
+
 - 總參與人次（動畫數字）
 - 即將到來的活動（2筆）
 - 已完成的活動（2筆）
 - 活動狀態統計卡片
 
 **適用場景：**
+
 - 活動管理人員查看活動概況
 - 關注參與人數和活動進度
 
 **數據來源：**
+
 - `activityStore.js`
 
 ---
 
 ### Dashboard3.vue（新版）
+
 **定位：** 系統綜合資訊牆
 
 **展示內容：**
 
 #### 財務概覽
+
 - 本月收入（已付款總額）
 - 待收款項（未付款/部分付款金額與筆數）
 - 已沖帳（完成會計處理的總額）
 - 待處理（待沖帳記錄數）
 
 #### 業務統計
+
 - 本月登記（新增祈福登記表數量）
 - 消災人數（本月消災人員總數）
 - 超度人數（本月祖先超度總數）
 - 待開收據（需要開立收據的記錄數）
 
 #### 動態信息
+
 - 即將到來的活動（最近3場）
 - 最新登記記錄（最近5筆）
 - 最新參加記錄（最近5筆，含付款狀態）
 
 **適用場景：**
+
 - 管理人員全面掌握系統運作狀況
 - 快速發現待處理事項
 - 財務與業務數據一目了然
 
 **數據來源：**
+
 - `dashboardStore3.js`（匯總 registrations、joinRecords、activities）
 
 ---
@@ -59,6 +69,7 @@
 ## 技術架構
 
 ### Dashboard.vue
+
 ```javascript
 // Store
 import { useActivityStore } from "../stores/activityStore.js";
@@ -72,6 +83,7 @@ import { useActivityStore } from "../stores/activityStore.js";
 ```
 
 ### Dashboard3.vue
+
 ```javascript
 // Store
 import { useDashboardStore3 } from "../stores/dashboardStore3.js";
@@ -102,6 +114,7 @@ import { useDashboardStore3 } from "../stores/dashboardStore3.js";
 ### dashboardStore3.js 核心邏輯
 
 #### 數據初始化
+
 ```javascript
 const initialize = async () => {
   // 支援 Mock 模式與 Directus 模式
@@ -122,6 +135,7 @@ const initialize = async () => {
 ```
 
 #### 本月數據計算
+
 ```javascript
 const getCurrentMonthRange = () => {
   const now = new Date();
@@ -141,6 +155,7 @@ const monthlyRegistrations = computed(() => {
 ```
 
 #### 財務數據計算
+
 ```javascript
 // 本月收入（已付款）
 const monthlyIncome = computed(() => {
@@ -206,19 +221,35 @@ onMounted(async () => {
 
 ```css
 /* 財務相關 */
-.stat-card.financial { border-left: 4px solid #4caf50; } /* 綠色 - 收入 */
-.stat-card.pending { border-left: 4px solid #ff9800; }   /* 橙色 - 待收 */
-.stat-card.reconciled { border-left: 4px solid #2196f3; } /* 藍色 - 已沖帳 */
-.stat-card.warning { border-left: 4px solid #f44336; }   /* 紅色 - 待處理 */
+.stat-card.financial {
+  border-left: 4px solid #4caf50;
+} /* 綠色 - 收入 */
+.stat-card.pending {
+  border-left: 4px solid #ff9800;
+} /* 橙色 - 待收 */
+.stat-card.reconciled {
+  border-left: 4px solid #2196f3;
+} /* 藍色 - 已沖帳 */
+.stat-card.warning {
+  border-left: 4px solid #f44336;
+} /* 紅色 - 待處理 */
 ```
 
 ### 付款狀態標籤
 
 ```css
-.status.success { background: #4caf50; } /* 已付款 */
-.status.warning { background: #ff9800; } /* 部分付款 */
-.status.danger { background: #f44336; }  /* 未付款 */
-.status.info { background: #2196f3; }    /* 免付 */
+.status.success {
+  background: #4caf50;
+} /* 已付款 */
+.status.warning {
+  background: #ff9800;
+} /* 部分付款 */
+.status.danger {
+  background: #f44336;
+} /* 未付款 */
+.status.info {
+  background: #2196f3;
+} /* 免付 */
 ```
 
 ---
@@ -251,16 +282,19 @@ onMounted(async () => {
 ## 開發注意事項
 
 ### 數據一致性
+
 - 確保 `createdAt` 欄位格式統一（ISO 8601）
 - 付款狀態枚舉值：`paid`, `partial`, `unpaid`, `waived`
 - 會計狀態枚舉值：`pending`, `reconciled`
 
 ### 效能優化
+
 - 使用 `computed` 避免重複計算
 - 大量數據時考慮分頁或虛擬滾動
 - 初始化時使用 `Promise.all` 並行載入數據
 
 ### 錯誤處理
+
 - 數據載入失敗時顯示友善提示
 - Mock 模式與 API 模式無縫切換
 - 空數據時顯示 `el-empty` 組件
@@ -270,16 +304,19 @@ onMounted(async () => {
 ## 測試建議
 
 ### 單元測試
+
 - 測試本月日期範圍計算
 - 測試財務數據計算邏輯
 - 測試數據過濾與排序
 
 ### 整合測試
+
 - 測試 Mock 模式數據載入
 - 測試 API 模式數據載入
 - 測試數據更新後的響應式更新
 
 ### UI 測試
+
 - 測試響應式佈局（手機/平板/桌面）
 - 測試卡片懸停效果
 - 測試空數據狀態顯示

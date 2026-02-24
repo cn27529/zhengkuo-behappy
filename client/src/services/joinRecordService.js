@@ -2,6 +2,7 @@
 import { baseService } from "./baseService.js";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { authService } from "./authService.js";
 
 export class JoinRecordService {
   constructor() {
@@ -298,6 +299,33 @@ export class JoinRecordService {
       console.error(`❌ 刪除參加記錄失敗 (ID: ${recordId})`, error);
       return this.handleParticipationRecordError(error);
     }
+  }
+
+  /**
+   * 更新收據打印狀態
+   */
+  async updateByReceiptPrint(record) {
+    if (!record?.id) {
+      return { success: false, message: "缺少記錄 ID" };
+    }
+
+    console.log("更新收據打印狀態 - 原始記錄:", record);
+
+    // 根據活動類型決定是否需要收據
+    const isNeedReceipt =
+      record.activeTemplate === "standard" || record.activeTemplate === "stamp";
+
+    const updateData = {
+      //needReceipt: isNeedReceipt ? "true" : "false" || "false", // 預設為 "false"
+      needReceipt: record.activeTemplate, // 直接使用 activeTemplate 的值來區分不同的收據需求
+      receiptNumber: `${record.id}A${record.activityId}R${record.registrationId}`,
+      receiptIssued: "true", // 收據已開立
+      receiptIssuedAt: DateUtils.getCurrentISOTime(),
+      //receiptIssuedBy: authService.getCurrentUser(),
+      receiptIssuedBy: authService.getUserName() || "沒有名稱", // 確保有名稱可用，否則使用預設值
+    };
+
+    return await this.updateParticipationRecord(record.id, updateData);
   }
 
   /**

@@ -342,6 +342,15 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
           matchFound = true;
         }
 
+        // 檢查收據號碼
+        if (
+          item.receiptNumber &&
+          item.receiptNumber.toLowerCase().includes(query)
+        ) {
+          console.log("✅ 匹配收據號碼:", item.receiptNumber);
+          matchFound = true;
+        }
+
         console.log(
           `第 ${index} 筆資料匹配結果:`,
           matchFound ? "✅ 匹配" : "❌ 不匹配",

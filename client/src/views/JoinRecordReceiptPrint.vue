@@ -45,7 +45,7 @@
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p>本表單由系統自動生成(收執聯)，列印時間：{{ printTime }}</p>
+            <p>本表單由系統自動生成(收執聯)，打印時間：{{ printTime }}</p>
           </div>
         </div>
 
@@ -94,7 +94,7 @@
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p>本表單由系統自動生成(收執聯)，列印時間：{{ printTime }}</p>
+            <p>本表單由系統自動生成(收執聯)，打印時間：{{ printTime }}</p>
           </div>
         </div>
       </div>
@@ -106,10 +106,17 @@
       </div>
 
       <div class="config-body">
-        <p class="label">選擇模板：</p>
+        <p class="label">選擇單據模板：</p>
         <el-radio-group v-model="activeTemplate" class="template-radio">
-          <el-radio label="standard" border>📜 感謝狀</el-radio>
-          <el-radio label="stamp" border>🛡️ 收據</el-radio>
+          <el-radio
+            @click="handleTemplateChange('standard')"
+            label="standard"
+            border
+            >📜 感謝狀</el-radio
+          >
+          <el-radio @click="handleTemplateChange('stamp')" label="stamp" border
+            >🛡️ 收據</el-radio
+          >
         </el-radio-group>
 
         <el-divider />
@@ -118,8 +125,8 @@
           <p><strong>提醒：</strong></p>
           <ul>
             <li>
-              紙張：JIS B6 (寛128mm x 高182mm)與國際標準 ISO 216 的 B6 (125mm x
-              176mm) 略有不同
+              紙張：JIS B6 128mm (寬) x 182mm (高)與國際標準 ISO 216 的 B6
+              (125mm x 176mm) 略有不同
             </li>
             <li>縮放：100%</li>
             <li>邊距：無 (None)</li>
@@ -149,10 +156,13 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ElMessage, ElLoading } from "element-plus";
+import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
 import * as htmlToImage from "html-to-image";
 import printJS from "print-js";
+import { DateUtils } from "../utils/dateUtils.js";
+import { useJoinRecordPrintStore } from "../stores/joinRecordPrintStore.js";
 
+const printStore = useJoinRecordPrintStore();
 // 模板切換狀態
 const activeTemplate = ref("standard");
 const printing = ref(false);
@@ -184,15 +194,17 @@ const currentMonth = computed(() => new Date().getMonth() + 1);
 const currentDay = computed(() => new Date().getDate());
 
 const setPrintTime = () => {
-  const now = new Date();
-  printTime.value = now.toLocaleString("zh-TW", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  // const now = new Date();
+  // printTime.value = now.toLocaleString("zh-TW", {
+  //   year: "numeric",
+  //   month: "2-digit",
+  //   day: "2-digit",
+  //   hour: "2-digit",
+  //   minute: "2-digit",
+  //   second: "2-digit",
+  // });
+
+  printTime.value = DateUtils.getCurrentTimestamp();
 };
 
 const convertToChinese = (num) => {
@@ -211,11 +223,20 @@ const convertToChinese = (num) => {
   return result.replace(/零+$/, "");
 };
 
+const handleTemplateChange = (template = "standard") => {
+  activeTemplate.value = template;
+
+  const name = (record.value.contact?.name || "未填寫").toString().trim();
+  const receiptSerialText =
+    activeTemplate.value === "standard" ? "感謝狀" : "收據";
+  document.title = `${name}-${receiptSerialNum.value}-${receiptSerialText}`;
+};
+
 const handlePrintWithHtmlToImage = async () => {
   const node = document.getElementById("receipt-capture-area");
   const loading = ElLoading.service({
     text: "正在生成高清圖像...",
-    background: "rgba(255, 255, 255, 0.9)",
+    background: "rgba(240, 242, 245, 1)", // 使用與背景相同的顏色，視覺更統一
   });
 
   try {
@@ -236,11 +257,16 @@ const handlePrintWithHtmlToImage = async () => {
       style:
         "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
       imageStyle: "width:100%;",
+      // --- 新增回調函數 ---
+      onPrintDialogClose: async () => {
+        await handlePostPrintCheck();
+      },
     });
 
-    ElMessage.success("收據生成成功");
+    // ElMessage.success("收據生成成功");
+    ElMessage.success("已傳送至打印預覽");
   } catch (error) {
-    console.error("列印失敗:", error);
+    console.error("打印失敗:", error);
     ElMessage.error("轉換失敗，請重新嘗試");
   } finally {
     loading.close();
@@ -248,20 +274,69 @@ const handlePrintWithHtmlToImage = async () => {
   }
 };
 
+/**
+ * 打印視窗關閉後的確認邏輯
+ */
+const handlePostPrintCheck = async () => {
+  try {
+    await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
+      confirmButtonText: "已打印完成",
+      cancelButtonText: "取消打印",
+      type: "question",
+      center: true,
+    });
+
+    // 使用者確認已打印完成，更新打印狀態
+    record.value.activeTemplate = activeTemplate.value;
+    // 更新收據打印狀態
+    const result = await printStore.updateReceiptPrintStatus(record.value);
+
+    if (result?.success) {
+      ElMessage({
+        type: "success",
+        message: result?.message || "已記錄打印完成狀態。",
+      });
+    } else {
+      ElMessage({
+        type: "warning",
+        message: result?.message || "狀態更新失敗，但打印已完成。",
+      });
+    }
+  } catch {
+    ElMessage({
+      type: "info",
+      message: "若打印失敗，請檢查打印機連線後重試。",
+    });
+  }
+};
+
 const handleClose = () => router.back();
 
 onMounted(() => {
+  // // 1. 開啟全螢幕 Loading
+  // const loading = ElLoading.service({
+  //   lock: true,
+  //   text: "正在準備收據資料...",
+  //   background: "rgba(240, 242, 245, 1)", // 使用與背景相同的顏色，視覺更統一
+  // });
+
   setPrintTime();
   const printData = route.query.print_data;
   if (printData) {
     try {
       record.value = JSON.parse(printData);
-      const name = (record.value.contact?.name || "未填寫").toString().trim();
-      document.title = `${name}-${receiptSerialNum.value}`;
+      handleTemplateChange();
     } catch (e) {
       ElMessage.error("數據解析失敗");
     }
   }
+
+  // // 3. 關鍵：設定 1.5 秒延遲
+  // setTimeout(() => {
+  //   //isPageReady.value = true;
+  //   loading.close();
+  // }, 1000); // 1500 毫秒 = 1.5 秒
+
   if (!record.value.id) router.back();
 });
 </script>
@@ -288,7 +363,124 @@ onMounted(() => {
 .print-page-container {
   display: flex;
   min-height: 100vh;
-  background-color: #f0f2f5;
+  background-color: #333;
+}
+
+/* 核心畫布區域 */
+.receipt-content {
+  background: #ffffff;
+  padding: 0;
+  line-height: 0;
+}
+
+.receipt-canvas {
+  width: 128mm;
+  height: 182mm;
+  padding: 12mm 10mm;
+  box-sizing: border-box;
+  position: relative;
+  writing-mode: vertical-rl;
+  -webkit-writing-mode: vertical-rl;
+  border: 0.2pt solid #333;
+  background-color: #ffffff;
+}
+
+/* 印章模板特別樣式 */
+.seal-container {
+  position: absolute;
+  left: 10mm;
+  top: 55mm;
+}
+/* 印信處 */
+.seal-box {
+  width: 35mm;
+  height: 35mm;
+  border: 0.5pt dashed #f6a7a7;
+  color: #f6a7a7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14pt;
+  opacity: 0.5;
+  padding: 5px;
+}
+
+/* 修改標題群組佈局 */
+.title-group {
+  display: grid;
+  flex-direction: column; /* 在直書模式下，這會處理水平方向的排列 */
+  align-items: center; /* 確保兩者在垂直軸線上對齊 */
+  justify-content: flex-start;
+  margin-left: 10mm; /* 調整整組標題與左側內容的間距 */
+  margin-right: 5mm;
+  height: 100%; /* 讓它撐滿高度以方便置中 */
+}
+
+.title {
+  font-size: 28pt;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 12px;
+  margin: 0; /* 移除原本可能干擾的 margin */
+}
+
+/* 調整字號樣式 */
+.receipt-serial {
+  font-size: 10pt;
+  margin-top: 100mm; /* 這會控制「標題」與「字號」之間的間距 */
+  letter-spacing: 2px;
+  /* 移除原本的 position: absolute; */
+  letter-spacing: 1px;
+  font-weight: normal;
+  white-space: nowrap; /* 確保字號不會意外換行 */
+}
+
+.content-section {
+  font-size: 15pt;
+  line-height: 1.8;
+  margin-right: 2mm;
+}
+
+.highlight {
+  font-weight: bold;
+}
+
+/* 寺廟資訊 */
+.temple-info {
+  position: absolute;
+  left: 10mm;
+  bottom: 28mm;
+  font-size: 9.5pt;
+  border-right: 1.5px solid #000;
+  padding-right: 3mm;
+  line-height: 1.6;
+}
+
+.temple-subtitle {
+  font-size: 14pt;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 5px;
+}
+
+/* 頁腳資訊 */
+.footer-info {
+  position: absolute;
+  left: 10mm;
+  bottom: 10mm;
+  writing-mode: horizontal-tb;
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+.print-meta {
+  position: absolute;
+  left: 10mm;
+  bottom: 5mm;
+  writing-mode: horizontal-tb;
+  color: #909399;
+  font-size: 8px;
 }
 
 /* 左側預覽區 */
@@ -350,120 +542,5 @@ onMounted(() => {
 .full-width {
   width: 100%;
   margin-left: 0 !important;
-}
-
-/* 核心畫布區域 */
-.receipt-content {
-  background: #ffffff;
-  padding: 0;
-  line-height: 0;
-}
-
-.receipt-canvas {
-  width: 128mm;
-  height: 182mm;
-  padding: 12mm 10mm;
-  box-sizing: border-box;
-  position: relative;
-  writing-mode: vertical-rl;
-  -webkit-writing-mode: vertical-rl;
-  border: 0.5pt solid #333;
-  background-color: #fff;
-}
-
-/* 印章模板特別樣式 */
-.seal-container {
-  position: absolute;
-  left: 10mm;
-  top: 55mm;
-}
-/* 印信處 */
-.seal-box {
-  width: 35mm;
-  height: 35mm;
-  border: 0.5pt dashed #f6a7a7;
-  color: #f6a7a7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 14pt;
-  opacity: 0.5;
-  padding: 5px;
-}
-
-/* 修改標題群組佈局 */
-.title-group {
-  display: grid;
-  flex-direction: column; /* 在直書模式下，這會處理水平方向的排列 */
-  align-items: center; /* 確保兩者在垂直軸線上對齊 */
-  justify-content: flex-start;
-  margin-left: 10mm; /* 調整整組標題與左側內容的間距 */
-  margin-right: 5mm;
-  height: 100%; /* 讓它撐滿高度以方便置中 */
-}
-
-.title {
-  font-size: 28pt;
-  font-weight: bold;
-  text-align: center;
-  letter-spacing: 12px;
-  margin-top: 0mm; /* 控制標題距離頂部的距離 */
-  margin-left: 0; /* 移除原本的 margin-left 避免偏移 */
-}
-
-/* 調整字號樣式 */
-.receipt-serial {
-  font-size: 10pt;
-  margin-top: 100mm; /* 這會控制「標題」與「字號」之間的間距 */
-  letter-spacing: 2px;
-  /* 移除原本的 position: absolute; */
-}
-
-.content-section {
-  font-size: 15pt;
-  line-height: 1.8;
-  margin-right: 2mm;
-}
-
-.highlight {
-  font-weight: bold;
-}
-
-/* 寺廟資訊 */
-.temple-info {
-  position: absolute;
-  left: 10mm;
-  bottom: 28mm;
-  font-size: 9.5pt;
-  border-right: 1.5px solid #000;
-  padding-right: 3mm;
-  line-height: 1.6;
-}
-
-.temple-subtitle {
-  font-size: 14pt;
-  font-weight: bold;
-  text-align: center;
-  letter-spacing: 5px;
-}
-
-/* 頁腳資訊 */
-.footer-info {
-  position: absolute;
-  left: 10mm;
-  bottom: 10mm;
-  writing-mode: horizontal-tb;
-  font-size: 10pt;
-  font-weight: bold;
-}
-
-.print-meta {
-  position: absolute;
-  left: 10mm;
-  bottom: 5mm;
-  writing-mode: horizontal-tb;
-  color: #909399;
-  font-size: 8px;
 }
 </style>

@@ -23,11 +23,11 @@
   "discountAmount": 200,                     // 折扣金額
   "finalAmount": 2000,                       // 最終金額
   "paidAmount": 2000,                        // 已付金額
-  "needReceipt": true,                       // 是否需要收據
+  "needReceipt": true,                       // 是否需要收據 activeTemplate.value === "standard" ? "感謝狀" : "收據"
   "receiptNumber": "R2025010001",            // 收據號碼
   "receiptIssued": true,                     // 收據是否已開立
   "receiptIssuedAt": "2025-01-16T10:00:00.000Z", // 收據開立時間
-  "receiptIssuedBy": "櫃台小姐",              // 收據開立人員
+  "receiptIssuedBy": "櫃台小姐",              // 收據開立人員(也稱為經手人)
   "accountingState": "reconciled",           // 會計狀態：reconciled=已對帳，pending=待處理
   "accountingDate": "2025-01-16T15:00:00.000Z", // 會計處理日期
   "accountingBy": "會計王小姐",               // 會計處理人員

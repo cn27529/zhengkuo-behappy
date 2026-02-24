@@ -2,6 +2,7 @@
 import { baseRustService } from "./baseRustService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
+import { authService } from "../services/authService.js";
 
 export class RustJoinRecordService {
   // ========== 建構函式 ==========
@@ -258,6 +259,36 @@ export class RustJoinRecordService {
   }
 
   /**
+   * 更新收據打印狀態
+   */
+  async updateByReceiptPrint(record, context = {}) {
+    if (!record?.id) {
+      return { success: false, message: "缺少記錄 ID" };
+    }
+
+    console.log("更新收據打印狀態 - 原始記錄:", record);
+
+    // 根據活動類型決定是否需要收據
+    const isNeedReceipt =
+      record.activeTemplate === "standard" || record.activeTemplate === "stamp";
+
+    const updateData = {
+      //needReceipt: isNeedReceipt ? "true" : "false" || "false", // 預設為 "false"
+      needReceipt: record.activeTemplate, // 直接使用 activeTemplate 的值來區分不同的收據需求
+      receiptNumber: `${record.id}A${record.activityId}R${record.registrationId}`,
+      receiptIssued: "true",
+      receiptIssuedAt: DateUtils.getCurrentISOTime(),
+      //receiptIssuedBy: authService.getCurrentUser(),
+      receiptIssuedBy: authService.getUserName() || "沒有名稱", // 確保有名稱可用，否則使用預設值
+    };
+
+    return await this.updateParticipationRecord(record.id, updateData, {
+      operation: "updateByReceiptPrint",
+      ...context,
+    });
+  }
+
+  /**
    * 儲存記錄 (原有方法保持兼容)
    */
   async saveRecord(payload, context = {}) {
@@ -276,7 +307,7 @@ export class RustJoinRecordService {
         notes: payload.notes || "",
         discountAmount: 0, // 折扣金額
         paidAmount: 0, // 付款金額
-        needReceipt: false, // 需要收據
+        needReceipt: false, // 需要收據 (根據活動類型決定，默認為 false)
         receiptNumber: "", // 收據號碼
         receiptIssued: false, // 收據已開立
         receiptIssuedAt: "", // 收據開立日期

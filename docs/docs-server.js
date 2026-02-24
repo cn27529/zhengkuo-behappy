@@ -4,7 +4,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const { marked } = require("marked");
-const { templateEngine } = require("./templates");
+const { templateEngine } = require("./templates.js");
 
 const app = express();
 const PORT = 3001;
@@ -81,13 +81,13 @@ app.get("/api/documents", (req, res) => {
     res.json({
       success: true,
       files: files,
-      count: files.length
+      count: files.length,
     });
   } catch (error) {
     console.error("獲取文檔列表失敗:", error);
     res.status(500).json({
       success: false,
-      message: "獲取文檔列表失敗"
+      message: "獲取文檔列表失敗",
     });
   }
 });
@@ -100,14 +100,14 @@ app.get("/api/document/:filename", (req, res) => {
   if (!fs.existsSync(filePath) || !filename.endsWith(".md")) {
     return res.status(404).json({
       success: false,
-      message: "文檔不存在"
+      message: "文檔不存在",
     });
   }
 
   try {
     const content = fs.readFileSync(filePath, "utf8");
     const stats = fs.statSync(filePath);
-    
+
     res.json({
       success: true,
       data: {
@@ -115,14 +115,14 @@ app.get("/api/document/:filename", (req, res) => {
         content: content,
         htmlContent: marked(content),
         modifiedDate: stats.mtime,
-        size: stats.size
-      }
+        size: stats.size,
+      },
     });
   } catch (error) {
     console.error("讀取文檔失敗:", error);
     res.status(500).json({
       success: false,
-      message: "讀取文檔失敗"
+      message: "讀取文檔失敗",
     });
   }
 });
@@ -133,13 +133,13 @@ app.post("/api/reload-templates", (req, res) => {
     templateEngine.clearCache();
     res.json({
       success: true,
-      message: "模板緩存已清除"
+      message: "模板緩存已清除",
     });
   } catch (error) {
     console.error("清除模板緩存失敗:", error);
     res.status(500).json({
       success: false,
-      message: "清除模板緩存失敗"
+      message: "清除模板緩存失敗",
     });
   }
 });
@@ -159,7 +159,7 @@ app.get("/doc/:filename", (req, res) => {
 
     const html = templateEngine.render("document.html", {
       filename: filename,
-      content: htmlContent
+      content: htmlContent,
     });
 
     if (html.includes("模板載入失敗")) {
@@ -181,12 +181,12 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
     docs: {
       count: files.length,
-      directory: DOCS_DIR
+      directory: DOCS_DIR,
     },
     server: {
       port: PORT,
-      uptime: process.uptime()
-    }
+      uptime: process.uptime(),
+    },
   });
 });
 
@@ -195,7 +195,7 @@ app.use((error, req, res, next) => {
   console.error("💥 服務器錯誤:", error);
   res.status(500).json({
     success: false,
-    message: "內部服務器錯誤"
+    message: "內部服務器錯誤",
   });
 });
 
@@ -226,21 +226,23 @@ app.listen(PORT, () => {
   console.log(`📚 文檔服務器已啟動: http://localhost:${PORT}`);
   console.log(`📁 文檔目錄: ${DOCS_DIR}`);
   console.log(`🎨 模板目錄: ${path.join(__dirname, "public")}`);
-  
+
   // 檢查關鍵文件是否存在
   const templatePath = path.join(__dirname, "public", "document.html");
   const stylesPath = path.join(__dirname, "public", "styles.css");
-  
+
   console.log("🔍 關鍵文件檢查:");
-  console.log(`  - document.html: ${fs.existsSync(templatePath) ? "✅" : "❌"}`);
+  console.log(
+    `  - document.html: ${fs.existsSync(templatePath) ? "✅" : "❌"}`,
+  );
   console.log(`  - styles.css: ${fs.existsSync(stylesPath) ? "✅" : "❌"}`);
-  
+
   // 列出一些文檔文件
   const files = getMarkdownFiles();
   console.log(`📄 找到 ${files.length} 個文檔文件`);
   if (files.length > 0) {
     console.log("  前幾個文檔:");
-    files.slice(0, 3).forEach(file => {
+    files.slice(0, 3).forEach((file) => {
       console.log(`    - ${file.name}`);
     });
   }

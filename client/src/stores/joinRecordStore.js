@@ -499,6 +499,11 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     return authService.getCurrentUser();
   };
 
+  // 獲取用戶名稱
+  const getUserName = () => {
+    return authService.getUserName();
+  };
+
   // 暴露給元件使用的變數與方法
   return {
     // State
@@ -527,6 +532,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     getAllRegistrations, // 獲取所有祈福登記
     getAllJoinRecords, // 獲取所有參加記錄
     // 獲取用戶信息
+    getUserName,
     getCurrentUser,
     // 其他方法
     getItemsSummary, // 取得項目摘要

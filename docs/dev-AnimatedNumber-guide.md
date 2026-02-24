@@ -24,6 +24,7 @@ const animate = (timestamp) => {
 ```
 
 **技術優勢：**
+
 - ✅ 瀏覽器原生支援，無需依賴
 - ✅ 自動優化效能（閒置標籤頁會暫停）
 - ✅ 與瀏覽器刷新率同步，保證流暢
@@ -56,23 +57,27 @@ integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 **設計原則：**
 
 1. **使用 `<span>` 標籤**
+
    ```html
    <span :class="className">{{ displayNumber }}</span>
    ```
+
    - 行內元素，不會破壞佈局
    - 繼承父元素樣式
 
 2. **CSS Scoped**
-   ```vue
+
+   ```html
    <style scoped>
-   /* 樣式只作用於組件內部 */
+     /* 樣式只作用於組件內部 */
    </style>
    ```
+
    - 不會污染全域樣式
    - 外部 CSS 完全不受影響
 
 3. **完全可自訂**
-   ```vue
+   ```html
    <AnimatedNumber
      :value="100"
      class="my-custom-class"
@@ -82,7 +87,7 @@ integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 ### 樣式繼承最佳實踐
 
-```vue
+```html
 <template>
   <div class="participants" style="color: blue; font-size: 20px;">
     參與人次：
@@ -92,12 +97,12 @@ integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 </template>
 
 <style>
-.participants {
-  color: #8b4513;
-  font-size: 24px;
-  font-weight: bold;
-}
-/* AnimatedNumber 會自動繼承這些樣式 */
+  .participants {
+    color: #8b4513;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  /* AnimatedNumber 會自動繼承這些樣式 */
 </style>
 ```
 
@@ -136,21 +141,21 @@ integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 Element Plus 沒有內建的數字動畫組件，但可使用：
 
-```vue
+```html
 <template>
   <el-statistic :value="displayValue" suffix="人" title="參與人次" />
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+  import { ref, onMounted } from "vue";
 
-const displayValue = ref(0);
-const targetValue = 342;
+  const displayValue = ref(0);
+  const targetValue = 342;
 
-onMounted(() => {
-  // 需要自己實現動畫邏輯
-  animateValue(0, targetValue, 2000);
-});
+  onMounted(() => {
+    // 需要自己實現動畫邏輯
+    animateValue(0, targetValue, 2000);
+  });
 </script>
 ```
 
@@ -159,26 +164,27 @@ onMounted(() => {
 ### 第三方庫對比
 
 #### 1. CountUp.js
+
 ```bash
 npm install countup.js
 ```
 
-```vue
+```html
 <template>
   <span ref="countupRef"></span>
 </template>
 
 <script setup>
-import { CountUp } from "countup.js";
+  import { CountUp } from "countup.js";
 
-onMounted(() => {
-  const countUp = new CountUp(countupRef.value, 342, {
-    duration: 2,
-    separator: ",",
-    suffix: " 人",
+  onMounted(() => {
+    const countUp = new CountUp(countupRef.value, 342, {
+      duration: 2,
+      separator: ",",
+      suffix: " 人",
+    });
+    countUp.start();
   });
-  countUp.start();
-});
 </script>
 ```
 
@@ -186,11 +192,12 @@ onMounted(() => {
 **缺點：** 需要安裝依賴（28KB）
 
 #### 2. vue-countup-v3
+
 ```bash
 npm install vue-countup-v3
 ```
 
-```vue
+```html
 <template>
   <vue-countup :end-val="342" :duration="2" suffix=" 人" />
 </template>
@@ -200,21 +207,22 @@ npm install vue-countup-v3
 **缺點：** 需要安裝依賴
 
 #### 3. GSAP (GreenSock)
+
 ```bash
 npm install gsap
 ```
 
-```vue
+```html
 <script setup>
-import { gsap } from "gsap";
+  import { gsap } from "gsap";
 
-onMounted(() => {
-  gsap.to(displayValue, {
-    value: 342,
-    duration: 2,
-    ease: "power2.out"
+  onMounted(() => {
+    gsap.to(displayValue, {
+      value: 342,
+      duration: 2,
+      ease: "power2.out",
+    });
   });
-});
 </script>
 ```
 
@@ -223,13 +231,13 @@ onMounted(() => {
 
 ## 方案對比
 
-| 方案 | 體積 | 難度 | 效能 | 依賴 | 推薦度 |
-|------|------|------|------|------|--------|
-| **自建組件** | 0KB | ⭐⭐ | ⭐⭐⭐⭐⭐ | 無 | ⭐⭐⭐⭐⭐ |
-| CountUp.js | 28KB | ⭐ | ⭐⭐⭐⭐ | 有 | ⭐⭐⭐⭐ |
-| vue-countup-v3 | 30KB | ⭐ | ⭐⭐⭐⭐ | 有 | ⭐⭐⭐⭐ |
-| GSAP | 300KB+ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | 有 | ⭐⭐⭐ |
-| Element Plus | - | ⭐⭐⭐⭐ | - | 需自建 | ⭐⭐ |
+| 方案           | 體積   | 難度     | 效能       | 依賴   | 推薦度     |
+| -------------- | ------ | -------- | ---------- | ------ | ---------- |
+| **自建組件**   | 0KB    | ⭐⭐     | ⭐⭐⭐⭐⭐ | 無     | ⭐⭐⭐⭐⭐ |
+| CountUp.js     | 28KB   | ⭐       | ⭐⭐⭐⭐   | 有     | ⭐⭐⭐⭐   |
+| vue-countup-v3 | 30KB   | ⭐       | ⭐⭐⭐⭐   | 有     | ⭐⭐⭐⭐   |
+| GSAP           | 300KB+ | ⭐⭐⭐   | ⭐⭐⭐⭐⭐ | 有     | ⭐⭐⭐     |
+| Element Plus   | -      | ⭐⭐⭐⭐ | -          | 需自建 | ⭐⭐       |
 
 ## 技術細節
 
@@ -243,10 +251,10 @@ const animate = (timestamp) => {
 
   // 2. 計算當前值（緩動函數）
   currentValue.value = easeOutExpo(
-    progress,        // 當前時間
-    0,              // 起始值
-    props.value,    // 目標值
-    props.duration  // 總時長
+    progress, // 當前時間
+    0, // 起始值
+    props.value, // 目標值
+    props.duration, // 總時長
   );
 
   // 3. 格式化顯示
@@ -269,21 +277,25 @@ const animate = (timestamp) => {
 ## 建議
 
 ### 簡單專案 → 使用自建組件
+
 - ✅ 零依賴，輕量級
 - ✅ 完全可控
 - ✅ 學習原理
 
 ### 需要更多功能 → vue-countup-v3
+
 ```bash
 npm install vue-countup-v3
 ```
 
 ### 已使用 GSAP → 直接用 GSAP
+
 - 可以統一動畫庫
 
 ## 總結
 
 **自建組件完全滿足需求：**
+
 - ✅ 純原生實現，零依賴
 - ✅ 不影響現有樣式
 - ✅ 效能優秀
@@ -293,4 +305,4 @@ npm install vue-countup-v3
 
 ---
 
-*此文件涵蓋 AnimatedNumber 組件的完整開發和使用指南。*
+_此文件涵蓋 AnimatedNumber 組件的完整開發和使用指南。_

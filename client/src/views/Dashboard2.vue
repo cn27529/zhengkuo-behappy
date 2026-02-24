@@ -16,6 +16,7 @@
         <el-card shadow="hover" class="summary-card">
           <div class="summary-label">總參與人次</div>
           <AnimatedNumber :value="totalParticipants" :duration="2000" />
+          <div class="summary-foot">啟用至今</div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
@@ -499,6 +500,7 @@ onMounted(async () => {
   font-weight: 600;
   color: #1f2937;
   margin-bottom: 0.15rem;
+  white-space: nowrap;
 }
 
 .list-meta {

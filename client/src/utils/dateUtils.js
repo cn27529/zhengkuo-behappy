@@ -20,6 +20,8 @@ const createFormatter = (options) => (dateString) => {
   }
 };
 
+export const getCurrentTimestamp = () => new Date().getTime();
+
 /**
  * 獲取當前時間的 ISO 格式字符串
  * @returns {string} ISO 格式時間字符串
@@ -191,6 +193,7 @@ export const isValidDate = (dateString) => {
  * 提供統一的日期時間處理接口
  */
 export const DateUtils = Object.freeze({
+  getCurrentTimestamp,
   getCurrentISOTime,
   formatFullTime,
   formatDateYMD,
