@@ -42,7 +42,7 @@
             <div class="items-detail">
               功德項目：
               <span v-for="(item, idx) in record.items" :key="idx" class="highlight">
-                {{ item.label }}({{ item.subtotal }})、
+                {{ item.label }}({{ item.subtotal }})&nbsp;&nbsp;
               </span>
             </div>
             <div class="total-amount">共計新台幣：<span class="highlight">{{ totalAmountChinese }}</span></div>
