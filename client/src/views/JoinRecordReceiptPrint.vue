@@ -256,9 +256,16 @@ onMounted(() => {
 /* 全域字體定義 */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap");
 
+/* 在組件的 <style> 標籤內 */
 .font-kaiti {
+  /* 使用 !important 確保壓過 style.css 裡的 * 全域設定 */
   font-family:
     "Kaiti TC", "Apple LiSung", "標楷體", "DFKai-SB", "Noto Serif TC", serif !important;
+}
+
+/* 確保收據內的所有子元素都繼承這個楷體，而不是去抓全域的正黑體 */
+.receipt-canvas * {
+  font-family: inherit !important;
 }
 </style>
 
