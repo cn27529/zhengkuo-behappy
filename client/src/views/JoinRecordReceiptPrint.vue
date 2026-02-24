@@ -2,19 +2,29 @@
   <div class="print-page-container">
     <div class="preview-section">
       <div id="receipt-capture-area" class="receipt-content">
-        
-        <div v-if="activeTemplate === 'standard'" class="receipt-canvas font-kaiti">
+        <div
+          v-if="activeTemplate === 'standard'"
+          class="receipt-canvas font-kaiti"
+        >
           <h1 class="title">感謝狀</h1>
           <div class="content-section">
-            <div class="donor-info">茲收到 <span class="highlight">{{ contactName }}</span> </div>
+            <div class="donor-info">
+              茲收到 <span class="highlight">{{ contactName }}</span>
+            </div>
             <div class="items-detail">
               功德項目：
-              <span v-for="(item, idx) in record.items" :key="idx" class="highlight">
-                {{ item.label }}({{ item.subtotal }})、
+              <span
+                v-for="(item, idx) in record.items"
+                :key="idx"
+                class="highlight"
+              >
+                {{ item.label }}({{ item.subtotal }})&nbsp;&nbsp;
               </span>
             </div>
             <div class="total-amount">
-              共計新台幣：<span class="highlight">{{ totalAmountChinese }}</span>
+              共計新台幣：<span class="highlight">{{
+                totalAmountChinese
+              }}</span>
             </div>
             <div v-if="contactAddress" class="address-info">
               住址：<span class="highlight">{{ contactAddress }}</span>
@@ -38,14 +48,24 @@
         <div v-else class="receipt-canvas font-kaiti stamp-layout">
           <h2 class="title">收據</h2>
           <div class="content-section">
-            <div class="donor-info">茲收到 <span class="highlight">{{ contactName }}</span> 大德</div>
+            <div class="donor-info">
+              茲收到 <span class="highlight">{{ contactName }}</span> 大德
+            </div>
             <div class="items-detail">
               功德項目：
-              <span v-for="(item, idx) in record.items" :key="idx" class="highlight">
+              <span
+                v-for="(item, idx) in record.items"
+                :key="idx"
+                class="highlight"
+              >
                 {{ item.label }}({{ item.subtotal }})&nbsp;&nbsp;
               </span>
             </div>
-            <div class="total-amount">共計新台幣：<span class="highlight">{{ totalAmountChinese }}</span></div>
+            <div class="total-amount">
+              共計新台幣：<span class="highlight">{{
+                totalAmountChinese
+              }}</span>
+            </div>
             <div v-if="contactAddress" class="address-info">
               住址：<span class="highlight">{{ contactAddress }}</span>
             </div>
@@ -54,12 +74,13 @@
               <div class="seal-box">財團法人鎮國基金會印信處</div>
             </div>
             <div class="temple-info">
-            <span class="temple-subtitle highlight">財團法人鎮國基金會</span><br />
-            會址：南投縣集集鎮廣明里鎮國巷101號<br />
-            電話：(O四九) 二七六二七二六<br />
-            董事長：釋廣心（游天木）<br />
-            經手人：釋徹空
-          </div>
+              <span class="temple-subtitle highlight">財團法人鎮國基金會</span
+              ><br />
+              會址：南投縣集集鎮廣明里鎮國巷101號<br />
+              電話：(O四九) 二七六二七二六<br />
+              董事長：釋廣心（游天木）<br />
+              經手人：釋徹空
+            </div>
           </div>
           <div class="footer-info">
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
@@ -68,7 +89,6 @@
             <p>本表單由系統自動生成(收執聯)，列印時間：{{ printTime }}</p>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -76,12 +96,12 @@
       <div class="config-header">
         <h3>🖨️ 打印配置</h3>
       </div>
-      
+
       <div class="config-body">
         <p class="label">選擇模板：</p>
         <el-radio-group v-model="activeTemplate" class="template-radio">
           <el-radio label="standard" border>📜 感謝狀</el-radio>
-          <el-radio label="stamp" border>🛡️ 印章版</el-radio>
+          <el-radio label="stamp" border>🛡️ 收據</el-radio>
         </el-radio-group>
 
         <el-divider />
@@ -89,7 +109,10 @@
         <div class="print-tips">
           <p><strong>提醒：</strong></p>
           <ul>
-            <li>紙張：JIS B6 (寛128mm x 高182mm)與國際標準 ISO 216 的 B6 (125mm x 176mm) 略有不同</li>
+            <li>
+              紙張：JIS B6 (寛128mm x 高182mm)與國際標準 ISO 216 的 B6 (125mm x
+              176mm) 略有不同
+            </li>
             <li>縮放：100%</li>
             <li>邊距：無 (None)</li>
           </ul>
@@ -98,10 +121,18 @@
 
       <el-divider />
       <div class="config-footer">
-        <el-button type="success" @click="handlePrintWithHtmlToImage" :loading="printing" size="large" class="full-width">
+        <el-button
+          type="success"
+          @click="handlePrintWithHtmlToImage"
+          :loading="printing"
+          size="large"
+          class="full-width"
+        >
           開始打印
         </el-button>
-        <el-button @click="handleClose" size="large" class="full-width">關閉頁面</el-button>
+        <el-button @click="handleClose" size="large" class="full-width"
+          >關閉頁面</el-button
+        >
       </div>
     </div>
   </div>
@@ -115,7 +146,7 @@ import * as htmlToImage from "html-to-image";
 import printJS from "print-js";
 
 // 模板切換狀態
-const activeTemplate = ref('standard');
+const activeTemplate = ref("standard");
 const printing = ref(false);
 
 const route = useRoute();
@@ -140,8 +171,12 @@ const currentDay = computed(() => new Date().getDate());
 const setPrintTime = () => {
   const now = new Date();
   printTime.value = now.toLocaleString("zh-TW", {
-    year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   });
 };
 
@@ -163,7 +198,10 @@ const convertToChinese = (num) => {
 
 const handlePrintWithHtmlToImage = async () => {
   const node = document.getElementById("receipt-capture-area");
-  const loading = ElLoading.service({ text: "正在渲染高清圖像...", background: "rgba(255, 255, 255, 0.9)" });
+  const loading = ElLoading.service({
+    text: "正在生成高清圖像...",
+    background: "rgba(255, 255, 255, 0.9)",
+  });
 
   try {
     printing.value = true;
@@ -171,7 +209,7 @@ const handlePrintWithHtmlToImage = async () => {
     await new Promise((resolve) => setTimeout(resolve, 400)); // 增加等待時間確保 Mac 渲染
 
     const dataUrl = await htmlToImage.toPng(node, {
-      pixelRatio: 3,
+      pixelRatio: 6,
       backgroundColor: "#ffffff",
       cacheBust: true,
       includeGraphics: true,
@@ -180,7 +218,8 @@ const handlePrintWithHtmlToImage = async () => {
     printJS({
       printable: dataUrl,
       type: "image",
-      style: "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
+      style:
+        "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
       imageStyle: "width:100%;",
     });
 
@@ -218,7 +257,8 @@ onMounted(() => {
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap");
 
 .font-kaiti {
-  font-family: "Kaiti TC", "Apple LiSung", "標楷體", "DFKai-SB", "Noto Serif TC", serif !important;
+  font-family:
+    "Kaiti TC", "Apple LiSung", "標楷體", "DFKai-SB", "Noto Serif TC", serif !important;
 }
 </style>
 
@@ -248,7 +288,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   padding: 24px;
-  box-shadow: -2px 0 8px rgba(0,0,0,0.05);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
 }
 
 .config-body {
@@ -264,10 +304,10 @@ onMounted(() => {
 
 .template-radio {
   margin: 20px 0;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            /* 桌面版 2 列 */
-            gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /* 桌面版 2 列 */
+  gap: 1rem;
 }
 
 .print-tips {
@@ -307,7 +347,7 @@ onMounted(() => {
   writing-mode: vertical-rl;
   -webkit-writing-mode: vertical-rl;
   border: 0.5pt solid #333;
-  background-color: #f56c6c0d; /* 淡紅色背景，增加印章感覺 */
+  background-color: #fff;
 }
 
 /* 印章模板特別樣式 */
@@ -320,7 +360,7 @@ onMounted(() => {
 .seal-box {
   width: 35mm;
   height: 35mm;
-  border: 2px dashed #f56c6c;
+  border: 0.5pt dashed #f56c6c;
   color: #f56c6c;
   display: flex;
   align-items: center;
@@ -328,6 +368,7 @@ onMounted(() => {
   text-align: center;
   font-size: 14pt;
   opacity: 0.5;
+  padding: 5px;
 }
 
 /* 元素細部樣式 */
@@ -364,7 +405,7 @@ onMounted(() => {
   font-size: 14pt;
   font-weight: bold;
   text-align: center;
-  letter-spacing: 5px;  
+  letter-spacing: 5px;
 }
 
 /* 頁腳資訊 */
