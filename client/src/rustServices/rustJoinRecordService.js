@@ -307,7 +307,7 @@ export class RustJoinRecordService {
         notes: payload.notes || "",
         discountAmount: 0, // 折扣金額
         paidAmount: 0, // 付款金額
-        needReceipt: false, // 需要收據 (根據活動類型決定，默認為 false)
+        needReceipt: false, // 需要收據 (根據活動類型決定，20260225修改定義默認為空值，值: "standard"=感謝狀, "stamp"=收據)
         receiptNumber: "", // 收據號碼
         receiptIssued: false, // 收據已開立
         receiptIssuedAt: "", // 收據開立日期

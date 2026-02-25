@@ -62,7 +62,7 @@
 
 **數據來源：**
 
-- `dashboardStore3.js`（匯總 registrations、joinRecords、activities）
+- `dashboardStore.js`（匯總 registrations、joinRecords、activities）
 
 ---
 
@@ -86,7 +86,7 @@ import { useActivityStore } from "../stores/activityStore.js";
 
 ```javascript
 // Store
-import { useDashboardStore3 } from "../stores/dashboardStore3.js";
+import { useDashboardStore } from "../stores/dashboardStore.js";
 
 // 主要 Computed（財務）
 - monthlyIncome: 本月收入
@@ -111,7 +111,7 @@ import { useDashboardStore3 } from "../stores/dashboardStore3.js";
 
 ## Store 設計
 
-### dashboardStore3.js 核心邏輯
+### dashboardStore.js 核心邏輯
 
 #### 數據初始化
 
@@ -203,9 +203,9 @@ const pendingPayments = computed(() => {
 ```vue
 <script setup>
 import { onMounted } from "vue";
-import { useDashboardStore3 } from "../stores/dashboardStore3.js";
+import { useDashboardStore } from "../stores/dashboardStore.js";
 
-const store = useDashboardStore3();
+const store = useDashboardStore();
 
 onMounted(async () => {
   await store.initialize();
