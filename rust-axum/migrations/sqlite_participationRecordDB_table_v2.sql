@@ -12,9 +12,9 @@ CREATE TABLE "participationRecordDB" (
     `discountAmount` integer null default '0',
     `finalAmount` integer null default '0',
     `paidAmount` integer null default '0',
-    `needReceipt` varchar(255) null default 'false', # 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+    `needReceipt` varchar(255) null default 'false', 
     `receiptNumber` varchar(255) null,
-    `receiptIssued` varchar(255) null default 'false',
+    `receiptIssued` varchar(255) null default '', # 經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
     `receiptIssuedAt` varchar(255) null,
     `receiptIssuedBy` varchar(255) null,
     `accountingState` varchar(255) null,

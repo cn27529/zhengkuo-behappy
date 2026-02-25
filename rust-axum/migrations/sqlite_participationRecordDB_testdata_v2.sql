@@ -33,9 +33,9 @@ INSERT INTO participationRecordDB (
   0,
   1600,
   1600,
-  '',
+  'false',
   'R2025010001',
-  'true',
+  'stamp', # 收據類型，"standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
   '2025-01-16T10:00:00.000Z',
   '櫃台小姐',
   'reconciled',

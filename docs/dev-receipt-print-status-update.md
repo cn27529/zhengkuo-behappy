@@ -10,9 +10,9 @@
 
 | 欄位名稱          | 類型         | 預設值  | 說明           |
 | ----------------- | ------------ | ------- | -------------- |
-| `needReceipt`     | varchar(255) | 'false' | 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。   |
+| `needReceipt`     | varchar(255) | 'false' | 是否需要收據   |
 | `receiptNumber`   | varchar(255) | null    | 收據編號       |
-| `receiptIssued`   | varchar(255) | 'false' | 收據是否已開立 |
+| `receiptIssued`   | varchar(255) | ''      | 收據是否已開立 |
 | `receiptIssuedAt` | varchar(255) | null    | 收據開立時間   |
 | `receiptIssuedBy` | varchar(255) | null    | 收據開立者     |
 
@@ -33,9 +33,9 @@ async updateByReceiptPrint(record) {
       record.activeTemplate === "standard" || record.activeTemplate === "stamp";
 
   const updateData = {
-    needReceipt: record.activeTemplate, // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+    needReceipt: "true",
     receiptNumber: `${record.id}A${record.activityId}R${record.registrationId}`,
-    receiptIssued: "true",
+    receiptIssued: record.activeTemplate, // 是否己開立收據。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
     receiptIssuedAt: DateUtils.getCurrentISOTime(),
       //receiptIssuedBy: authService.getCurrentUser(),
       receiptIssuedBy: authService.getUserName() || "沒有名稱", // 確保有名稱可用，否則使用預設值
@@ -58,10 +58,10 @@ async updateByReceiptPrint(record, context = {}) {
       record.activeTemplate === "standard" || record.activeTemplate === "stamp";
 
   const updateData = {
-    
-    needReceipt: record.activeTemplate, // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+
+    needReceipt: "true",
     receiptNumber: `${record.id}A${record.activityId}R${record.registrationId}`,
-    receiptIssued: "true",
+    receiptIssued: record.activeTemplate, // 是否己開立收據。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
     receiptIssuedAt: DateUtils.getCurrentISOTime(),
       //receiptIssuedBy: authService.getCurrentUser(),
       receiptIssuedBy: authService.getUserName() || "沒有名稱", // 確保有名稱可用，否則使用預設值
@@ -224,9 +224,9 @@ sequenceDiagram
   "id": 123,
   "activityId": 1,
   "registrationId": 456,
-  "needReceipt": "",　// 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+  "needReceipt": "false",
   "receiptNumber": null,
-  "receiptIssued": "false",
+  "receiptIssued": "", // 是否己開立收據。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
   "receiptIssuedAt": null,
   "receiptIssuedBy": null
 }
@@ -239,9 +239,9 @@ sequenceDiagram
   "id": 123,
   "activityId": 1,
   "registrationId": 456,
-  "needReceipt": "",　// 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+  "needReceipt": "true",
   "receiptNumber": "123A1R456",
-  "receiptIssued": "true",
+  "receiptIssued": "", // 是否己開立收據。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
   "receiptIssuedAt": "2026-02-24T20:02:11.594+08:00",
   "receiptIssuedBy": "admin"
 }

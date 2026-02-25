@@ -236,7 +236,7 @@ const handlePrintWithHtmlToImage = async () => {
   const node = document.getElementById("receipt-capture-area");
   const loading = ElLoading.service({
     text: "正在生成高清圖像...",
-    background: "rgba(240, 242, 245, 1)",
+    background: "rgba(240, 242, 245, 0.8)",
   });
 
   try {
@@ -257,16 +257,16 @@ const handlePrintWithHtmlToImage = async () => {
     printJS({
       printable: dataUrl,
       type: "image",
-      style: "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
+      style:
+        "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
       imageStyle: "width:100%;",
     });
 
     // 重點：列印視窗跳出後，主視窗直接進入確認狀態
     // 不等回調，直接手動喚起彈窗
     setTimeout(() => {
-        handlePostPrintCheck();
+      handlePostPrintCheck();
     }, 500); // 給予 500 毫秒讓列印視窗先彈出來，確認框會在它後方/下方準備好
-
   } catch (error) {
     console.error("打印失敗:", error);
     loading.close();
@@ -279,14 +279,13 @@ const handlePrintWithHtmlToImage = async () => {
 /**
  * 打印視窗關閉後的確認邏輯
  */
-const handlePostPrintCheck = async () => {  
-
+const handlePostPrintCheck = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
       confirmButtonText: "已打印完成",
       cancelButtonText: "取消打印",
       type: "question",
-      center: true,      
+      center: true,
     });
 
     // 使用者確認已打印完成，更新打印狀態
@@ -306,10 +305,10 @@ const handlePostPrintCheck = async () => {
       });
     }
   } catch {
-    ElMessage({
-      type: "info",
-      message: "若打印失敗，請檢查打印機連線後重試。",
-    });
+    // ElMessage({
+    //   type: "info",
+    //   message: "若打印失敗，請檢查打印機連線後重試。",
+    // });
   }
 };
 

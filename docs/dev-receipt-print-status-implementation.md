@@ -70,9 +70,9 @@
 通過 serviceAdapter 調用對應的 service
     ↓
 更新資料庫欄位：
-  - needReceipt: "" 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+  - needReceipt: "false" 是否需要收據
   - receiptNumber: "{id}A{activityId}R{registrationId}"
-  - receiptIssued: "true"
+  - receiptIssued: "" 收據已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
   - receiptIssuedAt: ISO 時間戳
   - receiptIssuedBy: 當前用戶
     ↓
@@ -83,9 +83,9 @@
 
 | 欄位            | 更新值                               | 說明           |
 | --------------- | ------------------------------------ | -------------- |
-| needReceipt     | "true"                               | 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。   |
+| needReceipt     | "true"                               | 是否需要收據   |
 | receiptNumber   | "{id}A{activityId}R{registrationId}" | 收據編號       |
-| receiptIssued   | "true"                               | 標記收據已開立 |
+| receiptIssued   | "stamp"                              | 標記收據已開立 |
 | receiptIssuedAt | ISO 時間戳                           | 收據開立時間   |
 | receiptIssuedBy | 當前用戶                             | 收據開立者     |
 

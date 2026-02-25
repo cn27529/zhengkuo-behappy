@@ -256,8 +256,8 @@
           </template>
         </el-table-column>
 
-        <!-- 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。 -->
-        <el-table-column label="單據" width="100" align="center">
+        <!-- 是否需要收據 -->
+        <el-table-column label="需要收據" width="100" align="center">
           <template #default="{ row }">
             <el-select
               v-model="row.needReceipt"
@@ -266,6 +266,25 @@
             >
               <el-option
                 v-for="option in stateConfigs.needReceipt.options"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
+            </el-select>
+          </template>
+        </el-table-column>
+
+        <!-- 經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。 -->
+        <!-- 收據狀態 -->
+        <el-table-column label="收據狀態" width="100" align="center">
+          <template #default="{ row }">
+            <el-select
+              v-model="row.receiptIssued"
+              size="small"
+              @change="markAsModified(row.id, 'receiptIssued')"
+            >
+              <el-option
+                v-for="option in stateConfigs.receiptIssued.options"
                 :key="option.value"
                 :label="option.label"
                 :value="option.value"
@@ -291,24 +310,6 @@
             >
               <el-option
                 v-for="option in stateConfigs.paymentState.options"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-              />
-            </el-select>
-          </template>
-        </el-table-column>
-
-        <!-- 收據狀態 -->
-        <el-table-column label="收據狀態" width="100" align="center">
-          <template #default="{ row }">
-            <el-select
-              v-model="row.receiptIssued"
-              size="small"
-              @change="markAsModified(row.id, 'receiptIssued')"
-            >
-              <el-option
-                v-for="option in stateConfigs.receiptIssued.options"
                 :key="option.value"
                 :label="option.label"
                 :value="option.value"
@@ -548,9 +549,10 @@ const handleSaveSingle = async (row) => {
     const updates = {
       state: row.state,
       paymentState: row.paymentState,
-      receiptIssued: row.receiptIssued,
+      receiptIssued: row.receiptIssued, // 經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       accountingState: row.accountingState,
       paymentMethod: row.paymentMethod,
+      needReceipt: row.needReceipt, // 是否需要收據
     };
 
     const result = await queryStore.updateRecordStates(row.id, updates);

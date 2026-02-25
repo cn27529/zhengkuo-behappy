@@ -23,9 +23,9 @@
   "discountAmount": 200,                     // 折扣金額
   "finalAmount": 2000,                       // 最終金額
   "paidAmount": 2000,                        // 已付金額
-  "needReceipt": "",                       // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+  "needReceipt": false,                       // 是否需要收據
   "receiptNumber": "R2025010001",            // 收據號碼
-  "receiptIssued": true,                     // 收據是否已開立
+  "receiptIssued": "stamp",                     // 收據是否已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
   "receiptIssuedAt": "2025-01-16T10:00:00.000Z", // 收據開立時間
   "receiptIssuedBy": "櫃台小姐",              // 收據開立人員(也稱為經手人)
   "accountingState": "reconciled",           // 會計狀態：reconciled=已對帳，pending=待處理

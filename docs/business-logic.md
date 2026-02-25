@@ -304,9 +304,9 @@ monthlyStats = {
 
 **收據資訊：**
 
-- `needReceipt` - 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+- `needReceipt` - 是否需要收據。
 - `receiptNumber` - 收據號碼（格式：RYYYYMMNNNN）
-- `receiptIssued` - 收據是否已開立
+- `receiptIssued` - 收據是否已開立，經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
 - `receiptIssuedAt` - 收據開立日期
 - `receiptIssuedBy` - 收據開立者
 
@@ -328,22 +328,22 @@ monthlyStats = {
 
 系統支援以下活動項目：
 
-| 項目代碼 | 項目名稱   | 單價 | 資料來源            | 說明                           |
-| -------- | ---------- | ---- | ------------------- | ------------------------------ |
-| chaodu   | 超度/超薦 | 1000 | salvation.ancestors | 祖先超度                       |
-| survivors | 陽上人    | 0    | salvation.survivors | 陽上人登記（免費）             |
-| qifu     | 消災祈福   | 300  | blessing.persons    | 消災祈福                       |
-| diandeng | 點燈       | 600  | blessing.persons    | 點燈祈福，含燈種記錄           |
-| xiaozai  | 固定消災   | 100  | blessing.persons    | 固定消災                       |
-| pudu     | 中元普度   | 1200 | blessing.persons    | 中元普度法會                   |
+| 項目代碼  | 項目名稱  | 單價 | 資料來源            | 說明                 |
+| --------- | --------- | ---- | ------------------- | -------------------- |
+| chaodu    | 超度/超薦 | 1000 | salvation.ancestors | 祖先超度             |
+| survivors | 陽上人    | 0    | salvation.survivors | 陽上人登記（免費）   |
+| qifu      | 消災祈福  | 300  | blessing.persons    | 消災祈福             |
+| diandeng  | 點燈      | 600  | blessing.persons    | 點燈祈福，含燈種記錄 |
+| xiaozai   | 固定消災  | 100  | blessing.persons    | 固定消災             |
+| pudu      | 中元普度  | 1200 | blessing.persons    | 中元普度法會         |
 
 **點燈燈種選項：**
 
-| 燈種代碼 | 燈種名稱 | 價格 | 說明                       |
-| -------- | -------- | ---- | -------------------------- |
-| guangming | 光明燈  | 600  | 記錄用途，統一價格 $600    |
-| taisui   | 太歲燈   | 800  | 記錄用途，統一價格 $800    |
-| yuanchen | 元辰燈   | 1000 | 記錄用途，統一價格 $1000   |
+| 燈種代碼  | 燈種名稱 | 價格 | 說明                     |
+| --------- | -------- | ---- | ------------------------ |
+| guangming | 光明燈   | 600  | 記錄用途，統一價格 $600  |
+| taisui    | 太歲燈   | 800  | 記錄用途，統一價格 $800  |
+| yuanchen  | 元辰燈   | 1000 | 記錄用途，統一價格 $1000 |
 
 **點燈業務規則：**
 
@@ -733,7 +733,9 @@ if (contact.relationship === "其它" && !contact.otherRelationship.trim()) {
 // 戶長數量檢查
 const householdHeads = blessing.persons.filter((p) => p.isHouseholdHead);
 if (householdHeads.length > maxHouseholdHeads) {
-  errors.push(`戶長數量超過限制 (${householdHeads.length}/${maxHouseholdHeads})`);
+  errors.push(
+    `戶長數量超過限制 (${householdHeads.length}/${maxHouseholdHeads})`,
+  );
 }
 
 // 戶長必填檢查（有消災人員時）
@@ -751,8 +753,8 @@ if (blessingAddress.trim() && filledBlessingPersons === 0) {
 
 // 消災人員資料完整性（多筆時）
 if (allBlessingPersons.length >= 2) {
-  const hasIncompleteData = allBlessingPersons.some(p => 
-    !p.name?.trim() || !p.zodiac?.trim()
+  const hasIncompleteData = allBlessingPersons.some(
+    (p) => !p.name?.trim() || !p.zodiac?.trim(),
   );
   if (hasIncompleteData) {
     errors.push("消災人員中有未填寫完整的條目，請填寫或刪除空白條目");
@@ -774,7 +776,7 @@ if (survivorsCount > maxSurvivors) {
 }
 
 // 超度地址與資料一致性
-if ((filledAncestors + filledSurvivors) > 0 && !salvationAddress.trim()) {
+if (filledAncestors + filledSurvivors > 0 && !salvationAddress.trim()) {
   errors.push("已填寫祖先或陽上人，超度地址為必填");
 }
 if (salvationAddress.trim() && filledAncestors === 0) {
@@ -788,14 +790,14 @@ if (filledAncestors > 0 && filledSurvivors === 0) {
 
 // 資料完整性檢查（多筆時）
 if (allAncestors.length >= 2) {
-  const hasIncompleteSurname = allAncestors.some(a => !a.surname?.trim());
+  const hasIncompleteSurname = allAncestors.some((a) => !a.surname?.trim());
   if (hasIncompleteSurname) {
     errors.push("祖先名單中有未填寫姓氏的條目，請填寫或刪除空白條目");
   }
 }
 
 if (allSurvivors.length >= 2) {
-  const hasIncompleteName = allSurvivors.some(s => !s.name?.trim());
+  const hasIncompleteName = allSurvivors.some((s) => !s.name?.trim());
   if (hasIncompleteName) {
     errors.push("陽上人名單中有未填寫姓名的條目，請填寫或刪除空白條目");
   }

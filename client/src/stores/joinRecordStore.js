@@ -177,9 +177,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       discountAmount: 0, // 折扣金額
       finalAmount: totalAmount, // 最終金額
       paidAmount: 0, // 付款金額
-      needReceipt: "", // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+      needReceipt: false, // 是否需要收據。
       receiptNumber: "", // 收據號碼
-      receiptIssued: false, // 收據已開立
+      receiptIssued: "", // 收據已開立，經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       receiptIssuedAt: "", // 收據開立日期
       receiptIssuedBy: "", // 收據開立者
       accountingState: "pending", // pending=未沖帳,reconciled=已沖帳

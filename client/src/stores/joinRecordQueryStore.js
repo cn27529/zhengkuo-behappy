@@ -419,9 +419,17 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
   // 狀態欄位配置
   const stateConfigs = computed(() => ({
-    
-    needReceipt:{
-      label: "需要收據類型",
+    needReceipt: {
+      label: "需要收據",
+      options: [
+        { value: "1", label: "是" },
+        { value: "0", label: "否" },
+      ],
+    },
+
+    // 經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
+    receiptIssued: {
+      label: "己開立收據",
       options: [
         { value: "", label: "未選擇" },
         { value: "standard", label: "感謝狀" },
@@ -445,14 +453,14 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
         { value: "paid", label: "已付款" },
       ],
     },
-    receiptIssued: {
-      label: "收據狀態",
-      options: [
-        { value: "", label: "未選擇" },
-        { value: "false", label: "未開立" },
-        { value: "true", label: "已開立" },
-      ],
-    },
+    // receiptIssued: {
+    //   label: "收據狀態",
+    //   options: [
+    //     { value: "", label: "未選擇" },
+    //     { value: "false", label: "未開立" },
+    //     { value: "true", label: "已開立" },
+    //   ],
+    // },
     accountingState: {
       label: "會計狀態",
       options: [

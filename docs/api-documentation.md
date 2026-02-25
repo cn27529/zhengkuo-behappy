@@ -511,9 +511,7 @@
           "quantity": 1,
           "subtotal": 600,
           "source": "blessing.persons",
-          "sourceData": [
-            { "id": 1, "name": "王小明", "zodiac": "龍" }
-          ],
+          "sourceData": [{ "id": 1, "name": "王小明", "zodiac": "龍" }],
           "sourceAddress": "台北市信義區",
           "lampDetails": [
             {
@@ -535,9 +533,9 @@
       "discountAmount": 0,
       "finalAmount": 2600,
       "paidAmount": 2600,
-      "needReceipt": "",　// 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+      "needReceipt": "false", // 預設 false
       "receiptNumber": "R2025010001",
-      "receiptIssued": true,
+      "receiptIssued": "", // 經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       "receiptIssuedAt": "2026-01-21T10:00:00Z",
       "receiptIssuedBy": "admin",
       "paymentState": "paid",
