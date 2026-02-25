@@ -304,7 +304,7 @@ monthlyStats = {
 
 **收據資訊：**
 
-- `needReceipt` - 是否需要收據
+- `needReceipt` - 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
 - `receiptNumber` - 收據號碼（格式：RYYYYMMNNNN）
 - `receiptIssued` - 收據是否已開立
 - `receiptIssuedAt` - 收據開立日期

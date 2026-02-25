@@ -229,6 +229,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   // 需收據但尚未開立
   const receiptPendingCount = computed(() => {
+    // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
     return joinRecords.value.filter(
       (record) =>
         normalizeBool(record?.needReceipt) &&

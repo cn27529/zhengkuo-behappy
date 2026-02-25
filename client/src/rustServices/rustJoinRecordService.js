@@ -273,8 +273,8 @@ export class RustJoinRecordService {
       record.activeTemplate === "standard" || record.activeTemplate === "stamp";
 
     const updateData = {
-      //needReceipt: isNeedReceipt ? "true" : "false" || "false", // 預設為 "false"
-      needReceipt: record.activeTemplate, // 直接使用 activeTemplate 的值來區分不同的收據需求
+      // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
+      needReceipt: record.activeTemplate || "",
       receiptNumber: `${record.id}A${record.activityId}R${record.registrationId}`,
       receiptIssued: "true",
       receiptIssuedAt: DateUtils.getCurrentISOTime(),
@@ -307,7 +307,7 @@ export class RustJoinRecordService {
         notes: payload.notes || "",
         discountAmount: 0, // 折扣金額
         paidAmount: 0, // 付款金額
-        needReceipt: false, // 需要收據 (根據活動類型決定，20260225修改定義默認為空值，值: "standard"=感謝狀, "stamp"=收據)
+        needReceipt: "", // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
         receiptNumber: "", // 收據號碼
         receiptIssued: false, // 收據已開立
         receiptIssuedAt: "", // 收據開立日期

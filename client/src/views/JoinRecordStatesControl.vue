@@ -256,6 +256,24 @@
           </template>
         </el-table-column>
 
+        <!-- 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。 -->
+        <el-table-column label="單據" width="100" align="center">
+          <template #default="{ row }">
+            <el-select
+              v-model="row.needReceipt"
+              size="small"
+              @change="markAsModified(row.id, 'needReceipt')"
+            >
+              <el-option
+                v-for="option in stateConfigs.needReceipt.options"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
+            </el-select>
+          </template>
+        </el-table-column>
+
         <!-- 收據號碼 -->
         <el-table-column label="收據號碼" width="100" align="center">
           <template #default="{ row }">

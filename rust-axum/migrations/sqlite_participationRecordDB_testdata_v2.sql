@@ -33,7 +33,7 @@ INSERT INTO participationRecordDB (
   0,
   1600,
   1600,
-  'true',
+  '',
   'R2025010001',
   'true',
   '2025-01-16T10:00:00.000Z',

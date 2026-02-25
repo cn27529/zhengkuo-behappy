@@ -987,7 +987,7 @@ const handleSubmitForm = async () => {
         duration: 3000,
       });
       setTimeout(() => {
-        router.back();
+        //router.back();
       }, 1500);
 
       // 重置選擇（保留活動選擇）

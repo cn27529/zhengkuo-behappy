@@ -419,9 +419,19 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
   // 狀態欄位配置
   const stateConfigs = computed(() => ({
+    
+    needReceipt:{
+      label: "需要收據類型",
+      options: [
+        { value: "", label: "未選擇" },
+        { value: "standard", label: "感謝狀" },
+        { value: "stamp", label: "收據" },
+      ],
+    },
     state: {
       label: "記錄狀態",
       options: [
+        { value: "", label: "未選擇" },
         { value: "pending", label: "待處理" },
         { value: "confirmed", label: "已確認" },
         { value: "completed", label: "已完成" },
@@ -430,6 +440,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     paymentState: {
       label: "付款狀態",
       options: [
+        { value: "", label: "未選擇" },
         { value: "unpaid", label: "未付款" },
         { value: "paid", label: "已付款" },
       ],
@@ -437,6 +448,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     receiptIssued: {
       label: "收據狀態",
       options: [
+        { value: "", label: "未選擇" },
         { value: "false", label: "未開立" },
         { value: "true", label: "已開立" },
       ],
@@ -444,6 +456,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     accountingState: {
       label: "會計狀態",
       options: [
+        { value: "", label: "未選擇" },
         { value: "pending", label: "待處理" },
         { value: "reconciled", label: "已對帳" },
       ],

@@ -10,7 +10,7 @@
 
 | 欄位名稱          | 類型         | 預設值  | 說明           |
 | ----------------- | ------------ | ------- | -------------- |
-| `needReceipt`     | varchar(255) | 'false' | 是否需要收據   |
+| `needReceipt`     | varchar(255) | 'false' | 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。   |
 | `receiptNumber`   | varchar(255) | null    | 收據編號       |
 | `receiptIssued`   | varchar(255) | 'false' | 收據是否已開立 |
 | `receiptIssuedAt` | varchar(255) | null    | 收據開立時間   |
@@ -33,8 +33,7 @@ async updateByReceiptPrint(record) {
       record.activeTemplate === "standard" || record.activeTemplate === "stamp";
 
   const updateData = {
-    //needReceipt: isNeedReceipt ? "true" : "false" || "false", // 預設為 "false"
-      needReceipt: record.activeTemplate, // 直接使用 activeTemplate 的值來區分不同的收據需求
+    needReceipt: record.activeTemplate, // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
     receiptNumber: `${record.id}A${record.activityId}R${record.registrationId}`,
     receiptIssued: "true",
     receiptIssuedAt: DateUtils.getCurrentISOTime(),
@@ -59,8 +58,8 @@ async updateByReceiptPrint(record, context = {}) {
       record.activeTemplate === "standard" || record.activeTemplate === "stamp";
 
   const updateData = {
-    //needReceipt: isNeedReceipt ? "true" : "false" || "false", // 預設為 "false"
-      needReceipt: record.activeTemplate, // 直接使用 activeTemplate 的值來區分不同的收據需求
+    
+    needReceipt: record.activeTemplate, // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
     receiptNumber: `${record.id}A${record.activityId}R${record.registrationId}`,
     receiptIssued: "true",
     receiptIssuedAt: DateUtils.getCurrentISOTime(),
@@ -225,7 +224,7 @@ sequenceDiagram
   "id": 123,
   "activityId": 1,
   "registrationId": 456,
-  "needReceipt": "false",
+  "needReceipt": "",　// 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
   "receiptNumber": null,
   "receiptIssued": "false",
   "receiptIssuedAt": null,
@@ -240,7 +239,7 @@ sequenceDiagram
   "id": 123,
   "activityId": 1,
   "registrationId": 456,
-  "needReceipt": "true",
+  "needReceipt": "",　// 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
   "receiptNumber": "123A1R456",
   "receiptIssued": "true",
   "receiptIssuedAt": "2026-02-24T20:02:11.594+08:00",

@@ -236,13 +236,13 @@ const handlePrintWithHtmlToImage = async () => {
   const node = document.getElementById("receipt-capture-area");
   const loading = ElLoading.service({
     text: "正在生成高清圖像...",
-    background: "rgba(240, 242, 245, 1)", // 使用與背景相同的顏色，視覺更統一
+    background: "rgba(240, 242, 245, 1)",
   });
 
   try {
     printing.value = true;
     await document.fonts.ready;
-    await new Promise((resolve) => setTimeout(resolve, 400)); // 增加等待時間確保 Mac 渲染
+    await new Promise((resolve) => setTimeout(resolve, 400));
 
     const dataUrl = await htmlToImage.toPng(node, {
       pixelRatio: 6,
@@ -251,25 +251,27 @@ const handlePrintWithHtmlToImage = async () => {
       includeGraphics: true,
     });
 
+    loading.close();
+
+    // 先執行列印
     printJS({
       printable: dataUrl,
       type: "image",
-      style:
-        "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
+      style: "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
       imageStyle: "width:100%;",
-      // --- 新增回調函數 ---
-      onPrintDialogClose: async () => {
-        await handlePostPrintCheck();
-      },
     });
 
-    // ElMessage.success("收據生成成功");
-    ElMessage.success("已傳送至打印預覽");
+    // 重點：列印視窗跳出後，主視窗直接進入確認狀態
+    // 不等回調，直接手動喚起彈窗
+    setTimeout(() => {
+        handlePostPrintCheck();
+    }, 500); // 給予 500 毫秒讓列印視窗先彈出來，確認框會在它後方/下方準備好
+
   } catch (error) {
     console.error("打印失敗:", error);
+    loading.close();
     ElMessage.error("轉換失敗，請重新嘗試");
   } finally {
-    loading.close();
     printing.value = false;
   }
 };
@@ -277,13 +279,14 @@ const handlePrintWithHtmlToImage = async () => {
 /**
  * 打印視窗關閉後的確認邏輯
  */
-const handlePostPrintCheck = async () => {
+const handlePostPrintCheck = async () => {  
+
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
       confirmButtonText: "已打印完成",
       cancelButtonText: "取消打印",
       type: "question",
-      center: true,
+      center: true,      
     });
 
     // 使用者確認已打印完成，更新打印狀態

@@ -30,7 +30,7 @@
   "discountAmount": 200,         // 折扣金額
   "finalAmount": 2000,           // 最終金額
   "paidAmount": 2000,            // 已付金額
-  "needReceipt": true,           // 是否需要收據
+  "needReceipt": "",           // 是否需要收據。經20260225決定修改定義默認為空值，有值時 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"。
   "receiptNumber": "R2025010001", // 收據號碼
   "paymentState": "paid",        // 付款狀態
   "accountingState": "reconciled" // 會計狀態
