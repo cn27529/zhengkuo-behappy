@@ -194,16 +194,6 @@ const currentMonth = computed(() => new Date().getMonth() + 1);
 const currentDay = computed(() => new Date().getDate());
 
 const setPrintTime = () => {
-  // const now = new Date();
-  // printTime.value = now.toLocaleString("zh-TW", {
-  //   year: "numeric",
-  //   month: "2-digit",
-  //   day: "2-digit",
-  //   hour: "2-digit",
-  //   minute: "2-digit",
-  //   second: "2-digit",
-  // });
-
   printTime.value = DateUtils.getCurrentTimestamp();
 };
 
@@ -253,7 +243,7 @@ const handlePrintWithHtmlToImage = async () => {
 
     loading.close();
 
-    // 先執行列印
+    // 先執行打印
     printJS({
       printable: dataUrl,
       type: "image",
@@ -262,11 +252,11 @@ const handlePrintWithHtmlToImage = async () => {
       imageStyle: "width:100%;",
     });
 
-    // 重點：列印視窗跳出後，主視窗直接進入確認狀態
+    // 重點：打印視窗跳出後，主視窗直接進入確認狀態
     // 不等回調，直接手動喚起彈窗
     setTimeout(() => {
       handlePostPrintCheck();
-    }, 500); // 給予 500 毫秒讓列印視窗先彈出來，確認框會在它後方/下方準備好
+    }, 500); // 給予 500 毫秒讓打印視窗先彈出來，確認框會在它後方/下方準備好
   } catch (error) {
     console.error("打印失敗:", error);
     loading.close();
@@ -282,13 +272,13 @@ const handlePrintWithHtmlToImage = async () => {
 const handlePostPrintCheck = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
-      confirmButtonText: "已打印完成",
+      confirmButtonText: "巳打印完成",
       cancelButtonText: "取消打印",
       type: "question",
       center: true,
     });
 
-    // 使用者確認已打印完成，更新打印狀態
+    // 使用者確認巳打印完成，更新打印狀態
     record.value.activeTemplate = activeTemplate.value;
     // 更新收據打印狀態
     const result = await printStore.updateReceiptPrintStatus(record.value);
@@ -296,7 +286,7 @@ const handlePostPrintCheck = async () => {
     if (result?.success) {
       ElMessage({
         type: "success",
-        message: result?.message || "已記錄打印完成狀態。",
+        message: result?.message || "記錄巳打印完成狀態。👍",
       });
     } else {
       ElMessage({
@@ -505,8 +495,6 @@ onMounted(() => {
   color: #909399;
   font-size: 8px;
 }
-
-
 
 .config-body {
   /* flex: 1; */

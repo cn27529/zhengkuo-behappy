@@ -7,16 +7,19 @@
 ## 功能特點
 
 ### 1. 列印頁面設計
+
 - **簡約設計**: 參考 `RegistrationPrint.vue` 的設計模式，採用純粹的列印樣式
 - **無多餘CSS**: 避免複雜的CSS影響列印品質，確保各種列印機的相容性
 - **響應式設計**: 支援螢幕預覽和列印輸出兩種模式
 
 ### 2. 數據結構適配
+
 - **聯絡人信息**: 顯示姓名、手機、電話、關係等基本信息
 - **參加項目**: 展示項目名稱、數量、金額、地址等詳細信息
 - **參加者資料**: 詳細列出每個項目的參加者姓名、生肖、備註等
 
 ### 3. 列印功能
+
 - **瀏覽器原生列印**: 使用 `window.print()` 實現列印功能
 - **PDF輸出**: 支援透過瀏覽器列印對話框輸出為PDF
 - **圖片輸出**: 支援輸出為PNG圖片格式
@@ -35,6 +38,7 @@ client/src/views/
 ### 1. JoinRecordPrint.vue 組件
 
 #### 主要功能
+
 - **數據載入**: 從 URL 參數和 sessionStorage 載入列印數據
 - **頁面渲染**: 根據數據結構渲染列印內容
 - **列印控制**: 提供返回和列印按鈕
@@ -60,6 +64,7 @@ const handlePrint = () => {
 ```
 
 #### 樣式設計
+
 - **@media print**: 專門的列印樣式，隱藏控制按鈕，優化列印效果
 - **@media screen**: 螢幕預覽樣式，提供良好的預覽體驗
 - **響應式表格**: 自適應不同內容長度的表格設計
@@ -67,22 +72,28 @@ const handlePrint = () => {
 ### 2. JoinRecordList.vue 更新
 
 #### 列印功能整合
+
 ```javascript
 const handlePrint = (item) => {
-  const printId = `print_join_record_${item.id}_${Math.floor(Math.random() * 1000)}`;
-  sessionStorage.setItem(printId, JSON.stringify(item));
-  
+  const recordId = item.id;
+  const printData = JSON.stringify(item);
+  const isoStr = DateUtils.getCurrentISOTime();
+
+  sessionStorage.setItem(printId, printData);
+
   router.push({
     path: "/join-record-print",
     query: {
       print_id: printId,
-      print_data: JSON.stringify(item),
+      print_data: printData,
+      iso_str: isoStr,
     },
   });
 };
 ```
 
 #### 按鈕啟用
+
 - 移除列印按鈕的 `disabled` 屬性
 - 實現完整的列印流程
 
@@ -111,22 +122,26 @@ const handlePrint = (item) => {
 ## 列印樣式優化
 
 ### 1. 頁面設置
+
 - **紙張大小**: A4 (21cm x 29.7cm)
 - **邊距**: 1cm
 - **字體**: Microsoft JhengHei (微軟正黑體)
 
 ### 2. 表格設計
+
 - **邊框**: 1pt 實線邊框
 - **間距**: 適當的內邊距確保可讀性
 - **對齊**: 文字居中，地址和備註靠左對齊
 
 ### 3. 分頁控制
+
 - **避免分頁**: 使用 `page-break-inside: avoid` 避免表格被分頁切斷
 - **內容分組**: 合理分組內容，確保相關信息在同一頁
 
 ## 使用方式
 
 ### 1. 基本列印流程
+
 1. 進入「活動參加記錄查詢」頁面
 2. 搜尋或瀏覽記錄列表
 3. 點擊記錄右側的「🖨️」列印按鈕
@@ -135,22 +150,26 @@ const handlePrint = (item) => {
 6. 在瀏覽器列印對話框中選擇列印機或儲存為PDF
 
 ### 2. 返回操作
+
 - 點擊「← 返回」按鈕回到記錄列表
 - 系統會自動清理暫存的列印數據
 
 ## 技術特點
 
 ### 1. 數據安全
+
 - 使用 sessionStorage 暫存列印數據
 - 頁面離開時自動清理暫存數據
 - 防止數據洩露和記憶體洩漏
 
 ### 2. 錯誤處理
+
 - 完整的錯誤捕獲和用戶提示
 - 數據格式驗證
 - 載入失敗的回退機制
 
 ### 3. 性能優化
+
 - 延遲載入組件
 - 最小化CSS影響
 - 高效的數據傳遞機制
@@ -158,16 +177,19 @@ const handlePrint = (item) => {
 ## 擴展功能
 
 ### 1. 多格式輸出
+
 - PDF下載
 - Excel匯出
 - 圖片輸出
 - 純文字格式
 
 ### 2. 批量列印
+
 - 支援選擇多筆記錄批量列印
 - 自動分頁處理
 
 ### 3. 自定義樣式
+
 - 可配置的列印樣式
 - 企業標識和浮水印支援
 

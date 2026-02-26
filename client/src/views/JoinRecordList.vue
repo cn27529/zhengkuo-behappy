@@ -252,7 +252,7 @@
             </el-tooltip>
 
             <el-tooltip content="收據打印" placement="top">
-              <el-button type="success" circle @click="handleReceipt(row)">
+              <el-button type="success" circle @click="handleReceiptPrint(row)">
                 🖨️
               </el-button>
             </el-tooltip>
@@ -479,7 +479,7 @@ const handlePrint = (item) => {
 };
 
 // 收據打印
-const handleReceipt = (item) => {
+const handleReceiptPrint = (item) => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(item);

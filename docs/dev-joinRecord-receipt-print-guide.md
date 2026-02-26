@@ -33,16 +33,17 @@
 
 ```javascript
 // 收據打印
-const handleReceipt = (item) => {
+const handleReceiptPrint = (item) => {
   try {
+    const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(item);
-    const printId = `receipt_${item.id}_${Date.now()}`;
+    const printId = `receipt_${item.id}_${isoStr}`;
 
     sessionStorage.setItem(printId, printData);
 
     router.push({
       path: "/join-record-receipt-print",
-      query: { print_id: printId, print_data: printData },
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);
@@ -285,7 +286,7 @@ const handlePostPrintCheck = () => {
     .then(() => {
       ElMessage({
         type: "success",
-        message: "已記錄打印完成狀態。",
+        message: "記錄巳打印完成狀態。",
       });
       // 可擴展：更新後端打印狀態
       // await updatePrintStatus(record.value.id);
@@ -799,7 +800,7 @@ await new Promise((resolve) => setTimeout(resolve, 400));
 
 ### 4. 打印狀態追蹤
 
-打印完成後確認機制，可擴展為後端狀態更新：
+巳打印完成後確認機制，可擴展為後端狀態更新：
 
 ```javascript
 const handlePostPrintCheck = () => {

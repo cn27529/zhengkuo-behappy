@@ -3,7 +3,7 @@
   <div class="print-page-container">
     <div class="preview-section">
       <div class="print-join-record">
-        <!-- 列印內容 -->
+        <!-- 打印內容 -->
         <div class="print-content" id="print-content">
           <!-- 表頭 -->
           <div class="print-header">
@@ -186,18 +186,18 @@
           <!-- 頁尾 -->
           <div class="print-footer">
             <div class="print-meta">
-              <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+              <p>本表單由系統自動生成，打印時間：{{ printTime }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="config-sidebar">
-      <!-- 列印控制欄（僅在預覽時顯示） -->
+      <!-- 打印控制欄（僅在預覽時顯示） -->
       <div class="print-controls" v-if="!isPrinting">
         <div class="controls">
           <el-button type="primary" @click="handlePrint" size="large"
-            >🖨️ 列印詳情</el-button
+            >🖨️ 打印詳情</el-button
           >
         </div>
         <div class="controls">
@@ -244,46 +244,46 @@ const getParticipantNames = (sourceData) => {
     .filter((name) => name && name !== "未知");
 };
 
-// 載入列印數據
+// 載入打印數據
 const loadPrintData = () => {
   try {
     const urlParams = new URLSearchParams(window.location.search);
     printId.value = urlParams.get("print_id");
     const printData = urlParams.get("print_data");
 
-    console.log("列印數據，ID:", printId.value);
-    console.log("列印數據，數據:", printData);
+    console.log("打印數據，ID:", printId.value);
+    console.log("打印數據，數據:", printData);
 
     if (!printId.value) {
-      throw new Error("無效的列印ID");
+      throw new Error("無效的打印ID");
     }
 
     const storedData =
       sessionStorage.getItem(printId.value) ||
       decodeURIComponent(printData || "null");
 
-    console.log("獲取的列印數據:", storedData);
+    console.log("獲取的打印數據:", storedData);
 
     if (!storedData || storedData === "undefined") {
-      ElMessage.error("找不到列印數據或資料無效，請返回重新操作");
+      ElMessage.error("找不到打印數據或資料無效，請返回重新操作");
       return;
     }
 
     let parsed = {};
     try {
       parsed = JSON.parse(storedData);
-      console.log("解析後的列印數據:", parsed);
+      console.log("解析後的打印數據:", parsed);
       printContent.value = parsed;
       if (!parsed || typeof parsed !== "object") {
-        throw new Error("解析後的列印數據不是有效對象");
+        throw new Error("解析後的打印數據不是有效對象");
       }
     } catch (e) {
-      console.error("解析列印數據失敗，可能格式錯誤", {
+      console.error("解析打印數據失敗，可能格式錯誤", {
         printId: printId.value,
         storedData,
         error: e,
       });
-      throw new Error("列印數據格式錯誤");
+      throw new Error("打印數據格式錯誤");
     }
 
     // 設定 document.title
@@ -296,12 +296,12 @@ const loadPrintData = () => {
       console.warn("設定 document.title 失敗:", e);
     }
   } catch (error) {
-    console.error("載入列印數據失敗:", error);
-    ElMessage.error("載入列印數據失敗，請返回重新操作");
+    console.error("載入打印數據失敗:", error);
+    ElMessage.error("載入打印數據失敗，請返回重新操作");
   }
 };
 
-// 設置列印時間
+// 設置打印時間
 const setPrintTime = () => {
   const now = new Date();
   printTime.value = DateUtils.formatDateTime(now);
@@ -312,12 +312,12 @@ const setPrintTime = () => {
 const handleBack = () => {
   if (printId.value) {
     sessionStorage.removeItem(printId.value);
-    console.log("已清理列印數據，ID:", printId.value);
+    console.log("已清理打印數據，ID:", printId.value);
   }
   router.back();
 };
 
-// 列印處理
+// 打印處理
 const handlePrint = () => {
   isPrinting.value = true;
 
@@ -329,7 +329,7 @@ const handlePrint = () => {
   }, 500);
 };
 
-// 監聽列印事件
+// 監聽打印事件
 const beforePrint = () => (isPrinting.value = true);
 const afterPrint = () => (isPrinting.value = false);
 
@@ -361,7 +361,7 @@ onUnmounted(() => {
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
   overflow-y: auto;
 }
 
@@ -389,7 +389,7 @@ onUnmounted(() => {
   }
 }
 
-/* 列印樣式 */
+/* 打印樣式 */
 @media print {
   .print-controls {
     display: none !important;
