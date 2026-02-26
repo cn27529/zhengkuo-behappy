@@ -173,31 +173,26 @@
         @selection-change="handleSelectionChange"
       >
         <!-- 多選框 -->
-        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column type="selection" width="50" align="center" />
 
         <!-- 記錄ID -->
         <el-table-column
           prop="id"
-          label="參加ID"
+          label="需要收據"
           width="80"
           align="center"
           fixed
         >
           <template #default="{ row }">
             <strong>{{ row.id }}</strong>
-          </template>
-        </el-table-column>
-
-        <!-- 活動ID -->
-        <el-table-column
-          prop="activityId"
-          label="活動ID"
-          width="80"
-          align="center"
-          v-if="false"
-        >
-          <template #default="{ row }">
-            <span>{{ row.activityId || "-" }}</span>
+            <el-switch
+              v-model="row.needReceipt"
+              :active-value="'1'"
+              :inactive-value="'0'"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              @change="markAsModified(row.id, 'needReceipt')"
+            />
           </template>
         </el-table-column>
 
@@ -219,7 +214,7 @@
         </el-table-column>
 
         <!-- 參加項目 -->
-        <el-table-column label="參加項目" min-width="120">
+        <el-table-column label="參加項目" width="120">
           <template #default="{ row }">
             <div class="items-summary">
               <el-tag
@@ -256,21 +251,19 @@
           </template>
         </el-table-column>
 
-        <!-- 需要收據 -->
-        <el-table-column label="需要收據" width="100" align="center">
+        <!-- 收據號碼 -->
+        <el-table-column label="收據號碼" width="120" align="center">
           <template #default="{ row }">
-            <el-select
-              v-model="row.needReceipt"
-              size="small"
-              @change="markAsModified(row.id, 'needReceipt')"
-            >
-              <el-option
-                v-for="option in stateConfigs.needReceipt.options"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-              />
-            </el-select>
+            <div class="receipt-number">
+              <el-tag
+                v-if="row.receiptNumber"
+                type="danger"
+                size="mini"
+                style="margin-top: 4px"
+              >
+                {{ row.receiptNumber || "" }}
+              </el-tag>
+            </div>
           </template>
         </el-table-column>
 
@@ -290,13 +283,6 @@
                 :value="option.value"
               />
             </el-select>
-          </template>
-        </el-table-column>
-
-        <!-- 收據號碼 -->
-        <el-table-column label="收據號碼" width="100" align="center">
-          <template #default="{ row }">
-            <div class="receipt-number">{{ row.receiptNumber || "-" }}</div>
           </template>
         </el-table-column>
 
