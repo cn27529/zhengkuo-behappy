@@ -8,15 +8,21 @@
 
 ### 1. 狀態管理
 
-控制台支援管理以下 5 個狀態欄位：
+控制台支援管理以下 6 個狀態欄位：
 
 | 欄位              | 說明     | 可選值                                                   |
 | ----------------- | -------- | -------------------------------------------------------- |
+| `needReceipt`     | 需要收據 | 0(否)、1(是)                                             |
 | `state`           | 記錄狀態 | pending(待處理)、confirmed(已確認)、completed(已完成)    |
 | `paymentState`    | 付款狀態 | unpaid(未付款)、paid(已付款)                             |
-| `receiptIssued`   | 收據狀態 | false(未開立)、true(已開立)                              |
+| `receiptIssued`   | 收據狀態 | 空(未打印)、standard(感謝狀)、stamp(收據)                |
 | `accountingState` | 會計狀態 | pending(待處理)、reconciled(已對帳)                      |
 | `paymentMethod`   | 付款方式 | 空(未選擇)、cash(現金)、transfer(銀行轉帳)、card(信用卡) |
+
+**注意**：
+- `receiptIssued` 於 2026-02-25 修改定義：空值表示未打印，`standard` 表示已打印感謝狀，`stamp` 表示已打印收據
+- `needReceipt` 控制是否需要開立收據（開關按鈕）
+- `receiptNumber` 為唯讀欄位，顯示已生成的收據編號（格式：`26029999` 或 `A26029999`）
 
 ### 2. 操作模式
 
@@ -48,11 +54,55 @@
 ```javascript
 // 狀態欄位配置
 const stateConfigs = computed(() => ({
-  state: { label: "記錄狀態", options: [...] },
-  paymentState: { label: "付款狀態", options: [...] },
-  receiptIssued: { label: "收據狀態", options: [...] },
-  accountingState: { label: "會計狀態", options: [...] },
-  paymentMethod: { label: "付款方式", options: [...] }
+  needReceipt: { 
+    label: "需要收據", 
+    options: [
+      { value: "1", label: "是" },
+      { value: "0", label: "否" }
+    ] 
+  },
+  state: { 
+    label: "記錄狀態", 
+    options: [
+      { value: "", label: "未選擇" },
+      { value: "pending", label: "待處理" },
+      { value: "confirmed", label: "已確認" },
+      { value: "completed", label: "已完成" }
+    ] 
+  },
+  paymentState: { 
+    label: "付款狀態", 
+    options: [
+      { value: "", label: "未選擇" },
+      { value: "unpaid", label: "未付款" },
+      { value: "paid", label: "已付款" }
+    ] 
+  },
+  receiptIssued: { 
+    label: "己開立收據", 
+    options: [
+      { value: "", label: "未選擇" },
+      { value: "standard", label: "感謝狀" },
+      { value: "stamp", label: "收據" }
+    ] 
+  },
+  accountingState: { 
+    label: "會計狀態", 
+    options: [
+      { value: "", label: "未選擇" },
+      { value: "pending", label: "待處理" },
+      { value: "reconciled", label: "已對帳" }
+    ] 
+  },
+  paymentMethod: { 
+    label: "付款方式", 
+    options: [
+      { value: "", label: "未選擇" },
+      { value: "cash", label: "現金" },
+      { value: "transfer", label: "銀行轉帳" },
+      { value: "card", label: "信用卡" }
+    ] 
+  }
 }));
 
 // 更新單筆記錄狀態
@@ -76,8 +126,14 @@ JoinRecordStatesControl.vue
 │   └── 批量保存按鈕
 └── 結果表格
     ├── 多選框
-    ├── 記錄資訊欄位
-    ├── 狀態下拉選單 x5
+    ├── 記錄ID + 需要收據開關
+    ├── 聯絡人資訊
+    ├── 參加項目
+    ├── 收據號碼（唯讀，顯示已生成編號）
+    ├── 收據狀態下拉選單（未打印/感謝狀/收據）
+    ├── 付款狀態下拉選單
+    ├── 會計狀態下拉選單
+    ├── 付款方式下拉選單
     └── 單筆保存按鈕
 ```
 
@@ -190,14 +246,26 @@ const canEditAccountingState = computed(() => {
 ## 注意事項
 
 1. **狀態一致性**：修改狀態時要注意業務邏輯的一致性，例如：
-   - 收據已開立時，付款狀態應該是已付款
+   - 收據已開立（`receiptIssued` 為 `standard` 或 `stamp`）時，付款狀態應該是已付款
    - 會計已對帳時，付款狀態應該是已付款
+   - 需要收據（`needReceipt` 為 `1`）但未打印時，`receiptIssued` 應為空值
 
-2. **批量操作**：批量更新時只會更新選中的狀態欄位，未選擇的欄位保持原值
+2. **收據狀態說明**（2026-02-25 更新）：
+   - 空值（`""`）：未打印收據或感謝狀
+   - `"standard"`：已打印感謝狀
+   - `"stamp"`：已打印收據
+   - 此欄位由打印頁面自動更新，不建議手動修改
 
-3. **修改追蹤**：每次狀態修改都會更新 `updatedAt` 時間戳
+3. **收據號碼**：
+   - `receiptNumber` 為唯讀欄位，由系統自動生成
+   - 格式：收據 `26029999`（年月+流水號），感謝狀 `A26029999`（加前綴A）
+   - 詳見 [收據編號生成機制說明](./dev-joinRecord-receiptNumber-guide.md)
 
-4. **分頁處理**：
+4. **批量操作**：批量更新時只會更新選中的狀態欄位，未選擇的欄位保持原值
+
+5. **修改追蹤**：每次狀態修改都會更新 `updatedAt` 時間戳
+
+6. **分頁處理**：
    - 桌面版：支援分頁，預設每頁 10 筆
    - 手機版：顯示全部結果，不分頁
 
@@ -214,3 +282,6 @@ const canEditAccountingState = computed(() => {
 - [參加記錄資料結構說明](./mock-participationRecords.md)
 - [參加記錄開發指南](./dev-joinRecord-guide.md)
 - [參加記錄查詢開發指南](./dev-joinRecord-list-guide.md)
+- [收據打印功能說明](./dev-joinRecord-receipt-print-guide.md)
+- [批量收據打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md)
+- [收據編號生成機制說明](./dev-joinRecord-receiptNumber-guide.md) ⭐ 新增
