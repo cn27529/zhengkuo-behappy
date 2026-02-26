@@ -7,6 +7,7 @@ import mockParticipationRecords from "../data/mock_participation_records.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
 import { PhoneMatch } from "../utils/phoneMatchUtils.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 // 活動參加記錄查詢的 Pinia store，管理查詢狀態與操作。
 export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
@@ -492,7 +493,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
           searchResults.value[index] = {
             ...searchResults.value[index],
             ...updates,
-            updatedAt: new Date().toISOString(),
+            updatedAt: DateUtils.getCurrentISOTime(),
           };
         }
 
@@ -516,7 +517,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
           searchResults.value[index] = {
             ...searchResults.value[index],
             ...updates,
-            updatedAt: new Date().toISOString(),
+            updatedAt: DateUtils.getCurrentISOTime(),
           };
         }
       }
@@ -544,7 +545,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
             searchResults.value[index] = {
               ...searchResults.value[index],
               ...updates,
-              updatedAt: new Date().toISOString(),
+              updatedAt: DateUtils.getCurrentISOTime(),
             };
           }
         });
@@ -572,7 +573,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
           searchResults.value[index] = {
             ...searchResults.value[index],
             ...updates,
-            updatedAt: new Date().toISOString(),
+            updatedAt: DateUtils.getCurrentISOTime(),
           };
         }
       });

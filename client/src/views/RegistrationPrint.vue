@@ -1,6 +1,8 @@
 <!-- src/views/PrintRegistration.vue -->
 <template>
-  <div class="print-registration">
+  <div class="print-page-container">
+    <div class="preview-section">
+<div class="print-registration">
     <!-- 列印內容 -->
     <div class="print-content" id="print-content">
       <!-- 表頭 -->
@@ -204,7 +206,11 @@
       </div>
     </div>
 
-    <!-- 列印控制欄（僅在預覽時顯示） -->
+    
+  </div>
+    </div>
+    <div class="config-sidebar">
+<!-- 列印控制欄（僅在預覽時顯示） -->
     <div class="print-controls" v-if="!isPrinting">
       <div class="controls">
         <div class="download-dropdown" style="display: none">
@@ -240,7 +246,9 @@
         <el-button @click="handleBack" size="large">關閉</el-button>
       </div>
     </div>
+    </div>
   </div>
+  
 </template>
 
 <script setup>
@@ -684,6 +692,48 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+
+/* 頁面容器佈局 */
+.print-page-container {
+  display: flex;
+  flex-direction: column; /* 手機模式預設為上下佈局 */
+  min-height: 100vh;
+  background-color: #333;
+}
+
+/* 左側預覽區 */
+.preview-section {
+  flex: 1;
+  /* display: flex; */
+  justify-content: center;
+  align-items: center;  
+  overflow-y: auto;
+}
+
+/* 右側側邊欄 */
+.config-sidebar {
+  background: #fff;
+  border-left: 1px solid #dcdfe6;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 桌面模式（寬度大於 768px）恢復左右佈局 */
+@media screen and (min-width: 769px) {
+  .print-page-container {
+    flex-direction: row;
+  }
+
+  .preview-section {
+    padding: 20px;
+  }
+  .config-sidebar {
+    width: 320px;
+  }
+}
+
 /* 列印樣式 */
 @media print {
   .print-controls {
@@ -818,7 +868,7 @@ onUnmounted(() => {
   .print-registration {
     max-width: 21cm;
     margin: 5px auto;
-    padding: 10px;
+    padding: 30px;
     background: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }

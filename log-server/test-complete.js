@@ -1,4 +1,5 @@
 // test-complete.js - 完整測試套件
+import { DateUtils } from "./utils/dateUtils.js";
 
 /**
  * 完整測試流程：
@@ -69,7 +70,7 @@ async function step2_writeSingleLog() {
     status: 201,
     success: true,
     responseTime: 100,
-    timestamp: new Date().toISOString(),
+    timestamp: DateUtils.getCurrentISOTime(),
     context: {
       test: true,
       type: "single",

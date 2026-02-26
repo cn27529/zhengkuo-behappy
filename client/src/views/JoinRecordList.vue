@@ -450,11 +450,12 @@ const handlePrint = (item) => {
   try {
     const recordId = item.id;
     const printData = JSON.stringify(item);
+    const isoStr = DateUtils.getCurrentISOTime();
 
     console.log("準備列印數據:", { recordId, printData });
     ElMessage.info(`準備列印表單: ${recordId}`);
 
-    const printId = `print_join_record_${recordId}_${Math.floor(Math.random() * 1000)}`;
+    const printId = `print_join_record_${recordId}_${isoStr}`;
     console.log("列印表單 ID:", printId);
 
     sessionStorage.setItem(printId, printData);
@@ -465,9 +466,10 @@ const handlePrint = (item) => {
 
     router.push({
       path: "/join-record-print",
-      query: {
+      query: {        
         print_id: printId,
         print_data: printData,
+        iso_str: isoStr,
       },
     });
   } catch (error) {
@@ -479,14 +481,15 @@ const handlePrint = (item) => {
 // 收據打印
 const handleReceipt = (item) => {
   try {
+    const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(item);
-    const printId = `receipt_${item.id}_${Date.now()}`;
+    const printId = `receipt_${item.id}_${isoStr}`;
 
     sessionStorage.setItem(printId, printData);
 
     router.push({
       path: "/join-record-receipt-print",
-      query: { print_id: printId, print_data: printData },
+      query: {  print_id: printId, print_data: printData, iso_str: isoStr },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);

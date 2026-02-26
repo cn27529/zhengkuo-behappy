@@ -1,7 +1,7 @@
 // mongoDBLogger.js - 使用 node-schedule 的更精確版本
-
 // 在檔案頂部加入
 import schedule from "node-schedule";
+import { DateUtils } from "./utils/dateUtils.js";
 
 // ==========================================
 // 在 startServer() 函數內使用
@@ -29,7 +29,7 @@ function startCleanupJobWithSchedule() {
 
       console.log("");
       console.log("═".repeat(60));
-      console.log(`⏰ [${new Date().toISOString()}] 開始執行定期清理`);
+      console.log(`⏰ [${DateUtils.getCurrentISOTime()}] 開始執行定期清理`);
       console.log(`   截止日期: ${cutoffDate.toISOString()}`);
 
       if (!collection) {

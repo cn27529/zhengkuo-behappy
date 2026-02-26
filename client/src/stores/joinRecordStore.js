@@ -216,9 +216,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const issueReceipt = (record) => {
     record.receiptNumber = generateReceiptNumber();
     record.receiptIssued = true;
-    record.receiptIssuedAt = new Date().toISOString();
+    record.receiptIssuedAt = DateUtils.getCurrentISOTime();
     record.receiptIssuedBy = getCurrentUser();
-    record.updatedAt = new Date().toISOString();
+    record.updatedAt = DateUtils.getCurrentISOTime();
     record.updatedUser = getCurrentUser();
   };
 
@@ -230,10 +230,10 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
    */
   const reconcileAccounting = (record, accountingBy, notes = "") => {
     record.accountingState = "reconciled";
-    record.accountingDate = new Date().toISOString();
+    record.accountingDate = DateUtils.getCurrentISOTime();
     record.accountingBy = accountingBy;
     record.accountingNotes = notes;
-    record.updatedAt = new Date().toISOString();
+    record.updatedAt = DateUtils.getCurrentISOTime();
     record.updatedUser = accountingBy;
   };
 
@@ -249,7 +249,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
     record.paidAmount += amount;
     record.paymentMethod = method;
-    record.paymentDate = new Date().toISOString();
+    record.paymentDate = DateUtils.getCurrentISOTime();
     record.paymentNotes = notes;
 
     // 更新付款狀態

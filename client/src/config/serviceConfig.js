@@ -1,3 +1,5 @@
+import { DateUtils } from "../utils/dateUtils.js";
+
 // src/config/serviceConfig.js
 export class ServiceConfig {
   constructor() {
@@ -61,7 +63,7 @@ export class ServiceConfig {
       const isHealthy = response.ok;
       this.backendHealth[backend] = {
         status: isHealthy ? "healthy" : "unhealthy",
-        lastCheck: new Date().toISOString(),
+        lastCheck: DateUtils.getCurrentISOTime(),
         failCount: isHealthy ? 0 : this.backendHealth[backend].failCount + 1,
       };
 
@@ -70,7 +72,7 @@ export class ServiceConfig {
       console.error(`❌ ${backend} 健康檢查失敗:`, error);
       this.backendHealth[backend] = {
         status: "unhealthy",
-        lastCheck: new Date().toISOString(),
+        lastCheck: DateUtils.getCurrentISOTime(),
         failCount: this.backendHealth[backend].failCount + 1,
       };
       return false;

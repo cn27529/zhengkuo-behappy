@@ -1,9 +1,10 @@
 // test_logger.js
+import { DateUtils } from "./utils/dateUtils.js";
 
 const SERVER_URL = "http://localhost:3002/mongo/logentry/";
 
 const testLog = {
-  timestamp: new Date().toISOString(),
+  timestamp: DateUtils.getCurrentISOTime(),
   endpoint: "http://localhost:8055/items/activityDB",
   method: "POST",
   status: 200,

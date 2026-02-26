@@ -1,9 +1,9 @@
 // ========== 日期時間工具函數 ==========
 
 const DEFAULT_CONFIG = Object.freeze({
-  timeZone: import.meta.env.VITE_APP_TIMEZONE || "Asia/Taipei",
-  locale: import.meta.env.VITE_APP_LOCALE || "zh-TW",
-  hour12: import.meta.env.VITE_APP_HOUR12 === "true",
+  timeZone:  "Asia/Taipei",
+  locale: "zh-TW",
+  hour12: false,
 });
 
 const createFormatter = (options) => (dateString) => {
@@ -23,18 +23,20 @@ const createFormatter = (options) => (dateString) => {
 /**
  * 獲取時間戳記 (Timestamp)
  * 支援不傳參（取得當前時間）或傳入 ISO 字串（轉換儲存的數據）
- * @param {string|Date} [date] - 可選的 ISO 時間字串或 Date 物件，例如 "2026-02-26T06:36:28.000Z"
+ * @param {string|Date} [date] - 可選的 ISO 時間字串或 Date 物件
  * @returns {number} 毫秒級時間戳
  */
 export const getCurrentTimestamp = (date) => {
-  // 如果傳入 null/undefined/空字串，就直接 new Date() 取得當前時間物件
-  const d = date ? new Date(date) : new Date();
-  const ts = d.getTime();
-  if (isNaN(ts)) {
+  // 如果有傳入 date 就用該值初始化，否則用當前時間
+  const targetDate = date ? new Date(date) : new Date();
+  
+  // 檢查轉換是否成功，若失敗（例如傳入非日期格式）回傳 0 或 NaN
+  if (isNaN(targetDate.getTime())) {
     console.error("提供給 getCurrentTimestamp 的日期字串無效:", date);
-    return 0;
+    return 0; 
   }
-  return ts;
+
+  return targetDate.getTime();
 };
 
 /**
@@ -55,7 +57,6 @@ export const formatFullTime = createFormatter({
   day: "2-digit",
   hour: "2-digit",
   minute: "2-digit",
-  second: "2-digit",
 });
 
 /**

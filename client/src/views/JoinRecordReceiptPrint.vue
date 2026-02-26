@@ -368,6 +368,27 @@ onMounted(() => {
   background-color: #333;
 }
 
+/* 左側預覽區 */
+.preview-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* 右側側邊欄 */
+.config-sidebar {
+  width: 320px;
+  background: #fff;
+  border-left: 1px solid #dcdfe6;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
 /* 核心畫布區域 */
 .receipt-content {
   background: #ffffff;
@@ -485,26 +506,7 @@ onMounted(() => {
   font-size: 8px;
 }
 
-/* 左側預覽區 */
-.preview-section {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  overflow-y: auto;
-}
 
-/* 右側側邊欄 */
-.config-sidebar {
-  width: 320px;
-  background: #fff;
-  border-left: 1px solid #dcdfe6;
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
-}
 
 .config-body {
   /* flex: 1; */

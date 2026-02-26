@@ -1,4 +1,5 @@
 // test-single-log.js - 測試單筆日誌寫入
+import { DateUtils } from "./utils/dateUtils.js";
 
 /**
  * 測試單筆日誌寫入到 MongoDB
@@ -17,7 +18,7 @@ async function testSingleLog() {
     status: 201,
     success: true,
     responseTime: 125,
-    timestamp: new Date().toISOString(),
+    timestamp: DateUtils.getCurrentISOTime(),
     userAgent: "Mozilla/5.0 (Test Client)",
     url: "http://localhost:3000/test",
     requestBody: {
@@ -27,7 +28,7 @@ async function testSingleLog() {
     responseData: {
       id: 1001,
       title: "Test Item",
-      created_at: new Date().toISOString(),
+      created_at: DateUtils.getCurrentISOTime(),
     },
     context: {
       service: "test-service",

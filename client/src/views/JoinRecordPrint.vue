@@ -1,197 +1,208 @@
 <!-- src/views/JoinRecordPrint.vue -->
 <template>
-  <div class="print-join-record">
-    <!-- 列印內容 -->
-    <div class="print-content" id="print-content">
-      <!-- 表頭 -->
-      <div class="print-header">
-        <h1>{{ printContent.contact?.name || "未填寫" }}-活動參加記錄表</h1>
-        <div class="print-meta">
-          <span>參加編號：{{ printContent.id || "未分配" }}、</span>
-          <span>活動編號：{{ printContent.activityId || "未分配" }}、</span>
-          <span>登記編號：{{ printContent.registrationId || "未分配" }}</span>
-        </div>
-      </div>
-
-      <!-- 活動資訊 -->
-      <div class="print-section" v-if="activityInfo">
-        <h2 class="section-title">活動資訊</h2>
-        <div class="section-content">
-          <table class="info-table">
-            <tbody>
-              <tr>
-                <td width="25%"><strong>活動名稱：</strong></td>
-                <td width="75%" colspan="3">
-                  {{ activityInfo?.name || "未填寫" }}
-                </td>
-              </tr>
-              <tr v-if="activityInfo?.date">
-                <td><strong>活動日期：</strong></td>
-                <td colspan="3">{{ activityInfo.date }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 聯絡人信息 -->
-      <div class="print-section">
-        <h2 class="section-title">一、聯絡人信息</h2>
-        <div class="section-content">
-          <table class="info-table">
-            <tbody>
-              <tr>
-                <td width="25%"><strong>聯絡人姓名：</strong></td>
-                <td width="25%">
-                  {{ printContent.contact?.name || "未填寫" }}
-                </td>
-                <td width="25%"><strong>手機號碼：</strong></td>
-                <td width="25%">
-                  {{ printContent.contact?.mobile || "未填寫" }}
-                </td>
-              </tr>
-              <tr>
-                <td><strong>家用電話：</strong></td>
-                <td>{{ printContent.contact?.phone || "未填寫" }}</td>
-                <td><strong>關係：</strong></td>
-                <td>
-                  {{ printContent.contact?.relationship || "未填寫" }}
-                  <span v-if="printContent.contact?.otherRelationship">
-                    ({{ printContent.contact.otherRelationship }})
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 參加項目 -->
-      <div
-        class="print-section"
-        v-if="
-          printContent.items &&
-          Array.isArray(printContent.items) &&
-          printContent.items.length
-        "
-      >
-        <h2 class="section-title">二、參加項目</h2>
-        <div class="section-content">
-          <!-- 項目列表 -->
-          <div class="items-list">
-            <table class="items-table">
-              <caption>
-                <div class="items-summary">
-                  共 {{ printContent.items.length }} 個項目，總金額：{{
-                    appConfig.dollarTitle
-                  }}{{ printContent.totalAmount || 0 }}
-                </div>
-              </caption>
-              <thead>
-                <tr>
-                  <th width="5%">序號</th>
-                  <th width="15%">參加項目</th>
-                  <th width="5%">數量</th>
-                  <th width="15%">小計</th>
-                  <th width="35%">地址</th>
-                  <th width="25%">參加者</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, index) in printContent.items" :key="index">
-                  <td class="text-center">{{ index + 1 }}</td>
-                  <td class="text-center">
-                    {{ item.label || "未填寫" }}
-                    <!-- <p v-if="item.lampDetails" v-for="lamp in item.lampDetails">
-                      {{ lamp.lampTypeLabel }}
-                    </p> -->
-                  </td>
-                  <td class="text-center">{{ item.quantity || 0 }}</td>
-                  <td class="text-center">
-                    {{ appConfig.dollarTitle }}{{ item.subtotal || 0 }}
-                  </td>
-                  <td class="text-left">
-                    {{ item.sourceAddress || "未填寫" }}
-                  </td>
-                  <td class="text-left">
-                    {{
-                      getParticipantNames(item.sourceData || []).join("、") ||
-                      "無"
-                    }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+  <div class="print-page-container">
+    <div class="preview-section">
+      <div class="print-join-record">
+        <!-- 列印內容 -->
+        <div class="print-content" id="print-content">
+          <!-- 表頭 -->
+          <div class="print-header">
+            <h1>{{ printContent.contact?.name || "未填寫" }}-活動參加記錄表</h1>
+            <div class="print-meta">
+              <span>參加編號：{{ printContent.id || "未分配" }}、</span>
+              <span>活動編號：{{ printContent.activityId || "未分配" }}、</span>
+              <span
+                >登記編號：{{ printContent.registrationId || "未分配" }}</span
+              >
+            </div>
           </div>
 
-          <!-- 詳細參加者資料 -->
+          <!-- 活動資訊 -->
+          <div class="print-section" v-if="activityInfo">
+            <h2 class="section-title">活動資訊</h2>
+            <div class="section-content">
+              <table class="info-table">
+                <tbody>
+                  <tr>
+                    <td width="25%"><strong>活動名稱：</strong></td>
+                    <td width="75%" colspan="3">
+                      {{ activityInfo?.name || "未填寫" }}
+                    </td>
+                  </tr>
+                  <tr v-if="activityInfo?.date">
+                    <td><strong>活動日期：</strong></td>
+                    <td colspan="3">{{ activityInfo.date }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 聯絡人信息 -->
+          <div class="print-section">
+            <h2 class="section-title">一、聯絡人信息</h2>
+            <div class="section-content">
+              <table class="info-table">
+                <tbody>
+                  <tr>
+                    <td width="25%"><strong>聯絡人姓名：</strong></td>
+                    <td width="25%">
+                      {{ printContent.contact?.name || "未填寫" }}
+                    </td>
+                    <td width="25%"><strong>手機號碼：</strong></td>
+                    <td width="25%">
+                      {{ printContent.contact?.mobile || "未填寫" }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>家用電話：</strong></td>
+                    <td>{{ printContent.contact?.phone || "未填寫" }}</td>
+                    <td><strong>關係：</strong></td>
+                    <td>
+                      {{ printContent.contact?.relationship || "未填寫" }}
+                      <span v-if="printContent.contact?.otherRelationship">
+                        ({{ printContent.contact.otherRelationship }})
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 參加項目 -->
           <div
-            v-for="(item, itemIndex) in printContent.items || []"
-            :key="itemIndex"
-            class="item-details"
+            class="print-section"
             v-if="
-              item &&
-              item.sourceData &&
-              Array.isArray(item.sourceData) &&
-              item.sourceData.length
+              printContent.items &&
+              Array.isArray(printContent.items) &&
+              printContent.items.length
             "
           >
-            <h3 class="sub-title">{{ item.label }} - 詳細參加者資料</h3>
-            <table class="participants-table">
-              <thead>
-                <tr>
-                  <th width="5%">序號</th>
-                  <th width="20%">姓名/姓氏</th>
-                  <th width="15%">生肖</th>
-                  <th width="50%">備註</th>
-                  <th width="10%">戶長</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(participant, index) in item.sourceData || []"
-                  :key="index"
-                >
-                  <td class="text-center">{{ index + 1 }}</td>
-                  <td class="text-center">
-                    {{
-                      participant.name ||
-                      (participant.surname
-                        ? `${participant.surname}氏`
-                        : "未填寫")
-                    }}
-                  </td>
-                  <td class="text-center">
-                    {{ participant.zodiac || "未選擇" }}
-                  </td>
-                  <td class="text-left">{{ participant.notes || "無" }}</td>
-                  <td class="text-center">
-                    {{ participant.isHouseholdHead ? "✓" : "" }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+            <h2 class="section-title">二、參加項目</h2>
+            <div class="section-content">
+              <!-- 項目列表 -->
+              <div class="items-list">
+                <table class="items-table">
+                  <caption>
+                    <div class="items-summary">
+                      共 {{ printContent.items.length }} 個項目，總金額：{{
+                        appConfig.dollarTitle
+                      }}{{ printContent.totalAmount || 0 }}
+                    </div>
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th width="5%">序號</th>
+                      <th width="15%">參加項目</th>
+                      <th width="5%">數量</th>
+                      <th width="15%">小計</th>
+                      <th width="35%">地址</th>
+                      <th width="25%">參加者</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in printContent.items"
+                      :key="index"
+                    >
+                      <td class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">
+                        {{ item.label || "未填寫" }}
+                        <!-- <p v-if="item.lampDetails" v-for="lamp in item.lampDetails">
+                      {{ lamp.lampTypeLabel }}
+                    </p> -->
+                      </td>
+                      <td class="text-center">{{ item.quantity || 0 }}</td>
+                      <td class="text-center">
+                        {{ appConfig.dollarTitle }}{{ item.subtotal || 0 }}
+                      </td>
+                      <td class="text-left">
+                        {{ item.sourceAddress || "未填寫" }}
+                      </td>
+                      <td class="text-left">
+                        {{
+                          getParticipantNames(item.sourceData || []).join(
+                            "、",
+                          ) || "無"
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-      <!-- 頁尾 -->
-      <div class="print-footer">
-        <div class="print-meta">
-          <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+              <!-- 詳細參加者資料 -->
+              <div
+                v-for="(item, itemIndex) in printContent.items || []"
+                :key="itemIndex"
+                class="item-details"
+                v-if="
+                  item &&
+                  item.sourceData &&
+                  Array.isArray(item.sourceData) &&
+                  item.sourceData.length
+                "
+              >
+                <h3 class="sub-title">{{ item.label }} - 詳細參加者資料</h3>
+                <table class="participants-table">
+                  <thead>
+                    <tr>
+                      <th width="5%">序號</th>
+                      <th width="20%">姓名/姓氏</th>
+                      <th width="15%">生肖</th>
+                      <th width="50%">備註</th>
+                      <th width="10%">戶長</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(participant, index) in item.sourceData || []"
+                      :key="index"
+                    >
+                      <td class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">
+                        {{
+                          participant.name ||
+                          (participant.surname
+                            ? `${participant.surname}氏`
+                            : "未填寫")
+                        }}
+                      </td>
+                      <td class="text-center">
+                        {{ participant.zodiac || "未選擇" }}
+                      </td>
+                      <td class="text-left">{{ participant.notes || "無" }}</td>
+                      <td class="text-center">
+                        {{ participant.isHouseholdHead ? "✓" : "" }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 頁尾 -->
+          <div class="print-footer">
+            <div class="print-meta">
+              <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- 列印控制欄（僅在預覽時顯示） -->
-    <div class="print-controls" v-if="!isPrinting">
-      <div class="controls">
-        <el-button type="primary" @click="handlePrint" size="large"
-          >🖨️ 列印詳情</el-button
-        >
-      </div>
-      <div class="controls">
-        <el-button @click="handleBack" size="large">關閉</el-button>
+    <div class="config-sidebar">
+      <!-- 列印控制欄（僅在預覽時顯示） -->
+      <div class="print-controls" v-if="!isPrinting">
+        <div class="controls">
+          <el-button type="primary" @click="handlePrint" size="large"
+            >🖨️ 列印詳情</el-button
+          >
+        </div>
+        <div class="controls">
+          <el-button @click="handleBack" size="large">關閉</el-button>
+        </div>
       </div>
     </div>
   </div>
@@ -203,12 +214,14 @@ import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { appConfig } from "../config/appConfig.js";
 import { useActivityStore } from "../stores/activityStore.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 const activityStore = useActivityStore();
 const router = useRouter();
 const printContent = ref({});
 const isPrinting = ref(false);
 const printTime = ref("");
+const printTimestamp = ref("");
 const printId = ref("");
 
 // 根據 activityId 取得活動詳情
@@ -291,14 +304,8 @@ const loadPrintData = () => {
 // 設置列印時間
 const setPrintTime = () => {
   const now = new Date();
-  printTime.value = now.toLocaleString("zh-TW", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  printTime.value = DateUtils.formatDateTime(now);
+  printTimestamp.value = DateUtils.getCurrentTimestamp(now);
 };
 
 // 返回表單頁面
@@ -341,6 +348,47 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* 頁面容器佈局 */
+.print-page-container {
+  display: flex;
+  flex-direction: column; /* 手機模式預設為上下佈局 */
+  min-height: 100vh;
+  background-color: #333;
+}
+
+/* 左側預覽區 */
+.preview-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+  overflow-y: auto;
+}
+
+/* 右側側邊欄 */
+.config-sidebar {
+  background: #fff;
+  border-left: 1px solid #dcdfe6;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 桌面模式（寬度大於 768px）恢復左右佈局 */
+@media screen and (min-width: 769px) {
+  .print-page-container {
+    flex-direction: row;
+  }
+
+  .preview-section {
+    padding: 20px;
+  }
+  .config-sidebar {
+    width: 320px;
+  }
+}
+
 /* 列印樣式 */
 @media print {
   .print-controls {
@@ -467,7 +515,7 @@ onUnmounted(() => {
   .print-join-record {
     max-width: 21cm;
     margin: 5px auto;
-    padding: 10px;
+    padding: 30px;
     background: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
@@ -560,7 +608,7 @@ onUnmounted(() => {
   .section-title {
     margin: 5px 0 5px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid #333;
+    border-bottom: 0px solid #333;
     color: #333;
   }
 

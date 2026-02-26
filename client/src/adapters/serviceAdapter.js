@@ -5,6 +5,7 @@ import { registrationService as directusRegistration } from "../services/registr
 import { monthlyDonateService as directusMonthlyDonate } from "../services/monthlyDonateService.js";
 import { joinRecordService as directusJoinRecord } from "../services/joinRecordService.js";
 import { mydataService as directusMydata } from "../services/mydataService.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 // Rust 服務（延遲加載，避免初始化錯誤）
 let rustServices = null;
@@ -570,7 +571,7 @@ class ServiceAdapter {
         success: true,
         backend,
         status: "healthy",
-        timestamp: new Date().toISOString(),
+        timestamp: DateUtils.getCurrentISOTime(),
       };
     } catch (error) {
       return {

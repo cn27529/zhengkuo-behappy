@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, reactive, computed } from "vue";
 import { useRegistrationStore } from "./registrationStore.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 export const useCardStore = defineStore("card", () => {
   // 卡片設計狀態
@@ -165,7 +166,7 @@ export const useCardStore = defineStore("card", () => {
         const designData = {
           selectedTemplateId: selectedTemplateId.value,
           items: droppedItems.value,
-          lastUpdated: new Date().toISOString(),
+          lastUpdated: DateUtils.getCurrentISOTime(),
         };
         // 保存到 sessionStorage（模擬保存到數據庫）
         sessionStorage.setItem("cardDesign", JSON.stringify(designData));
@@ -203,7 +204,7 @@ export const useCardStore = defineStore("card", () => {
       selectedTemplateId: selectedTemplateId.value,
       cardData: { ...cardData },
       droppedItems: [...droppedItems.value],
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: DateUtils.getCurrentISOTime(),
     };
   };
 

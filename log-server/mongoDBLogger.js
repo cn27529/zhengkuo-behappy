@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+import { DateUtils } from "./utils/dateUtils.js";
 
 // 載入環境變數
 dotenv.config();
@@ -132,7 +133,7 @@ app.get("/health", (req, res) => {
   res.json({
     status: "ok",
     mongodb: mongoClient ? "connected" : "disconnected",
-    timestamp: new Date().toISOString(),
+    timestamp: DateUtils.getCurrentISOTime(),
   });
 });
 
@@ -156,7 +157,7 @@ app.post("/mongo/logentry/", async (req, res) => {
       uploadedAt: new Date(),
       source: "web-client",
       projectId: MONGO_CONFIG.projectId,
-      serverReceivedAt: new Date().toISOString(),
+      serverReceivedAt: DateUtils.getCurrentISOTime(),
     };
 
     // 插入資料
@@ -205,7 +206,7 @@ app.post("/mongo/logentry/batch", async (req, res) => {
       uploadedAt: new Date(),
       source: "web-client",
       projectId: MONGO_CONFIG.projectId,
-      serverReceivedAt: new Date().toISOString(),
+      serverReceivedAt: DateUtils.getCurrentISOTime(),
     }));
 
     // 批次插入
@@ -461,7 +462,7 @@ function startCleanupJob() {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - CLEANUP_RETAIN_DAYS);
 
-    console.log(`⏰ [${new Date().toISOString()}] 開始自動清理...`);
+    console.log(`⏰ [${DateUtils.getCurrentISOTime()}] 開始自動清理...`);
     console.log(`   保留時間: 最近 ${CLEANUP_RETAIN_DAYS} 天`);
 
     if (!collection) {
