@@ -101,8 +101,28 @@
         <h3>查詢結果 (共 {{ totalItems }} 筆)</h3>
       </div>
 
+      <!-- 批量操作區 -->
+      <div class="batch-actions" v-if="selectedRecords.length > 0">
+        <div class="batch-info">
+          <span class="selected-count">
+            已選擇 <strong>{{ selectedRecords.length }}</strong> 筆記錄
+          </span>
+          <el-button size="small" @click="clearSelection">取消選擇</el-button>
+        </div>
+        <div class="batch-controls">
+          <el-button
+            type="success"
+            size="small"
+            @click="handleBatchReceiptPrint"
+          >
+            🖨️ 批量收據打印
+          </el-button>
+        </div>
+      </div>
+
       <!-- 查詢列表 -->
       <el-table
+        ref="tableRef"
         :data="paginatedResults"
         style="width: 100%"
         :default-sort="{ prop: 'createdAt', order: 'descending' }"
@@ -110,7 +130,10 @@
         border
         :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
         v-loading="isLoading"
+        @selection-change="handleSelectionChange"
       >
+        <!-- 多選框 -->
+        <el-table-column type="selection" width="50" align="center" />
         <el-table-column
           v-if="false"
           prop="activityId"
@@ -222,20 +245,34 @@
         <el-table-column
           prop="totalAmount"
           label="總金額"
-          min-width="100"
+          min-width="50"
           align="center"
         >
           <template #default="{ row }">
-            <strong class="amount"
-              >{{ appConfig.dollarTitle }}{{ row.totalAmount || 0 }}</strong
-            >
+            <strong class="amount">{{ row.totalAmount || 0 }}</strong>
+          </template>
+        </el-table-column>
+
+        <!-- 收據號碼 -->
+        <el-table-column label="收據號碼" min-width="80" align="center">
+          <template #default="{ row }">
+            <div class="receipt-number">
+              <el-tag
+                v-if="row.receiptNumber"
+                type="danger"
+                size="mini"
+                style="margin-top: 4px"
+              >
+                {{ row.receiptNumber || "" }}
+              </el-tag>
+            </div>
           </template>
         </el-table-column>
 
         <el-table-column
           prop="createdAt"
           label="建立時間"
-          min-width="150"
+          min-width="100"
           sortable
         >
           <template #default="{ row }">
@@ -345,6 +382,10 @@ const pageStateStore = usePageStateStore();
 const queryStore = useJoinRecordQueryStore();
 const isDev = computed(() => authService.getCurrentDev());
 const router = useRouter();
+const tableRef = ref(null);
+
+// 多選相關
+const selectedRecords = ref([]);
 
 // 使用 storeToRefs 保持響應性 - 包含分頁狀態
 const {
@@ -497,6 +538,48 @@ const handleReceiptPrint = (item) => {
   }
 };
 
+// 批量收據打印
+const handleBatchReceiptPrint = () => {
+  if (selectedRecords.value.length === 0) {
+    ElMessage.warning("請先選擇要打印的記錄");
+    return;
+  }
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = selectedRecords.value.map((r) => r.id).join(",");
+    const printDatas = selectedRecords.value.map((r) => r);
+    const printId = `receipt_batch_${isoStr}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+
+    router.push({
+      path: "/join-record-receipt-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "true",
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+
+// 選擇變更處理
+const handleSelectionChange = (selection) => {
+  selectedRecords.value = selection;
+};
+
+// 清除選擇
+const clearSelection = () => {
+  tableRef.value?.clearSelection();
+  selectedRecords.value = [];
+};
+
 const handleDelete = async (item) => {
   try {
     await ElMessageBox.confirm(
@@ -571,6 +654,39 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 批量操作區 */
+.batch-actions {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+}
+
+.batch-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.selected-count {
+  color: #333;
+  font-size: 0.875rem;
+}
+
+.selected-count strong {
+  color: var(--el-color-primary);
+  font-size: 1rem;
+}
+
+.batch-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 /* 項目摘要 */
 .items-summary {
   display: flex;

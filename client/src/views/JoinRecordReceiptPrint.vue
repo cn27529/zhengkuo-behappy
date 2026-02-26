@@ -106,7 +106,29 @@
       </div>
 
       <div class="config-body">
-        <p class="label">選擇單據模板：</p>
+        <!-- 批量打印導航 -->
+        <div v-if="isBatch" class="batch-navigation">
+          <p class="label">
+            批量張數：{{ currentIndex + 1 }} / {{ batchRecords.length }}
+          </p>
+          <div class="nav-buttons">
+            <el-button
+              v-for="(item, index) in batchRecords"
+              :key="index"
+              :type="getButtonType(index)"
+              :plain="index === currentIndex && !printedIndexes.has(index)"
+              circle
+              size="small"
+              @click="loadRecordByIndex(index)"
+            >
+              {{ index + 1 }}
+            </el-button>
+          </div>
+        </div>
+
+        <el-divider v-if="isBatch" />
+
+        <p class="label">選擇打印模板：</p>
         <el-radio-group v-model="activeTemplate" class="template-radio">
           <el-radio
             @click="handleTemplateChange('standard')"
@@ -172,6 +194,12 @@ const router = useRouter();
 const record = ref({});
 const printTime = ref("");
 
+// 批量打印相關
+const isBatch = ref(false);
+const batchRecords = ref([]);
+const currentIndex = ref(0);
+const printedIndexes = ref(new Set()); // 追蹤已打印完成的索引
+
 // 模擬收據字號（可改為從 API 獲取 record.id 或特定的編號規則）
 const receiptSerialNum = computed(() => {
   return record.value.id
@@ -219,7 +247,42 @@ const handleTemplateChange = (template = "standard") => {
   const name = (record.value.contact?.name || "未填寫").toString().trim();
   const receiptSerialText =
     activeTemplate.value === "standard" ? "感謝狀" : "收據";
-  document.title = `${name}-${receiptSerialNum.value}-${receiptSerialText}`;
+  const batchInfo = isBatch.value
+    ? `(${currentIndex.value + 1}/${batchRecords.value.length})`
+    : "";
+  document.title = `${name}-${receiptSerialNum.value}-${receiptSerialText}${batchInfo}`;
+};
+
+// 批量打印導航
+const handlePrevious = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--;
+    loadRecordByIndex(currentIndex.value);
+  }
+};
+
+const handleNext = () => {
+  if (currentIndex.value < batchRecords.value.length - 1) {
+    currentIndex.value++;
+    loadRecordByIndex(currentIndex.value);
+  }
+};
+
+const loadRecordByIndex = (index) => {
+  currentIndex.value = index; // 更新當前索引
+  record.value = batchRecords.value[index];
+  handleTemplateChange(activeTemplate.value);
+};
+
+// 獲取按鈕類型
+const getButtonType = (index) => {
+  if (printedIndexes.value.has(index)) {
+    return "success"; // 已打印完成：綠色
+  }
+  if (index === currentIndex.value) {
+    return "primary"; // 當前頁面：藍色
+  }
+  return "default"; // 未打印：灰色
 };
 
 const handlePrintWithHtmlToImage = async () => {
@@ -280,54 +343,110 @@ const handlePostPrintCheck = async () => {
 
     // 使用者確認巳打印完成，更新打印狀態
     record.value.activeTemplate = activeTemplate.value;
-    // 更新收據打印狀態
-    const result = await printStore.updateReceiptPrintStatus(record.value);
 
-    if (result?.success) {
-      ElMessage({
-        type: "success",
-        message: result?.message || "記錄巳打印完成狀態。👍",
-      });
+    // 如果是批量打印，更新當前這筆
+    if (isBatch.value) {
+      const result = await printStore.updateReceiptPrintStatus(record.value);
+
+      if (result?.success) {
+        // 標記當前索引為已打印
+        printedIndexes.value.add(currentIndex.value);
+
+        // 顯示完整的 store 返回訊息
+        const displayMessage =
+          result?.message ||
+          `收據 ${currentIndex.value + 1}/${batchRecords.value.length} 已標記為打印完成 👍`;
+
+        ElMessage({
+          type: "success",
+          message: displayMessage,
+          duration: 3000,
+        });
+
+        // 自動跳到下一張（如果還有的話）
+        if (currentIndex.value < batchRecords.value.length - 1) {
+          setTimeout(() => {
+            handleNext();
+          }, 500);
+        } else {
+          ElMessage({
+            type: "info",
+            message: "所有收據已處理完成！",
+          });
+        }
+      } else {
+        ElMessage({
+          type: "warning",
+          message: result?.message || "狀態更新失敗，但打印已完成。",
+        });
+      }
     } else {
-      ElMessage({
-        type: "warning",
-        message: result?.message || "狀態更新失敗，但打印已完成。",
-      });
+      // 單筆打印
+      const result = await printStore.updateReceiptPrintStatus(record.value);
+
+      if (result?.success) {
+        ElMessage({
+          type: "success",
+          message: result?.message || "記錄巳打印完成狀態。👍",
+        });
+      } else {
+        ElMessage({
+          type: "warning",
+          message: result?.message || "狀態更新失敗，但打印已完成。",
+        });
+      }
     }
   } catch {
-    // ElMessage({
-    //   type: "info",
-    //   message: "若打印失敗，請檢查打印機連線後重試。",
-    // });
+    // 使用者取消
   }
 };
 
 const handleClose = () => router.back();
 
 onMounted(() => {
-  // // 1. 開啟全螢幕 Loading
-  // const loading = ElLoading.service({
-  //   lock: true,
-  //   text: "正在準備收據資料...",
-  //   background: "rgba(240, 242, 245, 1)", // 使用與背景相同的顏色，視覺更統一
-  // });
-
   setPrintTime();
-  const printData = route.query.print_data;
-  if (printData) {
-    try {
-      record.value = JSON.parse(printData);
-      handleTemplateChange();
-    } catch (e) {
-      ElMessage.error("數據解析失敗");
+
+  // 檢查是否為批量打印
+  const isBatchParam = route.query.is_batch === "true";
+  const printId = route.query.print_id;
+
+  if (isBatchParam && printId) {
+    // 批量打印模式
+    isBatch.value = true;
+    const storedData = sessionStorage.getItem(printId);
+
+    if (storedData) {
+      try {
+        batchRecords.value = JSON.parse(storedData);
+        if (batchRecords.value.length > 0) {
+          currentIndex.value = 0;
+          record.value = batchRecords.value[0];
+          handleTemplateChange();
+        } else {
+          ElMessage.error("批量數據為空");
+          router.back();
+        }
+      } catch (e) {
+        ElMessage.error("批量數據解析失敗");
+        router.back();
+      }
+    } else {
+      ElMessage.error("找不到批量打印數據");
+      router.back();
+    }
+  } else {
+    // 單筆打印模式
+    const printData = route.query.print_data;
+    if (printData) {
+      try {
+        record.value = JSON.parse(printData);
+        handleTemplateChange();
+      } catch (e) {
+        ElMessage.error("數據解析失敗");
+        router.back();
+      }
     }
   }
-
-  // // 3. 關鍵：設定 1.5 秒延遲
-  // setTimeout(() => {
-  //   //isPageReady.value = true;
-  //   loading.close();
-  // }, 1000); // 1500 毫秒 = 1.5 秒
 
   if (!record.value.id) router.back();
 });
@@ -351,6 +470,36 @@ onMounted(() => {
 </style>
 
 <style scoped>
+/* 批量打印導航 */
+.batch-navigation {
+  background: #e7f4ff;
+  border: 1px solid #b3d8ff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.batch-navigation .label {
+  text-align: center;
+  font-weight: 600;
+  color: #409eff;
+  margin-bottom: 8px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.nav-buttons .el-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-weight: 600;
+}
+
 /* 頁面容器佈局 */
 .print-page-container {
   display: flex;

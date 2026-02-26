@@ -279,3 +279,7 @@ WHERE receiptIssued<>''
 ## 多張收據打印需求
 
 目前 client/src/views/JoinRecordList.vue 是列表收據打印功連接到 client/src/views/JoinRecordReceiptPrint.vue 實現打印，目前使用者的情境是要在列表頁面執行多選然後進行多張收據打印，這個多張打印我的想法是在列表頁執行多筆打勾，將打勾後的 ids 的 row 資料存到 sessionStorage.setItem(ids, printDatas)，接下來到打印頁面「JoinRecordReceiptPrint.vue」，如果 ids 是多筆的，我們的打印頁面在 "🖨️ 打印配置" 就有多張可以點選切換，"巳打印完成"的行為不變但需要注意多筆的資料更新的處理，多選的效果可以查看 client/src/views/JoinRecordStatesControl.vue 多選框應用。本次需求變更請查看 docs/dev-joinRecord-receipt-print-guide.md 文件並理解 client/src/views/JoinRecordReceiptPrint.vue 代碼。感謝你。
+
+## 收據以及感謝狀編碼規則
+
+收據以及感謝狀編碼的規則理解，收據（stamp）及感謝狀（standard）編碼規則，兩者都使用當前年月4碼+流水號4碼總共8碼："26029999"，兩者編碼規則相同，感謝狀再加一碼英文大寫："A26029999"，這是目前使用者所希望要的編碼方式，假設情境A使用者在打印頁面進行操作、B使用者同樣在打印頁面進行操作，兩位使用者會不會得到相同的編碼值，打印後會寫入資料庫，我們是web應用，我正在思考這個問題，如何防範。你思考一下，目前寫入的資料結構與文檔 client/src/data/mock_participation_records.json, docs/dev-joinRecord-receipt-print-guide.md，我們來腦力激盪一下，將"收據以及感謝狀編碼規則"的理解與分析結果生成 dev-joinRecord-receiptNumber-guide.md。

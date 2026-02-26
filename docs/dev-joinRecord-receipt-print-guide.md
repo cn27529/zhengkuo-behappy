@@ -1,5 +1,7 @@
 # 活動參加記錄 - 收據打印功能說明
 
+> **注意**: 本文檔說明單筆收據打印功能。如需批量打印多張收據，請參考 [批量收據打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md)。
+
 ## 功能概述
 
 實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模板切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。
@@ -841,7 +843,7 @@ const handlePostPrintCheck = () => {
 - [✅] 使用 html-to-image 生成高清圖像
 - [✅] 打印後確認機制
 - [✅] 動態收據字號生成
-- [ ] 支援批量打印多張收據
+- [✅] 支援批量打印多張收據（已實現，參考 [批量收據打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md)）
 - [ ] 添加自定義收據編號規則
 - [ ] 支援自定義寺廟資訊
 - [ ] 添加 QR Code（捐款查詢）
@@ -852,6 +854,7 @@ const handlePostPrintCheck = () => {
 
 ## 相關文件
 
+- [批量收據打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md) ⭐ 新增
 - [客製收據打印 Web 解決方案](./web-print-guide.md)
 - [活動參加記錄系統](./dev-joinRecord-guide.md)
 - [活動參加記錄列表](./dev-joinRecord-list-guide.md)
