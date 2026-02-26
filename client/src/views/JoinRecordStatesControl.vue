@@ -256,7 +256,7 @@
           </template>
         </el-table-column>
 
-        <!-- 是否需要收據 -->
+        <!-- 需要收據 -->
         <el-table-column label="需要收據" width="100" align="center">
           <template #default="{ row }">
             <el-select

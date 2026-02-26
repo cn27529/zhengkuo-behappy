@@ -146,7 +146,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="聯絡人" min-width="150" align="center">
+        <el-table-column label="聯絡人" min-width="60" align="center">
           <template #default="{ row }">
             <div class="contact-info">
               <div class="contact-name">
@@ -171,7 +171,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="參加項目" min-width="150">
+        <el-table-column label="參加項目" min-width="120">
           <template #default="{ row }">
             <div class="items-summary">
               <el-tag
