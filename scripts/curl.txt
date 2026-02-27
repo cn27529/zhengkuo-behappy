@@ -29,6 +29,9 @@ curl -X OPTIONS http://localhost:3000/api/activities \
 
 
 # rust-axum 
+
+curl -s "http://localhost:3000/api/mydata?fields=*,contact.*" | jq '.'
+
 # 法會活動
 curl -s "http://localhost:3000/api/activities?fields=*,contact.*" | jq '.'
 

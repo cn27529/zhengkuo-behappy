@@ -144,6 +144,46 @@ app.post("/api/reload-templates", (req, res) => {
   }
 });
 
+// 書本閱讀模式 - 翻頁瀏覽所有文檔
+app.get("/books", (req, res) => {
+  try {
+    const html = templateEngine.render("books.html");
+    res.send(html);
+  } catch (error) {
+    console.error("渲染書本頁面失敗:", error);
+    res.status(500).send("頁面載入失敗");
+  }
+});
+
+// API 端點 - 獲取所有文檔內容（用於書本模式）
+app.get("/api/books/all", (req, res) => {
+  try {
+    const files = getMarkdownFiles();
+    const pages = files.map((file) => {
+      const filePath = path.join(DOCS_DIR, file.name);
+      const content = fs.readFileSync(filePath, "utf8");
+      return {
+        filename: file.name,
+        title: file.description,
+        content: content,
+        htmlContent: marked(content),
+      };
+    });
+
+    res.json({
+      success: true,
+      pages: pages,
+      total: pages.length,
+    });
+  } catch (error) {
+    console.error("獲取文檔內容失敗:", error);
+    res.status(500).json({
+      success: false,
+      message: "獲取文檔內容失敗",
+    });
+  }
+});
+
 // 查看單個文檔 - 必須在 404 處理之前定義
 app.get("/doc/:filename", (req, res) => {
   const filename = decodeURIComponent(req.params.filename);
