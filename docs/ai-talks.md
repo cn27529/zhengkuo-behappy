@@ -283,3 +283,9 @@ WHERE receiptIssued<>''
 ## 收據以及感謝狀編碼規則
 
 收據以及感謝狀編碼的規則理解，收據（stamp）及感謝狀（standard）編碼規則，兩者都使用當前年月4碼+流水號4碼總共8碼："26029999"，兩者編碼規則相同，感謝狀再加一碼英文大寫："A26029999"，這是目前使用者所希望要的編碼方式，假設情境A使用者在打印頁面進行操作、B使用者同樣在打印頁面進行操作，兩位使用者會不會得到相同的編碼值，打印後會寫入資料庫，我們是web應用，我正在思考這個問題，如何防範。你思考一下，目前寫入的資料結構與文檔 client/src/data/mock_participation_records.json, docs/dev-joinRecord-receipt-print-guide.md，我們來腦力激盪一下，將"收據以及感謝狀編碼規則"的理解與分析結果生成 dev-joinRecord-receiptNumber-guide.md。
+
+## 文檔翻頁閱讀
+
+將 docs/ 所有 .md 檔案生成一頁面，可以用手指翻頁閱讀每個 .md 做每一頁就是一個 .md 的內容。生成 books 路由，以現有的 docs/docs-server.js 架構上添加。這個效果是否可行。
+
+將 docs/ 所有 .md 檔案生成 nodejs web 應用，端口3001，每個 .md 視為一個連接，點擊連接顯示 .md 頁面。
