@@ -107,10 +107,11 @@
 
       <div class="config-body">
         <!-- 批量打印導航 -->
+        <p class="label">
+          批量打印導航，第 {{ currentIndex + 1 }} 張 / 共
+          {{ batchRecords.length }} 張
+        </p>
         <div v-if="isBatch" class="batch-navigation">
-          <p class="label">
-            批量張數：{{ currentIndex + 1 }} / {{ batchRecords.length }}
-          </p>
           <div class="nav-buttons">
             <el-button
               v-for="(item, index) in batchRecords"
@@ -118,17 +119,19 @@
               :type="getButtonType(index)"
               :plain="index === currentIndex && !printedIndexes.has(index)"
               circle
-              size="small"
+              size="mini"
               @click="loadRecordByIndex(index)"
             >
-              {{ index + 1 }}
+              <el-tooltip :content="`${item.id}`" placement="top" size="mini">
+                <span>{{ index + 1 }}</span>
+              </el-tooltip>
             </el-button>
           </div>
         </div>
 
         <el-divider v-if="isBatch" />
 
-        <p class="label">選擇打印模板：</p>
+        <p class="label">請選擇打印模板</p>
         <el-radio-group v-model="activeTemplate" class="template-radio">
           <el-radio
             @click="handleTemplateChange('standard')"
@@ -472,11 +475,11 @@ onMounted(() => {
 <style scoped>
 /* 批量打印導航 */
 .batch-navigation {
+  /* border: 1px solid #b3d8ff;
   background: #e7f4ff;
-  border: 1px solid #b3d8ff;
   padding: 12px;
   border-radius: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 12px; */
 }
 
 .batch-navigation .label {
