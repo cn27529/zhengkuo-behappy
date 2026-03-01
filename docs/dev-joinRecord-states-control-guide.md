@@ -20,6 +20,7 @@
 | `paymentMethod`   | 付款方式 | 空(未選擇)、cash(現金)、transfer(銀行轉帳)、card(信用卡) |
 
 **注意**：
+
 - `receiptIssued` 於 2026-02-25 修改定義：空值表示未打印，`standard` 表示已打印感謝狀，`stamp` 表示已打印收據
 - `needReceipt` 控制是否需要開立收據（開關按鈕）
 - `receiptNumber` 為唯讀欄位，顯示已生成的收據編號（格式：`26029999` 或 `A26029999`）
@@ -54,54 +55,54 @@
 ```javascript
 // 狀態欄位配置
 const stateConfigs = computed(() => ({
-  needReceipt: { 
-    label: "需要收據", 
+  needReceipt: {
+    label: "需要收據",
     options: [
       { value: "1", label: "是" },
       { value: "0", label: "否" }
-    ] 
+    ]
   },
-  state: { 
-    label: "記錄狀態", 
+  state: {
+    label: "記錄狀態",
     options: [
       { value: "", label: "未選擇" },
       { value: "pending", label: "待處理" },
       { value: "confirmed", label: "已確認" },
       { value: "completed", label: "已完成" }
-    ] 
+    ]
   },
-  paymentState: { 
-    label: "付款狀態", 
+  paymentState: {
+    label: "付款狀態",
     options: [
       { value: "", label: "未選擇" },
       { value: "unpaid", label: "未付款" },
       { value: "paid", label: "已付款" }
-    ] 
+    ]
   },
-  receiptIssued: { 
-    label: "己開立收據", 
+  receiptIssued: {
+    label: "己開立收據",
     options: [
       { value: "", label: "未選擇" },
       { value: "standard", label: "感謝狀" },
       { value: "stamp", label: "收據" }
-    ] 
+    ]
   },
-  accountingState: { 
-    label: "會計狀態", 
+  accountingState: {
+    label: "會計狀態",
     options: [
       { value: "", label: "未選擇" },
       { value: "pending", label: "待處理" },
       { value: "reconciled", label: "已對帳" }
-    ] 
+    ]
   },
-  paymentMethod: { 
-    label: "付款方式", 
+  paymentMethod: {
+    label: "付款方式",
     options: [
       { value: "", label: "未選擇" },
       { value: "cash", label: "現金" },
       { value: "transfer", label: "銀行轉帳" },
       { value: "card", label: "信用卡" }
-    ] 
+    ]
   }
 }));
 
@@ -129,7 +130,7 @@ JoinRecordStatesControl.vue
     ├── 記錄ID + 需要收據開關
     ├── 聯絡人資訊
     ├── 參加項目
-    ├── 收據號碼（唯讀，顯示已生成編號）
+    ├── 打印號碼（唯讀，顯示已生成編號）
     ├── 收據狀態下拉選單（未打印/感謝狀/收據）
     ├── 付款狀態下拉選單
     ├── 會計狀態下拉選單
@@ -256,7 +257,7 @@ const canEditAccountingState = computed(() => {
    - `"stamp"`：已打印收據
    - 此欄位由打印頁面自動更新，不建議手動修改
 
-3. **收據號碼**：
+3. **打印號碼**：
    - `receiptNumber` 為唯讀欄位，由系統自動生成
    - 格式：收據 `26029999`（年月+流水號），感謝狀 `A26029999`（加前綴A）
    - 詳見 [收據編號生成機制說明](./dev-joinRecord-receiptNumber-guide.md)

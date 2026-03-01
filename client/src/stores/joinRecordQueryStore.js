@@ -343,12 +343,12 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
           matchFound = true;
         }
 
-        // 檢查收據號碼
+        // 檢查打印號碼
         if (
           item.receiptNumber &&
           item.receiptNumber.toLowerCase().includes(query)
         ) {
-          console.log("✅ 匹配收據號碼:", item.receiptNumber);
+          console.log("✅ 匹配打印號碼:", item.receiptNumber);
           matchFound = true;
         }
 

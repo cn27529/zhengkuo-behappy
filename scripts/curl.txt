@@ -29,8 +29,9 @@ curl -X OPTIONS http://localhost:3000/api/activities \
 
 
 # rust-axum 
+curl -s "http://localhost:3000/api/receipt-numbers?fields=*,contact.*" | jq '.'
 
-curl -s "http://localhost:3000/api/mydata?fields=*,contact.*" | jq '.'
+curl -s "http://localhost:3000/api/my-data?fields=*,contact.*" | jq '.'
 
 # 法會活動
 curl -s "http://localhost:3000/api/activities?fields=*,contact.*" | jq '.'
@@ -56,3 +57,8 @@ curl -X POST http://localhost:3000/api/activities \
 "state": "upcoming",
 "icon": "🦀"
 }'
+
+# 使用 curl 或 Postman 測試生成編號
+curl -X POST http://localhost:3000/api/receipt-numbers/generate \
+  -H "Content-Type: application/json" \
+  -d '{"recordId": 123, "receiptType": "stamp"}'

@@ -17,17 +17,18 @@ export const useJoinRecordPrintStore = defineStore("joinRecordPrint", {
       this.lastUpdateResult = null;
 
       try {
-        // 如果 record 中 receiptIssuedAt, receiptIssuedBy 已經有值，則不再更新
-        if (record.receiptIssuedAt && record.receiptIssuedBy) {
-          this.lastUpdateResult = {
-            success: true,
-            message: `收據打印狀態已存在，保持原始打印記錄不做更新。issuedAt: ${record.receiptIssuedAt}, issuedBy: ${record.receiptIssuedBy}`,
-          };
-          return this.lastUpdateResult;
-        }
+        // // 如果 record 中 receiptIssuedAt, receiptIssuedBy 已經有值，則不再更新
+        // if (record.receiptIssuedAt && record.receiptIssuedBy) {
+        //   this.lastUpdateResult = {
+        //     success: true,
+        //     message: `收據打印狀態已存在，保持原始打印記錄不做更新。issuedAt: ${record.receiptIssuedAt}, issuedBy: ${record.receiptIssuedBy}`,
+        //   };
+        //   return this.lastUpdateResult;
+        // }
 
         const result = await joinRecordService.updateByReceiptPrint(record);
         this.lastUpdateResult = result;
+
         return result;
       } catch (error) {
         console.error("更新收據打印狀態失敗:", error);

@@ -16,7 +16,7 @@ CREATE TABLE "participationRecordDB" (
     `receiptNumber` varchar(255) null,
     `receiptIssued` varchar(255) null default '', # 經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
     `receiptIssuedAt` varchar(255) null,
-    `receiptIssuedBy` varchar(255) null,
+    `receiptIssuedBy` varchar(255) null, # 收據開立者，也稱經手人
     `accountingState` varchar(255) null,
     `accountingDate` varchar(255) null,
     `accountingBy` varchar(255) null,

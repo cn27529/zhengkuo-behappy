@@ -13,7 +13,7 @@
 
           <div class="content-section">
             <div class="donor-info">
-              茲收到 <span class="highlight">{{ contactName }}</span>
+              茲收到 <span class="highlight">{{ contactName }}</span> 大德
             </div>
             <div class="items-detail">
               功德項目：
@@ -144,6 +144,17 @@
           >
         </el-radio-group>
 
+        <p class="label">修改大德</p>
+        <el-input
+          v-if="record.contact"
+          v-model="record.contact.name"
+          placeholder="請輸入大德姓名"
+          size="large"
+          clearable
+          @input="handleNameChange"
+        />
+        <el-input v-else disabled placeholder="載入中..." size="large" />
+
         <el-divider />
 
         <div class="print-tips">
@@ -179,15 +190,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElLoading, ElMessageBox } from "element-plus";
 import * as htmlToImage from "html-to-image";
 import printJS from "print-js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordPrintStore } from "../stores/joinRecordPrintStore.js";
+import { useReceiptNumberStore } from "../stores/receiptNumberStore.js";
 
 const printStore = useJoinRecordPrintStore();
+const receiptStore = useReceiptNumberStore(); // 生成編號的 store
+
 // 模板切換狀態
 const activeTemplate = ref("standard");
 const printing = ref(false);
@@ -196,6 +210,7 @@ const route = useRoute();
 const router = useRouter();
 const record = ref({});
 const printTime = ref("");
+const receiptNumberId = ref(null); // 儲存領取的正式編號 ID，以便後續更新狀態
 
 // 批量打印相關
 const isBatch = ref(false);
@@ -203,15 +218,31 @@ const batchRecords = ref([]);
 const currentIndex = ref(0);
 const printedIndexes = ref(new Set()); // 追蹤已打印完成的索引
 
+/**
+ * 當大德姓名修改時的處理
+ */
+const handleNameChange = () => {
+  // 重新觸發標題更新，確保列印存檔時的檔名同步
+  handleTemplateChange(activeTemplate.value);
+};
+
 // 模擬收據字號（可改為從 API 獲取 record.id 或特定的編號規則）
 const receiptSerialNum = computed(() => {
-  return record.value.id
-    ? `${record.value.id}A${record.value.activityId}R${record.value.registrationId}`
-    : "00000000";
+  // return record.value.id
+  //   ? `${record.value.id}A${record.value.activityId}R${record.value.registrationId}`
+  //   : "00000000";
+
+  // 優先使用 record 中的真實編號，若無則顯示暫存 ID，最後才顯示 0000
+  if (record.value.receiptNumber) return record.value.receiptNumber;
+  return record.value.id ? `TEMP-${record.value.id}` : "00000000";
 });
 
-// 數據邏輯 (保持您的原始配置)
-const contactName = computed(() => record.value.contact?.name || "未知");
+// 數據邏輯 (保持您的原始配置) 修正 contactName 的安全性
+const contactName = computed(() => {
+  // 增加安全檢查，防止讀取 undefined 的 name 屬性
+  return record.value?.contact?.name || "載入中...";
+});
+
 const contactAddress = computed(() => {
   const items = record.value.items || [];
   return items.find((item) => item.sourceAddress)?.sourceAddress || "";
@@ -244,6 +275,7 @@ const convertToChinese = (num) => {
   return result.replace(/零+$/, "");
 };
 
+//
 const handleTemplateChange = (template = "standard") => {
   activeTemplate.value = template;
 
@@ -290,6 +322,48 @@ const getButtonType = (index) => {
 
 const handlePrintWithHtmlToImage = async () => {
   const node = document.getElementById("receipt-capture-area");
+
+  // ✅ 1. 在擷取圖片前，先確認是否已有正式編號，若無則即時向 Rust 領取
+  if (!record.value.receiptNumber) {
+    const fetchLoading = ElLoading.service({ text: "正在領取正式編號..." }); //
+    try {
+      // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
+      const result = await receiptStore.generateReceiptNumber(
+        record.value.id,
+        activeTemplate.value,
+      );
+
+      if (result.success) {
+        // 更新本地響應式數據，觸發 receiptSerialNum 計算屬性
+        record.value.receiptNumber = result.data.receiptNumber; //
+        record.value.receiptIssued = activeTemplate.value;
+        receiptNumberId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
+
+        console.log(
+          "正式編號領取成功:",
+          record.value.receiptNumber,
+          "編號 ID:",
+          receiptNumberId.value,
+        );
+
+        handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
+
+        // 🔥 重要：等待 Vue 完成 DOM 更新，確保擷取到的 HTML 內含新編號
+        await nextTick();
+        await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      ElMessage.error("正式編號領取失敗: " + error.message);
+      fetchLoading.close();
+      return; // 領號失敗則中止列印，避免印出 TEMP 編號
+    } finally {
+      fetchLoading.close();
+    }
+  }
+
+  // ✅ 2. 圖像擷取與打印流程
   const loading = ElLoading.service({
     text: "正在生成高清圖像...",
     background: "rgba(240, 242, 245, 0.8)",
@@ -338,17 +412,19 @@ const handlePrintWithHtmlToImage = async () => {
 const handlePostPrintCheck = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
-      confirmButtonText: "巳打印完成",
+      confirmButtonText: "打印完成",
       cancelButtonText: "取消打印",
       type: "question",
       center: true,
     });
 
-    // 使用者確認巳打印完成，更新打印狀態
+    // 使用者確認打印完成，更新打印狀態
     record.value.activeTemplate = activeTemplate.value;
 
     // 如果是批量打印，更新當前這筆
     if (isBatch.value) {
+      record.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
+      record.value.receiptIssuedBy = receiptStore.getUserName() || "沒有名稱"; // 更新領取人
       const result = await printStore.updateReceiptPrintStatus(record.value);
 
       if (result?.success) {
@@ -358,13 +434,30 @@ const handlePostPrintCheck = async () => {
         // 顯示完整的 store 返回訊息
         const displayMessage =
           result?.message ||
-          `收據 ${currentIndex.value + 1}/${batchRecords.value.length} 已標記為打印完成 👍`;
+          `收據 ${currentIndex.value + 1}/${batchRecords.value.length} 標記為打印完成 👍`;
 
         ElMessage({
           type: "success",
           message: displayMessage,
           duration: 3000,
         });
+
+        // 同步更新編號狀態為已打印
+        if (receiptNumberId.value) {
+          // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
+          const stateResult = await receiptStore.stateReceiptNumber(
+            receiptNumberId.value,
+            "打印完成",
+            "printed",
+          ); // 同步更新編號狀態為已打印
+          if (stateResult?.success) {
+            console.log("編號狀態更新成功");
+          } else {
+            console.warn("編號狀態更新失敗:", stateResult?.message);
+          }
+        } else {
+          console.warn("缺少 receiptNumberId，無法更新編號狀態");
+        }
 
         // 自動跳到下一張（如果還有的話）
         if (currentIndex.value < batchRecords.value.length - 1) {
@@ -385,13 +478,32 @@ const handlePostPrintCheck = async () => {
       }
     } else {
       // 單筆打印
+      record.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
+      record.value.receiptIssuedBy = receiptStore.getUserName() || "沒有名稱"; // 更新領取人
       const result = await printStore.updateReceiptPrintStatus(record.value);
 
       if (result?.success) {
         ElMessage({
           type: "success",
-          message: result?.message || "記錄巳打印完成狀態。👍",
+          message: result?.message || "記錄打印完成狀態。👍",
         });
+
+        // 同步更新編號狀態為已打印
+        if (receiptNumberId.value) {
+          // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
+          const stateResult = await receiptStore.stateReceiptNumber(
+            receiptNumberId.value,
+            "打印完成",
+            "printed",
+          ); // 同步更新編號狀態為已打印
+          if (stateResult?.success) {
+            console.log("編號狀態「打印完成」更新成功");
+          } else {
+            console.warn("編號狀態「打印完成」更新失敗:", stateResult?.message);
+          }
+        } else {
+          console.warn("缺少 receiptNumberId，無法更新編號狀態");
+        }
       } else {
         ElMessage({
           type: "warning",
@@ -399,8 +511,59 @@ const handlePostPrintCheck = async () => {
         });
       }
     }
-  } catch {
-    // 使用者取消
+  } catch (error) {
+    // 這裡攔截「取消打印」的觸發
+    if (error === "cancel") {
+      console.log("使用者取消打印");
+
+      // 🔥 重要：在使用者取消打印後，仍然需要將該筆記錄的 receiptIssuedBy, receiptIssuedAt, receiptIssued 和 receiptNumber 重置為 null，保持在未打印狀態
+      // 這樣做的原因是：即使用戶取消了打印，但他之前已經領取了正式編號，為了保持數據的一致性和準確性，我們需要將該筆記錄的狀態重置回未打印，讓它可以再次被打印並領取新的編號。
+      // 注意：這裡的重置動作不會直接影響到後端的數據，除非 printStore.updateReceiptPrintStatus 這個方法內部有實現對 receiptIssued 和 receiptNumber 的更新邏輯。確保該方法能夠正確處理這些字段的重置。
+      // 這裡的重置動作是為了確保前端的狀態能夠反映出「取消打印」的結果，讓使用者在下一次嘗試打印時能夠重新領取編號並進行打印。
+      // 如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
+      // 已經領取了正式編號會保留在編號系統做為證據。
+      record.value.receiptIssued = ""; // 重置模板狀態，保持在未打印狀態
+      record.value.receiptNumber = ""; // 重置編號，保持在未打印狀態
+      record.value.receiptIssuedAt = ""; // 重置領取時間
+      record.value.receiptIssuedBy = ""; // 重置領取人
+      const result = await printStore.updateReceiptPrintStatus(record.value);
+      if (result?.success) {
+        ElMessage({
+          type: "info",
+          message: result?.message || "已取消打印狀態更新，記錄維持原樣。",
+        });
+      } else {
+        ElMessage({
+          type: "warning",
+          message: result?.message || "狀態更新失敗，但已取消打印。",
+        });
+      }
+
+      if (receiptNumberId.value) {
+        // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
+        const stateResult = await receiptStore.stateReceiptNumber(
+          receiptNumberId.value,
+          "取消打印",
+          "unprinted",
+        ); // 同步更新編號狀態為未打印
+        if (stateResult?.success) {
+          console.log("編號狀態「取消打印」更新成功");
+        } else {
+          console.warn("編號狀態「取消打印」更新失敗:", stateResult?.message);
+        }
+      } else {
+        console.warn("缺少 receiptNumberId，無法更新編號狀態");
+      }
+
+      ElMessage({
+        type: "info",
+        message: "已取消狀態更新，記錄維持原樣。",
+      });
+
+      // 可以在這裡加入額外邏輯，例如：
+      // 1. 如果是批量打印，是否需要停留在當前頁面不跳轉？（目前邏輯本來就不會跳轉）
+      // 2. 是否需要記錄該編號雖然領取但未實際打印？
+    }
   }
 };
 

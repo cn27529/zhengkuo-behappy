@@ -2,253 +2,256 @@
 <template>
   <div class="print-page-container">
     <div class="preview-section">
-<div class="print-registration">
-    <!-- 列印內容 -->
-    <div class="print-content" id="print-content">
-      <!-- 表頭 -->
-      <div class="print-header">
-        <h1>{{ printContent.contact?.name || "未填寫" }}-祈福登記表</h1>
-        <div class="print-meta">
-          <!-- <p>｜列印時間：{{ printTime }}｜列印編號：{{ printId }}｜</p> -->
-        </div>
-      </div>
+      <div class="print-registration">
+        <!-- 列印內容 -->
+        <div class="print-content" id="print-content">
+          <!-- 表頭 -->
+          <div class="print-header">
+            <h1>{{ printContent.contact?.name || "未填寫" }}-祈福登記表</h1>
+            <div class="print-meta">
+              <!-- <p>｜列印時間：{{ printTime }}｜列印編號：{{ printId }}｜</p> -->
+            </div>
+          </div>
 
-      <!-- 聯絡人信息 -->
-      <div class="print-section">
-        <h2 class="section-title">一、聯絡人信息</h2>
-        <div class="section-content">
-          <table class="info-table">
-            <tbody>
-              <tr>
-                <td width="25%"><strong>聯絡人姓名：</strong></td>
-                <td width="25%">
-                  {{ printContent.contact?.name || "未填寫" }}
-                </td>
-                <td width="25%"><strong>手機號碼：</strong></td>
-                <td width="25%">
-                  {{ printContent.contact?.mobile || "未填寫" }}
-                </td>
-              </tr>
-              <tr>
-                <td><strong>家用電話：</strong></td>
-                <td>{{ printContent.contact?.phone || "未填寫" }}</td>
-                <td><strong>資料表屬性：</strong></td>
-                <td>
-                  {{ printContent.contact?.relationship || "未填寫" }}
-                  <span v-if="printContent.contact?.otherRelationship">
-                    ({{ printContent.contact.otherRelationship }})
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+          <!-- 聯絡人信息 -->
+          <div class="print-section">
+            <h2 class="section-title">一、聯絡人信息</h2>
+            <div class="section-content">
+              <table class="info-table">
+                <tbody>
+                  <tr>
+                    <td width="25%"><strong>聯絡人姓名：</strong></td>
+                    <td width="25%">
+                      {{ printContent.contact?.name || "未填寫" }}
+                    </td>
+                    <td width="25%"><strong>手機號碼：</strong></td>
+                    <td width="25%">
+                      {{ printContent.contact?.mobile || "未填寫" }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>家用電話：</strong></td>
+                    <td>{{ printContent.contact?.phone || "未填寫" }}</td>
+                    <td><strong>資料表屬性：</strong></td>
+                    <td>
+                      {{ printContent.contact?.relationship || "未填寫" }}
+                      <span v-if="printContent.contact?.otherRelationship">
+                        ({{ printContent.contact.otherRelationship }})
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-      <!-- 消災祈福 -->
-      <div class="print-section" v-if="printContent.blessing">
-        <h2 class="section-title">二、消災祈福</h2>
-        <div class="section-content">
-          <table class="info-table">
-            <tbody>
-              <tr>
-                <td width="20%"><strong>地址：</strong></td>
-                <td width="80%">
-                  {{ printContent.blessing.address || "未填寫" }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <!-- 消災祈福 -->
+          <div class="print-section" v-if="printContent.blessing">
+            <h2 class="section-title">二、消災祈福</h2>
+            <div class="section-content">
+              <table class="info-table">
+                <tbody>
+                  <tr>
+                    <td width="20%"><strong>地址：</strong></td>
+                    <td width="80%">
+                      {{ printContent.blessing.address || "未填寫" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
-          <!-- 消災人員列表 -->
-          <div
-            class="persons-list"
-            v-if="
-              printContent.blessing.persons &&
-              printContent.blessing.persons.length
-            "
-          >
-            <h3 class="sub-title">消災人員名單</h3>
-            <table class="persons-table">
-              <caption>
-                <div class="persons-summary">
-                  共 {{ availableBlessingPersons.length }} 位人員
-                  <span v-if="currentHouseholdHeadsCount > 0">
-                    （{{ currentHouseholdHeadsCount }} 位戶長）
-                  </span>
-                </div>
-              </caption>
-              <thead>
-                <tr>
-                  <th width="5%">序號</th>
-                  <th width="20%">姓名</th>
-                  <th width="15%">生肖</th>
-                  <th width="50%">備註</th>
-                  <th width="10%">戶長</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(person, index) in availableBlessingPersons"
-                  :key="person.id"
-                >
-                  <td class="text-center">{{ index + 1 }}</td>
-                  <td class="text-center">{{ person.name || "未填寫" }}</td>
-                  <td class="text-center">{{ person.zodiac || "未選擇" }}</td>
-                  <td class="text-left">{{ person.notes || "無" }}</td>
-                  <td class="text-center">
-                    {{ person.isHouseholdHead ? "✓" : "" }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              <!-- 消災人員列表 -->
+              <div
+                class="persons-list"
+                v-if="
+                  printContent.blessing.persons &&
+                  printContent.blessing.persons.length
+                "
+              >
+                <h3 class="sub-title">消災人員名單</h3>
+                <table class="persons-table">
+                  <caption>
+                    <div class="persons-summary">
+                      共 {{ availableBlessingPersons.length }} 位人員
+                      <span v-if="currentHouseholdHeadsCount > 0">
+                        （{{ currentHouseholdHeadsCount }} 位戶長）
+                      </span>
+                    </div>
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th width="5%">序號</th>
+                      <th width="20%">姓名</th>
+                      <th width="15%">生肖</th>
+                      <th width="50%">備註</th>
+                      <th width="10%">戶長</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(person, index) in availableBlessingPersons"
+                      :key="person.id"
+                    >
+                      <td class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">{{ person.name || "未填寫" }}</td>
+                      <td class="text-center">
+                        {{ person.zodiac || "未選擇" }}
+                      </td>
+                      <td class="text-left">{{ person.notes || "無" }}</td>
+                      <td class="text-center">
+                        {{ person.isHouseholdHead ? "✓" : "" }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 超度祈福 -->
+          <div class="print-section" v-if="printContent.salvation">
+            <h2 class="section-title">三、超度祈福</h2>
+            <div class="section-content">
+              <table class="info-table">
+                <tbody>
+                  <tr>
+                    <td width="20%"><strong>地址：</strong></td>
+                    <td width="80%">
+                      {{ printContent.salvation.address || "未填寫" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- 歷代祖先 -->
+              <div
+                class="ancestors-list"
+                v-if="
+                  printContent.salvation.ancestors &&
+                  printContent.salvation.ancestors.length
+                "
+              >
+                <h3 class="sub-title">歷代祖先</h3>
+                <table class="persons-table">
+                  <caption>
+                    <div class="persons-summary">
+                      共 {{ availableAncestors.length }} 位祖先
+                    </div>
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th width="10%">序號</th>
+                      <th width="40%">祖先姓氏</th>
+                      <th width="50%">備註</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(ancestor, index) in availableAncestors"
+                      :key="ancestor.id"
+                    >
+                      <td class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">
+                        {{ ancestor.surname || "未填寫" }} 氏歷代祖先
+                      </td>
+                      <td class="text-left">{{ ancestor.notes || "無" }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- 陽上人 -->
+              <div
+                class="survivors-list"
+                v-if="
+                  printContent.salvation.survivors &&
+                  printContent.salvation.survivors.length
+                "
+              >
+                <h3 class="sub-title">陽上人</h3>
+                <table class="persons-table">
+                  <caption>
+                    <div class="persons-summary">
+                      共 {{ availableSurvivors.length }} 位陽上人
+                    </div>
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th width="10%">序號</th>
+                      <th width="25%">姓名</th>
+                      <th width="15%">生肖</th>
+                      <th width="50%">備註</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(survivor, index) in availableSurvivors"
+                      :key="survivor.id"
+                    >
+                      <td class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">
+                        {{ survivor.name || "未填寫" }}
+                      </td>
+                      <td class="text-center">
+                        {{ survivor.zodiac || "未選擇" }}
+                      </td>
+                      <td class="text-left">{{ survivor.notes || "無" }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 頁尾 -->
+          <div class="print-footer">
+            <p class="footer-note"></p>
+            <div class="print-meta">
+              <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+            </div>
           </div>
         </div>
       </div>
-
-      <!-- 超度祈福 -->
-      <div class="print-section" v-if="printContent.salvation">
-        <h2 class="section-title">三、超度祈福</h2>
-        <div class="section-content">
-          <table class="info-table">
-            <tbody>
-              <tr>
-                <td width="20%"><strong>地址：</strong></td>
-                <td width="80%">
-                  {{ printContent.salvation.address || "未填寫" }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- 歷代祖先 -->
-          <div
-            class="ancestors-list"
-            v-if="
-              printContent.salvation.ancestors &&
-              printContent.salvation.ancestors.length
-            "
-          >
-            <h3 class="sub-title">歷代祖先</h3>
-            <table class="persons-table">
-              <caption>
-                <div class="persons-summary">
-                  共 {{ availableAncestors.length }} 位祖先
-                </div>
-              </caption>
-              <thead>
-                <tr>
-                  <th width="10%">序號</th>
-                  <th width="40%">祖先姓氏</th>
-                  <th width="50%">備註</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(ancestor, index) in availableAncestors"
-                  :key="ancestor.id"
-                >
-                  <td class="text-center">{{ index + 1 }}</td>
-                  <td class="text-center">
-                    {{ ancestor.surname || "未填寫" }} 氏歷代祖先
-                  </td>
-                  <td class="text-left">{{ ancestor.notes || "無" }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- 陽上人 -->
-          <div
-            class="survivors-list"
-            v-if="
-              printContent.salvation.survivors &&
-              printContent.salvation.survivors.length
-            "
-          >
-            <h3 class="sub-title">陽上人</h3>
-            <table class="persons-table">
-              <caption>
-                <div class="persons-summary">
-                  共 {{ availableSurvivors.length }} 位陽上人
-                </div>
-              </caption>
-              <thead>
-                <tr>
-                  <th width="10%">序號</th>
-                  <th width="25%">姓名</th>
-                  <th width="15%">生肖</th>
-                  <th width="50%">備註</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(survivor, index) in availableSurvivors"
-                  :key="survivor.id"
-                >
-                  <td class="text-center">{{ index + 1 }}</td>
-                  <td class="text-center">{{ survivor.name || "未填寫" }}</td>
-                  <td class="text-center">{{ survivor.zodiac || "未選擇" }}</td>
-                  <td class="text-left">{{ survivor.notes || "無" }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- 頁尾 -->
-      <div class="print-footer">
-        <p class="footer-note"></p>
-        <div class="print-meta">
-          <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
-        </div>
-      </div>
-    </div>
-
-    
-  </div>
     </div>
     <div class="config-sidebar">
-<!-- 列印控制欄（僅在預覽時顯示） -->
-    <div class="print-controls" v-if="!isPrinting">
-      <div class="controls">
-        <div class="download-dropdown" style="display: none">
-          <button @click="toggleDownloadMenu" class="download-btn">
-            📥 下載
-            <span class="dropdown-arrow">▼</span>
-          </button>
-          <div v-if="showDownloadMenu" class="download-menu">
-            <button @click="handleDownloadPDF" class="download-option">
-              📄 下載為 PDF
+      <!-- 列印控制欄（僅在預覽時顯示） -->
+      <div class="print-controls" v-if="!isPrinting">
+        <div class="controls">
+          <div class="download-dropdown" style="display: none">
+            <button @click="toggleDownloadMenu" class="download-btn">
+              📥 下載
+              <span class="dropdown-arrow">▼</span>
             </button>
-            <button @click="handleDownloadExcel" class="download-option">
-              📊 下載為 Excel
-            </button>
-            <button @click="handleDownloadJSON" class="download-option">
-              ⚙️ 下載為 JSON
-            </button>
-            <button @click="handleDownloadImage" class="download-option">
-              🖼️ 下載為圖片
-            </button>
-            <button @click="handleDownloadText" class="download-option">
-              📝 下載為文字檔
-            </button>
+            <div v-if="showDownloadMenu" class="download-menu">
+              <button @click="handleDownloadPDF" class="download-option">
+                📄 下載為 PDF
+              </button>
+              <button @click="handleDownloadExcel" class="download-option">
+                📊 下載為 Excel
+              </button>
+              <button @click="handleDownloadJSON" class="download-option">
+                ⚙️ 下載為 JSON
+              </button>
+              <button @click="handleDownloadImage" class="download-option">
+                🖼️ 下載為圖片
+              </button>
+              <button @click="handleDownloadText" class="download-option">
+                📝 下載為文字檔
+              </button>
+            </div>
           </div>
         </div>
+        <div class="controls">
+          <el-button type="primary" @click="handlePrint" size="large"
+            >🖨️ 打印詳情</el-button
+          >
+        </div>
+        <div class="controls">
+          <el-button @click="handleBack" size="large">關閉</el-button>
+        </div>
       </div>
-      <div class="controls">
-        <el-button type="primary" @click="handlePrint" size="large"
-          >🖨️ 列印詳情</el-button
-        >
-      </div>
-      <div class="controls">
-        <el-button @click="handleBack" size="large">關閉</el-button>
-      </div>
-    </div>
     </div>
   </div>
-  
 </template>
 
 <script setup>
@@ -692,7 +695,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-
 /* 頁面容器佈局 */
 .print-page-container {
   display: flex;
@@ -706,7 +708,7 @@ onUnmounted(() => {
   flex: 1;
   /* display: flex; */
   justify-content: center;
-  align-items: center;  
+  align-items: center;
   overflow-y: auto;
 }
 

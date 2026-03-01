@@ -146,29 +146,6 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="資料屬性" min-width="50" align="center">
-          <template #default="{ row }">
-            <div>
-              <el-tooltip :content="`參加ID: ${row.id}`" placement="top">
-                <el-tag
-                  v-if="row.contact?.relationship"
-                  class="other-relationship"
-                  size="mini"
-                >
-                  {{ row.contact.relationship }}
-
-                  <span
-                    v-if="false && row.contact?.otherRelationship"
-                    class="other-relationship"
-                  >
-                    ({{ row.contact.otherRelationship }})
-                  </span>
-                </el-tag>
-              </el-tooltip>
-            </div>
-          </template>
-        </el-table-column>
-
         <el-table-column label="聯絡人" min-width="100" align="center">
           <template #default="{ row }">
             <div class="contact-info">
@@ -253,8 +230,8 @@
           </template>
         </el-table-column>
 
-        <!-- 收據號碼 -->
-        <el-table-column label="收據號碼" min-width="80" align="center">
+        <!-- 打印號碼 -->
+        <el-table-column label="打印號碼" min-width="80" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
               <el-tag
@@ -269,7 +246,17 @@
           </template>
         </el-table-column>
 
+        <!-- 收據開立者 -->
+        <el-table-column label="經手人" min-width="80" align="center">
+          <template #default="{ row }">
+            <div class="receipt-issuer">
+              <span v-if="row.receiptIssuedBy">{{ row.receiptIssuedBy }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
         <el-table-column
+          v-if="false"
           prop="createdAt"
           label="建立時間"
           min-width="100"
@@ -288,7 +275,12 @@
               </el-button>
             </el-tooltip>
 
-            <el-tooltip content="收據打印" placement="top">
+            <!-- 需要打印 -->
+            <el-tooltip
+              content="收據打印"
+              placement="top"
+              v-if="normalizeBool(row.needReceipt)"
+            >
               <el-button type="success" circle @click="handleReceiptPrint(row)">
                 🖨️
               </el-button>
@@ -400,6 +392,11 @@ const {
   stateOptions,
   itemTypeOptions,
 } = storeToRefs(queryStore);
+
+// 將多種布林/數字字串規格統一為 boolean
+const normalizeBool = (value) => {
+  return value === true || value === 1 || value === "1" || value === "true";
+};
 
 // 計算屬性 - 添加防護檢查
 const totalItems = computed(() => {
