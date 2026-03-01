@@ -25,6 +25,7 @@ export class BaseRustService {
       registrations: "/api/registrations",
       monthlyDonates: "/api/monthly-donates",
       participationRecords: "/api/participation-records",
+      receiptNumber: "/api/receipt-numbers", //收據與感謝狀取號
       myData: "/api/my-data",
       users: "/api/users",
       health: "/health",

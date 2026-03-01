@@ -10,12 +10,14 @@
 實現收據和感謝狀的唯一編號生成機制，確保在多使用者併發環境下不會產生重複編號。編號規則為年月4碼 + 流水號4碼，感謝狀額外加前綴 "A"。
 
 **技術方案**：
+
 - ✅ Rust Axum 後端原子性生成
 - ✅ 獨立 `receiptNumbersDB` 表管理編號
 - ✅ SQLite WAL 機制保證併發安全
 - ✅ 雙軌架構：寫入走 Rust，查詢走 Rust 高性能軌
 
 **性能優勢**：
+
 - ⚡ 編號生成：~1ms（只掃描當月編號，~100筆）
 - ⚡ 併發能力：鎖定範圍小，不影響其他操作
 - ⚡ 擴展性強：支援作廢、重新生成等功能
@@ -23,11 +25,13 @@
 ## 編號規則
 
 ### 收據（stamp）
+
 - **格式**: `YYMM9999`
 - **範例**: `26029999`（2026年2月，流水號9999）
 - **說明**: 8碼數字
 
 ### 感謝狀（standard）
+
 - **格式**: `AYYMM9999`
 - **範例**: `A26029999`（2026年2月，流水號9999）
 - **說明**: 前綴A + 8碼數字
@@ -69,8 +73,8 @@ CREATE TABLE receiptNumbersDB (
   created_by TEXT,                          -- 生成人員ID
   status TEXT DEFAULT 'active',             -- 'active', 'void', 'regenerated'
   void_reason TEXT,                         -- 作廢原因
-  
-  FOREIGN KEY (record_id) REFERENCES participationRecordsDB(id) ON DELETE CASCADE
+
+  FOREIGN KEY (record_id) REFERENCES participationRecordDB(id) ON DELETE CASCADE
 );
 
 -- 性能優化索引
@@ -81,27 +85,30 @@ CREATE INDEX idx_receipt_status ON receiptNumbersDB(status);
 ```
 
 **設計優勢**：
+
 - ✅ 查詢最大流水號只掃描當月記錄（~100筆），極快
-- ✅ `FOR UPDATE` 鎖定範圍小，不影響 participationRecordsDB 表
+- ✅ `FOR UPDATE` 鎖定範圍小，不影響 participationRecordDB 表
 - ✅ 完整的編號生成歷史和審計追蹤
 - ✅ 支援作廢、重新生成等擴展功能
 
 #### 2. 參加記錄表（現有）
 
 ```javascript
-// participationRecordsDB 表
+// participationRecordDB 表
 {
   "id": 32,
   "receiptNumber": "26029999",        // 收據編號（關聯 receiptNumbersDB 表）
   "receiptIssued": "stamp",           // 收據類型: "stamp" 或 "standard"
   "receiptIssuedAt": "2026-02-26T14:30:00Z",  // 打印時間
-  "receiptIssuedBy": "user_id",       // 打印人員
+  "receiptIssuedBy": "user_id",       // 收據開立者，也稱經手人
   // ... 其他欄位
 }
 ```
-  // ... 其他欄位
+
+// ... 其他欄位
 }
-```
+
+````
 
 ### 前端顯示
 
@@ -113,9 +120,10 @@ const receiptSerialNum = computed(() => {
     ? `${record.value.id}A${record.value.activityId}R${record.value.registrationId}`
     : "00000000";
 });
-```
+````
 
 **顯示位置**：
+
 ```html
 <div class="receipt-serial">佛字第 {{ receiptSerialNum }} 號</div>
 ```
@@ -150,12 +158,14 @@ T6: B使用者寫入資料庫 → 覆蓋或錯誤
 **原理**: 編號生成由後端統一管理，使用資料庫事務保證唯一性
 
 #### 優點
+
 - ✅ 100% 避免衝突
 - ✅ 資料庫保證唯一性
 - ✅ 支援高併發
 - ✅ 流水號連續
 
 #### 缺點
+
 - ❌ 需要後端 API 支援
 - ❌ 增加一次 API 請求
 
@@ -179,6 +189,7 @@ T6: B使用者寫入資料庫 → 覆蓋或錯誤
 #### 後端實現（Rust Axum + 獨立編號表）
 
 **架構優勢**：
+
 - ⚡ 查詢最大流水號只掃描 `receiptNumbersDB` 表（當月 ~100 筆）
 - ⚡ 性能提升 50 倍：1ms vs 50ms（相比掃描全部參加記錄）
 - 🔒 `FOR UPDATE` 鎖定範圍小，不影響參加記錄表操作
@@ -207,18 +218,18 @@ async fn generate_receipt_number(
 ) -> Result<Json<GenerateReceiptNumberResponse>, StatusCode> {
     let mut tx = pool.begin().await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+
     // 1. 獲取當前年月 (YYMM)
     let now = chrono::Local::now();
     let year_month = now.format("%y%m").to_string(); // "2602"
-    
+
     // 2. 查詢當月最大流水號（只掃描編號表，極快！）
     // 🚀 關鍵優化：只查詢當月記錄，不掃描全部參加記錄
     let max_serial: Option<i32> = sqlx::query_scalar(
-        "SELECT serial_number FROM receiptNumbersDB 
+        "SELECT serial_number FROM receiptNumbersDB
          WHERE year_month = ? AND receipt_type = ?
-         ORDER BY serial_number DESC 
-         LIMIT 1 
+         ORDER BY serial_number DESC
+         LIMIT 1
          FOR UPDATE"
     )
     .bind(&year_month)
@@ -226,14 +237,14 @@ async fn generate_receipt_number(
     .fetch_optional(&mut tx)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+
     // 3. 計算新流水號
     let next_serial = max_serial.unwrap_or(0) + 1;
-    
+
     if next_serial > 9999 {
         return Err(StatusCode::BAD_REQUEST); // 當月編號已用完
     }
-    
+
     // 4. 生成完整編號
     let prefix = if payload.receipt_type == "standard" {
         format!("A{}", year_month) // "A2602"
@@ -241,10 +252,10 @@ async fn generate_receipt_number(
         year_month.clone() // "2602"
     };
     let receipt_number = format!("{}{:04}", prefix, next_serial);
-    
+
     // 5. 插入編號記錄（審計追蹤）
     sqlx::query(
-        "INSERT INTO receiptNumbersDB 
+        "INSERT INTO receiptNumbersDB
          (receipt_number, receipt_type, year_month, serial_number, record_id, created_by)
          VALUES (?, ?, ?, ?, ?, ?)"
     )
@@ -257,11 +268,11 @@ async fn generate_receipt_number(
     .execute(&mut tx)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+
     // 6. 更新參加記錄
     let result = sqlx::query(
-        "UPDATE participation_records 
-         SET receiptNumber = ?, 
+        "UPDATE participation_records
+         SET receiptNumber = ?,
              receiptIssued = ?,
              receiptIssuedAt = CURRENT_TIMESTAMP,
              receiptIssuedBy = ?
@@ -274,15 +285,15 @@ async fn generate_receipt_number(
     .execute(&mut tx)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+
     if result.rows_affected() == 0 {
         return Err(StatusCode::NOT_FOUND); // 記錄不存在
     }
-    
+
     // 7. 提交事務
     tx.commit().await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+
     Ok(Json(GenerateReceiptNumberResponse {
         receipt_number,
     }))
@@ -290,6 +301,7 @@ async fn generate_receipt_number(
 ```
 
 **性能特點**：
+
 - ⚡ 單次請求完成編號生成（~1ms）
 - 🔒 事務鎖定時間極短（僅查詢編號表 + 插入 + 更新）
 - 📊 WAL 模式下不影響其他查詢操作
@@ -305,71 +317,71 @@ export const receiptService = {
    */
   async generateReceiptNumber(recordId, receiptType) {
     try {
-      const response = await fetch('/api/generate-receipt-number', {
-        method: 'POST',
+      const response = await fetch("/api/generate-receipt-number", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
         },
         body: JSON.stringify({
           record_id: recordId,
-          receipt_type: receiptType // "stamp" 或 "standard"
-        })
+          receipt_type: receiptType, // "stamp" 或 "standard"
+        }),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || '生成編號失敗');
+        throw new Error(error.message || "生成編號失敗");
       }
-      
+
       const data = await response.json();
       return data.receipt_number;
     } catch (error) {
-      console.error('生成收據編號失敗:', error);
+      console.error("生成收據編號失敗:", error);
       throw error;
     }
-  }
+  },
 };
 ```
 
 ```javascript
 // JoinRecordReceiptPrint.vue
-import { receiptService } from '../services/receiptService.js';
+import { receiptService } from "../services/receiptService.js";
 
 const handlePostPrintCheck = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
-      confirmButtonText: "巳打印完成",
+      confirmButtonText: "打印完成",
       cancelButtonText: "取消打印",
       type: "question",
       center: true,
     });
 
     // 1. 生成收據編號（後端原子性生成）
-    const loading = ElLoading.service({ text: '正在生成收據編號...' });
-    
+    const loading = ElLoading.service({ text: "正在生成收據編號..." });
+
     try {
       const receiptType = activeTemplate.value; // "stamp" 或 "standard"
       const receiptNumber = await receiptService.generateReceiptNumber(
-        record.value.id, 
-        receiptType
+        record.value.id,
+        receiptType,
       );
-      
+
       // 2. 更新本地記錄
       record.value.receiptNumber = receiptNumber;
       record.value.receiptIssued = receiptType;
-      
+
       // 3. 顯示成功訊息
       ElMessage({
         type: "success",
         message: `收據編號：${receiptNumber}`,
         duration: 3000,
       });
-      
+
       // 4. 批量模式：標記為已打印並跳到下一張
       if (isBatch.value) {
         printedIndexes.value.add(currentIndex.value);
-        
+
         if (currentIndex.value < batchRecords.value.length - 1) {
           setTimeout(() => {
             handleNext();
@@ -382,7 +394,7 @@ const handlePostPrintCheck = async () => {
         }
       }
     } catch (error) {
-      ElMessage.error(error.message || '生成收據編號失敗');
+      ElMessage.error(error.message || "生成收據編號失敗");
     } finally {
       loading.close();
     }
@@ -392,18 +404,19 @@ const handlePostPrintCheck = async () => {
 };
 ```
 
-
 ### 方案 2：唯一索引 + 重試機制（推薦 ⭐⭐⭐⭐）
 
 **原理**: 前端生成編號，資料庫唯一索引拒絕重複，衝突時自動重試
 
 #### 優點
+
 - ✅ 資料庫保證唯一性
 - ✅ 前端可控
 - ✅ 實現相對簡單
 - ✅ 無需新增 API
 
 #### 缺點
+
 - ❌ 可能需要重試（影響體驗）
 - ❌ 高併發時重試次數增加
 - ❌ 流水號可能不連續
@@ -412,11 +425,11 @@ const handlePostPrintCheck = async () => {
 
 ```sql
 -- 添加唯一索引
-CREATE UNIQUE INDEX idx_receipt_number 
+CREATE UNIQUE INDEX idx_receipt_number
 ON participation_records(receiptNumber);
 
 -- 或使用唯一約束
-ALTER TABLE participation_records 
+ALTER TABLE participation_records
 ADD CONSTRAINT uk_receipt_number UNIQUE (receiptNumber);
 ```
 
@@ -431,42 +444,42 @@ export class ReceiptNumberGenerator {
   static getCurrentYearMonth() {
     const now = new Date();
     const year = now.getFullYear().toString().slice(-2);
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
     return `${year}${month}`;
   }
-  
+
   /**
    * 查詢當月最大流水號
    */
   static async getMaxSerialNumber(yearMonth, receiptType) {
-    const prefix = receiptType === 'standard' ? `A${yearMonth}` : yearMonth;
-    
+    const prefix = receiptType === "standard" ? `A${yearMonth}` : yearMonth;
+
     try {
       const response = await fetch(`/api/receipt-max-serial?prefix=${prefix}`);
       const data = await response.json();
-      
+
       if (data.maxNumber) {
         // 提取最後4碼流水號
         const serial = data.maxNumber.slice(-4);
         return parseInt(serial, 10);
       }
-      
+
       return 0; // 當月第一筆
     } catch (error) {
-      console.error('查詢最大流水號失敗:', error);
+      console.error("查詢最大流水號失敗:", error);
       return 0;
     }
   }
-  
+
   /**
    * 生成收據編號
    */
   static async generate(receiptType) {
     const yearMonth = this.getCurrentYearMonth();
     const maxSerial = await this.getMaxSerialNumber(yearMonth, receiptType);
-    const nextSerial = (maxSerial + 1).toString().padStart(4, '0');
-    
-    const prefix = receiptType === 'standard' ? `A${yearMonth}` : yearMonth;
+    const nextSerial = (maxSerial + 1).toString().padStart(4, "0");
+
+    const prefix = receiptType === "standard" ? `A${yearMonth}` : yearMonth;
     return `${prefix}${nextSerial}`;
   }
 }
@@ -474,45 +487,49 @@ export class ReceiptNumberGenerator {
 /**
  * 帶重試機制的保存
  */
-export async function saveReceiptWithRetry(record, receiptType, maxRetries = 3) {
+export async function saveReceiptWithRetry(
+  record,
+  receiptType,
+  maxRetries = 3,
+) {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       // 1. 生成編號
       const receiptNumber = await ReceiptNumberGenerator.generate(receiptType);
-      
+
       // 2. 更新記錄
       record.receiptNumber = receiptNumber;
       record.receiptIssued = receiptType;
-      
+
       // 3. 嘗試寫入資料庫
       const result = await api.updateReceiptPrintStatus(record);
-      
+
       if (result.success) {
         return receiptNumber; // 成功
       }
-      
-      throw new Error(result.message || '更新失敗');
+
+      throw new Error(result.message || "更新失敗");
     } catch (error) {
       // 檢查是否為重複編號錯誤
-      const isDuplicateError = 
-        error.code === 'DUPLICATE_KEY' || 
-        error.message?.includes('duplicate') ||
-        error.message?.includes('unique constraint');
-      
+      const isDuplicateError =
+        error.code === "DUPLICATE_KEY" ||
+        error.message?.includes("duplicate") ||
+        error.message?.includes("unique constraint");
+
       if (isDuplicateError && attempt < maxRetries - 1) {
         // 衝突，等待隨機時間後重試
         const delay = Math.random() * 100 + 50; // 50-150ms
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         console.log(`編號衝突，重試第 ${attempt + 1} 次...`);
         continue;
       }
-      
+
       // 非重複錯誤或已達最大重試次數
       throw error;
     }
   }
-  
-  throw new Error('生成收據編號失敗：已達最大重試次數');
+
+  throw new Error("生成收據編號失敗：已達最大重試次數");
 }
 ```
 
@@ -520,27 +537,27 @@ export async function saveReceiptWithRetry(record, receiptType, maxRetries = 3) 
 
 ```javascript
 // JoinRecordReceiptPrint.vue
-import { saveReceiptWithRetry } from '../utils/receiptNumberGenerator.js';
+import { saveReceiptWithRetry } from "../utils/receiptNumberGenerator.js";
 
 const handlePostPrintCheck = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認");
 
-    const loading = ElLoading.service({ text: '正在生成收據編號...' });
-    
+    const loading = ElLoading.service({ text: "正在生成收據編號..." });
+
     try {
       const receiptType = activeTemplate.value;
       const receiptNumber = await saveReceiptWithRetry(
-        record.value, 
+        record.value,
         receiptType,
-        3 // 最多重試3次
+        3, // 最多重試3次
       );
-      
+
       ElMessage.success(`收據編號：${receiptNumber}`);
-      
+
       // 批量模式處理...
     } catch (error) {
-      ElMessage.error(error.message || '生成收據編號失敗');
+      ElMessage.error(error.message || "生成收據編號失敗");
     } finally {
       loading.close();
     }
@@ -557,12 +574,14 @@ const handlePostPrintCheck = async () => {
 **原理**: 編號包含隨機部分，降低衝突機率
 
 #### 優點
+
 - ✅ 衝突機率極低
 - ✅ 無需後端支援
 - ✅ 無需重試
 - ✅ 實現簡單
 
 #### 缺點
+
 - ❌ 編號不連續
 - ❌ 編號較長
 - ❌ 不符合使用者需求（純流水號）
@@ -573,19 +592,20 @@ const handlePostPrintCheck = async () => {
 // 收據編號：2602-9999-AB12
 // 年月 + 記錄ID + 隨機碼
 function generateReceiptNumber(recordId, receiptType) {
-  const yearMonth = new Date().getFullYear().toString().slice(-2) + 
-                    (new Date().getMonth() + 1).toString().padStart(2, '0');
-  
-  const serial = recordId.toString().padStart(4, '0');
+  const yearMonth =
+    new Date().getFullYear().toString().slice(-2) +
+    (new Date().getMonth() + 1).toString().padStart(2, "0");
+
+  const serial = recordId.toString().padStart(4, "0");
   const random = generateRandomCode(4); // "AB12"
-  
-  const prefix = receiptType === 'standard' ? 'A' : '';
+
+  const prefix = receiptType === "standard" ? "A" : "";
   return `${prefix}${yearMonth}${serial}${random}`;
 }
 
 function generateRandomCode(length) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -594,6 +614,7 @@ function generateRandomCode(length) {
 ```
 
 **範例**：
+
 - 收據：`2602999912AB`
 - 感謝狀：`A2602999912AB`
 
@@ -604,11 +625,13 @@ function generateRandomCode(length) {
 **原理**: 使用版本號檢測併發修改
 
 #### 優點
+
 - ✅ 檢測併發修改
 - ✅ 適合低衝突場景
 - ✅ 資料一致性保證
 
 #### 缺點
+
 - ❌ 需要資料庫支援
 - ❌ 衝突時需要重新生成編號
 - ❌ 增加資料庫欄位
@@ -617,7 +640,7 @@ function generateRandomCode(length) {
 
 ```sql
 -- 添加版本號欄位
-ALTER TABLE participation_records 
+ALTER TABLE participation_records
 ADD COLUMN version INT DEFAULT 0;
 ```
 
@@ -625,18 +648,21 @@ ADD COLUMN version INT DEFAULT 0;
 
 ```javascript
 async function updateWithOptimisticLock(record, newReceiptNumber) {
-  const result = await db.query(`
+  const result = await db.query(
+    `
     UPDATE participation_records 
     SET receiptNumber = ?, 
         receiptIssued = ?,
         version = version + 1
     WHERE id = ? AND version = ?
-  `, [newReceiptNumber, record.receiptIssued, record.id, record.version]);
-  
+  `,
+    [newReceiptNumber, record.receiptIssued, record.id, record.version],
+  );
+
   if (result.affectedRows === 0) {
-    throw new Error('CONCURRENT_MODIFICATION');
+    throw new Error("CONCURRENT_MODIFICATION");
   }
-  
+
   // 更新本地版本號
   record.version += 1;
 }
@@ -646,40 +672,45 @@ async function updateWithOptimisticLock(record, newReceiptNumber) {
 
 ## 方案比較
 
-| 方案 | 併發安全 | 實現難度 | 性能 | 用戶體驗 | 編號連續性 |
-|------|---------|---------|------|---------|-----------|
-| 方案1：後端原子性 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 方案2：唯一索引+重試 | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| 方案3：UUID混合 | ⭐⭐⭐⭐⭐ | ⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐ |
-| 方案4：樂觀鎖 | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| 方案                 | 併發安全   | 實現難度 | 性能       | 用戶體驗   | 編號連續性 |
+| -------------------- | ---------- | -------- | ---------- | ---------- | ---------- |
+| 方案1：後端原子性    | ⭐⭐⭐⭐⭐ | ⭐⭐⭐   | ⭐⭐⭐⭐   | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 方案2：唯一索引+重試 | ⭐⭐⭐⭐   | ⭐⭐     | ⭐⭐⭐     | ⭐⭐⭐⭐   | ⭐⭐⭐⭐   |
+| 方案3：UUID混合      | ⭐⭐⭐⭐⭐ | ⭐       | ⭐⭐⭐⭐⭐ | ⭐⭐       | ⭐         |
+| 方案4：樂觀鎖        | ⭐⭐⭐     | ⭐⭐⭐   | ⭐⭐⭐     | ⭐⭐⭐     | ⭐⭐⭐⭐   |
 
 ### 詳細比較
 
 #### 併發安全性
+
 - **方案1**: 資料庫事務 + 行鎖，100% 安全
 - **方案2**: 唯一索引保證，重試機制處理衝突
 - **方案3**: 隨機碼降低衝突機率至極低
 - **方案4**: 版本號檢測，但需要重新生成編號
 
 #### 實現難度
+
 - **方案1**: 需要後端 API 開發
 - **方案2**: 前端實現，需要處理重試邏輯
 - **方案3**: 最簡單，純前端實現
 - **方案4**: 需要資料庫結構變更
 
 #### 性能表現
+
 - **方案1**: 一次 API 請求，資料庫鎖定時間短
 - **方案2**: 可能需要多次重試
 - **方案3**: 無額外請求，最快
 - **方案4**: 類似方案2
 
 #### 用戶體驗
+
 - **方案1**: 無感知，編號立即生成
 - **方案2**: 衝突時可能有短暫延遲
 - **方案3**: 無延遲，但編號較長
 - **方案4**: 衝突時需要重試
 
 #### 編號連續性
+
 - **方案1**: 完全連續
 - **方案2**: 基本連續（衝突時可能跳號）
 - **方案3**: 不連續
@@ -694,11 +725,13 @@ async function updateWithOptimisticLock(record, newReceiptNumber) {
 **選擇方案2：唯一索引 + 重試機制**
 
 **理由**：
+
 - ✅ 快速實現，無需後端開發
 - ✅ 資料庫保證唯一性
 - ✅ 適合當前併發量
 
 **實施步驟**：
+
 1. 資料庫添加唯一索引
 2. 實現前端編號生成器
 3. 添加重試機制
@@ -709,12 +742,14 @@ async function updateWithOptimisticLock(record, newReceiptNumber) {
 **遷移到方案1：後端原子性生成**
 
 **理由**：
+
 - ✅ 最穩定可靠
 - ✅ 編號完全連續
 - ✅ 支援高併發
 - ✅ 易於維護
 
 **實施步驟**：
+
 1. 開發後端 API
 2. 前端調用 API
 3. 灰度發布測試
@@ -728,24 +763,24 @@ async function updateWithOptimisticLock(record, newReceiptNumber) {
 
 ```javascript
 // 測試編號生成
-describe('ReceiptNumberGenerator', () => {
-  test('生成收據編號格式正確', () => {
-    const number = ReceiptNumberGenerator.generate('stamp');
+describe("ReceiptNumberGenerator", () => {
+  test("生成收據編號格式正確", () => {
+    const number = ReceiptNumberGenerator.generate("stamp");
     expect(number).toMatch(/^\d{8}$/);
   });
-  
-  test('生成感謝狀編號格式正確', () => {
-    const number = ReceiptNumberGenerator.generate('standard');
+
+  test("生成感謝狀編號格式正確", () => {
+    const number = ReceiptNumberGenerator.generate("standard");
     expect(number).toMatch(/^A\d{8}$/);
   });
-  
-  test('流水號遞增', async () => {
-    const num1 = await ReceiptNumberGenerator.generate('stamp');
-    const num2 = await ReceiptNumberGenerator.generate('stamp');
-    
+
+  test("流水號遞增", async () => {
+    const num1 = await ReceiptNumberGenerator.generate("stamp");
+    const num2 = await ReceiptNumberGenerator.generate("stamp");
+
     const serial1 = parseInt(num1.slice(-4));
     const serial2 = parseInt(num2.slice(-4));
-    
+
     expect(serial2).toBe(serial1 + 1);
   });
 });
@@ -755,15 +790,15 @@ describe('ReceiptNumberGenerator', () => {
 
 ```javascript
 // 測試併發生成編號
-describe('併發測試', () => {
-  test('10個併發請求不產生重複編號', async () => {
-    const promises = Array(10).fill(null).map(() => 
-      saveReceiptWithRetry(mockRecord, 'stamp')
-    );
-    
+describe("併發測試", () => {
+  test("10個併發請求不產生重複編號", async () => {
+    const promises = Array(10)
+      .fill(null)
+      .map(() => saveReceiptWithRetry(mockRecord, "stamp"));
+
     const numbers = await Promise.all(promises);
     const uniqueNumbers = new Set(numbers);
-    
+
     expect(uniqueNumbers.size).toBe(10); // 所有編號唯一
   });
 });
@@ -791,18 +826,21 @@ ab -n 100 -c 10 -p request.json -T application/json \
 **A**: 當月流水號達到 9999 後：
 
 **方案1（推薦）**: 擴展編號位數
+
 ```
 原格式: YYMM9999 (8碼)
 新格式: YYMM99999 (9碼，支援到99999）
 ```
 
 **方案2**: 添加分類前綴
+
 ```
 收據: R26029999
 感謝狀: S26029999 (原 A26029999)
 ```
 
 **方案3**: 使用日期
+
 ```
 YYMMDD9999 (10碼，每日重置)
 ```
@@ -833,6 +871,7 @@ const maxNumber = await getMaxSerialNumber(yearMonth, receiptType);
 **A**: 編號已生成但打印失敗時：
 
 **方案1（推薦）**: 保留編號，標記為「已生成未打印」
+
 ```javascript
 {
   receiptNumber: "26029999",
@@ -843,6 +882,7 @@ const maxNumber = await getMaxSerialNumber(yearMonth, receiptType);
 ```
 
 **方案2**: 作廢編號，重新生成
+
 ```javascript
 {
   receiptNumber: "26029999",
@@ -864,13 +904,13 @@ async fn batch_generate_receiptNumbersDB(
 ) -> Result<Vec<String>, StatusCode> {
     let mut tx = pool.begin().await?;
     let mut numbers = Vec::new();
-    
+
     for record_id in record_ids {
         // 在同一事務中逐個生成，保證連續
         let number = generate_next_number(&mut tx, record_id, &receipt_type).await?;
         numbers.push(number);
     }
-    
+
     tx.commit().await?;
     Ok(numbers)
 }
@@ -884,11 +924,11 @@ async fn batch_generate_receiptNumbersDB(
 
 ```sql
 -- 查詢編號是否存在
-SELECT id FROM receiptNumbersDB 
+SELECT id FROM receiptNumbersDB
 WHERE receipt_number = '26029999' AND status = 'active';
 
 -- 查詢當月已使用數量
-SELECT COUNT(*) FROM receiptNumbersDB 
+SELECT COUNT(*) FROM receiptNumbersDB
 WHERE year_month = '2602' AND receipt_type = 'stamp' AND status = 'active';
 ```
 
@@ -898,16 +938,16 @@ WHERE year_month = '2602' AND receipt_type = 'stamp' AND status = 'active';
 
 ```sql
 -- 作廢編號
-UPDATE receiptNumbersDB 
+UPDATE receiptNumbersDB
 SET status = 'void', void_reason = '打印失敗'
 WHERE receipt_number = '26029999';
 
 -- 重新生成（生成新編號，標記為 regenerated）
-INSERT INTO receiptNumbersDB (..., status) 
+INSERT INTO receiptNumbersDB (..., status)
 VALUES (..., 'regenerated');
 
 -- 查詢有效編號（排除作廢）
-SELECT * FROM receiptNumbersDB 
+SELECT * FROM receiptNumbersDB
 WHERE status = 'active';
 ```
 
@@ -916,27 +956,30 @@ WHERE status = 'active';
 **A**: 免費獲得多項功能
 
 1. **審計追蹤**
+
 ```sql
 -- 查詢編號生成歷史
-SELECT * FROM receiptNumbersDB 
-WHERE record_id = 123 
+SELECT * FROM receiptNumbersDB
+WHERE record_id = 123
 ORDER BY created_at DESC;
 ```
 
 2. **統計分析**
+
 ```sql
 -- 當月各類型收據數量
-SELECT receipt_type, COUNT(*) 
-FROM receiptNumbersDB 
-WHERE year_month = '2602' 
+SELECT receipt_type, COUNT(*)
+FROM receiptNumbersDB
+WHERE year_month = '2602'
 GROUP BY receipt_type;
 ```
 
 3. **性能監控**
+
 ```sql
 -- 查詢生成速度（每小時生成數量）
-SELECT strftime('%H', created_at) as hour, COUNT(*) 
-FROM receiptNumbersDB 
+SELECT strftime('%H', created_at) as hour, COUNT(*)
+FROM receiptNumbersDB
 WHERE date(created_at) = date('now')
 GROUP BY hour;
 ```
@@ -950,6 +993,7 @@ GROUP BY hour;
 **完美契合點**：
 
 1. **雙軌 API 架構**
+
    ```
    編號生成（寫入） → Rust Axum API (http://localhost:3000)
    收據查詢（讀取） → Rust Axum API (高性能軌)
@@ -961,11 +1005,12 @@ GROUP BY hour;
    - ✅ 事務 + `FOR UPDATE` 保證唯一性
 
 3. **壓測驗證能力**
+
    ```bash
    # 查詢壓測（已驗證）
    npm run test:query
    # 每 100ms 並發 5 請求，平均響應 ~10ms
-   
+
    # 寫入壓測（已驗證）
    npm run test:wal
    # 每 500ms 寫入 1 筆，WAL 機制正常
@@ -975,13 +1020,14 @@ GROUP BY hour;
 
 基於獨立編號表設計：
 
-| 操作 | 數據量 | 響應時間 | 說明 |
-|------|--------|---------|------|
-| 編號生成 | 掃描當月 ~100 筆 | ~1ms | 只查詢 receiptNumbersDB 表 |
-| 收據查詢 | 全部 ~10000 筆 | ~10ms | Rust 高性能軌 |
-| 併發編號生成 | 10 個並發 | ~1-2ms | 鎖定範圍小，不互相影響 |
+| 操作         | 數據量           | 響應時間 | 說明                       |
+| ------------ | ---------------- | -------- | -------------------------- |
+| 編號生成     | 掃描當月 ~100 筆 | ~1ms     | 只查詢 receiptNumbersDB 表 |
+| 收據查詢     | 全部 ~10000 筆   | ~10ms    | Rust 高性能軌              |
+| 併發編號生成 | 10 個並發        | ~1-2ms   | 鎖定範圍小，不互相影響     |
 
 **對比方案 B（掃描全表）**：
+
 - 方案 A（獨立表）：~1ms（掃描 100 筆）
 - 方案 B（大表）：~50ms（掃描 10000 筆）
 - **性能提升 50 倍** ⚡
@@ -1045,16 +1091,16 @@ const generatedNumbers = new Set();
 async function generateReceiptNumber(recordId) {
   try {
     const response = await fetch(`${RUST_URL}/api/generate-receipt-number`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         record_id: recordId,
-        receipt_type: 'stamp'
-      })
+        receipt_type: "stamp",
+      }),
     });
-    
+
     const data = await response.json();
-    
+
     if (response.ok) {
       // 檢查重複
       if (generatedNumbers.has(data.receipt_number)) {
@@ -1070,16 +1116,16 @@ async function generateReceiptNumber(recordId) {
   } catch (error) {
     errorCount++;
   }
-  
+
   process.stdout.write(
-    `\r✅ 成功: ${successCount} | ❌ 錯誤: ${errorCount} | 🔁 重複: ${duplicateCount}`
+    `\r✅ 成功: ${successCount} | ❌ 錯誤: ${errorCount} | 🔁 重複: ${duplicateCount}`,
   );
 }
 
 async function main() {
   console.log("🔥 收據編號生成壓測");
   console.log(`📊 設定: ${CONCURRENT} 個並發，每 ${INTERVAL_MS}ms\n`);
-  
+
   let recordId = 1;
   setInterval(async () => {
     const promises = [];
@@ -1094,6 +1140,7 @@ main();
 ```
 
 **預期結果**：
+
 - ✅ 成功率 100%
 - ✅ 重複編號 0 個
 - ✅ 編號連續

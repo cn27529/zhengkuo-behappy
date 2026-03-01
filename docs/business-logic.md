@@ -305,10 +305,10 @@ monthlyStats = {
 **收據資訊：**
 
 - `needReceipt` - 是否需要收據。
-- `receiptNumber` - 收據號碼（格式：RYYYYMMNNNN）
+- `receiptNumber` - 打印號碼（格式：RYYYYMMNNNN）
 - `receiptIssued` - 收據是否已開立，經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
 - `receiptIssuedAt` - 收據開立日期
-- `receiptIssuedBy` - 收據開立者
+- `receiptIssuedBy` - 收據開立者，也稱經手人
 
 **付款資訊：**
 
@@ -381,7 +381,7 @@ sourceData.forEach((person) => {
 
 #### 4.4 收據管理
 
-**收據號碼生成規則：**
+**打印號碼生成規則：**
 
 - 格式：`RYYYYMMNNNN`
 - R：收據前綴

@@ -260,7 +260,7 @@ export class RustJoinRecordService {
 
   /**
    * 更新收據打印狀態
-   * 如果收據己打印這裡會是 true，receiptNumber 會記錄收據號碼，needReceipt 會記錄"standard" 是 "感謝狀", "stamp" 是 "收據"。
+   * 如果收據己打印這裡會是 true，receiptNumber 會記錄打印號碼，needReceipt 會記錄"standard" 是 "感謝狀", "stamp" 是 "收據"。
    */
   async updateByReceiptPrint(record, context = {}) {
     if (!record?.id) {
@@ -279,9 +279,13 @@ export class RustJoinRecordService {
       // 直接使用 activeTemplate 的值來表示是否已開立收據（standard 或 stamp），如果沒有則為空值。
       // 經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       receiptIssued: record.activeTemplate || "",
-      receiptIssuedAt: DateUtils.getCurrentISOTime(),
+      receiptIssuedAt:
+        record?.receiptIssuedAt === "" ? "" : DateUtils.getCurrentISOTime(),
       //receiptIssuedBy: authService.getCurrentUser(),
-      receiptIssuedBy: authService.getUserName() || "沒有名稱", // 確保有名稱可用，否則使用預設值
+      receiptIssuedBy:
+        record?.receiptIssuedBy === ""
+          ? ""
+          : authService.getUserName() || "沒有名稱", // 確保有名稱可用，否則使用預設值
     };
 
     return await this.updateParticipationRecord(record.id, updateData, {
@@ -310,10 +314,10 @@ export class RustJoinRecordService {
         discountAmount: 0, // 折扣金額
         paidAmount: 0, // 付款金額
         needReceipt: false, // 是否需要收據
-        receiptNumber: "", // 收據號碼
+        receiptNumber: "", // 打印號碼
         receiptIssued: "", // 收據是否已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
         receiptIssuedAt: "", // 收據開立日期
-        receiptIssuedBy: "", // 收據開立者
+        receiptIssuedBy: "", // 收據開立者，也稱經手人
         accountingState: "pending", // pending=未沖帳,reconciled=已沖帳, none=無需沖帳
         accountingDate: "", // 沖帳日期
         accountingBy: "", // 沖帳者

@@ -178,10 +178,10 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       finalAmount: totalAmount, // 最終金額
       paidAmount: 0, // 付款金額
       needReceipt: false, // 是否需要收據。
-      receiptNumber: "", // 收據號碼
+      receiptNumber: "", // 打印號碼
       receiptIssued: "", // 收據已開立，經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       receiptIssuedAt: "", // 收據開立日期
-      receiptIssuedBy: "", // 收據開立者
+      receiptIssuedBy: "", // 收據開立者，也稱經手人
       accountingState: "pending", // pending=未沖帳,reconciled=已沖帳
       accountingDate: "", // 沖帳日期
       accountingBy: "", // 沖帳者
@@ -197,7 +197,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   };
 
   /**
-   * 生成收據號碼
+   * 生成打印號碼
    * @returns
    */
   const generateReceiptNumber = () => {
@@ -217,7 +217,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     record.receiptNumber = generateReceiptNumber();
     record.receiptIssued = true;
     record.receiptIssuedAt = DateUtils.getCurrentISOTime();
-    record.receiptIssuedBy = getCurrentUser();
+    record.receiptIssuedBy = getUserName();
     record.updatedAt = DateUtils.getCurrentISOTime();
     record.updatedUser = getCurrentUser();
   };

@@ -537,7 +537,7 @@
       "receiptNumber": "R2025010001",
       "receiptIssued": "", // 經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       "receiptIssuedAt": "2026-01-21T10:00:00Z",
-      "receiptIssuedBy": "admin",
+      "receiptIssuedBy": "admin", // 收據開立者，也稱經手人
       "paymentState": "paid",
       "paymentMethod": "cash",
       "paymentDate": "2026-01-21T09:30:00Z",

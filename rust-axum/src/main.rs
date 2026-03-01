@@ -144,7 +144,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let monthly_donate_routes = routes::monthly_donate::create_routes();
     let participation_record_routes = routes::participation_record::create_routes();
     let my_data_routes = routes::my_data::create_routes();
-    
+    let receipt_number_routes = routes::receipt_number::create_routes(); // ✅ 新增：收據編號路由
+
     // ✅ 創建 SqliteProvider(DatabaseProvider 的實現)
     let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
 
@@ -160,12 +161,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(registration_routes)
         .merge(monthly_donate_routes)
         .merge(participation_record_routes)
-        .merge(my_data_routes)        
+        .merge(my_data_routes)
+        // ✅ 新增：合併收據編號路由
+        .merge(receipt_number_routes)
         // Add the SQL viewer at /sql-viewer
         .merge(sql_viewer_router)
-        .layer(cors)
         .layer(Extension(state.clone()))
-        .layer(Extension(pool.clone())); // ⭐ 修改：改用 clone，因為後面還要用 pool
+        .layer(Extension(pool.clone()))
+        .layer(cors); // ⭐ 新增：啟用 CORS 中介軟體
 
     // 啟動服務器
     let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
@@ -190,6 +193,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /api/monthly-donates        - 每月捐款列表");
     tracing::info!("  GET    /api/participation-records  - 參與記錄列表");
     tracing::info!("  GET    /api/my-data                - MyData 列表");
+    tracing::info!("  POST   /api/receipt-numbers/generate - ⚡ 原子性生成收據編號"); // ✅ 新增：收據編號日誌提示
+    tracing::info!("  GET    /api/receipt-numbers        - 收據編號歷史記錄");
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");
 
@@ -230,7 +235,8 @@ async fn root_handler() -> Json<Value> {
             "activities": "/api/activities",
             "registrations": "/api/registrations",
             "monthly_donates": "/api/monthly-donates",
-            "participation_records": "/api/participation-records",
+            "participation_records": "/api/participation-records",            
+            "receipt_generation": "/api/receipt-numbers/generate", // ✅ 新增：根路徑顯示收據編號生成端點
             "db_test": "/db-test",
             "sql_viewer": "/sql-viewer"
         },
