@@ -320,9 +320,7 @@
                   activityConfigs.qifu.label
                 }}</span> -->
 
-                <span class="stat-badge">{{
-                  activityConfigs.qifu.label
-                }}</span>
+                <span class="stat-badge">{{ activityConfigs.qifu.label }}</span>
 
                 <span class="selected-count" v-if="selections.qifu.length > 0">
                   (已選 {{ selections.qifu.length }} )
@@ -527,9 +525,7 @@
                   activityConfigs.pudu.label
                 }}</span> -->
 
-                <span class="stat-badge">{{
-                  activityConfigs.pudu.label
-                }}</span>
+                <span class="stat-badge">{{ activityConfigs.pudu.label }}</span>
 
                 <span class="selected-count" v-if="selections.pudu.length > 0">
                   (已選 {{ selections.pudu.length }} )
@@ -656,6 +652,7 @@
               class="saved-record-item"
             >
               <div class="record-header">
+                <span>{{ record.id }}</span>
                 <span class="record-name">{{ record.contact.name }}</span>
                 <span class="record-amount">${{ record.totalAmount }}</span>
               </div>
@@ -1032,14 +1029,13 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-
 .stat-badge {
   padding: 4px 8px;
   background: var(--primary-color);
   color: white;
   border-radius: 4px;
   font-size: 1rem;
-  margin-right: 10px
+  margin-right: 10px;
 }
 
 .form-section,

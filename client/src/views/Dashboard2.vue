@@ -59,8 +59,21 @@
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="hover" class="status-card danger">
           <div class="status-title">待開立收據</div>
-          <div class="status-value">{{ receiptPendingCount }}</div>
-          <div class="status-foot">需收據尚未開立</div>
+          <div class="status-value">
+            {{ receiptPendingCount }}
+          </div>
+          <div class="status-foot">
+            <el-button
+              v-for="id in receiptPendingIds"
+              :key="id"
+              type="success"
+              size="small"
+              circle
+              @click="handleReceiptPrint(id)"
+            >
+              🖨
+            </el-button>
+          </div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
@@ -79,7 +92,7 @@
       </el-col>
     </el-row>
 
-    <el-row :gutter="24" class="summary-row">
+    <el-row :gutter="24" class="summary-row" v-if="false">
       <el-col :xs="24" :sm="12" :lg="8">
         <el-card shadow="hover" class="finance-card">
           <div class="card-title">應收總額</div>
@@ -125,7 +138,7 @@
           <div class="card-value">
             {{ formatCurrency(next3MonthsDonateTotal) }}
           </div>
-          <div class="card-foot">提前掌握可預期收入</div>
+          <div class="card-foot">提前掌握可預期月贊助額</div>
         </el-card>
       </el-col>
     </el-row>
@@ -267,17 +280,21 @@ import { useDashboardStore } from "../stores/dashboardStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import AnimatedNumber from "../components/AnimatedNumber.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import {
-  Refresh,
-  Plus,
-  Edit,
-  Check,
-  Delete,
-  View,
-  Search,
-} from "@element-plus/icons-vue";
+// import {
+//   Refresh,
+//   Plus,
+//   Edit,
+//   Check,
+//   Delete,
+//   View,
+//   Search,
+// } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+import { useJoinRecordStore } from "../stores/joinRecordStore.js";
 
 const dashboardStore = useDashboardStore();
+const joinRecordStore = useJoinRecordStore();
+const router = useRouter();
 
 const totalParticipants = computed(() => dashboardStore.totalParticipants);
 const totalRegistrations = computed(() => dashboardStore.totalRegistrations);
@@ -298,6 +315,8 @@ const next3MonthsDonateTotal = computed(
 const paymentSummary = computed(() => dashboardStore.paymentSummary);
 const totalUnpaidAmount = computed(() => dashboardStore.totalUnpaidAmount);
 const receiptPendingCount = computed(() => dashboardStore.receiptPendingCount);
+const receiptPendingIds = computed(() => dashboardStore.receiptPendingIds);
+
 const accountingPendingCount = computed(
   () => dashboardStore.accountingPendingCount,
 );
@@ -322,6 +341,30 @@ const formatCurrency = (value) =>
     currency: "TWD",
     maximumFractionDigits: 0,
   }).format(Number(value) || 0);
+
+// 單筆收據打印
+const handleReceiptPrint = (record_id) => {
+  try {
+    const record = dashboardStore.getJoinRecordById(record_id);
+    if (!record) {
+      ElMessage.error("找不到對應的參加記錄");
+      return;
+    }
+    console.log("準備打印的參加記錄:", record);
+
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(record);
+    const printId = `receipt_${record.id}_${isoStr}`;
+    sessionStorage.setItem(printId, printData);
+    router.push({
+      path: "/join-record-receipt-print",
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+    });
+  } catch (error) {
+    console.error("導航到收據頁面失敗:", error);
+    ElMessage.error("導航到收據頁面失敗");
+  }
+};
 
 onMounted(async () => {
   await dashboardStore.initialize();

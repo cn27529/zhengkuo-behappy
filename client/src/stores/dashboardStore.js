@@ -232,8 +232,30 @@ export const useDashboardStore = defineStore("dashboard", () => {
     return joinRecords.value.filter(
       // 收據是否已開立，經20260225決定修改定義默認為空值，
       // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
-      (record) => normalizeBool(record?.needReceipt) && !record?.receiptIssued,
+      //(record) => normalizeBool(record?.needReceipt) && !record?.receiptIssued,
+      (record) =>
+        normalizeBool(record?.needReceipt) &&
+        (!record?.receiptIssuedAt ||
+          record?.receiptIssuedAt === "" ||
+          record?.receiptIssuedAt === null),
     ).length;
+  });
+
+  // 需收據但尚未開立的參加記錄 ID 清單
+  const receiptPendingIds = computed(() => {
+    const ids = joinRecords.value
+      .filter(
+        // 收據是否已開立，經20260225決定修改定義默認為空值，
+        // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
+        //(record) => normalizeBool(record?.needReceipt) && !record?.receiptIssued,
+        (record) =>
+          normalizeBool(record?.needReceipt) &&
+          (!record?.receiptIssuedAt ||
+            record?.receiptIssuedAt === "" ||
+            record?.receiptIssuedAt === null),
+      )
+      .map((record) => record.id);
+    return ids;
   });
 
   // 已付款但未沖帳
@@ -329,11 +351,45 @@ export const useDashboardStore = defineStore("dashboard", () => {
     return total;
   });
 
-  // 即將到來活動（依日期排序）
+  // 未來 6 個月已排定贊助總額
+  const next6MonthsDonateTotal = computed(() => {
+    const months = getNextYearMonths(6, { includeCurrent: false });
+    let total = 0;
+    allDonates.value.forEach((donate) => {
+      donate?.donateItems?.forEach((item) => {
+        const monthsMatch = item?.months?.some((month) =>
+          months.includes(month),
+        );
+        if (monthsMatch) {
+          total += toNumber(item?.price);
+        }
+      });
+    });
+    return total;
+  });
+
+  // 未來 12 個月已排定贊助總額
+  const next12MonthsDonateTotal = computed(() => {
+    const months = getNextYearMonths(12, { includeCurrent: false });
+    let total = 0;
+    allDonates.value.forEach((donate) => {
+      donate?.donateItems?.forEach((item) => {
+        const monthsMatch = item?.months?.some((month) =>
+          months.includes(month),
+        );
+        if (monthsMatch) {
+          total += toNumber(item?.price);
+        }
+      });
+    });
+    return total;
+  });
+
+  // 即將到來活動（依日期排序）日期由大到小
   const upcomingActivityHighlights = computed(() => {
     return [...upcomingActivities.value]
       .filter((activity) => activity?.date)
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, 4);
   });
 
@@ -392,7 +448,13 @@ export const useDashboardStore = defineStore("dashboard", () => {
     }
   };
 
+  // 根據 ID 取得參加記錄（從已載入的資料中尋找，避免 store 未同步問題）
+  const getJoinRecordById = (id) => {
+    return joinRecords.value.find((record) => record.id === id);
+  };
+
   return {
+    getJoinRecordById,
     loading,
     error,
     lastUpdatedAt,
@@ -405,6 +467,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     paymentSummary,
     totalUnpaidAmount,
     receiptPendingCount,
+    receiptPendingIds,
     accountingPendingCount,
     formsNeedAttentionCount,
 
@@ -413,6 +476,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
     currentMonthDonateSummary,
     next3MonthsDonateTotal,
+    next6MonthsDonateTotal,
+    next12MonthsDonateTotal,
 
     upcomingActivities,
     completedActivities,
