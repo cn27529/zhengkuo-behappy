@@ -463,8 +463,6 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         createdAt: createISOTime,
       };
       console.log("submitRecord:", payload);
-      // forUI 頁面顯示用
-      savedRecords.value.unshift(payload);
 
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不是 directus，無法創建數據");
@@ -479,6 +477,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       const result = await joinRecordService.saveRecord(payload);
       if (result.success) {
         console.log("✅ 成功創建參加記錄:", result.data);
+        // forUI 頁面顯示用
+        savedRecords.value.unshift(result.data); // 將新記錄加入 savedRecords
+
         return result;
       } else {
         error.value = result.message;

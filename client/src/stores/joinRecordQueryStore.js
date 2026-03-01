@@ -592,7 +592,13 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     }
   };
 
+  // 根據 ID 取得參加記錄（從已載入的資料中尋找，避免 store 未同步問題）
+  const getJoinRecordById = (id) => {
+    return searchResults.value.find((record) => record.id === id);
+  };
+
   return {
+    getJoinRecordById,
     // 狀態
     searchResults,
     searchQuery,

@@ -516,7 +516,7 @@ const handlePrint = (item) => {
   }
 };
 
-// 收據打印
+// 單筆收據打印
 const handleReceiptPrint = (item) => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
