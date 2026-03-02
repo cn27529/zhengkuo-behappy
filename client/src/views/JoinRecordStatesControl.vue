@@ -228,6 +228,15 @@
           </template>
         </el-table-column>
 
+        <!-- 備註 -->
+        <el-table-column label="備註" min-width="80" align="center">
+          <template #default="{ row }">
+            <div class="receipt-notes">
+              {{ row.notes }}
+            </div>
+          </template>
+        </el-table-column>
+
         <!-- 記錄狀態 -->
         <el-table-column
           label="記錄狀態"

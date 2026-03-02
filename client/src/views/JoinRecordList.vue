@@ -133,7 +133,12 @@
         @selection-change="handleSelectionChange"
       >
         <!-- 多選框 -->
-        <el-table-column type="selection" width="50" align="center" />
+        <el-table-column
+          type="selection"
+          width="50"
+          align="center"
+          v-if="false"
+        />
         <el-table-column
           v-if="false"
           prop="activityId"
@@ -219,14 +224,25 @@
           </template>
         </el-table-column>
 
+        <!-- 備註 -->
+        <el-table-column label="備註" min-width="80" align="center">
+          <template #default="{ row }">
+            <div class="receipt-notes">
+              {{ row.notes }}
+            </div>
+          </template>
+        </el-table-column>
+
         <el-table-column
           prop="totalAmount"
           label="總金額"
-          min-width="50"
+          min-width="80"
           align="center"
         >
           <template #default="{ row }">
-            <strong class="amount">{{ row.totalAmount || 0 }}</strong>
+            <strong class="amount"
+              >{{ appConfig.dollarTitle }}{{ row.totalAmount || 0 }}</strong
+            >
           </template>
         </el-table-column>
 
@@ -393,8 +409,6 @@ const {
   stateOptions,
   itemTypeOptions,
 } = storeToRefs(queryStore);
-
-
 
 // 計算屬性 - 添加防護檢查
 const totalItems = computed(() => {
