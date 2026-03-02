@@ -1,0 +1,46 @@
+[
+    {
+        "id": "ab11998d-27b1-4936-a437-324952ba3c1f",
+        "firstName": "Admin",
+        "lastName": "User",
+        "email": "admin@example.com",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$majGtv7LAaPK+v5Rzl5Ovg$Vd/TpXDdtahFHg4ilvYEDOtj5nfsNOM4UOfTGVDBfU0",
+        "title": "超級管理員",
+        "status": "active",
+        "role": "27f4d56f-da89-4989-a75a-3a751f56b575",
+        "lastAccess": "2026-03-02 12:54:52",
+        "lastPage": "/content/participationRecordDB",
+        "provider": "default",
+        "emailNotifications": true,
+        "textDirection": "auto"
+    },
+    {
+        "id": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+        "firstName": "zkuser",
+        "lastName": "01",
+        "email": "zkuser01@example.com",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$YJlPVrgNv7KqXxWrNrbL6g$fPfqtJuFdreEznhJ7O7E4XTIgnZPz/OwBjwz4Mo5ffI",
+        "title": "釋小空",
+        "status": "active",
+        "role": "7d7a74d6-f20d-43de-8509-8c4c1a967e67",
+        "lastAccess": "2026-03-01 09:12:44",
+        "lastPage": "/settings/policies",
+        "provider": "default",
+        "emailNotifications": true,
+        "textDirection": "auto"
+    },
+    {
+        "id": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+        "firstName": "test",
+        "lastName": "01",
+        "email": "test01@example.com",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$C6E5Y3dJKlg1wiq+MCzXcg$jEdBiHx2vXcyafSYVaY141N1LCRG0NS6Ll+0a3aq3hg",
+        "title": "釋測試",
+        "status": "active",
+        "role": "7d7a74d6-f20d-43de-8509-8c4c1a967e67",
+        "lastAccess": "2026-03-02 09:18:37",
+        "provider": "default",
+        "emailNotifications": true,
+        "textDirection": "auto"
+    }
+]

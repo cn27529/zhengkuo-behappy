@@ -21,6 +21,7 @@ export class BaseRustService {
         refresh: "/api/auth/refresh",
         me: "/api/auth/me",
       },
+      directusUsers: "/api/directus-users", // DIRECTUS使用者
       activities: "/api/activities",
       registrations: "/api/registrations",
       monthlyDonates: "/api/monthly-donates",
