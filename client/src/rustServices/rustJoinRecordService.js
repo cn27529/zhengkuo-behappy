@@ -313,7 +313,7 @@ export class RustJoinRecordService {
         notes: payload.notes || "",
         discountAmount: 0, // 折扣金額
         paidAmount: 0, // 付款金額
-        needReceipt: false, // 是否需要收據
+        needReceipt: payload.needReceipt, // 是否需要收據
         receiptNumber: "", // 打印號碼
         receiptIssued: "", // 收據是否已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
         receiptIssuedAt: "", // 收據開立日期

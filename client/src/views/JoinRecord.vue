@@ -60,7 +60,7 @@
           </p>
 
           <div><strong>金額計算:</strong></div>
-          <p>總金額: ${{ totalAmount }}</p>
+          <p>總金額: {{ appConfig.dollarTitle }}{{ totalAmount }}</p>
           <p>載入狀態: {{ isLoading ? "載入中..." : "已完成" }}</p>
 
           <div><strong>已保存記錄:</strong></div>
@@ -82,7 +82,7 @@
                 <strong>記錄 {{ index + 1 }}:</strong>
               </p>
               <p>聯絡人: {{ record.contact.name }}</p>
-              <p>總金額: ${{ record.totalAmount }}</p>
+              <p>總金額: {{ appConfig.dollarTitle }}{{ record.totalAmount }}</p>
               <p>保存時間: {{ record.createdAt }}</p>
               <p>
                 {{ JSON.stringify(record.items) }}
@@ -567,7 +567,10 @@
         </div>
 
         <!-- 是否需要收據 -->
-        <div class="form-section need-receipt-section" v-if="selectedRegistration">
+        <div
+          class="form-section need-receipt-section"
+          v-if="selectedRegistration"
+        >
           <h3>收據需求</h3>
           <div class="receipt-options">
             <el-switch
@@ -660,7 +663,7 @@
         <div class="results-section" v-if="savedRecords.length > 0">
           <div class="results-header">
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
-            <p class="search-hint">              
+            <p class="search-hint">
               <el-button
                 v-if="savedRecords.length > 1"
                 type="success"
@@ -677,24 +680,23 @@
               :key="index"
               class="saved-record-item"
             >
-              <div class="record-header">                
-                <span class="record-name">{{ record.contact.name }} <!-- 單筆打印 -->            
-                  {{ BoolUtils.normalizeBool(record.needReceipt) }}
+              <div class="record-header">
+                <!-- 單筆打印 -->
+                <span class="record-name"
+                  >{{ record.contact.name }}
                   <el-button
-              v-if="BoolUtils.normalizeBool(record.needReceipt)"
-              type="success"
-              size="small"
-              circle
-              @click="handleReceiptPrint(record)"
-            >
-              🖨
-            </el-button> </span>
+                    v-if="BoolUtils.normalizeBool(record.needReceipt)"
+                    type="success"
+                    size="small"
+                    circle
+                    @click="handleReceiptPrint(record)"
+                  >
+                    🖨
+                  </el-button>
+                </span>
                 <span class="record-amount">${{ record.totalAmount }}</span>
               </div>
               <div class="record-time">{{ formatDate(record.createdAt) }}</div>
-              
-
-              
             </div>
           </div>
         </div>
@@ -726,7 +728,9 @@
         </div>
         <div class="total-final">
           <span>總金額：</span>
-          <span class="amount">${{ totalAmount }}</span>
+          <span class="amount"
+            >{{ appConfig.dollarTitle }}{{ totalAmount }}</span
+          >
         </div>
       </div>
     </div>
@@ -755,7 +759,7 @@ const router = useRouter();
 // 狀態管理
 const isDev = computed(() => authService.getCurrentDev());
 const selectedActivityId = ref(null);
-const needReceipt = ref('0'); // 是否需要收據（'0'=不需要，'1'=需要）
+const needReceipt = ref("0"); // 是否需要收據（'0'=不需要，'1'=需要）
 
 const {
   activityConfigs,
@@ -952,7 +956,7 @@ const handleReset = async () => {
     });
     joinRecordStore.resetSelections();
     selectedActivityId.value = null;
-    needReceipt.value = '0';
+    needReceipt.value = "0";
     ElMessage.success("選擇已重置");
   } catch (err) {
     if (err !== "cancel") {
@@ -998,7 +1002,7 @@ const handleSubmitForm = async () => {
   try {
     // 確認提交對話框
     const { value: notes } = await ElMessageBox.prompt(
-      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.dollarTitle}${totalAmount.value}\n\n🖨️ 收據：${needReceipt.value === '1' ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不需要打印收據"}\n\n請在下方備註欄填寫相關說明：`,
+      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.dollarTitle}${totalAmount.value}\n\n🖨️ 收據：${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不需要打印收據"}\n\n請在下方備註欄填寫相關說明：`,
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
@@ -1015,7 +1019,6 @@ const handleSubmitForm = async () => {
       },
     );
 
-
     // 修改 joinRecordStore 的 submitRecord 方法，傳遞 activityId 和 notes
     const result = await joinRecordStore.submitRecord(
       selectedActivityId.value,
@@ -1024,10 +1027,10 @@ const handleSubmitForm = async () => {
     );
 
     console.log("活動參加，送出存檔:", {
-      "activityId": selectedActivityId.value,
-      "notes": notes.trim(),
-      "needReceipt": needReceipt.value
-    })
+      activityId: selectedActivityId.value,
+      notes: notes.trim(),
+      needReceipt: needReceipt.value,
+    });
 
     const createdISOTime = DateUtils.getCurrentISOTime();
 
@@ -1043,7 +1046,7 @@ const handleSubmitForm = async () => {
       // 重置選擇（保留活動選擇）
       //selectedActivityId.value = null;
       joinRecordStore.resetSelections();
-      needReceipt.value = '0';
+      needReceipt.value = "0";
     } else {
       ElMessage.error("保存失敗，請稍後再試");
     }
@@ -1072,8 +1075,6 @@ const formatDate = (dateString) => {
   });
 };
 
-
-
 // 批量打印
 const handleBatchReceiptPrint = () => {
   if (savedRecords.value.length === 0) {
@@ -1083,7 +1084,7 @@ const handleBatchReceiptPrint = () => {
 
   // 只過濾需要打印收據的記錄
   const printableRecords = savedRecords.value.filter((r) =>
-    BoolUtils.normalizeBool(r.needReceipt)
+    BoolUtils.normalizeBool(r.needReceipt),
   );
 
   if (printableRecords.length === 0) {

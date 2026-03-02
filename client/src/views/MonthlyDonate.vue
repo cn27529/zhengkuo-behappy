@@ -1046,8 +1046,11 @@ const handleDeleteDonator = async (donator) => {
       h("div", [
         h("p", `📊 統計信息\n\n`),
         h("p", `贊助項目：${itemsCount} 個\n\n`),
-        h("p", `總金額：${totalAmount.toLocaleString()} 元\n\n`),
-        h("p", `總月份：${totalMonths} 個月\n\n`),
+        h(
+          "p",
+          `總金額：{appConfig.dollarTitle}{totalAmount.toLocaleString()} 元\n\n`,
+        ),
+        h("p", `總月份：{appConfig.dollarTitle}{totalMonths} 個月\n\n`),
         h("p", `⚠️ 此操作將刪除該贊助人的所有贊助記錄，且無法恢復！`),
       ]),
       `確定刪除贊助人「${donator.name}」嗎？`,
