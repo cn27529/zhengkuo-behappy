@@ -5,6 +5,7 @@ import { useActivityStore } from "./activityStore.js";
 import { useJoinRecordStore } from "./joinRecordStore.js";
 import { useMonthlyDonateStore } from "./monthlyDonateStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { BoolUtils } from "../utils/boolUtils.js";
 
 // 安全解析日期字串，失敗回傳 null
 const parseDate = (value) => {
@@ -19,10 +20,6 @@ const toNumber = (value) => {
   return Number.isFinite(num) ? num : 0;
 };
 
-// 將多種布林/數字字串規格統一為 boolean
-const normalizeBool = (value) => {
-  return value === true || value === 1 || value === "1" || value === "true";
-};
 
 // 付款狀態優先採用 record.paymentState，若無則以金額推導
 const resolvePaymentState = (record) => {
@@ -231,10 +228,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const receiptPendingCount = computed(() => {
     return joinRecords.value.filter(
       // 收據是否已開立，經20260225決定修改定義默認為空值，
-      // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
-      //(record) => normalizeBool(record?.needReceipt) && !record?.receiptIssued,
+      // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。      
       (record) =>
-        normalizeBool(record?.needReceipt) &&
+        BoolUtils.normalizeBool(record?.needReceipt) &&
         (!record?.receiptIssuedAt ||
           record?.receiptIssuedAt === "" ||
           record?.receiptIssuedAt === null),
@@ -246,10 +242,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const ids = joinRecords.value
       .filter(
         // 收據是否已開立，經20260225決定修改定義默認為空值，
-        // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
-        //(record) => normalizeBool(record?.needReceipt) && !record?.receiptIssued,
+        // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。        
         (record) =>
-          normalizeBool(record?.needReceipt) &&
+          BoolUtils.normalizeBool(record?.needReceipt) &&
           (!record?.receiptIssuedAt ||
             record?.receiptIssuedAt === "" ||
             record?.receiptIssuedAt === null),

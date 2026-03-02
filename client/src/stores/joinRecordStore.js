@@ -429,8 +429,19 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     selections.value[key] = [...data];
   };
 
-  // 送出存檔
-  const submitRecord = async (activityId = null, notes = "") => {
+  // 活動參加，送出存檔
+  const submitRecord = async (
+    activityId = null, // 活動 ID
+    notes = "", // 備註
+    needReceipt = false, // 是否需要收據
+  ) => {
+
+    console.log("活動參加，送出存檔:", {
+      "activityId": activityId,
+      "notes": notes,
+      "needReceipt": needReceipt
+    })
+
     isLoading.value = true;
     error.value = null;
 
@@ -459,6 +470,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         total: totalAmount.value,
         totalAmount: totalAmount.value,
         notes: notes, // 新增備註欄位
+        needReceipt: needReceipt, // 是否需要收據
         createdUser: getCurrentUser(),
         createdAt: createISOTime,
       };
