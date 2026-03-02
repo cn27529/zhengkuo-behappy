@@ -566,6 +566,22 @@
           </div>
         </div>
 
+        <!-- 是否需要收據 -->
+        <div class="form-section need-receipt-section" v-if="selectedRegistration">
+          <h3>收據需求</h3>
+          <div class="receipt-options">
+            <el-switch
+              v-model="needReceipt"
+              :active-value="'1'"
+              :inactive-value="'0'"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              active-text="需要打印收據"
+              inactive-text="不需要打印收據"
+            />
+          </div>
+        </div>
+
         <!-- 操作按鈕 -->
         <div class="form-actions" v-if="selectedRegistration">
           <button type="button" class="btn btn-secondary" @click="handleReset">
@@ -648,7 +664,7 @@
               <el-button
                 v-if="savedRecords.length > 1"
                 type="success"
-                size="small"
+                size="large"
                 @click="handleBatchReceiptPrint"
               >
                 批量打印
@@ -662,20 +678,23 @@
               class="saved-record-item"
             >
               <div class="record-header">                
-                <span class="record-name">{{ record.contact.name }}</span>
-                <span class="record-amount">${{ record.totalAmount }}</span>
-              </div>
-              <div class="record-time">{{ formatDate(record.createdAt) }}</div>
-              
-              <!-- 單筆打印 -->
-            <el-button
+                <span class="record-name">{{ record.contact.name }} <!-- 單筆打印 -->            
+                  {{ BoolUtils.normalizeBool(record.needReceipt) }}
+                  <el-button
+              v-if="BoolUtils.normalizeBool(record.needReceipt)"
               type="success"
               size="small"
               circle
               @click="handleReceiptPrint(record)"
             >
               🖨
-            </el-button>
+            </el-button> </span>
+                <span class="record-amount">${{ record.totalAmount }}</span>
+              </div>
+              <div class="record-time">{{ formatDate(record.createdAt) }}</div>
+              
+
+              
             </div>
           </div>
         </div>
@@ -727,6 +746,7 @@ import { useActivityStore } from "../stores/activityStore.js";
 import { storeToRefs } from "pinia";
 import appConfig from "../config/appConfig.js";
 import { el } from "element-plus/es/locale/index.mjs";
+import { BoolUtils } from "../utils/boolUtils.js";
 
 const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
@@ -735,6 +755,7 @@ const router = useRouter();
 // 狀態管理
 const isDev = computed(() => authService.getCurrentDev());
 const selectedActivityId = ref(null);
+const needReceipt = ref('0'); // 是否需要收據（'0'=不需要，'1'=需要）
 
 const {
   activityConfigs,
@@ -931,6 +952,7 @@ const handleReset = async () => {
     });
     joinRecordStore.resetSelections();
     selectedActivityId.value = null;
+    needReceipt.value = '0';
     ElMessage.success("選擇已重置");
   } catch (err) {
     if (err !== "cancel") {
@@ -976,7 +998,7 @@ const handleSubmitForm = async () => {
   try {
     // 確認提交對話框
     const { value: notes } = await ElMessageBox.prompt(
-      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.dollarTitle}${totalAmount.value}\n\n請在下方備註欄填寫相關說明：`,
+      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.dollarTitle}${totalAmount.value}\n\n🖨️ 收據：${needReceipt.value === '1' ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不需要打印收據"}\n\n請在下方備註欄填寫相關說明：`,
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
@@ -993,11 +1015,20 @@ const handleSubmitForm = async () => {
       },
     );
 
+
     // 修改 joinRecordStore 的 submitRecord 方法，傳遞 activityId 和 notes
     const result = await joinRecordStore.submitRecord(
       selectedActivityId.value,
       notes.trim(),
+      needReceipt.value,
     );
+
+    console.log("活動參加，送出存檔:", {
+      "activityId": selectedActivityId.value,
+      "notes": notes.trim(),
+      "needReceipt": needReceipt.value
+    })
+
     const createdISOTime = DateUtils.getCurrentISOTime();
 
     if (result.success) {
@@ -1012,6 +1043,7 @@ const handleSubmitForm = async () => {
       // 重置選擇（保留活動選擇）
       //selectedActivityId.value = null;
       joinRecordStore.resetSelections();
+      needReceipt.value = '0';
     } else {
       ElMessage.error("保存失敗，請稍後再試");
     }
@@ -1049,10 +1081,20 @@ const handleBatchReceiptPrint = () => {
     return;
   }
 
+  // 只過濾需要打印收據的記錄
+  const printableRecords = savedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt)
+  );
+
+  if (printableRecords.length === 0) {
+    ElMessage.warning("目前沒有需要打印收據的記錄");
+    return;
+  }
+
   try {
     const isoStr = DateUtils.getCurrentISOTime();
-    const ids = savedRecords.value.map((r) => r.id).join(",");
-    const printDatas = savedRecords.value.map((r) => r);
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printDatas = printableRecords;
     const printId = `receipt_batch_${isoStr}`;
 
     // 存儲多筆資料
@@ -1550,7 +1592,17 @@ onMounted(async () => {
   bottom: 20px;
 }
 
-/* 位置控制：  */
+/* 收據需求 */
+.need-receipt-section h3 {
+  margin-bottom: 0.75rem;
+}
+
+.receipt-options {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .total-float.bottom-left {
   left: 20px;
   right: auto;

@@ -279,7 +279,7 @@
             <el-tooltip
               content="收據打印"
               placement="top"
-              v-if="normalizeBool(row.needReceipt)"
+              v-if="BoolUtils.normalizeBool(row.needReceipt)"
             >
               <el-button type="success" circle @click="handleReceiptPrint(row)">
                 🖨️
@@ -369,6 +369,7 @@ import { useJoinRecordQueryStore } from "../stores/joinRecordQueryStore.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { appConfig } from "../config/appConfig.js";
+import { BoolUtils } from "../utils/boolUtils.js";
 
 const pageStateStore = usePageStateStore();
 const queryStore = useJoinRecordQueryStore();
@@ -393,10 +394,7 @@ const {
   itemTypeOptions,
 } = storeToRefs(queryStore);
 
-// 將多種布林/數字字串規格統一為 boolean
-const normalizeBool = (value) => {
-  return value === true || value === 1 || value === "1" || value === "true";
-};
+
 
 // 計算屬性 - 添加防護檢查
 const totalItems = computed(() => {
