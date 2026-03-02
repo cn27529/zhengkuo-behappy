@@ -22,7 +22,7 @@ export class RustAuthService {
       {
         operation: "login",
         ...context,
-      }
+      },
     );
 
     // 保存 Rust 專用令牌
@@ -45,7 +45,7 @@ export class RustAuthService {
       {
         operation: "logout",
         ...context,
-      }
+      },
     );
 
     // 清除令牌
@@ -66,7 +66,7 @@ export class RustAuthService {
       {
         operation: "refreshToken",
         ...context,
-      }
+      },
     );
   }
 
@@ -90,22 +90,6 @@ export class RustAuthService {
   }
 
   /**
-   * 獲取當前用戶信息
-   */
-  // async getCurrentUser(context = {}) {
-  //   return await this.base.rustFetch(
-  //     this.endpoint.me,
-  //     {
-  //       method: "GET",
-  //     },
-  //     {
-  //       operation: "getCurrentUser",
-  //       ...context,
-  //     }
-  //   );
-  // }
-
-  /**
    * 獲取當前登錄用戶
    */
   async getCurrentUser() {
@@ -119,6 +103,31 @@ export class RustAuthService {
     } catch (error) {
       console.error("獲取用戶信息失敗:", error);
       return "anonymous";
+    }
+  }
+
+  getUserInfo() {
+    try {
+      const user = sessionStorage.getItem("auth-user");
+      return JSON.parse(user);
+    } catch (error) {
+      console.error("獲取用戶資訊失敗:", error);
+      return null;
+    }
+  }
+
+  getUserName() {
+    const user = this.getUserInfo();
+    return user ? user.username || user.displayName || "unknown" : "unknown";
+  }
+
+  getCurrentUsers() {
+    try {
+      const allUsers = sessionStorage.getItem("allUsers");
+      return JSON.parse(allUsers);
+    } catch (error) {
+      console.error("獲取用戶資訊失敗:", error);
+      return null;
     }
   }
 

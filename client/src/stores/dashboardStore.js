@@ -20,7 +20,6 @@ const toNumber = (value) => {
   return Number.isFinite(num) ? num : 0;
 };
 
-
 // 付款狀態優先採用 record.paymentState，若無則以金額推導
 const resolvePaymentState = (record) => {
   const normalized = String(record?.paymentState || "").toLowerCase();
@@ -228,7 +227,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const receiptPendingCount = computed(() => {
     return joinRecords.value.filter(
       // 收據是否已開立，經20260225決定修改定義默認為空值，
-      // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。      
+      // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       (record) =>
         BoolUtils.normalizeBool(record?.needReceipt) &&
         (!record?.receiptIssuedAt ||
@@ -242,7 +241,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const ids = joinRecords.value
       .filter(
         // 收據是否已開立，經20260225決定修改定義默認為空值，
-        // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。        
+        // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
         (record) =>
           BoolUtils.normalizeBool(record?.needReceipt) &&
           (!record?.receiptIssuedAt ||

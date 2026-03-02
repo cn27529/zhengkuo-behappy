@@ -864,6 +864,16 @@ export class AuthService {
     const user = this.getUserInfo();
     return user ? user.username || user.displayName || "unknown" : "unknown";
   }
+
+  getCurrentUsers() {
+    try {
+      const allUsers = sessionStorage.getItem("allUsers");
+      return JSON.parse(allUsers);
+    } catch (error) {
+      console.error("獲取用戶資訊失敗:", error);
+      return null;
+    }
+  }
 }
 
 export const authService = new AuthService();

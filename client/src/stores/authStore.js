@@ -314,8 +314,29 @@ export const useAuthStore = defineStore("auth", () => {
     return userInfo.value.role === role;
   };
 
+  const getAllUsers = async () => {
+    try {
+      const result = await serviceAdapter.getAllUsers();
+      console.log("getAllUsers:", result);
+      if (result.success) {
+        console.log(`✅ 成功獲取 ${result.data.length} 全部使用者`);
+        const usersStr = JSON.stringify(result.data);
+        console.log("usersStr:", usersStr);
+        sessionStorage.setItem("allUsers", usersStr);
+      }
+      return result.data;
+    } catch (error) {
+      console.error("getAllUsers數據失敗:", error);
+      throw new Error("getAllUsers數據失敗:", error);
+    }
+  };
+
   // 獲取所有用戶（僅管理員權限）
   const getUsers = async () => {
+    // const usersStr = localStorage.getItem("allUsers");
+    // const allUsers = JSON.parse(usersStr);
+    // return allUsers;
+
     if (!hasRole("admin")) {
       throw new Error("權限不足");
     }
@@ -392,6 +413,7 @@ export const useAuthStore = defineStore("auth", () => {
     isLoading,
     authMode,
     isDev,
+    getAllUsers,
     // 原有的登入方法
     login,
     // 新增的 2FA 方法
