@@ -39,7 +39,7 @@
             <span class="temple-subtitle highlight">鎮國寺</span><br />
             地址：南投縣集集鎮廣明里鎮國巷101號<br />
             電話：(O四九) 二七六二七二六<br />
-            經手人：釋徹空
+            經手人：{{ receiptIssuedBy }}
           </div>
           <div class="footer-info">
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
@@ -87,7 +87,7 @@
               會址：南投縣集集鎮廣明里鎮國巷101號<br />
               電話：(O四九) 二七六二七二六<br />
               董事長：釋廣心（游天木）<br />
-              經手人：釋徹空
+              經手人：{{ receiptIssuedBy }}
             </div>
           </div>
           <div class="footer-info">
@@ -198,6 +198,7 @@ import printJS from "print-js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordPrintStore } from "../stores/joinRecordPrintStore.js";
 import { useReceiptNumberStore } from "../stores/receiptNumberStore.js";
+import { authService } from "../services/authService.js";
 
 const printStore = useJoinRecordPrintStore();
 const receiptStore = useReceiptNumberStore(); // 生成編號的 store
@@ -247,6 +248,12 @@ const contactAddress = computed(() => {
   const items = record.value.items || [];
   return items.find((item) => item.sourceAddress)?.sourceAddress || "";
 });
+
+// 經手人顯示邏輯：優先顯示 record 中的 receiptIssuedBy，若無則顯示 authService 的使用者名稱，最後才顯示「載入中...」
+const receiptIssuedBy = computed(() => {
+  return record.value?.receiptIssuedBy || authService.getUserName() || "載入中...";
+});
+
 const totalAmountChinese = computed(() => {
   const amount = record.value.totalAmount || 0;
   return convertToChinese(amount) + "元整";
@@ -577,7 +584,7 @@ onMounted(() => {
   const printId = route.query.print_id;
 
   if (isBatchParam && printId) {
-    // 批量打印模式
+    // 批量打印
     isBatch.value = true;
     const storedData = sessionStorage.getItem(printId);
 
@@ -601,7 +608,7 @@ onMounted(() => {
       router.back();
     }
   } else {
-    // 單筆打印模式
+    // 單筆打印
     const printData = route.query.print_data;
     if (printData) {
       try {

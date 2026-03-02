@@ -115,7 +115,7 @@
             size="small"
             @click="handleBatchReceiptPrint"
           >
-            🖨️ 批量收據打印
+            🖨️ 批量打印
           </el-button>
         </div>
       </div>
@@ -535,7 +535,7 @@ const handleReceiptPrint = (item) => {
   }
 };
 
-// 批量收據打印
+// 批量打印
 const handleBatchReceiptPrint = () => {
   if (selectedRecords.value.length === 0) {
     ElMessage.warning("請先選擇要打印的記錄");

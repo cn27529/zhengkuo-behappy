@@ -1152,7 +1152,7 @@ main();
 - [API 文檔](./api-documentation.md) - 雙軌 API 架構說明
 - [WAL 壓測文檔](./test-stress-test-wal.md) - WAL 機制驗證
 - [收據打印功能說明](./dev-joinRecord-receipt-print-guide.md)
-- [批量收據打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md)
+- [批量打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md)
 - [活動參加記錄列表](./dev-joinRecord-list-guide.md)
 - [收據打印狀態更新](./dev-receipt-print-status-update.md)
 

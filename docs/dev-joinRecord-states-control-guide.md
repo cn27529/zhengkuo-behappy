@@ -284,5 +284,5 @@ const canEditAccountingState = computed(() => {
 - [參加記錄開發指南](./dev-joinRecord-guide.md)
 - [參加記錄查詢開發指南](./dev-joinRecord-list-guide.md)
 - [收據打印功能說明](./dev-joinRecord-receipt-print-guide.md)
-- [批量收據打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md)
+- [批量打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md)
 - [收據編號生成機制說明](./dev-joinRecord-receiptNumber-guide.md) ⭐ 新增
