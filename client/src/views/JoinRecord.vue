@@ -644,6 +644,16 @@
         <div class="results-section" v-if="savedRecords.length > 0">
           <div class="results-header">
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
+            <p class="search-hint">              
+              <el-button
+                v-if="savedRecords.length > 1"
+                type="success"
+                size="small"
+                @click="handleBatchReceiptPrint"
+              >
+                批量打印
+              </el-button>
+            </p>
           </div>
           <div class="saved-records-list">
             <div
@@ -651,12 +661,21 @@
               :key="index"
               class="saved-record-item"
             >
-              <div class="record-header">
-                <span>{{ record.id }}</span>
+              <div class="record-header">                
                 <span class="record-name">{{ record.contact.name }}</span>
                 <span class="record-amount">${{ record.totalAmount }}</span>
               </div>
               <div class="record-time">{{ formatDate(record.createdAt) }}</div>
+              
+              <!-- 單筆打印 -->
+            <el-button
+              type="success"
+              size="small"
+              circle
+              @click="handleReceiptPrint(record)"
+            >
+              🖨
+            </el-button>
             </div>
           </div>
         </div>
@@ -699,6 +718,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
@@ -706,9 +726,11 @@ import { useJoinRecordStore } from "../stores/joinRecordStore.js";
 import { useActivityStore } from "../stores/activityStore.js";
 import { storeToRefs } from "pinia";
 import appConfig from "../config/appConfig.js";
+import { el } from "element-plus/es/locale/index.mjs";
 
 const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
+const router = useRouter();
 
 // 狀態管理
 const isDev = computed(() => authService.getCurrentDev());
@@ -1016,6 +1038,63 @@ const formatDate = (dateString) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+
+
+// 批量打印
+const handleBatchReceiptPrint = () => {
+  if (savedRecords.value.length === 0) {
+    ElMessage.warning("請先選擇要打印的記錄");
+    return;
+  }
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = savedRecords.value.map((r) => r.id).join(",");
+    const printDatas = savedRecords.value.map((r) => r);
+    const printId = `receipt_batch_${isoStr}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+
+    router.push({
+      path: "/join-record-receipt-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "true",
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+
+// 單筆打印
+const handleReceiptPrint = (item) => {
+  try {
+    const record = item;
+    if (!record) {
+      ElMessage.error("找不到對應的參加記錄");
+      return;
+    }
+    console.log("準備打印的參加記錄:", record);
+
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(record);
+    const printId = `receipt_${record.id}_${isoStr}`;
+    sessionStorage.setItem(printId, printData);
+    router.push({
+      path: "/join-record-receipt-print",
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+    });
+  } catch (error) {
+    console.error("導航到收據頁面失敗:", error);
+    ElMessage.error("導航到收據頁面失敗");
+  }
 };
 
 // 組件掛載

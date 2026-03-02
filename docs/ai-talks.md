@@ -292,7 +292,7 @@ WHERE receiptIssued<>''
 
 將 docs/dev-joinRecord-list-modify-guide.md 的內容合併到 docs/dev-joinRecord-list-guide.md
 將 docs/dev-joinRecord-modify-guide.md 的內容合併到 docs/dev-joinRecord-guide.md
-將批量收據打印功能 docs/dev-joinRecord-receipt-batch-print-guide.md 的內容合併到 docs/dev-joinRecord-receipt-print-guide.md 成為單筆打印與多筆打印的文件。
+將批量打印功能 docs/dev-joinRecord-receipt-batch-print-guide.md 的內容合併到 docs/dev-joinRecord-receipt-print-guide.md 成為單筆打印與多筆打印的文件。
 生成 client/src/views/RegistrationList.vue 功能的開發說明文件，命名為 docs/dev-registration-list-guide.md，生成 client/src/views/RegistrationPrint.vue 功能的開發說明文件，命名為 docs/dev-registration-print-guide.md。
 
 ## docs/dev-joinRecord-receiptNumber-guide.md

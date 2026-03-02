@@ -152,7 +152,7 @@ onMounted(() => {
       size="small"
       @click="handleBatchReceiptPrint"
     >
-      🖨️ 批量收據打印
+      🖨️ 批量打印
     </el-button>
   </div>
 </div>
@@ -363,7 +363,7 @@ const handleTemplateChange = (template = "standard") => {
 #### 8. 批量打印完整流程
 
 1. 在列表頁勾選多筆記錄（顯示已選擇筆數）
-2. 點擊「🖨️ 批量收據打印」按鈕
+2. 點擊「🖨️ 批量打印」按鈕
 3. 跳轉到收據打印頁面，顯示「收據 1 / 3」和數字按鈕 `[1] [2] [3]`
 4. 第1張按鈕顯示為白底藍框（當前頁）
 5. 選擇模板（📜 感謝狀 / 🛡️ 收據）

@@ -63,6 +63,7 @@
             {{ receiptPendingCount }}
           </div>
           <div class="status-foot">
+            <!-- 單筆打印 -->
             <el-button
               v-for="id in receiptPendingIds"
               :key="id"
@@ -342,7 +343,7 @@ const formatCurrency = (value) =>
     maximumFractionDigits: 0,
   }).format(Number(value) || 0);
 
-// 單筆收據打印
+// 單筆打印
 const handleReceiptPrint = (record_id) => {
   try {
     const record = dashboardStore.getJoinRecordById(record_id);
