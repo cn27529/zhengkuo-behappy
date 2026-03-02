@@ -6,7 +6,9 @@ export class RustDirectusUsersService {
     this.serviceName = "RustDirectusUsersService";
     this.base = baseRustService;
     this.endpoint = this.base.endpoints.directusUsers;
-    console.log(`RustDirectusUsersService 初始化: 當前模式為 ${this.base.mode}`);
+    console.log(
+      `RustDirectusUsersService 初始化: 當前模式為 ${this.base.mode}`,
+    );
   }
 
   // ========== 核心 READ 方法 ==========
@@ -16,12 +18,9 @@ export class RustDirectusUsersService {
    */
   async getUserById(id, additionalContext = {}) {
     try {
-      const result = await this.base.rustFetch(
-        `${this.endpoint}/${id}`,
-        {
-          method: "GET",
-        }
-      );
+      const result = await this.base.rustFetch(`${this.endpoint}/${id}`, {
+        method: "GET",
+      });
 
       return result;
     } catch (error) {
@@ -51,12 +50,9 @@ export class RustDirectusUsersService {
       : this.endpoint;
 
     try {
-      const result = await this.base.rustFetch(
-        endpoint,
-        {
-          method: "GET",
-        }
-      );
+      const result = await this.base.rustFetch(endpoint, {
+        method: "GET",
+      });
 
       return result;
     } catch (error) {
@@ -113,7 +109,7 @@ export class RustDirectusUsersService {
   /**
    * Rust 特定的錯誤處理
    */
-  handleError(error) {
+  handleUserError(error) {
     return this.base.handleRustError(error);
   }
 }

@@ -32,7 +32,7 @@ if (import.meta.env.VITE_AUTH_MODE === "mock") {
 
 if (authService.getCurrentDev()) {
   console.warn(
-    "🔧 調試信息已打開！使用 window.authService.setMode() 來切換模式",
+    "🔧 調試信息已打開！使用 window.$authService.setMode() 來切換模式",
   );
 }
 
