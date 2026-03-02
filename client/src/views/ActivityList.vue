@@ -971,7 +971,8 @@ const handleComplete = async (activityId) => {
 const handleDelete = async (activity) => {
   try {
     await ElMessageBox.confirm(
-      `確定要刪除活動 "${activity.name}" 嗎？⚠️ 此操作無法復原。`,
+      `確定要刪除活動「${activity.name}」嗎？
+      本活動參與人次為 ${activity.participants} 人次，刪除後人次無法被統計。⚠️ 此操作無法復原。`,
       "確認刪除",
       {
         confirmButtonText: "確定",

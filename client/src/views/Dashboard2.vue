@@ -58,7 +58,7 @@
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card shadow="hover" class="status-card danger">
-          <div class="status-title">待開立收據</div>
+          <div class="status-title">待開立收據/感謝狀</div>
           <div class="status-value">
             {{ receiptPendingCount }}
           </div>
@@ -98,7 +98,7 @@
         <el-card shadow="hover" class="finance-card">
           <div class="card-title">應收總額</div>
           <div class="card-value">
-            {{ formatCurrency(paymentSummary.totalReceivable) }}
+            {{ appConfig.formatCurrency(paymentSummary.totalReceivable) }}
           </div>
           <div class="card-foot">含已收與未收款項</div>
         </el-card>
@@ -107,7 +107,7 @@
         <el-card shadow="hover" class="finance-card">
           <div class="card-title">已收金額</div>
           <div class="card-value">
-            {{ formatCurrency(paymentSummary.totalPaid) }}
+            {{ appConfig.formatCurrency(paymentSummary.totalPaid) }}
           </div>
           <div class="card-foot">付款狀態已更新</div>
         </el-card>
@@ -115,7 +115,9 @@
       <el-col :xs="24" :sm="12" :lg="8">
         <el-card shadow="hover" class="finance-card">
           <div class="card-title">未收金額</div>
-          <div class="card-value">{{ formatCurrency(totalUnpaidAmount) }}</div>
+          <div class="card-value">
+            {{ appConfig.formatCurrency(totalUnpaidAmount) }}
+          </div>
           <div class="card-foot">仍需催收與追蹤</div>
         </el-card>
       </el-col>
@@ -126,7 +128,7 @@
         <el-card shadow="hover" class="donate-card">
           <div class="card-title">本月贊助總額</div>
           <div class="card-value">
-            {{ formatCurrency(currentMonthDonateSummary.total) }}
+            {{ appConfig.formatCurrency(currentMonthDonateSummary.total) }}
           </div>
           <div class="card-foot">
             活躍贊助者 {{ currentMonthDonateSummary.donors }} 人
@@ -135,9 +137,9 @@
       </el-col>
       <el-col :xs="24" :sm="12" :lg="12">
         <el-card shadow="hover" class="donate-card">
-          <div class="card-title">未來 3 個月排定贊助</div>
+          <div class="card-title">未來 6 個月排定贊助</div>
           <div class="card-value">
-            {{ formatCurrency(next3MonthsDonateTotal) }}
+            {{ appConfig.formatCurrency(next6MonthsDonateTotal) }}
           </div>
           <div class="card-foot">提前掌握可預期月贊助額</div>
         </el-card>
@@ -213,7 +215,7 @@
                   {{
                     registration.contact?.mobile || registration.contact?.phone
                   }}
-                  {{ registration.contact?.relationship }}，於{{
+                  {{ registration.contact?.relationship }}，{{
                     formatDateTime(
                       registration.createdAt || registration.date_created,
                     )
@@ -258,13 +260,13 @@
                       {{ item.label }} {{ item.quantity }}
                     </span>
                   </span>
-                  {{ record.totalAmount }} 元，於{{
+                  {{ appConfig.formatCurrency(record.totalAmount) }} 元，{{
                     formatDateTime(record.createdAt || record.date_created)
                   }}
                 </div>
               </div>
               <div v-if="false" class="list-value">
-                {{ formatCurrency(record.finalAmount) }}
+                {{ appConfig.formatCurrency(record.finalAmount) }}
               </div>
             </div>
           </div>
@@ -280,6 +282,7 @@ import { computed, onMounted } from "vue";
 import { useDashboardStore } from "../stores/dashboardStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import AnimatedNumber from "../components/AnimatedNumber.vue";
+import appConfig from "../config/appConfig.js";
 import { ElMessage, ElMessageBox } from "element-plus";
 // import {
 //   Refresh,
@@ -310,8 +313,15 @@ const joinRecordsInLast7Days = computed(
 const currentMonthDonateSummary = computed(
   () => dashboardStore.currentMonthDonateSummary,
 );
+//
 const next3MonthsDonateTotal = computed(
   () => dashboardStore.next3MonthsDonateTotal,
+);
+const next6MonthsDonateTotal = computed(
+  () => dashboardStore.next6MonthsDonateTotal,
+);
+const next12MonthsDonateTotal = computed(
+  () => dashboardStore.next12MonthsDonateTotal,
 );
 const paymentSummary = computed(() => dashboardStore.paymentSummary);
 const totalUnpaidAmount = computed(() => dashboardStore.totalUnpaidAmount);
@@ -336,12 +346,6 @@ const lastUpdatedAt = computed(() => dashboardStore.lastUpdatedAt);
 
 const formatDate = (value) => DateUtils.formatDate(value);
 const formatDateTime = (value) => DateUtils.formatDateTime(value);
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("zh-TW", {
-    style: "currency",
-    currency: "TWD",
-    maximumFractionDigits: 0,
-  }).format(Number(value) || 0);
 
 // 單筆打印
 const handleReceiptPrint = (record_id) => {
@@ -355,7 +359,7 @@ const handleReceiptPrint = (record_id) => {
 
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(record);
-    const printId = `receipt_${record.id}_${isoStr}`;
+    const printId = `print_receipt_${record.id}`;
     sessionStorage.setItem(printId, printData);
     router.push({
       path: "/join-record-receipt-print",

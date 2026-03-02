@@ -303,7 +303,7 @@ export class JoinRecordService {
 
   /**
    * 更新收據打印狀態
-   * 如果收據己打印這裡會是 true，receiptNumber 會記錄打印號碼，needReceipt 會記錄"standard" 是 "感謝狀", "stamp" 是 "收據"。
+   * 如果收據己打印這裡會是 true，receiptNumber 會記錄佛字編號，needReceipt 會記錄"standard" 是 "感謝狀", "stamp" 是 "收據"。
    */
   async updateByReceiptPrint(record) {
     if (!record?.id) {
@@ -318,7 +318,7 @@ export class JoinRecordService {
 
     const updateData = {
       needReceipt: isNeedReceipt,
-      receiptNumber: record.receiptNumber || "", // 保持原有打印號碼不變，如果沒有則為空字符串
+      receiptNumber: record.receiptNumber || "", // 保持原有佛字編號不變，如果沒有則為空字符串
       // 直接使用 activeTemplate 的值來表示是否已開立收據（standard 或 stamp），如果沒有則為空值
       //經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       receiptIssued: record.activeTemplate || "",
@@ -350,7 +350,7 @@ export class JoinRecordService {
         discountAmount: 0, // 折扣金額
         paidAmount: 0, // 付款金額
         needReceipt: payload.needReceipt, // 是否需要收據
-        receiptNumber: "", // 打印號碼
+        receiptNumber: "", // 佛字編號
         receiptIssued: "", // 收據是否已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
         receiptIssuedAt: "", // 收據開立日期
         receiptIssuedBy: "", // 收據開立者，也稱經手人

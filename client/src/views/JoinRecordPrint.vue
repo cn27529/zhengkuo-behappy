@@ -87,8 +87,8 @@
                   <caption>
                     <div class="items-summary">
                       共 {{ printContent.items.length }} 個項目，總金額：{{
-                        appConfig.dollarTitle
-                      }}{{ printContent.totalAmount || 0 }}
+                        appConfig.formatCurrency(printContent.totalAmount) || 0
+                      }}
                     </div>
                   </caption>
                   <thead>
@@ -115,7 +115,7 @@
                       </td>
                       <td class="text-center">{{ item.quantity || 0 }}</td>
                       <td class="text-center">
-                        {{ appConfig.dollarTitle }}{{ item.subtotal || 0 }}
+                        {{ appConfig.formatCurrency(item.subtotal) || 0 }}
                       </td>
                       <td class="text-left">
                         {{ item.sourceAddress || "未填寫" }}
@@ -186,7 +186,11 @@
           <!-- 頁尾 -->
           <div class="print-footer">
             <div class="print-meta">
-              <p>本表單由系統自動生成，打印時間：{{ printTime }}</p>
+              <p>
+                本表單由系統自動生成，打印時間：{{ printTime }}｜打印編號：{{
+                  printId
+                }}
+              </p>
             </div>
           </div>
         </div>
@@ -423,8 +427,8 @@ onUnmounted(() => {
   }
 
   .print-meta {
-    font-size: 10pt;
     color: #666;
+    font-size: 8px;
   }
 
   .print-section {
@@ -598,7 +602,7 @@ onUnmounted(() => {
 
   .print-meta {
     color: #666;
-    font-size: 14px;
+    font-size: 8px;
   }
 
   .print-section {

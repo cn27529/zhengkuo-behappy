@@ -60,7 +60,7 @@
           </p>
 
           <div><strong>金額計算:</strong></div>
-          <p>總金額: {{ appConfig.dollarTitle }}{{ totalAmount }}</p>
+          <p>總金額: {{ appConfig.formatCurrency(totalAmount) }}</p>
           <p>載入狀態: {{ isLoading ? "載入中..." : "已完成" }}</p>
 
           <div><strong>已保存記錄:</strong></div>
@@ -82,7 +82,7 @@
                 <strong>記錄 {{ index + 1 }}:</strong>
               </p>
               <p>聯絡人: {{ record.contact.name }}</p>
-              <p>總金額: {{ appConfig.dollarTitle }}{{ record.totalAmount }}</p>
+              <p>總金額: {{ appConfig.formatCurrency(record.totalAmount) }}</p>
               <p>保存時間: {{ record.createdAt }}</p>
               <p>
                 {{ JSON.stringify(record.items) }}
@@ -244,8 +244,10 @@
                   (已選 {{ selections.chaodu.length }} )
                 </span>
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.chaodu.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.chaodu.price)
+                  }}</span
                 >
               </div>
               {{ selectedRegistration.salvation.address }}
@@ -326,8 +328,10 @@
                   (已選 {{ selections.qifu.length }} )
                 </span>
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.qifu.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.qifu.price)
+                  }}</span
                 >
               </div>
               <div class="address">
@@ -388,8 +392,10 @@
                 </span>
 
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.diandeng.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.diandeng.price)
+                  }}</span
                 >
               </div>
 
@@ -475,8 +481,10 @@
                 </span>
 
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.xiaozai.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.xiaozai.price)
+                  }}</span
                 >
               </div>
               <div class="address">
@@ -532,8 +540,10 @@
                 </span>
 
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.pudu.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.pudu.price)
+                  }}</span
                 >
               </div>
 
@@ -694,7 +704,9 @@
                     🖨
                   </el-button>
                 </span>
-                <span class="record-amount">${{ record.totalAmount }}</span>
+                <span class="record-amount"
+                  >${{ appConfig.formatCurrency(record.totalAmount) }}</span
+                >
               </div>
               <div class="record-time">{{ formatDate(record.createdAt) }}</div>
             </div>
@@ -728,9 +740,9 @@
         </div>
         <div class="total-final">
           <span>總金額：</span>
-          <span class="amount"
-            >{{ appConfig.dollarTitle }}{{ totalAmount }}</span
-          >
+          <span class="amount">{{
+            appConfig.formatCurrency(totalAmount)
+          }}</span>
         </div>
       </div>
     </div>
@@ -1002,7 +1014,7 @@ const handleSubmitForm = async () => {
   try {
     // 確認提交對話框
     const { value: notes } = await ElMessageBox.prompt(
-      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.dollarTitle}${totalAmount.value}\n\n🖨️ 收據：${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不需要打印收據"}\n\n請在下方備註欄填寫相關說明：`,
+      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n🖨️ 收據：${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不需要打印收據"}\n\n請在下方備註欄填寫相關說明：`,
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
@@ -1096,7 +1108,7 @@ const handleBatchReceiptPrint = () => {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
     const printDatas = printableRecords;
-    const printId = `receipt_batch_${isoStr}`;
+    const printId = `print_receipt_ids_${ids}`;
 
     // 存儲多筆資料
     sessionStorage.setItem(printId, JSON.stringify(printDatas));
@@ -1128,7 +1140,7 @@ const handleReceiptPrint = (item) => {
 
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(record);
-    const printId = `receipt_${record.id}_${isoStr}`;
+    const printId = `print_receipt_${record.id}`;
     sessionStorage.setItem(printId, printData);
     router.push({
       path: "/join-record-receipt-print",

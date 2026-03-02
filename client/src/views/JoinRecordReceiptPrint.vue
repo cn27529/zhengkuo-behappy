@@ -22,7 +22,9 @@
                 :key="idx"
                 class="highlight"
               >
-                {{ item.label }}({{ item.subtotal }})&nbsp;&nbsp;
+                {{ item.label }}({{
+                  appConfig.formatCurrency(item.subtotal)
+                }})&nbsp;&nbsp;
               </span>
             </div>
             <div class="total-amount">
@@ -45,7 +47,11 @@
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p>本表單由系統自動生成(收執聯)，打印時間：{{ printTime }}</p>
+            <p>
+              本表單由系統自動生成(收執聯)，打印時間：{{
+                printTime
+              }}｜打印編號：{{ printId }}
+            </p>
           </div>
         </div>
 
@@ -66,7 +72,9 @@
                 :key="idx"
                 class="highlight"
               >
-                {{ item.label }}({{ item.subtotal }})&nbsp;&nbsp;
+                {{ item.label }}({{
+                  appConfig.formatCurrency(item.subtotal)
+                }})&nbsp;&nbsp;
               </span>
             </div>
             <div class="total-amount">
@@ -94,7 +102,11 @@
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p>本表單由系統自動生成(收執聯)，打印時間：{{ printTime }}</p>
+            <p>
+              本表單由系統自動生成(收執聯)，打印時間：{{
+                printTime
+              }}｜打印編號：{{ printId }}
+            </p>
           </div>
         </div>
       </div>
@@ -199,6 +211,7 @@ import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordPrintStore } from "../stores/joinRecordPrintStore.js";
 import { useReceiptNumberStore } from "../stores/receiptNumberStore.js";
 import { authService } from "../services/authService.js";
+import appConfig from "../config/appConfig.js";
 
 const printStore = useJoinRecordPrintStore();
 const receiptStore = useReceiptNumberStore(); // 生成編號的 store
@@ -211,6 +224,7 @@ const route = useRoute();
 const router = useRouter();
 const record = ref({});
 const printTime = ref("");
+const printId = ref("");
 const receiptNumberId = ref(null); // 儲存領取的正式編號 ID，以便後續更新狀態
 
 // 批量打印相關
@@ -251,7 +265,9 @@ const contactAddress = computed(() => {
 
 // 經手人顯示邏輯：優先顯示 record 中的 receiptIssuedBy，若無則顯示 authService 的使用者名稱，最後才顯示「載入中...」
 const receiptIssuedBy = computed(() => {
-  return record.value?.receiptIssuedBy || authService.getUserName() || "載入中...";
+  return (
+    record.value?.receiptIssuedBy || authService.getUserName() || "載入中..."
+  );
 });
 
 const totalAmountChinese = computed(() => {
@@ -263,7 +279,8 @@ const currentMonth = computed(() => new Date().getMonth() + 1);
 const currentDay = computed(() => new Date().getDate());
 
 const setPrintTime = () => {
-  printTime.value = DateUtils.getCurrentTimestamp();
+  const now = new Date();
+  printTime.value = DateUtils.formatDateTime(now);
 };
 
 const convertToChinese = (num) => {
@@ -328,11 +345,49 @@ const getButtonType = (index) => {
 };
 
 const handlePrintWithHtmlToImage = async () => {
+  // ✅ 0. 打印前確認 — 在領號之前先讓操作者確認內容
+  const templateLabel =
+    activeTemplate.value === "standard" ? "📜 感謝狀" : "🛡️ 收據";
+  const itemsText = (record.value.items || [])
+    .map(
+      (item) => `${item.label}（${appConfig.formatCurrency(item.subtotal)}）`,
+    )
+    .join("、");
+
+  try {
+    await ElMessageBox.confirm(
+      `
+        <div style="line-height:2; font-size:15px;">
+          <div>🙏 大德：<strong>${contactName.value}</strong></div>
+          <div>📋 打印類型：<strong style="color:#409EFF;">${templateLabel}</strong></div>
+          <div>💰 功德項目：<strong>${itemsText}</strong></div>
+          <div>💵 總金額：<strong style="color:#E6A23C;">${totalAmountChinese.value}</strong></div>
+          <hr style="margin:12px 0; border-color:#eee;"/>
+          <div style="color:#F56C6C; font-size:13px;">
+            ⚠️ 確認後將領取「佛字編號」，若選錯類型流程較複雜，請仔細確認。
+          </div>
+        </div>
+      `,
+      "請確認打印內容",
+      {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: "✅ 確認，開始打印",
+        cancelButtonText: "✏️ 返回修改",
+        type: "warning",
+        center: true,
+        distinguishCancelAndClose: true,
+      },
+    );
+  } catch {
+    // 操作者點「返回修改」或關閉 → 中止，不做任何動作
+    return;
+  }
+
   const node = document.getElementById("receipt-capture-area");
 
   // ✅ 1. 在擷取圖片前，先確認是否已有正式編號，若無則即時向 Rust 領取
   if (!record.value.receiptNumber) {
-    const fetchLoading = ElLoading.service({ text: "正在領取正式編號..." }); //
+    const fetchLoading = ElLoading.service({ text: "正在領取佛字編號..." }); //
     try {
       // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
       const result = await receiptStore.generateReceiptNumber(
@@ -574,19 +629,23 @@ const handlePostPrintCheck = async () => {
   }
 };
 
-const handleClose = () => router.back();
+const handleClose = () => {
+  // 告知 List 頁面需要重新查詢
+  sessionStorage.setItem("joinRecordListNeedsRefresh", "true");
+  router.back();
+};
 
 onMounted(() => {
   setPrintTime();
 
   // 檢查是否為批量打印
   const isBatchParam = route.query.is_batch === "true";
-  const printId = route.query.print_id;
+  printId.value = route.query.print_id;
 
-  if (isBatchParam && printId) {
+  if (isBatchParam && printId.value) {
     // 批量打印
     isBatch.value = true;
-    const storedData = sessionStorage.getItem(printId);
+    const storedData = sessionStorage.getItem(printId.value);
 
     if (storedData) {
       try {
@@ -814,8 +873,8 @@ onMounted(() => {
   left: 10mm;
   bottom: 5mm;
   writing-mode: horizontal-tb;
-  color: #909399;
   font-size: 8px;
+  color: #666;
 }
 
 .config-body {

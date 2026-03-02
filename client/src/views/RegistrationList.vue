@@ -384,12 +384,13 @@ const handleEdit = async (item) => {
 const handlePrint = (item) => {
   try {
     const formId = item.formId;
+    const recordId = item.id;
     const printData = JSON.stringify(item);
 
     console.log("準備列印數據:", { formId, printData });
     ElMessage.info(`準備列印表單: ${formId}`);
 
-    const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
+    const printId = `print_registration_${recordId}`;
     console.log("列印表單 ID:", printId);
 
     sessionStorage.setItem(printId, printData);

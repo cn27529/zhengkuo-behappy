@@ -178,7 +178,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       finalAmount: totalAmount, // 最終金額
       paidAmount: 0, // 付款金額
       needReceipt: false, // 是否需要收據。
-      receiptNumber: "", // 打印號碼
+      receiptNumber: "", // 佛字編號
       receiptIssued: "", // 收據已開立，經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       receiptIssuedAt: "", // 收據開立日期
       receiptIssuedBy: "", // 收據開立者，也稱經手人
@@ -197,7 +197,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   };
 
   /**
-   * 生成打印號碼
+   * 生成佛字編號
    * @returns
    */
   const generateReceiptNumber = () => {
@@ -435,12 +435,11 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     notes = "", // 備註
     needReceipt = false, // 是否需要收據
   ) => {
-
     console.log("活動參加，送出存檔:", {
-      "activityId": activityId,
-      "notes": notes,
-      "needReceipt": needReceipt
-    })
+      activityId: activityId,
+      notes: notes,
+      needReceipt: needReceipt,
+    });
 
     isLoading.value = true;
     error.value = null;

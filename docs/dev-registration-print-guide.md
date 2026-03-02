@@ -265,7 +265,9 @@ const loadPrintData = () => {
 <div class="print-footer">
   <p class="footer-note"></p>
   <div class="print-meta">
-    <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+    <p>本表單由系統自動生成，打印時間：{{ printTime }}｜打印編號：{{
+                  printId
+                }}</p>
   </div>
 </div>
 ```
@@ -315,7 +317,7 @@ const handlePrint = () => {
   // 延遲執行列印，確保樣式已應用
   setTimeout(() => {
     window.print();
-    
+
     // 列印後恢復狀態
     setTimeout(() => {
       isPrinting.value = false;
@@ -388,7 +390,7 @@ const handleDownloadExcel = () => {
 
   try {
     let excelContent = `${document.title}\n\n`;
-    
+
     // 聯絡人
     excelContent += "聯絡人:\n";
     excelContent += ",姓名,手機,電話,關係\n";
@@ -604,7 +606,7 @@ const downloadBlob = (blob, filename) => {
   .preview-section {
     padding: 20px;
   }
-  
+
   .config-sidebar {
     width: 320px;
   }

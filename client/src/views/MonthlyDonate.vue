@@ -75,7 +75,7 @@
           </div>
         </template>
         <div class="stat-content">
-          <h3>{{ stats.totalAmount.toLocaleString() }}</h3>
+          <h3>{{ appConfig.formatCurrency(stats.totalAmount) }}</h3>
         </div>
       </el-card>
 
@@ -208,12 +208,14 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="統計" width="55" align="center">
+            <el-table-column label="統計" width="65" align="center">
               <template #default="{ row }">
                 <div class="donate-stats">
                   <div class="stat-item">
                     <span class="stat-label" style="display: none">金額:</span>
-                    <span class="stat-value">{{ row.totalAmount }}</span>
+                    <span class="stat-value">{{
+                      appConfig.formatCurrency(row.totalAmount)
+                    }}</span>
                   </div>
                   <div class="stat-item" style="display: none">
                     <span class="stat-label">月份:</span>
@@ -561,7 +563,7 @@
           <div class="donator-stats">
             <el-statistic
               title="總贊助金額"
-              :value="selectedDonator.totalAmount"
+              :value="appConfig.formatCurrency(selectedDonator.totalAmount)"
               suffix="元"
             />
             <el-statistic
@@ -654,6 +656,7 @@ import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import IconSelector from "../components/IconSelector.vue";
 import { storeToRefs } from "pinia";
+import appConfig from "../config/appConfig.js";
 
 const monthlyDonateStore = useMonthlyDonateStore();
 
@@ -956,7 +959,7 @@ const getMonthTooltip = (monthItems) => {
   const totalAmount = monthItems.reduce((sum, item) => sum + item.price, 0);
   const itemCount = monthItems.length;
 
-  return `贊助金額: ${totalAmount.toLocaleString()}元\n項目數: ${itemCount}個`;
+  return `贊助金額: ${appConfig.formatCurrency(totalAmount)}元\n項目數: ${itemCount}個`;
 };
 
 const formatMonth = (yearMonth) => {
@@ -1046,11 +1049,8 @@ const handleDeleteDonator = async (donator) => {
       h("div", [
         h("p", `📊 統計信息\n\n`),
         h("p", `贊助項目：${itemsCount} 個\n\n`),
-        h(
-          "p",
-          `總金額：{appConfig.dollarTitle}{totalAmount.toLocaleString()} 元\n\n`,
-        ),
-        h("p", `總月份：{appConfig.dollarTitle}{totalMonths} 個月\n\n`),
+        h("p", `總金額：${appConfig.formatCurrency(totalAmount)} 元\n\n`),
+        h("p", `總月份：${totalMonths} 個月\n\n`),
         h("p", `⚠️ 此操作將刪除該贊助人的所有贊助記錄，且無法恢復！`),
       ]),
       `確定刪除贊助人「${donator.name}」嗎？`,
