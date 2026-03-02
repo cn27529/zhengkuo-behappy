@@ -145,6 +145,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let participation_record_routes = routes::participation_record::create_routes();
     let my_data_routes = routes::my_data::create_routes();
     let receipt_number_routes = routes::receipt_number::create_routes(); // ✅ 新增：收據編號路由
+    let directus_users_routes = routes::directus_users::create_routes();
 
     // ✅ 創建 SqliteProvider(DatabaseProvider 的實現)
     let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
@@ -164,6 +165,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(my_data_routes)
         // ✅ 新增：合併收據編號路由
         .merge(receipt_number_routes)
+        .merge(directus_users_routes)
         // Add the SQL viewer at /sql-viewer
         .merge(sql_viewer_router)
         .layer(Extension(state.clone()))
@@ -193,8 +195,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /api/monthly-donates        - 每月捐款列表");
     tracing::info!("  GET    /api/participation-records  - 參與記錄列表");
     tracing::info!("  GET    /api/my-data                - MyData 列表");
-    tracing::info!("  POST   /api/receipt-numbers/generate - ⚡ 原子性生成收據編號"); // ✅ 新增：收據編號日誌提示
+    tracing::info!("  POST   /api/receipt-numbers/generate - 生成收據編號");
     tracing::info!("  GET    /api/receipt-numbers        - 收據編號歷史記錄");
+    tracing::info!("  GET    /api/directus-users         - DIRECTUS使用者");
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");
 
@@ -236,7 +239,9 @@ async fn root_handler() -> Json<Value> {
             "registrations": "/api/registrations",
             "monthly_donates": "/api/monthly-donates",
             "participation_records": "/api/participation-records",            
-            "receipt_generation": "/api/receipt-numbers/generate", // ✅ 新增：根路徑顯示收據編號生成端點
+            "receipt_numbers": "/api/receipt-numbers/", 
+            "receipt_generation": "/api/receipt-numbers/generation", 
+            "directus_users": "/api/directus-users",
             "db_test": "/db-test",
             "sql_viewer": "/sql-viewer"
         },

@@ -314,3 +314,7 @@ WHERE receiptIssued<>''
 第四階段我們要生成 client/src/stores/receiptNumberStore.js 將這個「收據編號生成」套用到現有的 client/src/views/JoinRecordReceiptPrint.vue 功能當中。實現 client/src/stores/receiptNumberStore.js 時，請參照當前 client/src/stores/activityStore.js 代碼進行編程。我們先實現 client/src/stores/receiptNumberStore.js 沒問題後我們再接 client/src/views/JoinRecordReceiptPrint.vue。
 
 說了這麼多也是讓你多理解現有的架構，才不會生成不正確的怪怪代碼 XD，好了共四個階段我們先把四個階段生成可執行的 docs/how-to-create-recriptNumber-guide.md 文檔，我先看過。
+
+## directus_users
+
+依據 db/sqlite_directus_users_table.sql，生成 rust-axum/handlers/directus_users.rs, rust-axum/models/directus_users.rs, rust-axum/ruutes/directus_users.rs，目前只生成CRUD的R
