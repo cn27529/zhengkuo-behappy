@@ -194,6 +194,7 @@
 import appConfig from "../config/appConfig.js";
 import { useJoinRecordReportStore } from "../stores/joinRecordReportStore.js";
 import { ElMessage } from "element-plus";
+import { DateUtils } from "../utils/dateUtils.js";
 
 const store = useJoinRecordReportStore();
 
@@ -215,9 +216,9 @@ const formatValue = (row, key) => {
   if (key === "contactMobile") return row.contact?.mobile || "";
   if (key === "receiptIssued") return row.receiptIssued ? "已開立" : "未開立";
   if (key === "totalAmount")
-    return `${appConfig.dollarTitle}${row.totalAmount}`;
+    return `${appConfig.formatCurrency(row.totalAmount)}`;
   if (key === "createdAt")
-    return row.createdAt ? new Date(row.createdAt).toLocaleString("zh-TW") : "";
+    return row.createdAt ? DateUtils.formatDateTime(row.createdAt) : "";
   return row[key] ?? "";
 };
 

@@ -200,9 +200,9 @@
 
                   <!-- <span class="item-label">{{ item.label }}</span>
                   <span class="item-quantity">x{{ item.quantity }}</span> -->
-                  <span v-if="false" class="item-amount"
-                    >{{ appConfig.dollarTitle }}{{ item.subtotal }}</span
-                  >
+                  <span v-if="false" class="item-amount">{{
+                    appConfig.formatCurrency(item.subtotal)
+                  }}</span>
                 </div>
                 <div v-if="false" class="item-address">
                   <!-- <span class="address-label">地址：</span> -->
@@ -236,18 +236,18 @@
         <el-table-column
           prop="totalAmount"
           label="總金額"
-          min-width="80"
+          min-width="50"
           align="center"
         >
           <template #default="{ row }">
-            <strong class="amount"
-              >{{ appConfig.dollarTitle }}{{ row.totalAmount || 0 }}</strong
-            >
+            <strong class="amount">{{
+              appConfig.formatCurrency(row.totalAmount) || 0
+            }}</strong>
           </template>
         </el-table-column>
 
-        <!-- 打印號碼 -->
-        <el-table-column label="打印號碼" min-width="80" align="center">
+        <!-- 佛字編號 -->
+        <el-table-column label="佛字編號" min-width="80" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
               <el-tag
@@ -375,7 +375,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onActivated } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
@@ -505,7 +505,7 @@ const handlePrint = (item) => {
     console.log("準備列印數據:", { recordId, printData });
     ElMessage.info(`準備列印表單: ${recordId}`);
 
-    const printId = `print_join_record_${recordId}_${isoStr}`;
+    const printId = `print_join_record_${recordId}`;
     console.log("列印表單 ID:", printId);
 
     sessionStorage.setItem(printId, printData);
@@ -533,7 +533,7 @@ const handleReceiptPrint = (item) => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(item);
-    const printId = `receipt_${item.id}_${isoStr}`;
+    const printId = `print_receipt_${item.id}`;
 
     sessionStorage.setItem(printId, printData);
 
@@ -558,7 +558,7 @@ const handleBatchReceiptPrint = () => {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
     const printDatas = selectedRecords.value.map((r) => r);
-    const printId = `receipt_batch_${isoStr}`;
+    const printId = `print_receipt_ids_${ids}`;
 
     // 存儲多筆資料
     sessionStorage.setItem(printId, JSON.stringify(printDatas));
@@ -655,10 +655,26 @@ const getParticipantNames = (sourceData) => {
     .filter((name) => name && name !== "未知");
 };
 
+// 封裝重新查詢邏輯（可共用）
+const refreshIfNeeded = () => {
+  const needsRefresh = sessionStorage.getItem("joinRecordListNeedsRefresh");
+  if (needsRefresh === "true") {
+    sessionStorage.removeItem("joinRecordListNeedsRefresh");
+    console.log("偵測到收據打印完成，自動重新查詢...");
+    handleSearch();
+  }
+};
+
+// 如果有用 <keep-alive> 包裹，用 onActivated
+onActivated(() => {
+  refreshIfNeeded();
+});
+
 onMounted(() => {
   console.log("✅ JoinRecordList 組件已載入");
   console.log("清除頁面狀態");
   pageStateStore.clearPageState("joinRecord");
+  refreshIfNeeded(); // 加這一行
 });
 </script>
 

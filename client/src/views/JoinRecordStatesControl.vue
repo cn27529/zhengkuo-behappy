@@ -13,7 +13,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋姓名、手機、電話、地址、關係、備註、打印號碼"
+              placeholder="搜尋姓名、手機、電話、地址、關係、備註、佛字編號"
               @keyup.enter="handleSearch"
               :disabled="isLoading"
               clearable
@@ -53,7 +53,7 @@
           </div>
           <p class="search-hint">
             💡 提示:
-            可依項目類型或關鍵字（聯絡人、參加者、地址、備註、打印號碼）搜尋相關記錄
+            可依項目類型或關鍵字（聯絡人、參加者、地址、備註、佛字編號）搜尋相關記錄
           </p>
         </div>
       </div>
@@ -260,8 +260,8 @@
           </template>
         </el-table-column>
 
-        <!-- 打印號碼 -->
-        <el-table-column label="打印號碼" width="120" align="center">
+        <!-- 佛字編號 -->
+        <el-table-column label="佛字編號" width="120" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
               <el-tag

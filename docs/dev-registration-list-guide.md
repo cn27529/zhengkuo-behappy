@@ -147,7 +147,7 @@ const handlePrint = (item) => {
     const formId = item.formId;
     const printData = JSON.stringify(item);
 
-    const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
+    const printId = `print_registration_${formId}_${Math.floor(Math.random() * 1000)}`;
 
     // 存儲到 sessionStorage
     sessionStorage.setItem(printId, printData);
@@ -193,15 +193,15 @@ const handleCardDesign = (item) => {
 
 ## 表格欄位說明
 
-| 欄位 | 說明 | 寬度 | 對齊 |
-|------|------|------|------|
-| 圖標 | 顯示 👤 圖標和 ID tooltip | 50px | 居中 |
-| 聯絡人 | 聯絡人姓名 | 100px | 居中 |
-| 手機 | 手機號碼 | 120px | 左對齊 |
-| 電話 | 家用電話 | 120px | 左對齊 |
-| 關係 | 與登記人關係（含其他關係說明） | 100px | 左對齊 |
-| 建立時間 | 記錄建立時間（可排序） | 150px | 左對齊 |
-| 操作 | 查看/編輯/卡片設計按鈕 | 200px | 居中固定 |
+| 欄位     | 說明                           | 寬度  | 對齊     |
+| -------- | ------------------------------ | ----- | -------- |
+| 圖標     | 顯示 👤 圖標和 ID tooltip      | 50px  | 居中     |
+| 聯絡人   | 聯絡人姓名                     | 100px | 居中     |
+| 手機     | 手機號碼                       | 120px | 左對齊   |
+| 電話     | 家用電話                       | 120px | 左對齊   |
+| 關係     | 與登記人關係（含其他關係說明） | 100px | 左對齊   |
+| 建立時間 | 記錄建立時間（可排序）         | 150px | 左對齊   |
+| 操作     | 查看/編輯/卡片設計按鈕         | 200px | 居中固定 |
 
 ## 狀態顯示
 
@@ -387,10 +387,10 @@ onMounted(() => {
 ```javascript
 onMounted(() => {
   console.log("✅ RegistrationList 組件已載入");
-  
+
   // 清除頁面狀態
   pageStateStore.clearPageState("registration");
-  
+
   // 啟用調試模式
   isDev.value = authService.getCurrentDev();
 });
@@ -433,10 +433,7 @@ handleEdit() / handlePrint() / handleCardDesign()
 **A**: 修改 `page-sizes` 屬性：
 
 ```vue
-<el-pagination
-  :page-sizes="[10, 20, 50, 100]"
-  ...
-/>
+<el-pagination :page-sizes="[10, 20, 50, 100]" ... />
 ```
 
 ### Q3: 查詢結果如何持久化？

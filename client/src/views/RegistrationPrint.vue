@@ -8,9 +8,6 @@
           <!-- 表頭 -->
           <div class="print-header">
             <h1>{{ printContent.contact?.name || "未填寫" }}-祈福登記表</h1>
-            <div class="print-meta">
-              <!-- <p>｜列印時間：{{ printTime }}｜列印編號：{{ printId }}｜</p> -->
-            </div>
           </div>
 
           <!-- 聯絡人信息 -->
@@ -207,7 +204,11 @@
           <div class="print-footer">
             <p class="footer-note"></p>
             <div class="print-meta">
-              <p>本表單由系統自動生成，列印時間：{{ printTime }}</p>
+              <p>
+                本表單由系統自動生成，打印時間：{{ printTime }}｜打印編號：{{
+                  printId
+                }}
+              </p>
             </div>
           </div>
         </div>
@@ -258,6 +259,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { DateUtils } from "../utils/dateUtils.js";
 
 const router = useRouter();
 const printContent = ref({});
@@ -358,14 +360,7 @@ const loadPrintData = () => {
 // 設置列印時間
 const setPrintTime = () => {
   const now = new Date();
-  printTime.value = now.toLocaleString("zh-TW", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  printTime.value = DateUtils.formatDateTime(now);
 };
 
 const closeDownloadMenu = (event) => {
@@ -770,8 +765,8 @@ onUnmounted(() => {
   }
 
   .print-meta {
-    font-size: 10pt;
     color: #666;
+    font-size: 8px;
   }
 
   .print-section {
@@ -1024,7 +1019,7 @@ onUnmounted(() => {
 
   .print-meta {
     color: #666;
-    font-size: 14px;
+    font-size: 8px;
   }
 
   .print-section {

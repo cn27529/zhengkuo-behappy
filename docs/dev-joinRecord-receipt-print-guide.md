@@ -47,7 +47,7 @@ const handleReceiptPrint = (item) => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(item);
-    const printId = `receipt_${item.id}_${isoStr}`;
+    const printId = `print_receipt_${item.id}_${isoStr}`;
 
     sessionStorage.setItem(printId, printData);
 
@@ -170,7 +170,7 @@ const handleBatchReceiptPrint = () => {
   const isoStr = DateUtils.getCurrentISOTime();
   const ids = selectedRecords.value.map((r) => r.id).join(",");
   const printDatas = selectedRecords.value.map((r) => r);
-  const printId = `receipt_batch_${isoStr}`;
+  const printId = `print_receipt_ids_${isoStr}`;
 
   // 存儲多筆資料到 sessionStorage
   sessionStorage.setItem(printId, JSON.stringify(printDatas));
@@ -874,8 +874,8 @@ const setPrintTime = () => {
   left: 10mm;
   bottom: 5mm;
   writing-mode: horizontal-tb;
-  color: #909399;
   font-size: 8px;
+  color: #666;
 }
 ```
 

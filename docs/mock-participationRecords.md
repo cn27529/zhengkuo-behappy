@@ -24,7 +24,7 @@
   "finalAmount": 2000,                       // 最終金額
   "paidAmount": 2000,                        // 已付金額
   "needReceipt": false,                       // 是否需要收據
-  "receiptNumber": "R2025010001",            // 打印號碼
+  "receiptNumber": "R2025010001",            // 佛字編號
   "receiptIssued": "stamp",                     // 收據是否已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
   "receiptIssuedAt": "2025-01-16T10:00:00.000Z", // 收據開立時間
   "receiptIssuedBy": "櫃台小姐",              // 收據開立者，也稱經手人

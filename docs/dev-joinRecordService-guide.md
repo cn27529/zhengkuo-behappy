@@ -18,7 +18,7 @@ CREATE TABLE joinRecordDB (
   finalAmount DECIMAL(10,2) NOT NULL,        -- 最終金額
   paidAmount DECIMAL(10,2) DEFAULT 0,        -- 已付金額
   needReceipt BOOLEAN DEFAULT false,         -- 是否需要收據
-  receiptNumber VARCHAR(50),                 -- 打印號碼
+  receiptNumber VARCHAR(50),                 -- 佛字編號
   receiptIssued BOOLEAN DEFAULT '',       -- 收據已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
   receiptIssuedAt DATETIME,                  -- 收據開立時間
   receiptIssuedBy VARCHAR(100),              -- 收據開立者，也稱經手人
