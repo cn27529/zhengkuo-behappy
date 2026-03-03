@@ -1,5 +1,6 @@
 [
     {
+        "id": "ab11998d-27b1-4936-a437-324952ba3c1f",
         "username": "admin",
         "displayName": "阿德民",
         "role": "admin",
@@ -11,6 +12,7 @@
         ]
     },
     {
+        "id": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
         "username": "zkuser01",
         "displayName": "廣小明",
         "role": "user",
@@ -19,6 +21,7 @@
         ]
     },
     {
+        "id": "8591-4288-8ebe-a4af19e718f7",
         "username": "temple_staff",
         "displayName": "寺廟工作人員",
         "role": "staff",
@@ -29,6 +32,7 @@
         ]
     },
     {
+        "id": "a4af19e718f7-a4954ebc-8591-4288-8ebe",
         "username": "volunteer",
         "displayName": "志工",
         "role": "volunteer",
@@ -38,6 +42,7 @@
         ]
     },
     {
+        "id": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
         "username": "user01",
         "displayName": "一般用戶01",
         "role": "user",

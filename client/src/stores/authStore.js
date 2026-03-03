@@ -102,6 +102,9 @@ export const useAuthStore = defineStore("auth", () => {
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
         allUserInfo.value = mockData;
+        const usersStr = JSON.stringify(mockData);
+        console.log("usersStr:", usersStr);
+        sessionStorage.setItem("allUsers", usersStr);
         return allUserInfo.value;
       }
 
