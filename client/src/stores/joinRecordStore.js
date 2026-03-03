@@ -472,11 +472,16 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         needReceipt: needReceipt, // 是否需要收據
         createdUser: getCurrentUser(),
         createdAt: createISOTime,
+        user_created: getCurrentUser(),
       };
       console.log("submitRecord:", payload);
-
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不是 directus，無法創建數據");
+        const mockPlayload = {
+          id: DatMath.floor(Date.now() / 1000), // 秒級整數
+          ...payload,
+        };
+        savedRecords.value.unshift(mockPlayload); // 將新記錄加入 savedRecords
         return {
           success: true,
           data: payload,

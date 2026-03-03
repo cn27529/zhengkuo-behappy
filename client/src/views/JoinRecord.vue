@@ -1044,11 +1044,9 @@ const handleSubmitForm = async () => {
       needReceipt: needReceipt.value,
     });
 
-    const createdISOTime = DateUtils.getCurrentISOTime();
-
     if (result.success) {
       ElMessage.success({
-        message: "參加記錄已保存！",
+        message: result.message || "參加記錄已保存！",
         duration: 3000,
       });
       setTimeout(() => {
