@@ -6,6 +6,8 @@ import { serviceAdapter } from "../adapters/serviceAdapter.js";
 import userData from "../data/auth_user.json";
 
 export const useAuthStore = defineStore("auth", () => {
+  
+  const allUsers = ref(null);
   const userInfo = ref(null);
   const isAuthenticated = ref(false);
   const isLoading = ref(false);
@@ -67,6 +69,8 @@ export const useAuthStore = defineStore("auth", () => {
             result.data.refreshToken,
           );
         }
+
+        await getAllUsers();
 
         resetInactivityTimer();
         setupActivityListeners();
@@ -253,6 +257,7 @@ export const useAuthStore = defineStore("auth", () => {
       sessionStorage.removeItem("auth-user");
       sessionStorage.removeItem("auth-token");
       sessionStorage.removeItem("auth-refresh-token");
+      sessionStorage.removeItem("allUsers");
 
       console.log("用戶已退出登入");
     }
@@ -323,8 +328,9 @@ export const useAuthStore = defineStore("auth", () => {
         const usersStr = JSON.stringify(result.data);
         console.log("usersStr:", usersStr);
         sessionStorage.setItem("allUsers", usersStr);
+        allUsers.value = JSON.parse(usersStr);
       }
-      return result.data;
+      allUsers.value;
     } catch (error) {
       console.error("getAllUsers數據失敗:", error);
       throw new Error("getAllUsers數據失敗:", error);
@@ -333,7 +339,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   // 獲取所有用戶（僅管理員權限）
   const getUsers = async () => {
-    // const usersStr = localStorage.getItem("allUsers");
+    // const usersStr = sessionStorage.getItem("allUsers");
     // const allUsers = JSON.parse(usersStr);
     // return allUsers;
 
@@ -407,7 +413,7 @@ export const useAuthStore = defineStore("auth", () => {
       : "desktop";
   };
 
-  return {
+  return {    
     user: userInfo,
     isAuthenticated,
     isLoading,

@@ -407,8 +407,11 @@ const {
   stateFilter,
   itemsFilter,
   stateOptions,
-  itemTypeOptions,
+  itemTypeOptions,  
 } = storeToRefs(queryStore);
+
+const allUsers = ref(null);
+const currentAllUsers = computed(() => authService.getCurrentUsers());
 
 // 計算屬性 - 添加防護檢查
 const totalItems = computed(() => {
@@ -436,6 +439,9 @@ const isMobile = computed(() => {
 
 // 方法
 const handleSearch = async () => {
+  
+  console.log(allUsers.value.length);
+
   queryStore.resetPagination();
 
   const query = searchQuery.value ? searchQuery.value.trim() : "";
@@ -674,7 +680,9 @@ onMounted(() => {
   console.log("✅ JoinRecordList 組件已載入");
   console.log("清除頁面狀態");
   pageStateStore.clearPageState("joinRecord");
-  refreshIfNeeded(); // 加這一行
+  refreshIfNeeded(); // 加這一行  
+  allUsers.value = currentAllUsers.value;
+  console.log("currentAllUsers:", currentAllUsers.value);
 });
 </script>
 
