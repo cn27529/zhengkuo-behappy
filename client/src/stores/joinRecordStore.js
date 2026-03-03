@@ -477,8 +477,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       console.log("submitRecord:", payload);
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不是 directus，無法創建數據");
+        const now = new Date();
         const mockPlayload = {
-          id: DatMath.floor(Date.now() / 1000), // 秒級整數
+          id: DateUtils.getCurrentTimestamp(now), //mock id
           ...payload,
         };
         savedRecords.value.unshift(mockPlayload); // 將新記錄加入 savedRecords
