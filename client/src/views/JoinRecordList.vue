@@ -695,9 +695,9 @@ const refreshIfNeeded = () => {
 };
 
 // 如果有用 <keep-alive> 包裹，用 onActivated
-onActivated(() => {
-  refreshIfNeeded();
-});
+// onActivated(() => {
+//   refreshIfNeeded();
+// });
 
 onMounted(() => {
   console.log("✅ JoinRecordList 組件已載入");

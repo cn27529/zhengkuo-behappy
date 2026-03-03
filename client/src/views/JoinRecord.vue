@@ -194,7 +194,7 @@
             </span>
 
             <span>
-              <!-- <strong>關係：</strong> -->
+              <strong>資料表屬性：</strong>
               {{ selectedRegistration.contact.relationship }}
               <span v-if="selectedRegistration.contact.otherRelationship">
                 {{ selectedRegistration.contact.otherRelationship }}
@@ -590,7 +590,7 @@
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="需要打印收據"
-              inactive-text="不需要打印收據"
+              inactive-text="不打印收據"
             />
           </div>
         </div>
@@ -759,6 +759,7 @@ import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordStore } from "../stores/joinRecordStore.js";
 import { useActivityStore } from "../stores/activityStore.js";
+import { usePageStateStore } from "../stores/pageStateStore.js";
 import { storeToRefs } from "pinia";
 import appConfig from "../config/appConfig.js";
 import { el } from "element-plus/es/locale/index.mjs";
@@ -766,6 +767,7 @@ import { BoolUtils } from "../utils/boolUtils.js";
 
 const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
+const pageStateStore = usePageStateStore();
 const router = useRouter();
 
 // 狀態管理
@@ -841,6 +843,8 @@ const handleActivityChange = (activityId) => {
       console.log("選中活動:", activity.name);
     }
   }
+  // 保存活動選擇到 pageState
+  pageStateStore.setPageState("joinRecord", { selectedActivityId: activityId });
 };
 
 // 格式化活動日期
@@ -1014,7 +1018,7 @@ const handleSubmitForm = async () => {
   try {
     // 確認提交對話框
     const { value: notes } = await ElMessageBox.prompt(
-      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n🖨️ 收據：${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不需要打印收據"}\n\n請在下方備註欄填寫相關說明：`,
+      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n🖨️ 收據：${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不打印收據"}\n\n請在下方備註欄填寫相關說明：`,
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
@@ -1157,6 +1161,13 @@ onMounted(async () => {
   isDev.value = authService.getCurrentDev();
   await loadRegistrationData(); // 載入真實報名資料
   await loadActivityData(); // 載入活動資料
+
+  // 恢復活動選擇
+  const pageState = pageStateStore.getPageState("joinRecord");
+  if (pageState?.selectedActivityId) {
+    selectedActivityId.value = pageState.selectedActivityId;
+    console.log("恢復活動選擇:", selectedActivityId.value);
+  }
 });
 </script>
 
