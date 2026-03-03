@@ -6,9 +6,9 @@ import { serviceAdapter } from "../adapters/serviceAdapter.js";
 import userData from "../data/auth_user.json";
 
 export const useAuthStore = defineStore("auth", () => {
-  
-  const allUsers = ref(null);
+  const allUserInfo = ref(null);
   const userInfo = ref(null);
+
   const isAuthenticated = ref(false);
   const isLoading = ref(false);
 
@@ -93,6 +93,24 @@ export const useAuthStore = defineStore("auth", () => {
       throw error;
     } finally {
       isLoading.value = false;
+    }
+  };
+
+  const getAllUsers = async () => {
+    try {
+      const result = await serviceAdapter.getAllUsers();
+      if (result.success) {
+        console.log(`✅ 成功獲取 ${result.data.length} 全部使用者`);
+        const usersStr = JSON.stringify(result.data);
+        console.log("usersStr:", usersStr);
+        sessionStorage.setItem("allUsers", usersStr);
+        allUserInfo.value = JSON.parse(usersStr);
+      }
+      allUserInfo.value;
+      return allUserInfo.value;
+    } catch (error) {
+      console.error("getAllUsers數據失敗:", error);
+      throw new Error("getAllUsers數據失敗:", error);
     }
   };
 
@@ -319,24 +337,6 @@ export const useAuthStore = defineStore("auth", () => {
     return userInfo.value.role === role;
   };
 
-  const getAllUsers = async () => {
-    try {
-      const result = await serviceAdapter.getAllUsers();
-      console.log("getAllUsers:", result);
-      if (result.success) {
-        console.log(`✅ 成功獲取 ${result.data.length} 全部使用者`);
-        const usersStr = JSON.stringify(result.data);
-        console.log("usersStr:", usersStr);
-        sessionStorage.setItem("allUsers", usersStr);
-        allUsers.value = JSON.parse(usersStr);
-      }
-      allUsers.value;
-    } catch (error) {
-      console.error("getAllUsers數據失敗:", error);
-      throw new Error("getAllUsers數據失敗:", error);
-    }
-  };
-
   // 獲取所有用戶（僅管理員權限）
   const getUsers = async () => {
     // const usersStr = sessionStorage.getItem("allUsers");
@@ -413,7 +413,8 @@ export const useAuthStore = defineStore("auth", () => {
       : "desktop";
   };
 
-  return {    
+  return {
+    allUser: allUserInfo,
     user: userInfo,
     isAuthenticated,
     isLoading,

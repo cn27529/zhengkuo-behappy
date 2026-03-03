@@ -218,16 +218,6 @@ onMounted(() => {
   // 修改用户昵称的计算方式
   userDisplayName.value = authStore.user ? authStore.user.displayName : "訪客";
 });
-
-// 增加粘性标题时的样式
-// window.addEventListener('scroll', function() {
-//     var header = document.querySelector('.form-header');
-//     if (window.pageYOffset > 0) {
-//         header.classList.add('sticky');
-//     } else {
-//         header.classList.remove('sticky');
-//     }
-// });
 </script>
 
 <style>

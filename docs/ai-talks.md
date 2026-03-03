@@ -318,3 +318,7 @@ WHERE receiptIssued<>''
 ## directus_users
 
 依據 db/sqlite_directus_users_table.sql，生成 rust-axum/handlers/directus_users.rs, rust-axum/models/directus_users.rs, rust-axum/ruutes/directus_users.rs，目前只生成CRUD的R
+
+## last_name
+
+在 client/src/views/JoinRecordList.vue 如何調適 recordUserName 方法中回傳 last_name

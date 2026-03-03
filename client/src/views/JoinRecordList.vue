@@ -253,7 +253,7 @@
               <el-tag
                 v-if="row.receiptNumber"
                 type="danger"
-                size="mini"
+                size="small"
                 style="margin-top: 4px"
               >
                 {{ row.receiptNumber || "" }}
@@ -263,11 +263,30 @@
         </el-table-column>
 
         <!-- 收據開立者 -->
-        <el-table-column label="經手人" min-width="80" align="center">
+        <el-table-column label="經" min-width="30" align="center">
           <template #default="{ row }">
             <div class="receipt-issuer">
-              <span v-if="row.receiptIssuedBy">{{ row.receiptIssuedBy }}</span>
+              <span v-if="row.receiptIssuedBy">
+                <el-tooltip :content="row.receiptIssuedBy" placement="top">
+                  <el-button type="danger" size="small" circle>
+                    {{ row.receiptIssuedBy.substring(1, 2) }}
+                  </el-button>
+                </el-tooltip>
+              </span>
             </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="user_created"
+          label="資料人員"
+          min-width="80"
+          align="center"
+        >
+          <template #default="{ row }">
+            <span class="receipt-issuer">{{
+              recordUserName(row.user_created)
+            }}</span>
           </template>
         </el-table-column>
 
@@ -392,6 +411,7 @@ const queryStore = useJoinRecordQueryStore();
 const isDev = computed(() => authService.getCurrentDev());
 const router = useRouter();
 const tableRef = ref(null);
+const currentAllUsers = computed(() => authService.getCurrentUsers());
 
 // 多選相關
 const selectedRecords = ref([]);
@@ -407,11 +427,14 @@ const {
   stateFilter,
   itemsFilter,
   stateOptions,
-  itemTypeOptions,  
+  itemTypeOptions,
 } = storeToRefs(queryStore);
 
-const allUsers = ref(null);
-const currentAllUsers = computed(() => authService.getCurrentUsers());
+// 取得資料列名稱顯示用
+const recordUserName = (recordUserId) => {
+  const user = currentAllUsers.value.find((item) => item.id === recordUserId);
+  return `${user?.firstName}${user?.lastName}` || "??";
+};
 
 // 計算屬性 - 添加防護檢查
 const totalItems = computed(() => {
@@ -439,9 +462,6 @@ const isMobile = computed(() => {
 
 // 方法
 const handleSearch = async () => {
-  
-  console.log(allUsers.value.length);
-
   queryStore.resetPagination();
 
   const query = searchQuery.value ? searchQuery.value.trim() : "";
@@ -680,8 +700,7 @@ onMounted(() => {
   console.log("✅ JoinRecordList 組件已載入");
   console.log("清除頁面狀態");
   pageStateStore.clearPageState("joinRecord");
-  refreshIfNeeded(); // 加這一行  
-  allUsers.value = currentAllUsers.value;
+  refreshIfNeeded(); // 加這一行
   console.log("currentAllUsers:", currentAllUsers.value);
 });
 </script>
