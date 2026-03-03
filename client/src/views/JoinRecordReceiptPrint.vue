@@ -210,7 +210,6 @@ import printJS from "print-js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordPrintStore } from "../stores/joinRecordPrintStore.js";
 import { useReceiptNumberStore } from "../stores/receiptNumberStore.js";
-import { authService } from "../services/authService.js";
 import appConfig from "../config/appConfig.js";
 
 const printStore = useJoinRecordPrintStore();
@@ -263,11 +262,9 @@ const contactAddress = computed(() => {
   return items.find((item) => item.sourceAddress)?.sourceAddress || "";
 });
 
-// 經手人顯示邏輯：優先顯示 record 中的 receiptIssuedBy，若無則顯示 authService 的使用者名稱，最後才顯示「載入中...」
+// 經手人顯示邏輯：優先顯示 record 中的 receiptIssuedBy，若無則顯示 getUserName 的使用者名稱
 const receiptIssuedBy = computed(() => {
-  return (
-    record.value?.receiptIssuedBy || authService.getUserName() || "載入中..."
-  );
+  return record.value?.receiptIssuedBy || receiptStore.getUserName();
 });
 
 const totalAmountChinese = computed(() => {
@@ -486,7 +483,7 @@ const handlePostPrintCheck = async () => {
     // 如果是批量打印，更新當前這筆
     if (isBatch.value) {
       record.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
-      record.value.receiptIssuedBy = receiptStore.getUserName() || "沒有名稱"; // 更新領取人
+      record.value.receiptIssuedBy = receiptStore.getUserName(); // 更新領取人
       const result = await printStore.updateReceiptPrintStatus(record.value);
 
       if (result?.success) {
@@ -541,7 +538,7 @@ const handlePostPrintCheck = async () => {
     } else {
       // 單筆打印
       record.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
-      record.value.receiptIssuedBy = receiptStore.getUserName() || "沒有名稱"; // 更新領取人
+      record.value.receiptIssuedBy = receiptStore.getUserName(); // 更新領取人
       const result = await printStore.updateReceiptPrintStatus(record.value);
 
       if (result?.success) {
