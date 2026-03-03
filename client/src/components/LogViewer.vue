@@ -455,7 +455,7 @@ async function clearOldLogs() {
       "確認清理",
       {
         confirmButtonText: "確定",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         type: "warning",
       }
     );
@@ -486,7 +486,7 @@ async function clearAllLogs() {
       "確認清理全部日誌",
       {
         confirmButtonText: "確定清理",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         type: "error",
         confirmButtonClass: "el-button--danger",
         beforeClose: async (action, instance, done) => {

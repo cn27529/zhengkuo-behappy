@@ -613,7 +613,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="createdAt" label="建立時間" width="150">
+            <el-table-column prop="createdAt" label="資料時間" width="150" sortable align="center">
               <template #default="{ row }">
                 {{ formatDateLong(row.createdAt) }}
               </template>
@@ -728,7 +728,7 @@ const toggleExtendedMode = async () => {
         "確認操作",
         {
           confirmButtonText: "確定",
-          cancelButtonText: "取消",
+          //cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -1056,7 +1056,7 @@ const handleDeleteDonator = async (donator) => {
       `確定刪除贊助人「${donator.name}」嗎？`,
       {
         confirmButtonText: "確定刪除",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         type: "error",
         dangerouslyUseHTMLString: false,
         distinguishCancelAndClose: true,
@@ -1126,7 +1126,7 @@ const handleConfirmDeleteDonator = async (donator) => {
       "二次確認",
       {
         confirmButtonText: "確定刪除",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         inputPattern: /.+/,
         inputErrorMessage: "請輸入贊助人姓名",
         inputPlaceholder: donator.name,
@@ -1284,7 +1284,7 @@ const deleteDonateItem = async (donator, item) => {
       "確認刪除",
       {
         confirmButtonText: "確定",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         type: "error",
       },
     );

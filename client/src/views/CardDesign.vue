@@ -783,7 +783,7 @@ const handlePrintCard = async () => {
 const handleResetDesign = () => {
   ElMessageBox.confirm("確定要重置所有設計嗎？此操作不可撤銷。", "重置確認", {
     confirmButtonText: "確定",
-    cancelButtonText: "取消",
+    //cancelButtonText: "取消",
     type: "warning",
     center: true,
   })

@@ -963,7 +963,7 @@ const handleReset = async () => {
   try {
     await ElMessageBox.confirm("確定要重置所有選擇嗎？", "確認操作", {
       confirmButtonText: "確定",
-      cancelButtonText: "取消",
+      //cancelButtonText: "取消",
       type: "warning",
     });
     joinRecordStore.resetSelections();
@@ -1018,7 +1018,7 @@ const handleSubmitForm = async () => {
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         inputPlaceholder: "請輸入備註說明（必填）",
         inputValidator: (value) => {
           if (!value || value.trim() === "") {

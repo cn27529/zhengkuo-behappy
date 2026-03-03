@@ -176,7 +176,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="參加項目" min-width="120">
+        <el-table-column label="參加項目" min-width="120" align="center">
           <template #default="{ row }">
             <div class="items-summary">
               <el-tag
@@ -247,7 +247,7 @@
         </el-table-column>
 
         <!-- 佛字編號 -->
-        <el-table-column label="佛字編號" min-width="80" align="center">
+        <el-table-column label="佛字編號 / 經手人" min-width="70" align="left">
           <template #default="{ row }">
             <div class="receipt-number">
               <el-tag
@@ -258,15 +258,8 @@
               >
                 {{ row.receiptNumber || "" }}
               </el-tag>
-            </div>
-          </template>
-        </el-table-column>
-
-        <!-- 收據開立者 -->
-        <el-table-column label="經" min-width="30" align="center">
-          <template #default="{ row }">
-            <div class="receipt-issuer">
-              <span v-if="row.receiptIssuedBy">
+              <!-- 收據開立者經手人 -->
+              <span class="receipt-by" v-if="row.receiptIssuedBy">
                 <el-tooltip :content="row.receiptIssuedBy" placement="top">
                   <el-button type="danger" size="small" circle>
                     {{ row.receiptIssuedBy.substring(1, 2) }}
@@ -284,7 +277,7 @@
           align="center"
         >
           <template #default="{ row }">
-            <span class="receipt-issuer">{{
+            <span class="user-created">{{
               recordUserName(row.user_created)
             }}</span>
           </template>
@@ -293,9 +286,10 @@
         <el-table-column
           v-if="false"
           prop="createdAt"
-          label="建立時間"
+          label="資料時間"
           min-width="100"
           sortable
+          align="center"
         >
           <template #default="{ row }">
             <span class="date-time">{{ formatDateLong(row.createdAt) }}</span>
@@ -622,7 +616,7 @@ const handleDelete = async (item) => {
       "確認刪除",
       {
         confirmButtonText: "確定刪除",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         type: "warning",
       },
     );
@@ -706,6 +700,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 收據開立者經手人 */
+.receipt-by {
+  margin-left: 8px;
+}
 /* 批量操作區 */
 .batch-actions {
   margin-top: 1rem;

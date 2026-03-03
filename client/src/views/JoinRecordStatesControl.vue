@@ -214,7 +214,7 @@
         </el-table-column>
 
         <!-- 參加項目 -->
-        <el-table-column label="參加項目" width="120">
+        <el-table-column label="參加項目" width="120" align="center">
           <template #default="{ row }">
             <div class="items-summary">
               <el-tag

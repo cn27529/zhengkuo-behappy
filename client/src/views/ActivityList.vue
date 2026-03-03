@@ -949,7 +949,7 @@ const handleComplete = async (activityId) => {
   try {
     await ElMessageBox.confirm("確定要標記此活動為已完成嗎？", "確認操作", {
       confirmButtonText: "確定",
-      cancelButtonText: "取消",
+      //cancelButtonText: "取消",
       type: "warning",
     });
 
@@ -976,7 +976,7 @@ const handleDelete = async (activity) => {
       "確認刪除",
       {
         confirmButtonText: "確定",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         type: "error",
       },
     );

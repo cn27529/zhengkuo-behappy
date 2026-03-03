@@ -379,7 +379,7 @@
         "display": "datetime",
         "width": "half",
         "readonly": true,
-        "note": "建立時間"
+        "note": "資料時間"
       },
       "schema": {
         "name": "createdAt",

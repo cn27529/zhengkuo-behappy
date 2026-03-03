@@ -352,7 +352,7 @@ const handlePostPrintCheck = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
       confirmButtonText: "打印完成",
-      cancelButtonText: "取消打印",
+      //cancelButtonText: "取消打印",
       type: "question",
       center: true,
     });

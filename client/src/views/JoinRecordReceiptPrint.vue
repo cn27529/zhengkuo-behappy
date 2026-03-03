@@ -360,16 +360,16 @@ const handlePrintWithHtmlToImage = async () => {
           <div>💰 功德項目：<strong>${itemsText}</strong></div>
           <div>💵 總金額：<strong style="color:#E6A23C;">${totalAmountChinese.value}</strong></div>
           <hr style="margin:12px 0; border-color:#eee;"/>
-          <div style="color:#F56C6C; font-size:13px;">
-            ⚠️ 確認後將領取「佛字編號」，若選錯類型流程較複雜，請仔細確認。
+          <div style="color:#F56C6C; font-size:15px;">
+            ⚠️ 確認後將領取「佛字編號」請確認打印詳情。
           </div>
         </div>
       `,
-      "請確認打印內容",
+      "請確認打印詳情",
       {
         dangerouslyUseHTMLString: true,
         confirmButtonText: "✅ 確認，開始打印",
-        cancelButtonText: "✏️ 返回修改",
+        //cancelButtonText: "取消打印",
         type: "warning",
         center: true,
         distinguishCancelAndClose: true,
@@ -472,7 +472,7 @@ const handlePostPrintCheck = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
       confirmButtonText: "打印完成",
-      cancelButtonText: "取消打印",
+      //cancelButtonText: "取消打印",
       type: "question",
       center: true,
     });

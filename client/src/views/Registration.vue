@@ -688,7 +688,7 @@ const handleDeleteForm = (index) => {
     "確認刪除",
     {
       confirmButtonText: "確定刪除",
-      cancelButtonText: "取消",
+      //cancelButtonText: "取消",
       type: "warning",
     },
   )
@@ -864,7 +864,7 @@ const handleResetForm = () => {
     "確認清空",
     {
       confirmButtonText: "確定清空",
-      cancelButtonText: "取消",
+      //cancelButtonText: "取消",
       type: "warning",
     },
   )

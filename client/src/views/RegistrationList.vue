@@ -134,12 +134,26 @@
 
         <el-table-column
           prop="createdAt"
-          label="建立時間"
+          label="資料時間"
           min-width="150"
           sortable
+          align="center"
         >
           <template #default="{ row }">
             <span class="date-time">{{ formatDateLong(row.createdAt) }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="user_created"
+          label="資料人員"
+          min-width="80"
+          align="center"
+        >
+          <template #default="{ row }">
+            <span class="user-created">{{
+              recordUserName(row.user_created)
+            }}</span>
           </template>
         </el-table-column>
 
@@ -263,6 +277,15 @@ const {
   currentPage,
   pageSize,
 } = storeToRefs(queryStore);
+
+
+// 取得資料列名稱顯示用
+const recordUserName = (recordUserId) => {
+  const user = currentAllUsers.value.find((item) => item.id === recordUserId);
+  return `${user?.firstName}${user?.lastName}` || "??";
+};
+
+const currentAllUsers = computed(() => authService.getCurrentUsers());
 
 // 計算屬性 - 添加防護檢查
 const totalItems = computed(() => {
