@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { authService } from "../services/authService.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js";
 import userData from "../data/auth_user.json";
+import mockData from "../data/mock_directus_users.json";
 
 export const useAuthStore = defineStore("auth", () => {
   const allUserInfo = ref(null);
@@ -98,6 +99,12 @@ export const useAuthStore = defineStore("auth", () => {
 
   const getAllUsers = async () => {
     try {
+      if (serviceAdapter.getIsMock()) {
+        console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
+        allUserInfo.value = mockData;
+        return allUserInfo.value;
+      }
+
       const result = await serviceAdapter.getAllUsers();
       if (result.success) {
         console.log(`✅ 成功獲取 ${result.data.length} 全部使用者`);
