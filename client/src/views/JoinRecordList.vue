@@ -247,7 +247,7 @@
         </el-table-column>
 
         <!-- 佛字編號 -->
-        <el-table-column label="佛字編號 / 經手人" min-width="70" align="left">
+        <el-table-column label="佛字編號 | 經手人" min-width="70" align="right">
           <template #default="{ row }">
             <div class="receipt-number">
               <el-tag
@@ -260,7 +260,11 @@
               </el-tag>
               <!-- 收據開立者經手人 -->
               <span class="receipt-by" v-if="row.receiptIssuedBy">
-                <el-tooltip :content="row.receiptIssuedBy" placement="top">
+                <el-tooltip
+                  :content="`經手人：${row.receiptIssuedBy}`"
+                  placement="top"
+                >
+                  📝
                   <el-button type="danger" size="small" circle>
                     {{ row.receiptIssuedBy.substring(1, 2) }}
                   </el-button>
@@ -273,7 +277,7 @@
         <el-table-column
           prop="user_created"
           label="資料人員"
-          min-width="80"
+          min-width="50"
           align="center"
         >
           <template #default="{ row }">
@@ -296,7 +300,12 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="180" fixed="right" align="center">
+        <el-table-column
+          label="操作"
+          min-width="100"
+          fixed="right"
+          align="center"
+        >
           <template #default="{ row }">
             <el-tooltip content="查看詳情" placement="top">
               <el-button type="primary" circle @click="handlePrint(row)">
@@ -702,7 +711,7 @@ onMounted(() => {
 <style scoped>
 /* 收據開立者經手人 */
 .receipt-by {
-  margin-left: 8px;
+  margin-left: 0px;
 }
 /* 批量操作區 */
 .batch-actions {

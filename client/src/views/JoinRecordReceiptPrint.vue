@@ -211,6 +211,7 @@ import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordPrintStore } from "../stores/joinRecordPrintStore.js";
 import { useReceiptNumberStore } from "../stores/receiptNumberStore.js";
 import appConfig from "../config/appConfig.js";
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 
 const printStore = useJoinRecordPrintStore();
 const receiptStore = useReceiptNumberStore(); // 生成編號的 store
@@ -385,33 +386,43 @@ const handlePrintWithHtmlToImage = async () => {
   // ✅ 1. 在擷取圖片前，先確認是否已有正式編號，若無則即時向 Rust 領取
   if (!record.value.receiptNumber) {
     const fetchLoading = ElLoading.service({ text: "正在領取佛字編號..." }); //
+
     try {
-      // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
-      const result = await receiptStore.generateReceiptNumber(
-        record.value.id,
-        activeTemplate.value,
-      );
-
-      if (result.success) {
-        // 更新本地響應式數據，觸發 receiptSerialNum 計算屬性
-        record.value.receiptNumber = result.data.receiptNumber; //
-        record.value.receiptIssued = activeTemplate.value;
-        receiptNumberId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
-
-        console.log(
-          "正式編號領取成功:",
-          record.value.receiptNumber,
-          "編號 ID:",
-          receiptNumberId.value,
-        );
-
+      //
+      if (serviceAdapter.getIsMock()) {
+        console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
         handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
-
         // 🔥 重要：等待 Vue 完成 DOM 更新，確保擷取到的 HTML 內含新編號
         await nextTick();
         await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
       } else {
-        throw new Error(result.message);
+        // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
+        const result = await receiptStore.generateReceiptNumber(
+          record.value.id,
+          activeTemplate.value,
+        );
+
+        if (result.success) {
+          // 更新本地響應式數據，觸發 receiptSerialNum 計算屬性
+          record.value.receiptNumber = result.data.receiptNumber; //
+          record.value.receiptIssued = activeTemplate.value;
+          receiptNumberId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
+
+          console.log(
+            "正式編號領取成功:",
+            record.value.receiptNumber,
+            "編號 ID:",
+            receiptNumberId.value,
+          );
+
+          handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
+
+          // 🔥 重要：等待 Vue 完成 DOM 更新，確保擷取到的 HTML 內含新編號
+          await nextTick();
+          await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
+        } else {
+          throw new Error(result.message);
+        }
       }
     } catch (error) {
       ElMessage.error("正式編號領取失敗: " + error.message);

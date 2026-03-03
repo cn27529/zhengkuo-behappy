@@ -60,7 +60,7 @@
           </p>
 
           <div><strong>金額計算:</strong></div>
-          <p>總金額: {{ appConfig.formatCurrency(totalAmount) }}</p>
+          <p>總金額：{{ appConfig.formatCurrency(totalAmount) }}</p>
           <p>載入狀態: {{ isLoading ? "載入中..." : "已完成" }}</p>
 
           <div><strong>已保存記錄:</strong></div>
@@ -82,7 +82,7 @@
                 <strong>記錄 {{ index + 1 }}:</strong>
               </p>
               <p>聯絡人: {{ record.contact.name }}</p>
-              <p>總金額: {{ appConfig.formatCurrency(record.totalAmount) }}</p>
+              <p>總金額： {{ appConfig.formatCurrency(record.totalAmount) }}</p>
               <p>保存時間: {{ record.createdAt }}</p>
               <p>
                 {{ JSON.stringify(record.items) }}

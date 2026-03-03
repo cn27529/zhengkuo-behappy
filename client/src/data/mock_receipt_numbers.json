@@ -1,5 +1,47 @@
 [
   {
+    "id": 70,
+    "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_created": "1970-01-01 00:00:02",
+    "receiptNumber": "A26030032",
+    "receiptType": "standard",
+    "yearMonth": "2603",
+    "serialNumber": 32,
+    "recordId": 60,
+    "state": "printed",
+    "voidReason": "打印完成",
+    "createdAt": "2026-03-03T14:05:47.293512+08:00",
+    "updatedAt": "2026-03-03T06:06:02.798Z"
+  },
+  {
+    "id": 69,
+    "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_created": "1970-01-01 00:00:02",
+    "receiptNumber": "26030008",
+    "receiptType": "stamp",
+    "yearMonth": "2603",
+    "serialNumber": 8,
+    "recordId": 62,
+    "state": "printed",
+    "voidReason": "打印完成",
+    "createdAt": "2026-03-03T14:04:00.709512+08:00",
+    "updatedAt": "2026-03-03T06:04:15.014Z"
+  },
+  {
+    "id": 68,
+    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+    "date_created": "1970-01-01 00:00:02",
+    "receiptNumber": "26030007",
+    "receiptType": "stamp",
+    "yearMonth": "2603",
+    "serialNumber": 7,
+    "recordId": 67,
+    "state": "printed",
+    "voidReason": "打印完成",
+    "createdAt": "2026-03-03T14:01:10.748461+08:00",
+    "updatedAt": "2026-03-03T06:01:30.490Z"
+  },
+  {
     "id": 67,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "1970-01-01 00:00:02",

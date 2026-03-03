@@ -67,9 +67,9 @@
     {
         "id": 105,
         "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-        "date_created": "2025-12-19 06:56:11",
-        "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-        "date_updated": "2026-02-07 06:05:19",
+        "date_created": "2025-12-18 22:56:11",
+        "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+        "date_updated": "2026-02-12 11:28:32",
         "state": "updated",
         "formId": "b643f42",
         "formName": "2025祈福登記表-024",
@@ -85,16 +85,10 @@
             ],
             "survivors": [
                 {
-                    "id": 11,
+                    "id": 13,
                     "name": "唐建國999",
-                    "notes": "12312",
+                    "notes": "",
                     "zodiac": "兔"
-                },
-                {
-                    "id": 12,
-                    "name": "黃洧析",
-                    "notes": "434234",
-                    "zodiac": ""
                 }
             ]
         },
@@ -118,7 +112,7 @@
             ]
         },
         "createdAt": "2025-12-19T14:56:10.920Z",
-        "updatedAt": "2026-02-07T06:05:19.881Z"
+        "updatedAt": "2026-02-12T11:28:32.062Z"
     },
     {
         "id": 104,

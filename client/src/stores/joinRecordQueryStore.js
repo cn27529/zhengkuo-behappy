@@ -499,7 +499,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
         return {
           success: true,
-          message: "狀態更新成功 (Mock 模式)",
+          message: `記錄 ${recordId} 更新成功 (Mock 模式)`,
           data: searchResults.value[index],
         };
       }

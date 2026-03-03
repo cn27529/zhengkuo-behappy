@@ -173,18 +173,23 @@
         @selection-change="handleSelectionChange"
       >
         <!-- 多選框 -->
-        <el-table-column type="selection" width="50" align="center" />
+        <el-table-column type="selection" min-width="20" align="center" />
 
         <!-- 記錄ID -->
         <el-table-column
           prop="id"
-          label="需要打印"
-          width="80"
+          label="記錄ID"
+          min-width="30"
           align="center"
           fixed
         >
           <template #default="{ row }">
             <strong>{{ row.id }}</strong>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="需要打印" min-width="40" align="center">
+          <template #default="{ row }">
             <el-switch
               v-model="row.needReceipt"
               :active-value="'1'"
@@ -214,7 +219,12 @@
         </el-table-column>
 
         <!-- 參加項目 -->
-        <el-table-column label="參加項目" width="120" align="center">
+        <el-table-column
+          label="參加項目"
+          min-width="120"
+          align="center"
+          v-if="false"
+        >
           <template #default="{ row }">
             <div class="items-summary">
               <el-tag
@@ -229,10 +239,18 @@
         </el-table-column>
 
         <!-- 備註 -->
-        <el-table-column label="備註" min-width="80" align="center">
+        <el-table-column label="備註" width="120" align="center">
           <template #default="{ row }">
-            <div class="receipt-notes">
-              {{ row.notes }}
+            <div class="notes-cell">
+              <span class="notes-preview">{{ row.notes || "無" }}</span>
+              <el-button
+                size="small"
+                text
+                @click="editNotes(row)"
+                class="notes-btn"
+              >
+                ...
+              </el-button>
             </div>
           </template>
         </el-table-column>
@@ -261,7 +279,12 @@
         </el-table-column>
 
         <!-- 佛字編號 -->
-        <el-table-column label="佛字編號" width="120" align="center">
+        <el-table-column
+          label="佛字編號"
+          min-width="70"
+          align="center"
+          v-if="false"
+        >
           <template #default="{ row }">
             <div class="receipt-number">
               <el-tag
@@ -548,13 +571,14 @@ const handleSaveSingle = async (row) => {
       accountingState: row.accountingState,
       paymentMethod: row.paymentMethod,
       needReceipt: row.needReceipt, // 是否需要收據
+      notes: row.notes, // 備註
     };
 
     const result = await queryStore.updateRecordStates(row.id, updates);
 
     if (result.success) {
       modifiedRecords.value.delete(row.id);
-      ElMessage.success(`記錄 ${row.id} 更新成功`);
+      ElMessage.success(result.message);
     } else {
       ElMessage.error(result.message || "更新失敗");
     }
@@ -625,9 +649,52 @@ const clearBatchUpdates = () => {
     paymentMethod: "",
   };
 };
+
+// 編輯備註
+const editNotes = async (row) => {
+  try {
+    const { value } = await ElMessageBox.prompt("請輸入備註內容", "編輯備註", {
+      confirmButtonText: "確認",
+      cancelButtonText: "取消",
+      inputType: "textarea",
+      inputValue: row.notes || "",
+      inputPlaceholder: "請輸入備註內容",
+    });
+
+    row.notes = value;
+    markAsModified(row.id, "notes");
+  } catch {
+    // 用戶取消
+  }
+};
 </script>
 
 <style scoped>
+.notes-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.notes-preview {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #666;
+}
+
+.notes-btn {
+  padding: 4px 8px;
+  font-weight: bold;
+  color: var(--el-color-primary);
+}
+
+.receipt-notes {
+  text-align: left;
+}
 .receipt-number {
   font-weight: 500;
   color: var(--el-color-primary);

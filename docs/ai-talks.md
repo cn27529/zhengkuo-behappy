@@ -319,6 +319,10 @@ WHERE receiptIssued<>''
 
 依據 db/sqlite_directus_users_table.sql，生成 rust-axum/handlers/directus_users.rs, rust-axum/models/directus_users.rs, rust-axum/ruutes/directus_users.rs，目前只生成CRUD的R
 
-## last_name
+## 列表"備註"欄位可以
 
-在 client/src/views/JoinRecordList.vue 如何調適 recordUserName 方法中回傳 last_name
+調適 client/src/views/JoinRecordStatesControl.vue，列表"備註"欄位可以修改，我們使用 ElMessageBox.prompt 來修改列表的 row.notes 按確認修改觸發 markAsModified(row.notes, 'notes')，可行嗎
+
+將 client/src/views/JoinRecordStatesControl.vue 的修改，更新 docs/dev-joinRecord-states-control-guide.md
+
+加入列表備註編輯功能，開始打印加入getIsMock判斷，更新mock數據
