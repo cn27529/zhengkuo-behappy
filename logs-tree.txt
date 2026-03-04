@@ -1,7 +1,6 @@
 ./log-server
 ├── capacity-monitor.js
 ├── curl.txt
-├── log-server思路.txt
 ├── mongo-LogEntryDB-apikey.txt
 ├── mongoDBLogger-with-schedule.js
 ├── mongoDBLogger.js

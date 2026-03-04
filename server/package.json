@@ -1,5 +1,5 @@
 {
-  "name": "temple-management-server",
+  "name": "temple-management-cms",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
