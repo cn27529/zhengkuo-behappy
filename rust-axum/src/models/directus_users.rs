@@ -46,8 +46,8 @@ pub struct DirectusUserResponse {
     pub last_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub password: Option<String>,
+    // #[serde(skip_serializing_if = "Option::is_none")]
+    // pub password: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub location: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -94,7 +94,7 @@ impl From<DirectusUser> for DirectusUserResponse {
             first_name: user.first_name,
             last_name: user.last_name,
             email: user.email,
-            password: user.password,
+            //password: user.password,
             location: user.location,
             title: user.title,
             description: user.description,
