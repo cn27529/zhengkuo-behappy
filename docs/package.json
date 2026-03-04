@@ -1,5 +1,5 @@
 {
-  "name": "docs-server",
+  "name": "temple-management-client-docs",
   "version": "1.0.0",
   "description": "文檔檢視器",
   "main": "docs-server.js",

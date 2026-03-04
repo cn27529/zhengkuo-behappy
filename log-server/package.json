@@ -1,5 +1,5 @@
 {
-  "name": "mongodb-logger-server",
+  "name": "temple-management-mongodb-logger",
   "version": "1.0.0",
   "description": "MongoDB 日誌接收服務器",
   "type": "module",
