@@ -40,8 +40,6 @@
 
 ### 獨立 Store (`joinRecordReportStore.js`)
 
-報表功能已從 `joinRecordQueryStore` 分離為獨立 store：
-
 ```javascript
 // 報表狀態
 reportFilters: {
