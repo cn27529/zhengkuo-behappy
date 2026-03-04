@@ -2,6 +2,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authService } from "../services/authService.js";
+//import { rustAuthService as authService } from "../rustServices/rustAuthService.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js";
 import userData from "../data/auth_user.json";
 import mockData from "../data/mock_directus_users.json";
@@ -47,7 +48,7 @@ export const useAuthStore = defineStore("auth", () => {
     });
   };
 
-  const login = async (username, password) => {
+  const submitLogin = async (username, password) => {
     isLoading.value = true;
 
     try {
@@ -432,7 +433,7 @@ export const useAuthStore = defineStore("auth", () => {
     isDev,
     getAllUsers,
     // 原有的登入方法
-    login,
+    submitLogin,
     // 新增的 2FA 方法
     loginWith2FA,
     verify2FA,

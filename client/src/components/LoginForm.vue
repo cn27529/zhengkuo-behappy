@@ -128,7 +128,7 @@ const handleLogin = async () => {
   loading.value = true;
 
   try {
-    await authStore.login(loginForm.username, loginForm.password);
+    await authStore.submitLogin(loginForm.username, loginForm.password);
 
     // 處理「記住我」邏輯
     if (rememberMe.value) {

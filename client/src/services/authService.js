@@ -57,20 +57,16 @@ export class AuthService {
 
     if (currentMode === "mock") {
       return this.mockValidateToken();
-    } else if (currentMode === "directus") {
+    } else (currentMode === "directus") {
       return this.directusValidateToken();
-    } else {
-      return this.backendValidateToken();
-    }
+    } 
   }
 
   async refreshToken() {
     if (this.base.mode === "mock") {
       return this.mockRefreshToken();
-    } else if (this.base.mode === "directus") {
+    } else (this.base.mode === "directus") {
       return this.directusRefreshToken();
-    } else {
-      return this.backendRefreshToken();
     }
   }
 
@@ -250,7 +246,7 @@ export class AuthService {
           console.log("Directus 返回用戶資訊:", userResult.data);
           userData = userResult.data;
           // Directus 返回的用戶資訊沒有顯示名稱，displayName使用填寫的email
-          userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;          
+          userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
         } else {
           console.error("Directus 返回用戶資訊發生錯誤:", ...userResponse);
         }
@@ -446,7 +442,7 @@ export class AuthService {
       const userResult = await userResponse.json();
       console.log("Directus 返回用戶資訊:", userResult.data);
       userData = userResult.data;
-      userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;      
+      userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
     } else {
       console.error("Directus 返回用戶資訊發生錯誤:", userResponse.status);
     }
@@ -496,16 +492,6 @@ export class AuthService {
       console.error("Directus 登出請求失敗:", error);
       // 登出失敗不影響前端狀態清除
       return { success: true };
-    }
-  }
-
-  getToken() {
-    try {
-      const token = sessionStorage.getItem("auth-token");
-      return token;
-    } catch (error) {
-      console.error("獲取 Token 失敗:", error);
-      return null;
     }
   }
 
@@ -612,159 +598,32 @@ export class AuthService {
     }
   }
 
-  // ========== 後端 API 方法 ==========
-  async backendLogin(username, password) {
+  /**
+   * 檢查認證狀態
+   */
+  async checkAuth(context = {}) {
     try {
-      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authLogin}`;
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!response.ok) {
-        // 如果後端返回錯誤狀態碼
-        const errorText = await response.text();
-        throw new Error(`後端錯誤: ${response.status} - ${errorText}`);
-      }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error("後端登入請求失敗:", error);
-
-      // 檢查是否是網路錯誤（後端服務未啟動）
-      if (
-        error.message.includes("Failed to fetch") ||
-        error.message.includes("NetworkError")
-      ) {
-        return {
-          success: false,
-          message: "後端服務未啟動或網路連接失敗",
-          errorCode: "BACKEND_NOT_AVAILABLE",
-          details: "請確保後端服務正在運行，或切換到 Mock 模式進行測試",
-        };
-      }
-
+      const user = await this.getCurrentUser(context);
       return {
-        success: false,
-        message: "後端服務錯誤",
-        errorCode: "BACKEND_ERROR",
-        details: error.message,
+        authenticated: true,
+        user: user.data,
+      };
+    } catch (error) {
+      console.error("檢查認證狀態失敗:", error);
+      return {
+        authenticated: false,
+        error: error.message,
       };
     }
   }
 
-  async backendLogout() {
+  getToken() {
     try {
       const token = sessionStorage.getItem("auth-token");
-
-      // 如果沒有 token，直接返回成功
-      if (!token) {
-        return { success: true };
-      }
-
-      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authLogout}`;
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // 即使後端登出失敗，也認為成功（因為前端狀態已經清除）
-      if (!response.ok) {
-        console.warn("後端登出失敗，但前端狀態已清除");
-      }
-
-      return { success: true };
+      return token;
     } catch (error) {
-      console.error("後端登出請求失敗:", error);
-      // 登出失敗不影響前端狀態清除
-      return { success: true };
-    }
-  }
-
-  async backendValidateToken() {
-    try {
-      const token = sessionStorage.getItem("auth-token");
-      if (!token) {
-        return { success: false, message: "未找到 Token" };
-      }
-
-      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authValidate}`;
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Token 驗證失敗:", error);
-
-      // 如果是網路錯誤，提供更友好的提示
-      if (error.message.includes("Failed to fetch")) {
-        return {
-          success: false,
-          message: "後端服務未啟動，無法驗證 Token",
-          errorCode: "BACKEND_NOT_AVAILABLE",
-        };
-      }
-
-      return {
-        success: false,
-        message: "Token 驗證失敗",
-        errorCode: "VALIDATION_ERROR",
-      };
-    }
-  }
-
-  async backendRefreshToken() {
-    try {
-      const refreshToken = sessionStorage.getItem("auth-refresh-token");
-      if (!refreshToken) {
-        return { success: false, message: "未找到 Refresh Token" };
-      }
-
-      const apiUrl = `${this.base.apiBaseUrl}${this.base.apiEndpoints.authRefresh}`;
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Token 刷新失敗:", error);
-
-      if (error.message.includes("Failed to fetch")) {
-        return {
-          success: false,
-          message: "後端服務未啟動，無法刷新 Token",
-          errorCode: "BACKEND_NOT_AVAILABLE",
-        };
-      }
-
-      return {
-        success: false,
-        message: "Token 刷新失敗",
-        errorCode: "REFRESH_ERROR",
-      };
+      console.error("獲取 Token 失敗:", error);
+      return null;
     }
   }
 
@@ -872,6 +731,8 @@ export class AuthService {
       return null;
     }
   }
+
+  // ========== 後端 API 方法 ==========
 }
 
 export const authService = new AuthService();
