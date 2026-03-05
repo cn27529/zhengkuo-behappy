@@ -80,7 +80,12 @@
         :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
         v-loading="isLoading"
       >
-        <el-table-column label="圖標" min-width="50" align="center">
+        <el-table-column
+          label="圖標"
+          min-width="50"
+          align="center"
+          v-if="false"
+        >
           <template #default="{ row }">
             <div>
               <el-tooltip :content="row.id" placement="top">
@@ -88,6 +93,22 @@
               </el-tooltip>
               <div class="form-name"></div>
             </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="createdAt"
+          label="資料時間"
+          width="110"
+          sortable
+          align="center"
+        >
+          <template #default="{ row }">
+            <el-tooltip :content="row.id" placement="top">
+              <span class="date-time">{{
+                formatRelativeOrDateTime(row.createdAt)
+              }}</span>
+            </el-tooltip>
           </template>
         </el-table-column>
 
@@ -129,18 +150,6 @@
                 ({{ row.contact.otherRelationship }})
               </span>
             </div>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="createdAt"
-          label="資料時間"
-          min-width="150"
-          sortable
-          align="center"
-        >
-          <template #default="{ row }">
-            <span class="date-time">{{ formatDateLong(row.createdAt) }}</span>
           </template>
         </el-table-column>
 
@@ -277,7 +286,6 @@ const {
   currentPage,
   pageSize,
 } = storeToRefs(queryStore);
-
 
 // 取得資料列名稱顯示用
 const recordUserName = (recordUserId) => {
@@ -487,6 +495,8 @@ const getStatusText = (state) => {
 const formatDateLong = (dateString) => {
   return DateUtils.formatDateLong(dateString);
 };
+const formatRelativeOrDateTime = (value) =>
+  DateUtils.formatRelativeOrDateTime(value);
 
 const truncateAddress = (address) => {
   if (!address) return "-";

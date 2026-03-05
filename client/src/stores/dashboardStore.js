@@ -265,7 +265,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     return registrations.value.filter(isRegistrationNeedsAttention).length;
   });
 
-  // 最新祈福登記（最多 6 筆）
+  // 近期祈福登記
   const recentRegistrations = computed(() => {
     return [...registrations.value]
       .map((reg) => ({
@@ -277,7 +277,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
       .slice(0, 6);
   });
 
-  // 最新參加記錄（最多 6 筆）
+  // 近期參加記錄
   const recentJoinRecords = computed(() => {
     return [...joinRecords.value]
       .map((record) => ({
@@ -387,7 +387,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
       .slice(0, 4);
   });
 
-  // 最近完成活動（依日期排序）
+  // 近期完成活動（依日期排序）
   const completedActivityHighlights = computed(() => {
     return [...completedActivities.value]
       .filter((activity) => activity?.date)

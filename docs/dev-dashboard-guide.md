@@ -51,8 +51,9 @@
 #### 動態信息
 
 - 即將到來的活動（最近3場）
-- 最新登記記錄（最近5筆）
-- 最新參加記錄（最近5筆，含付款狀態）
+- 巳經完成活動（最近3場）
+- 近期祈福登記（最近6筆）
+- 近期參加記錄（最近6筆，含付款狀態）
 
 **適用場景：**
 
@@ -103,8 +104,8 @@ import { useDashboardStore } from "../stores/dashboardStore.js";
 
 // 主要 Computed（動態）
 - upcomingActivities: 即將到來的活動（3筆）
-- recentRegistrations: 最新登記記錄（5筆）
-- recentJoinRecords: 最新參加記錄（5筆）
+- recentRegistrations: 新期登記記錄（5筆）
+- recentJoinRecords: 近期參加記錄（5筆）
 ```
 
 ---

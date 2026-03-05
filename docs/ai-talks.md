@@ -330,3 +330,7 @@ WHERE receiptIssued<>''
 ## 選擇打印模板 "收據"
 
 client/src/views/JoinRecordReceiptPrint.vue，選擇打印模板 "收據" 執行 開始打印一樣正常 執行 請確認打印詳情 也正常 生成高清圖像就見鬼了 變成 "感謝狀"
+
+## 近期祈福登記, 近期參加記錄
+
+client/src/views/Dashboard2.vue 的 "近期祈福登記" 與 "近期參加記錄" 在日期的顯示要適為比如今天是3月5號 "近期參加記錄"列表的資料日期是 "2026/03/02 下午07:39"，此筆資料大於一天，就顯示"2天前"，如果日期條件就是日期在"三日"為限，超過三日就照舊顯示，"三日"的條件可以修改，我們將日期的顯示轉換生成在 client/src/utils/dateUtils.js，可以理解這個顯示的意思嗎。如果在一天內的資料就顯示"10小時前"，如果在一小時內的資料就顯示"29分鐘前"。將 client/src/utils/dateUtils.js 生成 docs/dev-DateUtils-guide.md 說明文檔

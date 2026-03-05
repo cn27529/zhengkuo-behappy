@@ -205,6 +205,42 @@ export const isValidDate = (dateString) => {
 };
 
 /**
+ * 格式化為相對時間或完整時間
+ * 1小時內顯示分鐘，1天內顯示小時，1-3天內顯示天數，超過則顯示完整時間
+ * @param {string} dateString - UTC 格式日期字符串
+ * @param {number} daysThreshold - 天數閾值（預設 3 天）
+ * @returns {string} 格式化後的時間字符串
+ */
+export const formatRelativeOrDateTime = (dateString, daysThreshold = 3) => {
+  if (!dateString) return "-";
+
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+      if (diffHours === 0) {
+        if (diffMinutes === 0) return "剛剛";
+        return `${diffMinutes}分鐘前`;
+      }
+      return `${diffHours}小時前`;
+    }
+
+    if (diffDays < daysThreshold) {
+      return `${diffDays}天前`;
+    }
+
+    return formatDateTime(dateString);
+  } catch {
+    return dateString;
+  }
+};
+
+/**
  * 日期工具函數集合
  * 提供統一的日期時間處理接口
  */
@@ -218,6 +254,7 @@ export const DateUtils = Object.freeze({
   formatTime,
   formatDateTime,
   formatDateTimeYMD,
+  formatRelativeOrDateTime,
   getOneYearAgo,
   getMonthsAgo,
   getDaysAgo,

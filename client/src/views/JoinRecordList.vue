@@ -151,6 +151,22 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          prop="createdAt"
+          label="資料時間"
+          width="110"
+          sortable
+          align="center"
+        >
+          <template #default="{ row }">
+            <el-tooltip :content="row.id" placement="top">
+              <span class="date-time">{{
+                formatRelativeOrDateTime(row.createdAt)
+              }}</span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
         <el-table-column label="聯絡人" min-width="100" align="center">
           <template #default="{ row }">
             <div class="contact-info">
@@ -240,9 +256,9 @@
           align="center"
         >
           <template #default="{ row }">
-            <div class="item-amount">{{
-              appConfig.formatCurrency(row.totalAmount) || 0
-            }}</div>
+            <div class="item-amount">
+              {{ appConfig.formatCurrency(row.totalAmount) || 0 }}
+            </div>
           </template>
         </el-table-column>
 
@@ -284,19 +300,6 @@
             <span class="user-created">{{
               recordUserName(row.user_created)
             }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          v-if="false"
-          prop="createdAt"
-          label="資料時間"
-          min-width="100"
-          sortable
-          align="center"
-        >
-          <template #default="{ row }">
-            <span class="date-time">{{ formatDateLong(row.createdAt) }}</span>
           </template>
         </el-table-column>
 
@@ -669,6 +672,8 @@ const getStateTagType = (state) => {
 const formatDateLong = (dateString) => {
   return DateUtils.formatDateLong(dateString);
 };
+const formatRelativeOrDateTime = (value) =>
+  DateUtils.formatRelativeOrDateTime(value);
 
 // 獲取參加者姓名列表
 const getParticipantNames = (sourceData) => {
@@ -709,9 +714,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 /* 佛字第 | 經手人 */
-.receipt-number{
+.receipt-number {
   text-align: right;
 }
 

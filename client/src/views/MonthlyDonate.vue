@@ -613,9 +613,15 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="createdAt" label="資料時間" width="150" sortable align="center">
+            <el-table-column
+              prop="createdAt"
+              label="資料時間"
+              width="150"
+              sortable
+              align="center"
+            >
               <template #default="{ row }">
-                {{ formatDateLong(row.createdAt) }}
+                {{ formatRelativeOrDateTime(row.createdAt) }}
               </template>
             </el-table-column>
             <el-table-column label="操作" width="120" align="center">
@@ -972,6 +978,8 @@ const formatMonth = (yearMonth) => {
 const formatDateLong = (dateString) => {
   return DateUtils.formatDateLong(dateString);
 };
+const formatRelativeOrDateTime = (value) =>
+  DateUtils.formatRelativeOrDateTime(value);
 
 const handleSearch = () => {
   currentPage.value = 1;

@@ -173,7 +173,7 @@
       </el-col>
       <el-col :xs="24" :lg="12">
         <el-card shadow="hover" class="list-card">
-          <div class="list-title">最近完成活動</div>
+          <div class="list-title">巳經完成活動</div>
           <div v-if="completedActivityHighlights.length" class="list-body">
             <div
               v-for="activity in completedActivityHighlights"
@@ -200,7 +200,7 @@
     <el-row :gutter="24" class="summary-row">
       <el-col :xs="24" :lg="12">
         <el-card shadow="hover" class="list-card">
-          <div class="list-title">最新祈福登記</div>
+          <div class="list-title">近期祈福登記</div>
           <div v-if="recentRegistrations.length" class="list-body">
             <div
               v-for="registration in recentRegistrations"
@@ -216,7 +216,7 @@
                     registration.contact?.mobile || registration.contact?.phone
                   }}
                   {{ registration.contact?.relationship }}，{{
-                    formatDateTime(
+                    formatRelativeOrDateTime(
                       registration.createdAt || registration.date_created,
                     )
                   }}
@@ -232,7 +232,7 @@
       </el-col>
       <el-col :xs="24" :lg="12">
         <el-card shadow="hover" class="list-card">
-          <div class="list-title">最新參加記錄</div>
+          <div class="list-title">近期參加記錄</div>
           <div v-if="recentJoinRecords.length" class="list-body">
             <div
               v-for="record in recentJoinRecords"
@@ -261,7 +261,9 @@
                     </span>
                   </span>
                   {{ appConfig.formatCurrency(record.totalAmount) }} 元，{{
-                    formatDateTime(record.createdAt || record.date_created)
+                    formatRelativeOrDateTime(
+                      record.createdAt || record.date_created,
+                    )
                   }}
                 </div>
               </div>
@@ -346,6 +348,8 @@ const lastUpdatedAt = computed(() => dashboardStore.lastUpdatedAt);
 
 const formatDate = (value) => DateUtils.formatDate(value);
 const formatDateTime = (value) => DateUtils.formatDateTime(value);
+const formatRelativeOrDateTime = (value) =>
+  DateUtils.formatRelativeOrDateTime(value);
 
 // 單筆打印
 const handleReceiptPrint = (record_id) => {
@@ -423,7 +427,7 @@ onMounted(async () => {
 }
 
 .meta-value {
-  font-weight: 600;
+  font-weight: 700;
   color: #3c3c3c;
 }
 
@@ -438,6 +442,7 @@ onMounted(async () => {
 }
 
 .summary-label {
+  font-weight: 700;
   font-size: 0.95rem;
   color: #6b7280;
   margin-bottom: 0.25rem;
@@ -470,11 +475,12 @@ onMounted(async () => {
   font-size: 0.95rem;
   color: #6b7280;
   margin-bottom: 0.35rem;
+  font-weight: 700;
 }
 
 .status-value {
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #1f2937;
 }
 
@@ -494,11 +500,12 @@ onMounted(async () => {
   font-size: 0.95rem;
   color: #6b7280;
   margin-bottom: 0.35rem;
+  font-weight: 700;
 }
 
 .card-value {
   font-size: 1.9rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #1f2937;
 }
 
@@ -510,7 +517,7 @@ onMounted(async () => {
 
 .list-title {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #374151;
   margin-bottom: 0.75rem;
 }
@@ -545,7 +552,7 @@ onMounted(async () => {
 }
 
 .list-label {
-  font-weight: 600;
+  font-weight: 700;
   color: #1f2937;
   margin-bottom: 0.15rem;
   white-space: nowrap;
@@ -558,7 +565,7 @@ onMounted(async () => {
 
 .list-value {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #374151;
 }
 
