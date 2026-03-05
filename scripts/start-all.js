@@ -13,6 +13,7 @@ const colors = {
   cyan: "\x1b[36m",
   blue: "\x1b[34m",
   magenta: "\x1b[35m",
+  bold: "\x1b[1m"
 };
 
 function log(message, color = "reset") {
