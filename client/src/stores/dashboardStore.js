@@ -265,7 +265,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     return registrations.value.filter(isRegistrationNeedsAttention).length;
   });
 
-  // 最新登記清單（最多 6 筆）
+  // 最新祈福登記（最多 6 筆）
   const recentRegistrations = computed(() => {
     return [...registrations.value]
       .map((reg) => ({
