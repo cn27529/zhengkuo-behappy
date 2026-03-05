@@ -312,18 +312,14 @@ export class JoinRecordService {
 
     console.log("更新收據打印狀態 - 原始記錄:", record);
 
-    // 根據活動類型決定是否需要收據
-    const isNeedReceipt =
-      record.activeTemplate === "standard" || record.activeTemplate === "stamp";
-
     const updateData = {
-      needReceipt: isNeedReceipt,
       receiptNumber: record.receiptNumber || "", // 保持原有佛字第不變，如果沒有則為空字符串
       // 直接使用 activeTemplate 的值來表示是否已開立收據（standard 或 stamp），如果沒有則為空值
       //經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
       receiptIssued: record.activeTemplate || "",
       receiptIssuedAt: record.receiptIssuedAt,
       receiptIssuedBy: record.receiptIssuedBy,
+      needReceipt: record.needReceipt,
     };
 
     return await this.updateParticipationRecord(record.id, updateData);

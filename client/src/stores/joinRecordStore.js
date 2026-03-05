@@ -145,58 +145,6 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   };
 
   /**
-   * 建立完整的參與記錄
-   * @param {*} registration
-   * @param {*} activity
-   * @param {*} selectedItems
-   * @returns
-   */
-  const createParticipationRecord = (registration, activity, selectedItems) => {
-    const items = selectedItems.map((item) => {
-      const sourceData = getSourceData(
-        registration,
-        activityConfigs[item.type].source,
-      );
-      return createParticipationItem(
-        item.type,
-        item.selectedData || sourceData,
-      );
-    });
-
-    // 計算總金額
-    const totalAmount = calculateTotalAmount(items);
-    const createISOTime = DateUtils.getCurrentISOTime();
-    // 建立完整的參與記錄
-    return {
-      registrationId: registration.id, // registration.id
-      activityId: activity.activityId, // activity.activityId
-      state: "confirmed", // confirmed=已確認，unconfirmed=未確認，canceled=已取消
-      items, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普度。資料來源：createParticipationItem
-      contact: registration.contact, // 聯絡人資訊
-      totalAmount, // 總金額
-      discountAmount: 0, // 折扣金額
-      finalAmount: totalAmount, // 最終金額
-      paidAmount: 0, // 付款金額
-      needReceipt: false, // 是否需要收據。
-      receiptNumber: "", // 佛字第
-      receiptIssued: "", // 收據已開立，經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
-      receiptIssuedAt: "", // 收據開立日期
-      receiptIssuedBy: "", // 收據開立者，也稱經手人
-      accountingState: "pending", // pending=未沖帳,reconciled=已沖帳
-      accountingDate: "", // 沖帳日期
-      accountingBy: "", // 沖帳者
-      accountingNotes: "", // 沖帳備註
-      paymentState: "unpaid", // paid=已付款，partial=部分付款，unpaid=未付款，waived=免付
-      paymentMethod: "", // cash=現金，transfer=轉帳
-      paymentDate: "", // 付款日期
-      paymentNotes: "", // 付款備註
-      notes: "", // 備註
-      createdAt: createISOTime,
-      createdUser: getCurrentUser(),
-    };
-  };
-
-  /**
    * 生成佛字第
    * @returns
    */
@@ -429,7 +377,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     selections.value[key] = [...data];
   };
 
-  // 活動參加，送出存檔
+  // 活動參加，提交參加記錄
   const submitRecord = async (
     activityId = null, // 活動 ID
     notes = "", // 備註
@@ -545,7 +493,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     setGroupSelection,
     setPersonLampType,
     getPersonLampType,
-    submitRecord,
+    submitRecord, // // 提交參加記錄
     loadRegistrationData, // 載入祈福登記資料
     getAllRegistrations, // 獲取所有祈福登記
     getAllJoinRecords, // 獲取所有參加記錄
@@ -557,7 +505,6 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     getItemsDetail, // 取得項目詳細清單
     recordPayment, // 記錄付款
     issueReceipt, // 開立收據
-    createParticipationRecord, // 建立完整的參與記錄
     reconcileAccounting, // 會計沖帳
     getSourceData, // 獲取資料來源
   };

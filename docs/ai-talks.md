@@ -326,3 +326,7 @@ WHERE receiptIssued<>''
 將 client/src/views/JoinRecordStatesControl.vue 的修改，更新 docs/dev-joinRecord-states-control-guide.md
 
 加入列表備註編輯功能，開始打印加入getIsMock判斷，更新mock數據
+
+## 選擇打印模板 "收據"
+
+client/src/views/JoinRecordReceiptPrint.vue，選擇打印模板 "收據" 執行 開始打印一樣正常 執行 請確認打印詳情 也正常 生成高清圖像就見鬼了 變成 "感謝狀"

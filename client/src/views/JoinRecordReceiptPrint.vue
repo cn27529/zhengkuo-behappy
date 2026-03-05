@@ -143,7 +143,7 @@
 
         <el-divider v-if="isBatch" />
 
-        <p class="label">請選擇打印模板</p>
+        <p class="label">選擇打印模板</p>
         <el-radio-group v-model="activeTemplate" class="template-radio">
           <el-radio
             @click="handleTemplateChange('standard')"
@@ -217,7 +217,7 @@ const printStore = useJoinRecordPrintStore();
 const receiptStore = useReceiptNumberStore(); // 生成編號的 store
 
 // 模板切換狀態
-const activeTemplate = ref("standard");
+const activeTemplate = ref("stamp");
 const printing = ref(false);
 
 const route = useRoute();
@@ -298,8 +298,10 @@ const convertToChinese = (num) => {
 };
 
 //
-const handleTemplateChange = (template = "standard") => {
-  activeTemplate.value = template;
+const handleTemplateChange = (template) => {
+  if (template) {
+    activeTemplate.value = template;
+  }
 
   const name = (record.value.contact?.name || "未填寫").toString().trim();
   const receiptSerialText =
@@ -483,7 +485,7 @@ const handlePostPrintCheck = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
       confirmButtonText: "打印完成",
-      //cancelButtonText: "取消打印",
+      cancelButtonText: "取消打印",
       type: "question",
       center: true,
     });
@@ -586,16 +588,18 @@ const handlePostPrintCheck = async () => {
     if (error === "cancel") {
       console.log("使用者取消打印");
 
-      // 🔥 重要：在使用者取消打印後，仍然需要將該筆記錄的 receiptIssuedBy, receiptIssuedAt, receiptIssued 和 receiptNumber 重置為 null，保持在未打印狀態
-      // 這樣做的原因是：即使用戶取消了打印，但他之前已經領取了正式編號，為了保持數據的一致性和準確性，我們需要將該筆記錄的狀態重置回未打印，讓它可以再次被打印並領取新的編號。
-      // 注意：這裡的重置動作不會直接影響到後端的數據，除非 printStore.updateReceiptPrintStatus 這個方法內部有實現對 receiptIssued 和 receiptNumber 的更新邏輯。確保該方法能夠正確處理這些字段的重置。
-      // 這裡的重置動作是為了確保前端的狀態能夠反映出「取消打印」的結果，讓使用者在下一次嘗試打印時能夠重新領取編號並進行打印。
-      // 如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
-      // 已經領取了正式編號會保留在編號系統做為證據。
+      //🔥 重要：在使用者取消打印後，仍然需要將該筆記錄的 receiptIssuedBy, receiptIssuedAt, receiptIssued 和 receiptNumber 重置為 null，保持在未打印狀態
+      //  這樣做的原因是：即使用戶取消了打印，但他之前已經領取了正式編號，為了保持數據的一致性和準確性，我們需要將該筆記錄的狀態重置回未打印，讓它可以再次被打印並領取新的編號。
+      //  注意：這裡的重置動作不會直接影響到後端的數據，除非 printStore.updateReceiptPrintStatus 這個方法內部有實現對 receiptIssued 和 receiptNumber 的更新邏輯。確保該方法能夠正確處理這些字段的重置。
+      //  這裡的重置動作是為了確保前端的狀態能夠反映出「取消打印」的結果，讓使用者在下一次嘗試打印時能夠重新領取編號並進行打印。
+      //  如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
+      //  已經領取了正式編號會保留在編號系統做為證據。
+
       record.value.receiptIssued = ""; // 重置模板狀態，保持在未打印狀態
       record.value.receiptNumber = ""; // 重置編號，保持在未打印狀態
       record.value.receiptIssuedAt = ""; // 重置領取時間
       record.value.receiptIssuedBy = ""; // 重置領取人
+      record.value.needReceipt = "1";
       const result = await printStore.updateReceiptPrintStatus(record.value);
       if (result?.success) {
         ElMessage({
