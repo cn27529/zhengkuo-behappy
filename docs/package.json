@@ -1,7 +1,7 @@
 {
   "name": "temple-management-client-docs",
-  "version": "1.0.0",
-  "description": "文檔檢視器",
+  "version": "2.0.0",
+  "description": "文檔服務器",
   "main": "docs-server.js",
   "scripts": {
     "start": "node generate-books.js && node docs-server.js",
@@ -16,7 +16,7 @@
     "marked": "^12.0.0"
   },
   "keywords": [
-    "文檔檢視器"
+    "文檔服務器"
   ],
   "author": "cn27529",
   "license": "MIT"
