@@ -318,7 +318,7 @@
         "interface": "input",
         "display": "raw",
         "width": "half",
-        "note": "佛字編號"
+        "note": "佛字第"
       },
       "schema": {
         "name": "receiptNumber",

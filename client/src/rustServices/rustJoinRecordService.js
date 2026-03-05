@@ -260,7 +260,7 @@ export class RustJoinRecordService {
 
   /**
    * 更新收據打印狀態
-   * 如果收據己打印這裡會是 true，receiptNumber 會記錄佛字編號，needReceipt 會記錄"standard" 是 "感謝狀", "stamp" 是 "收據"。
+   * 如果收據己打印這裡會是 true，receiptNumber 會記錄佛字第，needReceipt 會記錄"standard" 是 "感謝狀", "stamp" 是 "收據"。
    */
   async updateByReceiptPrint(record, context = {}) {
     if (!record?.id) {
@@ -314,7 +314,7 @@ export class RustJoinRecordService {
         discountAmount: 0, // 折扣金額
         paidAmount: 0, // 付款金額
         needReceipt: payload.needReceipt, // 是否需要收據
-        receiptNumber: "", // 佛字編號
+        receiptNumber: "", // 佛字第
         receiptIssued: "", // 收據是否已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
         receiptIssuedAt: "", // 收據開立日期
         receiptIssuedBy: "", // 收據開立者，也稱經手人

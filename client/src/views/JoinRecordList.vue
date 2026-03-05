@@ -246,8 +246,8 @@
           </template>
         </el-table-column>
 
-        <!-- 佛字編號 -->
-        <el-table-column label="佛字編號 | 經手人" min-width="70" align="right">
+        <!-- 佛字第 -->
+        <el-table-column label="佛字第 | 經手人" min-width="60" align="right">
           <template #default="{ row }">
             <div class="receipt-number">
               <el-tag

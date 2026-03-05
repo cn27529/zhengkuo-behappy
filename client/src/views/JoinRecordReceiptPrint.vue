@@ -362,7 +362,7 @@ const handlePrintWithHtmlToImage = async () => {
           <div>💵 總金額：<strong style="color:#E6A23C;">${totalAmountChinese.value}</strong></div>
           <hr style="margin:12px 0; border-color:#eee;"/>
           <div style="color:#F56C6C; font-size:15px;">
-            ⚠️ 確認後將領取「佛字編號」請確認打印詳情。
+            ⚠️ 確認後將領取「佛字第」請確認打印詳情。
           </div>
         </div>
       `,
@@ -385,7 +385,7 @@ const handlePrintWithHtmlToImage = async () => {
 
   // ✅ 1. 在擷取圖片前，先確認是否已有正式編號，若無則即時向 Rust 領取
   if (!record.value.receiptNumber) {
-    const fetchLoading = ElLoading.service({ text: "正在領取佛字編號..." }); //
+    const fetchLoading = ElLoading.service({ text: "正在領取佛字第..." }); //
 
     try {
       //
