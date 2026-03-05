@@ -336,3 +336,9 @@ client/src/views/JoinRecordReceiptPrint.vue，選擇打印模板 "收據" 執行
 ## 近期祈福登記, 近期參加記錄
 
 client/src/views/Dashboard2.vue 的 "近期祈福登記" 與 "近期參加記錄" 在日期的顯示要適為比如今天是3月5號 "近期參加記錄"列表的資料日期是 "2026/03/02 下午07:39"，此筆資料大於一天，就顯示"2天前"，如果日期條件就是日期在"三日"為限，超過三日就照舊顯示，"三日"的條件可以修改，我們將日期的顯示轉換生成在 client/src/utils/dateUtils.js，可以理解這個顯示的意思嗎。如果在一天內的資料就顯示"10小時前"，如果在一小時內的資料就顯示"29分鐘前"。將 client/src/utils/dateUtils.js 生成 docs/dev-DateUtils-guide.md 說明文檔
+
+## 專案文檔的資料改為前端處理
+
+目前文檔是由 docs/docs-server.js 後端生成，我們要調適為由將文檔生成在 docs/public/books.json 將 books.json 放在前端，index.html 改為前端讀取 books.json 前端使用vue使用CDN引用，css保持不變，index.html 加入可以查詢 books.json 的內容，依據查詢後的顯示相關列表。分析一下是否可行，這樣的 index.html比較好維護，不用 docs/templates.js 的HTML 模板處理模組，你覺的這樣如何呢。每次啟動時就生成 books.json。除了"提取文檔描述（第一個大標題）"再加入提取"## 概述說明"所有的文檔都有"## 概述說明"，為什麼要這樣改變，因為我在找文檔的時候發現沒有"查詢"好難找文件，記的有什麼關鍵字但是列表一個一個標題看 心累 ＝..＝。如果你有什麼好做法也可以告訴我。
+
+將 docs/docs-server-guide.md 與 docs/README.md 整合成一份，以 docs/README.md 為主，兩份檔案雷同了。

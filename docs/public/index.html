@@ -5,46 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>專案文檔</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>📚 專案文檔</h1>
-        <div class="stats">
-            <strong>共 {{fileCount}} 個文檔</strong>
-        </div>
-        <div class="file-list" id="file-list">
-            <!-- 文檔列表將由 JavaScript 動態生成 -->
+    <div id="app">
+        <div class="container">
+            <h1>📚 專案文檔</h1>
+            
+            <div class="search-box">
+                <input 
+                    v-model="searchQuery" 
+                    type="text" 
+                    placeholder="🔍 搜尋標題、概述..." 
+                    class="search-input"
+                />
+                <span class="search-stats">{{ filteredBooks.length }} / {{ books.length }} 個文檔</span>
+            </div>
+
+            <div class="file-list">
+                <div v-for="book in filteredBooks" :key="book.id" class="file-item">
+                    <a :href="book.path">{{ book.title }}</a>
+                    <div class="file-name">{{ book.filename }}</div>
+                    <div class="file-date">📅 {{ book.formattedDate }}</div>
+                    <div class="file-description" v-html="highlightText(book.overview)"></div>
+                </div>
+                <div v-if="filteredBooks.length === 0" class="no-results">
+                    找不到符合「{{ searchQuery }}」的文檔
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // 獲取文檔列表數據
-        async function loadDocuments() {
-            try {
-                const response = await fetch('/api/documents');
-                const data = await response.json();
-                
-                // 更新統計
-                document.querySelector('.stats strong').textContent = `共 ${data.files.length} 個文檔`;
-                
-                // 生成文檔列表
-                const fileList = document.getElementById('file-list');
-                fileList.innerHTML = data.files.map(file => `
-                    <div class="file-item">
-                        <a href="/doc/${encodeURIComponent(file.path)}">${file.title}</a>
-                        <div class="file-name">${file.name}</div>
-                        <div class="file-date">📅 ${file.formattedDate}</div>
-                        <div class="file-description">${file.description}</div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('載入文檔列表失敗:', error);
-                document.getElementById('file-list').innerHTML = '<p>載入文檔列表失敗</p>';
-            }
-        }
+        const { createApp } = Vue;
 
-        // 頁面載入時執行
-        document.addEventListener('DOMContentLoaded', loadDocuments);
+        createApp({
+            data() {
+                return {
+                    books: [],
+                    searchQuery: ''
+                };
+            },
+            computed: {
+                filteredBooks() {
+                    if (!this.searchQuery.trim()) return this.books;
+                    
+                    const query = this.searchQuery.toLowerCase();
+                    return this.books.filter(book => 
+                        book.title.toLowerCase().includes(query) ||
+                        book.overview.toLowerCase().includes(query) ||
+                        book.filename.toLowerCase().includes(query)
+                    );
+                }
+            },
+            methods: {
+                highlightText(text) {
+                    if (!this.searchQuery.trim()) return text;
+                    
+                    const query = this.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    return text.replace(regex, '<mark>$1</mark>');
+                },
+                async loadBooks() {
+                    try {
+                        const response = await fetch('/static/books.json');
+                        const data = await response.json();
+                        this.books = data.books;
+                    } catch (error) {
+                        console.error('載入文檔失敗:', error);
+                    }
+                }
+            },
+            mounted() {
+                this.loadBooks();
+            }
+        }).mount('#app');
     </script>
 </body>
 </html>

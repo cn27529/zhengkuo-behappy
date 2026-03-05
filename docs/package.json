@@ -4,8 +4,9 @@
   "description": "文檔檢視器",
   "main": "docs-server.js",
   "scripts": {
-    "start": "node docs-server.js",
-    "dev": "node --watch docs-server.js"
+    "start": "node generate-books.js && node docs-server.js",
+    "dev": "node generate-books.js && node --watch docs-server.js",
+    "build": "node generate-books.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
