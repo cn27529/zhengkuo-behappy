@@ -1,6 +1,6 @@
 # Mock Activity 資料說明文件
 
-## 概述
+## 概述說明
 
 本文件說明 `client/src/data/mock_activities.json` 中的模擬活動資料結構和內容，用於寺廟管理系統中的活動管理模組測試和開發。
 

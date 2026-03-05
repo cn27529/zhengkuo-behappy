@@ -2,7 +2,7 @@
 
 檔案位置：`/src/data/mock_logEntrys.json`
 
-## 概要
+## 概述說明
 
 操作記錄 (Log Entries) 是寺廟管理系統中記錄所有 API 操作的核心資料結構，用於追蹤系統中的所有資料變更、API 呼叫狀態、錯誤處理及效能監控。當資料誤刪除時，可以從 `context.requestBody` 中找回完整的資料內容。
 

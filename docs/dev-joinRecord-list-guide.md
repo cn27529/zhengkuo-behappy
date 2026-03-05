@@ -1,23 +1,23 @@
 # 活動參加記錄查詢功能開發指南
 
 ## 修改日期
+
 2026-01-27
 
-## 概述
+## 概述說明
 
-本功能實現了"活動參加記錄查詢"，允許用戶查詢和管理已提交的活動參加記錄。
-
-## 功能概述
-`JoinRecordList.vue` 是參加記錄的查詢列表頁面，提供搜尋、篩選和分頁功能。
+本功能實現了"活動參加記錄查詢"，允許用戶查詢和管理已提交的活動參加記錄，`JoinRecordList.vue` 是參加記錄的查詢列表頁面，提供搜尋、篩選和分頁功能。
 
 ## 主要功能特點
 
 ### 1. 查詢功能
+
 - **關鍵字搜尋：** 支援姓名、手機、電話、地址、關係、參加項目的模糊搜尋
 - **狀態篩選：** 可依據記錄狀態（已確認、待處理、已取消）進行篩選
 - **項目類型篩選：** 可依據參加項目類型進行篩選
 
 ### 2. 顯示內容
+
 - **基本資訊：** 記錄ID、登記ID、聯絡人資訊
 - **狀態標籤：** 使用不同顏色標籤顯示記錄狀態
 - **參加項目詳情：** 顯示項目名稱、數量、金額、參加者、地址
@@ -25,6 +25,7 @@
 - **建立時間：** 顯示記錄建立時間
 
 ### 3. 響應式設計
+
 - **桌面版：** 完整表格顯示，支援分頁
 - **手機版：** 適配小螢幕，顯示全部資料不分頁
 
@@ -69,7 +70,9 @@
 ## 技術架構
 
 ### Store 整合
+
 使用 `useJoinRecordQueryStore` 管理查詢狀態：
+
 ```javascript
 const {
   searchResults,
@@ -86,33 +89,35 @@ const {
 ```
 
 ### 查詢邏輯
+
 ```javascript
 const handleSearch = async () => {
   queryStore.resetPagination();
-  
+
   const queryData = {
     query: searchQuery.value?.trim() || "",
     state: stateFilter.value?.trim() || "",
     items: itemsFilter.value?.trim() || "",
   };
-  
+
   const result = await queryStore.queryJoinRecordData(queryData);
   // 處理查詢結果...
 };
 ```
 
 ### 分頁處理
+
 ```javascript
 const paginatedResults = computed(() => {
   if (!Array.isArray(searchResults.value) || searchResults.value.length === 0) {
     return [];
   }
-  
+
   // 手機設備返回所有結果不分頁
   if (isMobile.value) {
     return searchResults.value;
   }
-  
+
   // 桌面設備分頁處理
   const start = (currentPage.value - 1) * pageSize.value;
   const end = start + pageSize.value;
@@ -181,6 +186,7 @@ const paginatedResults = computed(() => {
 ## 資料顯示邏輯
 
 ### 聯絡人資訊顯示
+
 ```javascript
 // 模板中的聯絡人資訊顯示
 <div class="contact-info">
@@ -200,6 +206,7 @@ const paginatedResults = computed(() => {
 ```
 
 ### 參加項目顯示
+
 ```javascript
 // 參加項目列表顯示
 <div class="items-list">
@@ -224,6 +231,7 @@ const paginatedResults = computed(() => {
 ```
 
 ### 狀態標籤處理
+
 ```javascript
 const getStateText = (state) => {
   const statusMap = {
@@ -247,11 +255,13 @@ const getStateTagType = (state) => {
 ## 樣式設計
 
 ### 響應式表格
+
 - 使用 Element Plus 的 `el-table` 組件
 - 設定最小寬度確保內容完整顯示
 - 手機版調整字體大小和間距
 
 ### 項目標籤樣式
+
 ```css
 .item-tag {
   padding: 0.5rem;
@@ -269,16 +279,17 @@ const getStateTagType = (state) => {
 ```
 
 ### 手機版優化
+
 ```css
 @media (max-width: 768px) {
   .search-input-group {
     flex-direction: column;
   }
-  
+
   .items-list {
     max-width: 200px;
   }
-  
+
   .item-header {
     flex-direction: column;
     align-items: flex-start;
@@ -357,7 +368,9 @@ const getStateTagType = (state) => {
 ## 功能擴展建議
 
 ### 1. 匯出功能
+
 可考慮添加 Excel 或 PDF 匯出功能：
+
 ```javascript
 const handleExport = () => {
   // 實現匯出邏輯
@@ -366,14 +379,18 @@ const handleExport = () => {
 ```
 
 ### 2. 進階篩選
+
 可添加日期範圍、金額範圍等篩選條件：
+
 ```javascript
 const dateRange = ref([]);
 const amountRange = ref([]);
 ```
 
 ### 3. 批量操作
+
 可添加批量刪除、批量狀態更新等功能：
+
 ```javascript
 const selectedRows = ref([]);
 const handleBatchDelete = () => {
@@ -465,6 +482,7 @@ const handleBatchDelete = () => {
 4. **錯誤測試**: 測試網路錯誤和資料錯誤情況
 
 ## 相關文件
+
 - `client/src/stores/joinRecordQueryStore.js` - 查詢狀態管理
 - `client/src/services/joinRecordService.js` - API 服務層
 - `client/src/utils/dateUtils.js` - 日期格式化工具

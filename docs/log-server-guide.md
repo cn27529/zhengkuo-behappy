@@ -1,5 +1,7 @@
 # MongoDB 日誌服務器
 
+## 概述說明
+
 本地 Node.js 日誌服務器，透過 `mongoDBLogger.js` 啟動，接收來自前端的日誌並存入雲端 MongoDB Atlas。
 
 ## ✨ 主要特色
@@ -122,10 +124,10 @@ async sendToRemoteLog(logEntry) {
   const blob = new Blob([JSON.stringify(logEntry)], {
     type: "application/json",
   });
-  
+
   const BASE_URL = import.meta.env.VITE_REMOTE_LOG_URL;
   const success = navigator.sendBeacon(`${BASE_URL}/mongo/logentry/`, blob);
-  
+
   if (!success) {
     // fallback 使用 fetch
     await fetch(`${BASE_URL}/mongo/logentry/`, {

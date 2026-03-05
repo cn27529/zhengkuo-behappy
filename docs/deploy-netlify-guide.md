@@ -1,6 +1,6 @@
 # Netlify 部署指南
 
-## 問題描述
+## 概述說明
 
 在開發過程中，需要將 `zk-client-rustaxum` 分支的內容部署到 `zk-client-netlify` 分支，但某些功能（菜單項目）不希望在生產環境中顯示。
 

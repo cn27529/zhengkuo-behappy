@@ -1,6 +1,6 @@
 # 參加記錄狀態控制台開發指南
 
-## 概述
+## 概述說明
 
 參加記錄狀態控制台 (`JoinRecordStatesControl.vue`) 是一個專門用於批量管理參加記錄狀態的管理介面，允許管理員快速調整記錄的各項狀態。
 
@@ -260,22 +260,22 @@ const canEditAccountingState = computed(() => {
    - 會計已對帳時，付款狀態應該是已付款
    - 需要收據（`needReceipt` 為 `1`）但未打印時，`receiptIssued` 應為空值
 
-2. **收據狀態說明**（2026-02-25 更新）：
+3. **收據狀態說明**（2026-02-25 更新）：
    - 空值（`""`）：未打印收據或感謝狀
    - `"standard"`：已打印感謝狀
    - `"stamp"`：已打印收據
    - 此欄位由打印頁面自動更新，不建議手動修改
 
-3. **佛字第**：
+4. **佛字第**：
    - `receiptNumber` 為唯讀欄位，由系統自動生成
    - 格式：收據 `26029999`（年月+流水號），感謝狀 `A26029999`（加前綴A）
    - 詳見 [收據編號生成機制說明](./dev-joinRecord-receiptNumber-guide.md)
 
-3. **批量操作**：批量更新時只會更新選中的狀態欄位，未選擇的欄位保持原值
+5. **批量操作**：批量更新時只會更新選中的狀態欄位，未選擇的欄位保持原值
 
-4. **修改追蹤**：每次狀態修改都會更新 `updatedAt` 時間戳
+6. **修改追蹤**：每次狀態修改都會更新 `updatedAt` 時間戳
 
-5. **分頁處理**：
+7. **分頁處理**：
    - 桌面版：支援分頁，預設每頁 10 筆
    - 手機版：顯示全部結果，不分頁
 
@@ -293,5 +293,4 @@ const canEditAccountingState = computed(() => {
 - [參加記錄開發指南](./dev-joinRecord-guide.md)
 - [參加記錄查詢開發指南](./dev-joinRecord-list-guide.md)
 - [收據打印功能說明](./dev-joinRecord-receipt-print-guide.md)
-- [批量打印功能說明](./dev-joinRecord-receipt-batch-print-guide.md)
 - [收據編號生成機制說明](./dev-joinRecord-receiptNumber-guide.md) ⭐ 新增

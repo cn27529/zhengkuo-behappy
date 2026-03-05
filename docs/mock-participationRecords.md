@@ -2,7 +2,7 @@
 
 檔案位置：`/src/data/mock_participation_records.json`
 
-## 概要
+## 概述說明
 
 參加記錄 (Participation Records) 是寺廟管理系統中記錄信眾參加各種宗教活動的核心資料結構，包含活動項目選擇、費用計算、付款狀態、收據開立及會計處理等完整資訊。
 

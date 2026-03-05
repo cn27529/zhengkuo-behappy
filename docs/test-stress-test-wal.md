@@ -1,5 +1,7 @@
 # 驗證 WAL 機制是否生效
 
+## 概述說明
+
 生成 stress-test-wal.js 調用 scripts/testMydata.js 頻繁寫入，然後我停止服務來驗證 WAL 機制是否生效
 
 # 現在可以用以下方式測試 WAL checkpoint 機制：
