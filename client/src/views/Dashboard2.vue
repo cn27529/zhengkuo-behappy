@@ -244,7 +244,7 @@
                   {{ record.contact?.name || "未填聯絡人" }}
                 </div>
                 <div class="list-meta">
-                  <span v-for="item in record.items">
+                  <span v-for="item in record.items" v-if="false">
                     <el-badge
                       :value="item.quantity"
                       class="item"
