@@ -13,7 +13,7 @@ const colors = {
   cyan: "\x1b[36m",
   blue: "\x1b[34m",
   magenta: "\x1b[35m",
-  bold: "\x1b[1m"
+  bold: "\x1b[1m",
 };
 
 function log(message, color = "reset") {
@@ -47,7 +47,7 @@ function startServices(projectRoot) {
   log(`${colors.bold}${colors.green}🚀 啟動所有服務...${colors.reset}`);
   log(`${"=".repeat(50)}\n`, "cyan");
 
-  log("📦 服務列表:", "cyan");
+  log("📦 所有服務列表:", "cyan");
   log("  • 🐇Directus (port 8055)", "blue");
   log("  • 🌍Vue Client (port 5173)", "blue");
   log("  • 🦀Rust-Axum (port 3000)", "blue");
