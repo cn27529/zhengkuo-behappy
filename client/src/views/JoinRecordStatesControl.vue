@@ -173,13 +173,13 @@
         @selection-change="handleSelectionChange"
       >
         <!-- 多選框 -->
-        <el-table-column type="selection" min-width="20" align="center" />
+        <el-table-column type="selection" width="50" align="center" />
 
         <!-- 記錄ID -->
         <el-table-column
           prop="id"
           label="記錄ID"
-          min-width="30"
+          width="100"
           align="center"
           fixed
         >
@@ -188,7 +188,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="需要打印" min-width="40" align="center">
+        <el-table-column label="需要打印" width="100" align="center">
           <template #default="{ row }">
             <el-switch
               v-model="row.needReceipt"
@@ -221,9 +221,9 @@
         <!-- 參加項目 -->
         <el-table-column
           label="參加項目"
-          min-width="120"
+          width="200"
           align="center"
-          v-if="false"
+          v-if="false"        
         >
           <template #default="{ row }">
             <div class="items-summary">
@@ -239,7 +239,7 @@
         </el-table-column>
 
         <!-- 備註 -->
-        <el-table-column label="備註" width="120" align="center">
+        <el-table-column label="備註" min-width="120" align="center">
           <template #default="{ row }">
             <div class="notes-cell">
               <span class="notes-preview">{{ row.notes || "無" }}</span>
