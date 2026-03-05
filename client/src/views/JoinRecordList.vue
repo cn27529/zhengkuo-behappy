@@ -240,9 +240,9 @@
           align="center"
         >
           <template #default="{ row }">
-            <strong class="amount">{{
+            <div class="item-amount">{{
               appConfig.formatCurrency(row.totalAmount) || 0
-            }}</strong>
+            }}</div>
           </template>
         </el-table-column>
 
@@ -833,6 +833,7 @@ onMounted(() => {
   color: var(--el-color-primary);
   font-weight: 600;
   margin-left: auto;
+  text-align: right;
 }
 
 .item-address {
@@ -895,6 +896,7 @@ onMounted(() => {
 .amount {
   color: var(--el-color-primary);
   font-size: 1rem;
+  text-align: right;
 }
 
 .date-time {
