@@ -247,7 +247,7 @@
         </el-table-column>
 
         <!-- 佛字第 -->
-        <el-table-column label="佛字第 | 經手人" min-width="80" align="right">
+        <el-table-column label="佛字第 | 經手人" min-width="80" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
               <el-tag
@@ -709,6 +709,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
+/* 佛字第 | 經手人 */
+.receipt-number{
+  text-align: right;
+}
+
 /* 收據開立者經手人 */
 .receipt-by {
   margin-left: 0px;
