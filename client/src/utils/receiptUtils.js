@@ -2,12 +2,12 @@
 
 /**
  * 收據相關的輔助工具函數
- * 
+ *
  * 用於處理 needReceipt 欄位的新舊格式轉換和驗證
- * 
+ *
  * 舊格式: boolean (true/false) 或 string ("true"/"false"/"0"/"1")
  * 新格式: string ("" | "standard" | "stamp")
- * 
+ *
  * @module receiptUtils
  */
 
@@ -24,10 +24,10 @@ export const ReceiptUtils = {
   /**
    * 標準化 needReceipt 值
    * 處理舊的 boolean 值和新的 string 值
-   * 
+   *
    * @param {any} value - 原始值
    * @returns {string} 標準化後的值: "" | "standard" | "stamp"
-   * 
+   *
    * @example
    * normalizeNeedReceipt(true)        // => "standard"
    * normalizeNeedReceipt("true")      // => "standard"
@@ -47,17 +47,31 @@ export const ReceiptUtils = {
     }
 
     // 處理舊的 boolean 值
-    if (value === true || value === "true" || value === "1" || value === "TRUE") {
+    if (
+      value === true ||
+      value === "true" ||
+      value === "1" ||
+      value === "TRUE"
+    ) {
       return this.RECEIPT_TYPES.STANDARD; // 預設轉換為感謝狀
     }
 
     // 處理 false 值
-    if (value === false || value === "false" || value === "0" || value === "FALSE" || value === "") {
+    if (
+      value === false ||
+      value === "false" ||
+      value === "0" ||
+      value === "FALSE" ||
+      value === ""
+    ) {
       return this.RECEIPT_TYPES.NONE;
     }
 
     // 處理新的字串值
-    if (value === this.RECEIPT_TYPES.STANDARD || value === this.RECEIPT_TYPES.STAMP) {
+    if (
+      value === this.RECEIPT_TYPES.STANDARD ||
+      value === this.RECEIPT_TYPES.STAMP
+    ) {
       return value;
     }
 
@@ -68,10 +82,10 @@ export const ReceiptUtils = {
 
   /**
    * 檢查是否需要收據（任何類型）
-   * 
+   *
    * @param {string} value - needReceipt 值
    * @returns {boolean} 是否需要收據
-   * 
+   *
    * @example
    * isNeedReceipt("")         // => false
    * isNeedReceipt("standard") // => true
@@ -80,12 +94,15 @@ export const ReceiptUtils = {
    */
   isNeedReceipt(value) {
     const normalized = this.normalizeNeedReceipt(value);
-    return normalized === this.RECEIPT_TYPES.STANDARD || normalized === this.RECEIPT_TYPES.STAMP;
+    return (
+      normalized === this.RECEIPT_TYPES.STANDARD ||
+      normalized === this.RECEIPT_TYPES.STAMP
+    );
   },
 
   /**
    * 檢查是否需要感謝狀
-   * 
+   *
    * @param {string} value - needReceipt 值
    * @returns {boolean}
    */
@@ -96,7 +113,7 @@ export const ReceiptUtils = {
 
   /**
    * 檢查是否需要收據
-   * 
+   *
    * @param {string} value - needReceipt 值
    * @returns {boolean}
    */
@@ -107,10 +124,10 @@ export const ReceiptUtils = {
 
   /**
    * 獲取收據類型標籤（中文）
-   * 
+   *
    * @param {string} value - needReceipt 值
    * @returns {string} 中文標籤
-   * 
+   *
    * @example
    * getReceiptTypeLabel("")         // => "不需要"
    * getReceiptTypeLabel("standard") // => "感謝狀"
@@ -128,7 +145,7 @@ export const ReceiptUtils = {
 
   /**
    * 獲取收據類型選項（用於下拉選單）
-   * 
+   *
    * @returns {Array<{value: string, label: string}>}
    */
   getReceiptTypeOptions() {
@@ -141,7 +158,7 @@ export const ReceiptUtils = {
 
   /**
    * 驗證 needReceipt 值是否有效
-   * 
+   *
    * @param {string} value - 要驗證的值
    * @returns {boolean} 是否有效
    */
@@ -156,10 +173,10 @@ export const ReceiptUtils = {
 
   /**
    * 根據 activeTemplate 獲取 needReceipt 值
-   * 
-   * @param {string} activeTemplate - 活動模板類型
+   *
+   * @param {string} activeTemplate - 活動模版類型
    * @returns {string} needReceipt 值
-   * 
+   *
    * @example
    * getReceiptTypeFromTemplate("standard") // => "standard"
    * getReceiptTypeFromTemplate("stamp")    // => "stamp"
@@ -178,7 +195,7 @@ export const ReceiptUtils = {
   /**
    * 批量標準化資料
    * 用於資料遷移或批量處理
-   * 
+   *
    * @param {Array<Object>} records - 記錄陣列
    * @returns {Array<Object>} 標準化後的記錄陣列
    */
@@ -196,7 +213,7 @@ export const ReceiptUtils = {
 
   /**
    * 獲取收據類型的顏色標籤（用於 UI 顯示）
-   * 
+   *
    * @param {string} value - needReceipt 值
    * @returns {Object} { type: string, color: string }
    */
@@ -219,6 +236,8 @@ export const RECEIPT_TYPES = ReceiptUtils.RECEIPT_TYPES;
 /**
  * 導出常用函數的簡寫
  */
-export const normalizeNeedReceipt = ReceiptUtils.normalizeNeedReceipt.bind(ReceiptUtils);
+export const normalizeNeedReceipt =
+  ReceiptUtils.normalizeNeedReceipt.bind(ReceiptUtils);
 export const isNeedReceipt = ReceiptUtils.isNeedReceipt.bind(ReceiptUtils);
-export const getReceiptTypeLabel = ReceiptUtils.getReceiptTypeLabel.bind(ReceiptUtils);
+export const getReceiptTypeLabel =
+  ReceiptUtils.getReceiptTypeLabel.bind(ReceiptUtils);

@@ -77,7 +77,7 @@
                   </caption>
                   <thead>
                     <tr>
-                      <th width="5%">序號</th>
+                      <th v-if="false" width="5%">序號</th>
                       <th width="20%">姓名</th>
                       <th width="15%">生肖</th>
                       <th width="50%">備註</th>
@@ -89,7 +89,7 @@
                       v-for="(person, index) in availableBlessingPersons"
                       :key="person.id"
                     >
-                      <td class="text-center">{{ index + 1 }}</td>
+                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">{{ person.name || "未填寫" }}</td>
                       <td class="text-center">
                         {{ person.zodiac || "未選擇" }}
@@ -137,7 +137,7 @@
                   </caption>
                   <thead>
                     <tr>
-                      <th width="10%">序號</th>
+                      <th v-if="false" width="10%">序號</th>
                       <th width="40%">祖先姓氏</th>
                       <th width="50%">備註</th>
                     </tr>
@@ -147,7 +147,7 @@
                       v-for="(ancestor, index) in availableAncestors"
                       :key="ancestor.id"
                     >
-                      <td class="text-center">{{ index + 1 }}</td>
+                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">
                         {{ ancestor.surname || "未填寫" }} 氏歷代祖先
                       </td>
@@ -174,7 +174,7 @@
                   </caption>
                   <thead>
                     <tr>
-                      <th width="10%">序號</th>
+                      <th v-if="false" width="10%">序號</th>
                       <th width="25%">姓名</th>
                       <th width="15%">生肖</th>
                       <th width="50%">備註</th>
@@ -185,7 +185,7 @@
                       v-for="(survivor, index) in availableSurvivors"
                       :key="survivor.id"
                     >
-                      <td class="text-center">{{ index + 1 }}</td>
+                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">
                         {{ survivor.name || "未填寫" }}
                       </td>

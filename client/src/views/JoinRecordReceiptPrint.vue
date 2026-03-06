@@ -22,9 +22,14 @@
                 :key="idx"
                 class="highlight"
               >
-                {{ item.label }}({{
-                  appConfig.formatCurrency(item.subtotal)
-                }})&nbsp;&nbsp;
+                {{
+                  item.subtotal > 0
+                    ? item.label +
+                      "(" +
+                      appConfig.formatCurrency(item.subtotal) +
+                      ")&nbsp;&nbsp;"
+                    : ""
+                }}
               </span>
             </div>
             <div class="total-amount">
@@ -72,9 +77,14 @@
                 :key="idx"
                 class="highlight"
               >
-                {{ item.label }}({{
-                  appConfig.formatCurrency(item.subtotal)
-                }})&nbsp;&nbsp;
+                {{
+                  item.subtotal > 0
+                    ? item.label +
+                      "(" +
+                      appConfig.formatCurrency(item.subtotal) +
+                      ")&nbsp;&nbsp;"
+                    : ""
+                }}
               </span>
             </div>
             <div class="total-amount">
@@ -143,7 +153,7 @@
 
         <el-divider v-if="isBatch" />
 
-        <p class="label">選擇打印模板</p>
+        <p class="label">選擇打印模版</p>
         <el-radio-group v-model="activeTemplate" class="template-radio">
           <el-radio
             @click="handleTemplateChange('standard')"
@@ -216,7 +226,7 @@ import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 const printStore = useJoinRecordPrintStore();
 const receiptStore = useReceiptNumberStore(); // 生成編號的 store
 
-// 模板切換狀態
+// 模版切換狀態
 const activeTemplate = ref("stamp");
 const printing = ref(false);
 
@@ -595,7 +605,7 @@ const handlePostPrintCheck = async () => {
       //  如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
       //  已經領取了正式編號會保留在編號系統做為證據。
 
-      record.value.receiptIssued = ""; // 重置模板狀態，保持在未打印狀態
+      record.value.receiptIssued = ""; // 重置模版狀態，保持在未打印狀態
       record.value.receiptNumber = ""; // 重置編號，保持在未打印狀態
       record.value.receiptIssuedAt = ""; // 重置領取時間
       record.value.receiptIssuedBy = ""; // 重置領取人
@@ -763,7 +773,7 @@ onMounted(() => {
 
 /* 右側側邊欄 */
 .config-sidebar {
-  width: 320px;
+  width: 380px;
   background: #fff;
   border-left: 1px solid #dcdfe6;
   display: flex;
@@ -791,7 +801,7 @@ onMounted(() => {
   background-color: #ffffff;
 }
 
-/* 印章模板特別樣式 */
+/* 印章模版特別樣式 */
 .seal-container {
   position: absolute;
   left: 10mm;

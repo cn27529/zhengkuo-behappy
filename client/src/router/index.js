@@ -47,6 +47,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/join-record-card-print",
+    title: "牌位打印",
+    component: () => import("../views/JoinRecordCardPrint.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/join-record-receipt-print",
     title: "收據打印",
     component: () => import("../views/JoinRecordReceiptPrint.vue"),

@@ -223,17 +223,15 @@
           label="參加項目"
           width="200"
           align="center"
-          v-if="false"        
+          v-if="false"
         >
           <template #default="{ row }">
             <div class="items-summary">
-              <el-tag
-                v-for="(item, index) in row.items"
-                :key="index"
-                class="stat-badge"
-              >
-                {{ item.label }} {{ item.quantity }}
-              </el-tag>
+              <span v-for="(item, index) in row.items" :key="index">
+                <el-tag class="stat-badge" v-if="item.subtotal > 0">
+                  {{ item.label }} {{ item.quantity }}
+                </el-tag>
+              </span>
             </div>
           </template>
         </el-table-column>

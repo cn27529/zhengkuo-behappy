@@ -5,7 +5,7 @@
 
 ## 概述說明
 
-實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模板切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。
+實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模版切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。
 
 本文檔涵蓋：
 
@@ -108,7 +108,7 @@ onMounted(() => {
 
 1. 在列表頁點擊單筆記錄的 🖨️ 按鈕
 2. 跳轉到收據打印頁面
-3. 選擇模板（📜 感謝狀 / 🛡️ 收據）
+3. 選擇模版（📜 感謝狀 / 🛡️ 收據）
 4. 點擊「開始打印」按鈕
 5. 打印對話框彈出，執行打印
 6. 確認「打印完成」→ 更新後端狀態
@@ -283,14 +283,14 @@ onMounted(() => {
 
   <el-divider v-if="isBatch" />
 
-  <!-- 模板選擇... -->
+  <!-- 模版選擇... -->
 </div>
 ```
 
 **按鈕狀態顯示**：
 
 - **未打印**：灰色實心按鈕 `[1]` `[3]` `[4]`
-- **當前頁**：白底藍框按鈕 `[2]`（與模板選擇樣式一致）
+- **當前頁**：白底藍框按鈕 `[2]`（與模版選擇樣式一致）
 - **已打印**：綠色實心按鈕 `[1]` ✅
 
 **互動特性**：
@@ -366,7 +366,7 @@ const handleTemplateChange = (template = "standard") => {
 2. 點擊「🖨️ 批量打印」按鈕
 3. 跳轉到收據打印頁面，顯示「收據 1 / 3」和數字按鈕 `[1] [2] [3]`
 4. 第1張按鈕顯示為白底藍框（當前頁）
-5. 選擇模板（📜 感謝狀 / 🛡️ 收據）
+5. 選擇模版（📜 感謝狀 / 🛡️ 收據）
 6. 點擊「開始打印」按鈕
 7. 打印對話框彈出，執行打印
 8. 確認「打印完成」→ 第1張按鈕變綠色 ✅，自動跳到第2張
@@ -389,19 +389,19 @@ const handleTemplateChange = (template = "standard") => {
 
 ## 收據內容結構
 
-### 雙模板設計
+### 雙模版設計
 
-系統提供兩種收據模板：
+系統提供兩種收據模版：
 
-1. **感謝狀模板** (`standard`)：簡潔版本，適用於一般捐款
-2. **收據模板** (`stamp`)：正式版本，包含印信處，適用於需要蓋章的正式收據
+1. **感謝狀模版** (`standard`)：簡潔版本，適用於一般捐款
+2. **收據模版** (`stamp`)：正式版本，包含印信處，適用於需要蓋章的正式收據
 
-### 模板切換功能
+### 模版切換功能
 
 ```html
 <template>
   <div class="config-sidebar">
-    <p class="label">選擇單據模板：</p>
+    <p class="label">選擇單據模版：</p>
     <el-radio-group v-model="activeTemplate" class="template-radio">
       <el-radio
         @click="handleTemplateChange('standard')"
@@ -430,7 +430,7 @@ const handleTemplateChange = (template = "standard") => {
 </script>
 ```
 
-### 感謝狀模板內容
+### 感謝狀模版內容
 
 ```html
 <div v-if="activeTemplate === 'standard'" class="receipt-canvas font-kaiti">
@@ -471,7 +471,7 @@ const handleTemplateChange = (template = "standard") => {
 </div>
 ```
 
-### 收據模板內容（含印信處）
+### 收據模版內容（含印信處）
 
 ```html
 <div v-else class="receipt-canvas font-kaiti stamp-layout">
@@ -815,7 +815,7 @@ const setPrintTime = () => {
 ### 印信處樣式
 
 ```css
-/* 印章模板專用 */
+/* 印章模版專用 */
 .seal-container {
   position: absolute;
   left: 10mm;
@@ -1035,7 +1035,7 @@ await new Promise((resolve) => setTimeout(resolve, 400));
 
 ### 3. 動態標題
 
-根據選擇的模板更新瀏覽器標題：
+根據選擇的模版更新瀏覽器標題：
 
 ```javascript
 const handleTemplateChange = (template) => {
@@ -1144,7 +1144,7 @@ npm install html-to-image print-js
 3. 確保 `await document.fonts.ready` 執行完成
 4. Mac 用戶增加延遲時間（400ms）
 
-### Q3: 模板切換後樣式錯亂？
+### Q3: 模版切換後樣式錯亂？
 
 **A**: 使用 `v-if` 而非 `v-show` 確保 DOM 完全重新渲染：
 
@@ -1201,9 +1201,9 @@ printJS({
 
 **A**: 可以。點擊「關閉頁面」按鈕返回列表，已打印完成的記錄狀態已更新，未打印的記錄保持原狀態。
 
-### Q9: 批量打印時可以切換模板嗎？
+### Q9: 批量打印時可以切換模版嗎？
 
-**A**: 可以。每張收據可以獨立選擇「感謝狀」或「收據」模板，不影響其他張。
+**A**: 可以。每張收據可以獨立選擇「感謝狀」或「收據」模版，不影響其他張。
 
 ### Q10: sessionStorage 數據何時清除？
 
@@ -1236,9 +1236,9 @@ printJS({
 
 ## 技術亮點
 
-### 1. 雙模板架構
+### 1. 雙模版架構
 
-使用 `v-if` 條件渲染實現兩種收據模板，無需重複代碼：
+使用 `v-if` 條件渲染實現兩種收據模版，無需重複代碼：
 
 ```html
 <div v-if="activeTemplate === 'standard'" class="receipt-canvas font-kaiti">
@@ -1342,7 +1342,7 @@ if (currentIndex.value < batchRecords.value.length - 1) {
 
 ## 未來優化方向
 
-- [✅] 支援雙模板切換（感謝狀/收據）
+- [✅] 支援雙模版切換（感謝狀/收據）
 - [✅] 使用 html-to-image 生成高清圖像
 - [✅] 打印後確認機制
 - [✅] 動態收據字號生成
@@ -1363,7 +1363,7 @@ if (currentIndex.value < batchRecords.value.length - 1) {
 - [ ] 添加自定義收據編號規則
 - [ ] 支援自定義寺廟資訊
 - [ ] 添加 QR Code（捐款查詢）
-- [ ] 更多收據模板（橫式、A4 等）
+- [ ] 更多收據模版（橫式、A4 等）
 - [ ] 打印歷史記錄與狀態追蹤
 - [ ] PDF 匯出功能
 - [ ] 收據預覽縮放功能

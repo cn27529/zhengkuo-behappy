@@ -118,6 +118,16 @@
             🖨️ 批量打印
           </el-button>
         </div>
+
+        <div class="table-operations">
+          <el-button
+            type="warning"
+            icon="el-icon-copy-document"
+            :disabled="selectedRecords.length === 0"
+            @click="handleBatchCardPrint"
+            >批量打印牌位 ({{ selectedRecords.length }})</el-button
+          >
+        </div>
       </div>
 
       <!-- 查詢列表 -->
@@ -195,13 +205,11 @@
         <el-table-column label="參加項目" min-width="120" align="center">
           <template #default="{ row }">
             <div class="items-summary">
-              <el-tag
-                v-for="(item, index) in row.items"
-                :key="index"
-                class="stat-badge"
-              >
-                {{ item.label }} {{ item.quantity }}
-              </el-tag>
+              <span v-for="(item, index) in row.items" :key="index">
+                <el-tag class="stat-badge" v-if="item.subtotal > 0">
+                  {{ item.label }} {{ item.quantity }}
+                </el-tag>
+              </span>
 
               <div
                 v-if="false"
@@ -303,35 +311,61 @@
           </template>
         </el-table-column>
 
-        <el-table-column
-          label="操作"
-          min-width="100"
-          fixed="right"
-          align="center"
-        >
+        <el-table-column label="操作" width="150" align="center">
           <template #default="{ row }">
-            <el-tooltip content="查看詳情" placement="top">
-              <el-button type="primary" circle @click="handlePrint(row)">
-                👁️
-              </el-button>
-            </el-tooltip>
+            <div class="action-buttons-group">
+              <el-tooltip content="查看詳情" placement="top">
+                <el-button
+                  type="primary"
+                  circle
+                  @click="handlePrint(row)"
+                  size="small"
+                >
+                  👁️
+                </el-button>
+              </el-tooltip>
 
-            <!-- 需要打印 -->
-            <el-tooltip
-              content="收據打印"
-              placement="top"
-              v-if="BoolUtils.normalizeBool(row.needReceipt)"
-            >
-              <el-button type="success" circle @click="handleReceiptPrint(row)">
-                🖨️
-              </el-button>
-            </el-tooltip>
+              <el-tooltip
+                content="收據打印"
+                placement="top"
+                v-if="BoolUtils.normalizeBool(row.needReceipt)"
+              >
+                <el-button
+                  type="success"
+                  circle
+                  @click="handleReceiptPrint(row)"
+                  size="small"
+                >
+                  🖨️
+                </el-button>
+              </el-tooltip>
 
-            <el-tooltip content="刪除記錄" placement="top">
-              <el-button type="danger" circle @click="handleDelete(row)">
-                🗑️
-              </el-button>
-            </el-tooltip>
+              <el-tooltip
+                content="牌位打印"
+                placement="top"
+                v-if="BoolUtils.normalizeBool(row.needReceipt)"
+              >
+                <el-button
+                  type="warning"
+                  circle
+                  @click="handleCardPrint(row)"
+                  size="small"
+                >
+                  💳
+                </el-button>
+              </el-tooltip>
+
+              <el-tooltip content="刪除記錄" placement="top">
+                <el-button
+                  type="danger"
+                  circle
+                  @click="handleDelete(row)"
+                  size="small"
+                >
+                  🗑️
+                </el-button>
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -597,6 +631,61 @@ const handleBatchReceiptPrint = () => {
 
     router.push({
       path: "/join-record-receipt-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "true",
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+
+/**
+ * 單筆牌位打印
+ * @param {Object} item - 單筆參加記錄數據
+ */
+const handleCardPrint = (item) => {
+  // 將數據轉為字串傳遞，與收據頁面邏輯保持一致
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(item);
+    const printId = `print_receipt_${item.id}`;
+    sessionStorage.setItem(printId, printData);
+
+    router.push({
+      path: "/join-record-card-print",
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+    });
+  } catch (error) {
+    console.error("導航到牌位頁面失敗:", error);
+    ElMessage.error("導航到牌位頁面失敗");
+  }
+};
+
+/**
+ * 批量牌位打印
+ */
+const handleBatchCardPrint = () => {
+  if (selectedRecords.value.length === 0) {
+    ElMessage.warning("請先選擇要打印的記錄");
+    return;
+  }
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = selectedRecords.value.map((r) => r.id).join(",");
+    const printDatas = selectedRecords.value.map((r) => r);
+    const printId = `print_receipt_ids_${ids}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+
+    router.push({
+      path: "/join-record-card-print",
       query: {
         print_id: printId,
         ids: ids,
@@ -957,6 +1046,18 @@ onMounted(() => {
   color: var(--el-color-primary);
   font-weight: bold;
   margin-right: 0.5rem;
+}
+
+.action-buttons-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px; /* 統一設定按鈕間距 */
+  flex-wrap: wrap; /* 如果縮到很窄，允許按鈕自動換行而不溢出 */
+}
+
+/* 移除 Element Plus 按鈕預設的左邊距，改用 gap 控制 */
+.action-buttons-group .el-button + .el-button {
+  margin-left: 0;
 }
 
 /* 調試面板 */

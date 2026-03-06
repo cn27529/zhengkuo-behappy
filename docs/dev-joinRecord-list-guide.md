@@ -188,7 +188,7 @@ const paginatedResults = computed(() => {
 ### 聯絡人資訊顯示
 
 ```javascript
-// 模板中的聯絡人資訊顯示
+// 模版中的聯絡人資訊顯示
 <div class="contact-info">
   <div class="contact-name">
     <strong>{{ row.contact?.name || "-" }}</strong>

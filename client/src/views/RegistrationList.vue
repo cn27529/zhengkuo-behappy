@@ -166,25 +166,41 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="200" fixed="right" align="center">
+        <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
-            <el-tooltip content="查看詳情" placement="top">
-              <el-button type="primary" circle @click="handlePrint(row)">
-                👁️
-              </el-button>
-            </el-tooltip>
+            <div class="action-buttons-group">
+              <el-tooltip content="查看詳情" placement="top">
+                <el-button
+                  type="primary"
+                  circle
+                  @click="handlePrint(row)"
+                  size="small"
+                >
+                  👁️
+                </el-button>
+              </el-tooltip>
 
-            <el-tooltip content="編輯表單" placement="top">
-              <el-button circle @click="handleEdit(row)" type="info">
-                📝
-              </el-button>
-            </el-tooltip>
+              <el-tooltip content="編輯表單" placement="top">
+                <el-button
+                  circle
+                  @click="handleEdit(row)"
+                  type="info"
+                  size="small"
+                >
+                  📝
+                </el-button>
+              </el-tooltip>
 
-            <el-tooltip content="卡片設計" placement="right">
-              <el-button circle @click="handleCardDesign(row)" v-if="false"
-                >💳</el-button
-              >
-            </el-tooltip>
+              <el-tooltip content="卡片設計" placement="right">
+                <el-button
+                  circle
+                  @click="handleCardDesign(row)"
+                  size="small"
+                  v-if="false"
+                  >💳</el-button
+                >
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -690,6 +706,18 @@ onMounted(() => {
   font-size: 0.75rem;
   color: #666;
   margin-left: 0.25rem;
+}
+
+.action-buttons-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px; /* 統一設定按鈕間距 */
+  flex-wrap: wrap; /* 如果縮到很窄，允許按鈕自動換行而不溢出 */
+}
+
+/* 移除 Element Plus 按鈕預設的左邊距，改用 gap 控制 */
+.action-buttons-group .el-button + .el-button {
+  margin-left: 0;
 }
 
 /* 響應式設計 */

@@ -30,7 +30,7 @@
 client/src/views/
 ├── JoinRecordPrint.vue     # 新建的打印頁面組件
 ├── JoinRecordList.vue      # 更新的列表頁面（新增打印功能）
-└── RegistrationPrint.vue   # 參考的打印頁面模板
+└── RegistrationPrint.vue   # 參考的打印頁面模版
 ```
 
 ## 實現細節

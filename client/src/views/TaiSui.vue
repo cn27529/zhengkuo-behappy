@@ -12,7 +12,7 @@
       <!-- 年份输入区域 -->
       <div id="sticky" class="form-section">
         <div class="form-grid">
-          <!-- 在模板中修改輸入框 -->
+          <!-- 在模版中修改輸入框 -->
           <div class="form-group address-row">
             <label for="yearInput">
               <h3>查詢年份</h3>
@@ -84,7 +84,7 @@
               <div class="result-value zodiac-display">
                 {{
                   taiSuiStore.getZodiacIcon(
-                    taiSuiStore.analysisResult.taiSuiTypes.valueTaiSui
+                    taiSuiStore.analysisResult.taiSuiTypes.valueTaiSui,
                   )
                 }}
                 {{ taiSuiStore.analysisResult.taiSuiTypes.valueTaiSui }}
@@ -95,7 +95,7 @@
               <div class="result-value zodiac-display">
                 {{
                   taiSuiStore.getZodiacIcon(
-                    taiSuiStore.analysisResult.taiSuiTypes.chongTaiSui
+                    taiSuiStore.analysisResult.taiSuiTypes.chongTaiSui,
                   )
                 }}
                 {{ taiSuiStore.analysisResult.taiSuiTypes.chongTaiSui }}
@@ -106,7 +106,7 @@
               <div class="result-value zodiac-display">
                 {{
                   taiSuiStore.getZodiacIcon(
-                    taiSuiStore.analysisResult.taiSuiTypes.haiTaiSui
+                    taiSuiStore.analysisResult.taiSuiTypes.haiTaiSui,
                   )
                 }}
                 {{ taiSuiStore.analysisResult.taiSuiTypes.haiTaiSui }}
@@ -117,7 +117,7 @@
               <div class="result-value zodiac-display">
                 {{
                   taiSuiStore.getZodiacIcon(
-                    taiSuiStore.analysisResult.taiSuiTypes.poTaiSui
+                    taiSuiStore.analysisResult.taiSuiTypes.poTaiSui,
                   )
                 }}
                 {{ taiSuiStore.analysisResult.taiSuiTypes.poTaiSui }}
@@ -128,7 +128,7 @@
               <div class="result-value zodiac-display">
                 {{
                   taiSuiStore.getZodiacIcon(
-                    taiSuiStore.analysisResult.taiSuiTypes.xingTaiSui
+                    taiSuiStore.analysisResult.taiSuiTypes.xingTaiSui,
                   )
                 }}
                 {{ taiSuiStore.analysisResult.taiSuiTypes.xingTaiSui }}
@@ -173,7 +173,15 @@
 
 <script setup>
 import { onMounted, watch, ref, nextTick } from "vue";
-import { Refresh, Plus, Edit, Check, Delete, View, Search } from "@element-plus/icons-vue";
+import {
+  Refresh,
+  Plus,
+  Edit,
+  Check,
+  Delete,
+  View,
+  Search,
+} from "@element-plus/icons-vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTaiSuiStore } from "../stores/taisuiStore.js";
 
@@ -306,7 +314,7 @@ watch(
       await nextTick();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // 監聽滾動事件以實現粘性標題

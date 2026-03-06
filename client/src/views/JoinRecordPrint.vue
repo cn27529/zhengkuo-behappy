@@ -93,7 +93,7 @@
                   </caption>
                   <thead>
                     <tr>
-                      <th width="5%">序號</th>
+                      <th v-if="false" width="5%">序號</th>
                       <th width="15%">參加項目</th>
                       <th width="5%">數量</th>
                       <th width="15%">小計</th>
@@ -106,19 +106,24 @@
                       v-for="(item, index) in printContent.items"
                       :key="index"
                     >
-                      <td class="text-center">{{ index + 1 }}</td>
+                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">
                         {{ item.label || "未填寫" }}
-                        <!-- <p v-if="item.lampDetails" v-for="lamp in item.lampDetails">
-                      {{ lamp.lampTypeLabel }}
-                    </p> -->
                       </td>
                       <td class="text-center">{{ item.quantity || 0 }}</td>
                       <td class="text-center">
-                        {{ appConfig.formatCurrency(item.subtotal) || 0 }}
+                        {{
+                          item.subtotal >= 1
+                            ? appConfig.formatCurrency(item.subtotal) || 0
+                            : ""
+                        }}
                       </td>
                       <td class="text-left">
-                        {{ item.sourceAddress || "未填寫" }}
+                        {{
+                          item.subtotal >= 1
+                            ? item.sourceAddress || "未填寫"
+                            : ""
+                        }}
                       </td>
                       <td class="text-left">
                         {{
@@ -148,7 +153,7 @@
                 <table class="participants-table">
                   <thead>
                     <tr>
-                      <th width="5%">序號</th>
+                      <th v-if="false" width="5%">序號</th>
                       <th width="20%">姓名/姓氏</th>
                       <th width="15%">生肖</th>
                       <th width="50%">備註</th>
@@ -160,7 +165,7 @@
                       v-for="(participant, index) in item.sourceData || []"
                       :key="index"
                     >
-                      <td class="text-center">{{ index + 1 }}</td>
+                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">
                         {{
                           participant.name ||
@@ -219,6 +224,7 @@ import { ElMessage } from "element-plus";
 import { appConfig } from "../config/appConfig.js";
 import { useActivityStore } from "../stores/activityStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { parse } from "marked";
 
 const activityStore = useActivityStore();
 const router = useRouter();
@@ -277,7 +283,20 @@ const loadPrintData = () => {
     try {
       parsed = JSON.parse(storedData);
       console.log("解析後的打印數據:", parsed);
+
+      // // 排除陽上人的顯示，過濾掉 type 為 survivors 的項目
+      // const filteredItems = parsed.items.filter(
+      //   (item) => item.type !== "survivors",
+      // );
+
+      // // 如果你想更新原始物件中的 items
+      // const updatedData = {
+      //   ...parsed,
+      //   items: filteredItems,
+      // };
+
       printContent.value = parsed;
+
       if (!parsed || typeof parsed !== "object") {
         throw new Error("解析後的打印數據不是有效對象");
       }

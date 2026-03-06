@@ -1,6 +1,15 @@
 {
   "books": [
     {
+      "id": "dev-joinRecord-receipt-print-guide",
+      "title": "活動參加記錄 - 收據打印功能說明",
+      "overview": "實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模版切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。\n\n本文檔涵蓋：\n\n- **單筆打印**：從列表頁點擊單筆記錄進行打印\n- **批量打印**：多選記錄後批量進入打印頁面，透過數字按鈕快速切換並打印，每張打印完成後自動跳轉到下一張",
+      "filename": "dev-joinRecord-receipt-print-guide.md",
+      "path": "/doc/dev-joinRecord-receipt-print-guide.md",
+      "modifiedDate": "2026-03-06T05:43:43.174Z",
+      "formattedDate": "2026/03/06 下午01:43"
+    },
+    {
       "id": "nginx-setup-guide",
       "title": "Nginx 設置指南 - 鎮國寺廟管理系統",
       "overview": "使用 Nginx 啟動",
@@ -12,7 +21,7 @@
     {
       "id": "README",
       "title": "文檔服務器",
-      "overview": "前後端分離的文檔瀏覽系統，使用 Vue.js 前端 + Express 後端，支援即時搜尋功能。\n\n**改版重點**：\n\n- 從後端模板渲染改為前後端分離架構\n- 使用 Vue 3 CDN 實現前端互動，無需打包工具\n- 啟動時自動掃描 markdown 生成靜態 JSON 索引\n- 前端即時過濾搜尋，無需後端查詢，提升使用體驗\n- 提取文檔標題和「概述說明」區塊，方便快速定位文件\n- 關鍵字高亮顯示，解決文檔多時難以查找的問題從後端模板渲染改為前後端分離架構，使用 Vue 前端讀取靜態 JSON 實現即時搜尋功能。",
+      "overview": "前後端分離的文檔瀏覽系統，使用 Vue.js 前端 + Express 後端，支援即時搜尋功能。\n\n**改版重點**：\n\n- 從後端模版渲染改為前後端分離架構\n- 使用 Vue 3 CDN 實現前端互動，無需打包工具\n- 啟動時自動掃描 markdown 生成靜態 JSON 索引\n- 前端即時過濾搜尋，無需後端查詢，提升使用體驗\n- 提取文檔標題和「概述說明」區塊，方便快速定位文件\n- 關鍵字高亮顯示，解決文檔多時難以查找的問題從後端模版渲染改為前後端分離架構，使用 Vue 前端讀取靜態 JSON 實現即時搜尋功能。",
       "filename": "README.md",
       "path": "/doc/README.md",
       "modifiedDate": "2026-03-05T12:57:16.141Z",
@@ -133,15 +142,6 @@
       "filename": "log-cleanup-strategy.md",
       "path": "/doc/log-cleanup-strategy.md",
       "modifiedDate": "2026-03-05T11:46:46.927Z",
-      "formattedDate": "2026/03/05 下午07:46"
-    },
-    {
-      "id": "dev-joinRecord-receipt-print-guide",
-      "title": "活動參加記錄 - 收據打印功能說明",
-      "overview": "實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模板切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。\n\n本文檔涵蓋：\n\n- **單筆打印**：從列表頁點擊單筆記錄進行打印\n- **批量打印**：多選記錄後批量進入打印頁面，透過數字按鈕快速切換並打印，每張打印完成後自動跳轉到下一張",
-      "filename": "dev-joinRecord-receipt-print-guide.md",
-      "path": "/doc/dev-joinRecord-receipt-print-guide.md",
-      "modifiedDate": "2026-03-05T11:46:46.817Z",
       "formattedDate": "2026/03/05 下午07:46"
     },
     {
@@ -425,5 +425,5 @@
     }
   ],
   "total": 47,
-  "generatedAt": "2026-03-05T13:08:41.264Z"
+  "generatedAt": "2026-03-06T05:47:36.181Z"
 }

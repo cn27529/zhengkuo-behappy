@@ -931,7 +931,7 @@ const handlePrintPage = () => {
   }
 };
 
-// store 方法（直接暴露給模板使用）
+// store 方法（直接暴露給模版使用）
 const addBlessingPerson = registrationStore.addBlessingPerson;
 const removeBlessingPerson = registrationStore.removeBlessingPerson;
 const addAncestor = registrationStore.addAncestor;

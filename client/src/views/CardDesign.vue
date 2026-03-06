@@ -277,7 +277,7 @@ const calculateCardDimensions = () => {
   const containerHeight = container.clientHeight;
 
   // 計算圖片縮放比例（假設圖片原始比例）
-  const imageAspectRatio = 2 / 3; // 假設卡片模板是2:3比例
+  const imageAspectRatio = 2 / 3; // 假設卡片模版是2:3比例
   const containerAspectRatio = containerWidth / containerHeight;
 
   if (containerAspectRatio > imageAspectRatio) {

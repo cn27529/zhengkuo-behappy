@@ -1,4 +1,4 @@
-// templates.js - HTML 模板處理模組
+// templates.js - HTML 模版處理模組
 const fs = require("fs");
 const path = require("path");
 
@@ -9,9 +9,9 @@ class TemplateEngine {
   }
 
   /**
-   * 載入模板文件
-   * @param {string} templateName - 模板文件名
-   * @returns {string} 模板內容
+   * 載入模版文件
+   * @param {string} templateName - 模版文件名
+   * @returns {string} 模版內容
    */
   loadTemplate(templateName) {
     if (this.cache.has(templateName)) {
@@ -24,44 +24,44 @@ class TemplateEngine {
       this.cache.set(templateName, content);
       return content;
     } catch (error) {
-      console.error(`❌ 載入模板失敗: ${templateName}`, error);
+      console.error(`❌ 載入模版失敗: ${templateName}`, error);
       return null;
     }
   }
 
   /**
-   * 渲染模板
-   * @param {string} templateName - 模板文件名
+   * 渲染模版
+   * @param {string} templateName - 模版文件名
    * @param {object} data - 要替換的數據
    * @returns {string} 渲染後的 HTML
    */
   render(templateName, data = {}) {
     const template = this.loadTemplate(templateName);
     if (!template) {
-      return `<h1>模板載入失敗: ${templateName}</h1>`;
+      return `<h1>模版載入失敗: ${templateName}</h1>`;
     }
 
     let rendered = template;
 
-    // 替換模板變數 {{variable}}
-    Object.keys(data).forEach(key => {
-      const regex = new RegExp(`{{${key}}}`, 'g');
-      rendered = rendered.replace(regex, data[key] || '');
+    // 替換模版變數 {{variable}}
+    Object.keys(data).forEach((key) => {
+      const regex = new RegExp(`{{${key}}}`, "g");
+      rendered = rendered.replace(regex, data[key] || "");
     });
 
     return rendered;
   }
 
   /**
-   * 清除模板緩存
+   * 清除模版緩存
    */
   clearCache() {
     this.cache.clear();
   }
 
   /**
-   * 重新載入特定模板
-   * @param {string} templateName - 模板文件名
+   * 重新載入特定模版
+   * @param {string} templateName - 模版文件名
    */
   reloadTemplate(templateName) {
     this.cache.delete(templateName);
@@ -69,10 +69,10 @@ class TemplateEngine {
   }
 }
 
-// 創建全局模板引擎實例
+// 創建全局模版引擎實例
 const templateEngine = new TemplateEngine();
 
 module.exports = {
   TemplateEngine,
-  templateEngine
+  templateEngine,
 };

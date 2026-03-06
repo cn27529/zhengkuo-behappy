@@ -329,9 +329,9 @@ WHERE receiptIssued<>''
 
 加入列表備註編輯功能，開始打印加入getIsMock判斷，更新mock數據
 
-## 選擇打印模板 "收據"
+## 選擇打印模版 "收據"
 
-client/src/views/JoinRecordReceiptPrint.vue，選擇打印模板 "收據" 執行 開始打印一樣正常 執行 請確認打印詳情 也正常 生成高清圖像就見鬼了 變成 "感謝狀"
+client/src/views/JoinRecordReceiptPrint.vue，選擇打印模版 "收據" 執行 開始打印一樣正常 執行 請確認打印詳情 也正常 生成高清圖像就見鬼了 變成 "感謝狀"
 
 ## 近期祈福登記, 近期參加記錄
 
@@ -339,6 +339,10 @@ client/src/views/Dashboard2.vue 的 "近期祈福登記" 與 "近期參加記錄
 
 ## 專案文檔的資料改為前端處理
 
-目前文檔是由 docs/docs-server.js 後端生成，我們要調適為由將文檔生成在 docs/public/books.json 將 books.json 放在前端，index.html 改為前端讀取 books.json 前端使用vue使用CDN引用，css保持不變，index.html 加入可以查詢 books.json 的內容，依據查詢後的顯示相關列表。分析一下是否可行，這樣的 index.html比較好維護，不用 docs/templates.js 的HTML 模板處理模組，你覺的這樣如何呢。每次啟動時就生成 books.json。除了"提取文檔描述（第一個大標題）"再加入提取"## 概述說明"所有的文檔都有"## 概述說明"，為什麼要這樣改變，因為我在找文檔的時候發現沒有"查詢"好難找文件，記的有什麼關鍵字但是列表一個一個標題看 心累 ＝..＝。如果你有什麼好做法也可以告訴我。
+目前文檔是由 docs/docs-server.js 後端生成，我們要調適為由將文檔生成在 docs/public/books.json 將 books.json 放在前端，index.html 改為前端讀取 books.json 前端使用vue使用CDN引用，css保持不變，index.html 加入可以查詢 books.json 的內容，依據查詢後的顯示相關列表。分析一下是否可行，這樣的 index.html比較好維護，不用 docs/templates.js 的HTML 模版處理模組，你覺的這樣如何呢。每次啟動時就生成 books.json。除了"提取文檔描述（第一個大標題）"再加入提取"## 概述說明"所有的文檔都有"## 概述說明"，為什麼要這樣改變，因為我在找文檔的時候發現沒有"查詢"好難找文件，記的有什麼關鍵字但是列表一個一個標題看 心累 ＝..＝。如果你有什麼好做法也可以告訴我。
 
 將 docs/docs-server-guide.md 與 docs/README.md 整合成一份，以 docs/README.md 為主，兩份檔案雷同了。
+
+## 打造 client/src/views/JoinRecordCardPrint.vue
+
+打造一個與 JoinRecordReceiptPrint.vue 項目一樣功能的項目，名叫牌位打印，項目名稱 JoinRecordCardPrint.vue，現有 JoinRecordReceiptPrint.vue 項目文檔在 docs/dev-joinRecord-receipt-print-guide.md，你先理解 dev-joinRecord-receipt-print-guide.md 文檔內容，我們要來進行 JoinRecordCardPrint.vue 的打造。

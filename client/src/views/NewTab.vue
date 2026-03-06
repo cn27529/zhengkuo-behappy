@@ -106,7 +106,7 @@ link.target = '_blank';
 link.rel = 'noopener noreferrer';
 link.click();
 
-// 或者在模板中使用
+// 或者在模版中使用
 // <a href="https://example.com" target="_blank" rel="noopener">連結</a>`,
   },
   {
@@ -245,7 +245,9 @@ h1 {
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   padding: 25px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
   border-top: 4px solid #2575fc;
 }
 

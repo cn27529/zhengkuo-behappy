@@ -361,19 +361,19 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     }
 
     // 4. 過濾掉 "陽上人" 項目（price 為 0）
-    filteredData = filteredData
-      .map((record) => {
-        if (record.items && Array.isArray(record.items)) {
-          const filteredItems = record.items.filter(
-            (item) => item.label !== "陽上人",
-          );
-          return { ...record, items: filteredItems };
-        }
-        return record;
-      })
-      .filter((record) => record.items && record.items.length > 0);
+    // filteredData = filteredData
+    //   .map((record) => {
+    //     if (record.items && Array.isArray(record.items)) {
+    //       const filteredItems = record.items.filter(
+    //         (item) => item.label !== "陽上人",
+    //       );
+    //       return { ...record, items: filteredItems };
+    //     }
+    //     return record;
+    //   })
+    //   .filter((record) => record.items && record.items.length > 0);
 
-    console.log("🎯 過濾完成，結果:", filteredData);
+    // console.log("🎯 過濾完成，結果:", filteredData);
     return filteredData;
   };
 
