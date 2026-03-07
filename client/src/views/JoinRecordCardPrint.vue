@@ -115,19 +115,19 @@ const surname = ref(null);
 const cardTemplates = {
   salvation_1: {
     name: "超度中牌_空白款",
-    url: "/public/card-template-zk01a.png", // 超度中牌_空白款
+    url: "/card-template-zk01a.png", // 超度中牌_空白款
     width: "95mm",
     height: "258mm",
   },
   salvation_2: {
     name: "超度中牌_中字款",
-    url: "/public/card-template-zk02a.png", // 超度中牌_中字款
+    url: "/card-template-zk02a.png", // 超度中牌_中字款
     width: "92mm",
     height: "258mm",
   },
   safe: {
     name: "合家平安",
-    url: "/public/card-template-safe.png", //合家平安
+    url: "/card-template-safe.png", //合家平安
     width: "93mm",
     height: "257mm",
   },
