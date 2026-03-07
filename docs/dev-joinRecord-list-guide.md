@@ -2,7 +2,8 @@
 
 ## 修改日期
 
-2026-01-27
+2026-03-07 - 新增牌位打印功能  
+2026-01-27 - 初始版本
 
 ## 概述說明
 
@@ -24,7 +25,14 @@
 - **總金額：** 顯示記錄總金額
 - **建立時間：** 顯示記錄建立時間
 
-### 3. 響應式設計
+### 3. 操作功能
+
+- **收據打印：** 點擊 🖨️ 按鈕進入收據打印頁面
+- **牌位打印：** 點擊 💳 按鈕進入牌位打印頁面（可視化拖拽設計）
+- **批量打印：** 支援批量收據打印與批量牌位打印
+- **刪除記錄：** 點擊刪除按鈕移除記錄
+
+### 4. 響應式設計
 
 - **桌面版：** 完整表格顯示，支援分頁
 - **手機版：** 適配小螢幕，顯示全部資料不分頁
@@ -459,6 +467,164 @@ const handleBatchDelete = () => {
 - 條件渲染
 - 智能過濾
 
+## 操作功能實現
+
+### 1. 單筆收據打印
+
+```javascript
+const handleReceiptPrint = (item) => {
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(item);
+    const printId = `print_receipt_${item.id}`;
+    sessionStorage.setItem(printId, printData);
+
+    router.push({
+      path: "/join-record-receipt-print",
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+    });
+  } catch (error) {
+    console.error("導航到收據頁面失敗:", error);
+    ElMessage.error("導航到收據頁面失敗");
+  }
+};
+```
+
+### 2. 單筆牌位打印
+
+```javascript
+const handleCardPrint = (item) => {
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(item);
+    const printId = `print_receipt_${item.id}`;
+    sessionStorage.setItem(printId, printData);
+
+    router.push({
+      path: "/join-record-card-print",
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+    });
+  } catch (error) {
+    console.error("導航到牌位頁面失敗:", error);
+    ElMessage.error("導航到牌位頁面失敗");
+  }
+};
+```
+
+### 3. 批量收據打印
+
+```javascript
+const handleBatchReceiptPrint = () => {
+  if (selectedRecords.value.length === 0) {
+    ElMessage.warning("請先選擇要打印的記錄");
+    return;
+  }
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = selectedRecords.value.map((r) => r.id).join(",");
+    const printDatas = selectedRecords.value.map((r) => r);
+    const printId = `print_receipt_ids_${ids}`;
+
+    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+
+    router.push({
+      path: "/join-record-receipt-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "true",
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+```
+
+### 4. 批量牌位打印
+
+```javascript
+const handleBatchCardPrint = () => {
+  if (selectedRecords.value.length === 0) {
+    ElMessage.warning("請先選擇要打印的記錄");
+    return;
+  }
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = selectedRecords.value.map((r) => r.id).join(",");
+    const printDatas = selectedRecords.value.map((r) => r);
+    const printId = `print_receipt_ids_${ids}`;
+
+    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+
+    router.push({
+      path: "/join-record-card-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "true",
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+```
+
+### 5. 操作按鈕顯示
+
+```vue
+<!-- 收據打印按鈕 -->
+<el-tooltip
+  content="收據打印"
+  placement="top"
+  v-if="BoolUtils.normalizeBool(row.needReceipt)"
+>
+  <el-button
+    type="success"
+    circle
+    @click="handleReceiptPrint(row)"
+    size="small"
+  >
+    🖨️
+  </el-button>
+</el-tooltip>
+
+<!-- 牌位打印按鈕 -->
+<el-tooltip
+  content="牌位打印"
+  placement="top"
+  v-if="BoolUtils.normalizeBool(row.needReceipt)"
+>
+  <el-button
+    type="warning"
+    circle
+    @click="handleCardPrint(row)"
+    size="small"
+  >
+    💳
+  </el-button>
+</el-tooltip>
+
+<!-- 刪除按鈕 -->
+<el-tooltip content="刪除記錄" placement="top">
+  <el-button
+    type="danger"
+    circle
+    @click="handleDelete(row)"
+    size="small"
+  >
+    🗑️
+  </el-button>
+</el-tooltip>
+```
+
 ## 注意事項
 
 1. **資料安全：** 刪除和列印功能目前未實作，避免誤操作
@@ -486,3 +652,5 @@ const handleBatchDelete = () => {
 - `client/src/stores/joinRecordQueryStore.js` - 查詢狀態管理
 - `client/src/services/joinRecordService.js` - API 服務層
 - `client/src/utils/dateUtils.js` - 日期格式化工具
+- [參加記錄收據打印功能](./dev-joinRecord-receipt-print-guide.md)
+- [參加記錄牌位打印功能](./dev-joinRecord-card-print-guide.md)

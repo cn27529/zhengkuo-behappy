@@ -260,6 +260,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { DateUtils } from "../utils/dateUtils.js";
+import html2canvas from "html2canvas";
 
 const router = useRouter();
 const printContent = ref({});
@@ -519,12 +520,6 @@ const handleDownloadImage = async () => {
   showDownloadMenu.value = false;
 
   try {
-    // 檢查是否已載入 html2canvas
-    if (typeof html2canvas === "undefined") {
-      // 動態載入 html2canvas
-      await loadHtml2Canvas();
-    }
-
     const element = document.getElementById("print-content");
     const canvas = await html2canvas(element, {
       scale: 2,
@@ -605,23 +600,6 @@ const downloadBlob = (blob, filename) => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-};
-
-// 動態載入 html2canvas
-const loadHtml2Canvas = () => {
-  return new Promise((resolve, reject) => {
-    if (typeof html2canvas !== "undefined") {
-      resolve();
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
 };
 
 // 返回表單頁面

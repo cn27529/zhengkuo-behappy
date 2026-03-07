@@ -99,7 +99,7 @@ const routes = [
   {
     path: "/dashboard",
     title: "儀表板",
-    component: () => import("../views/Dashboard2.vue"),
+    component: () => import("../views/Dashboard.vue"),
     meta: { requiresAuth: true },
   },
 

@@ -1,114 +1,440 @@
 # Dashboard 開發指南
 
+> **最後更新**: 2026-03-07  
+> **文件路徑**: `client/src/views/Dashboard.vue`
+
 ## 概述說明
 
-本系統提供三個版本的 Dashboard 頁面，分別針對不同的展示需求設計。
+Dashboard（資訊牆）提供系統全面的數據概覽，包含業務統計、財務狀態、活動管理與近期記錄，讓管理人員即時掌握登記、金流與活動概況。
 
-## Dashboard 版本比較
+## 核心功能
 
-### Dashboard.vue（原版）
+### 1. 業務統計卡片
 
-**定位：** 活動統計儀表板
+- **總參與人次**: 啟用至今累計參與人次（動畫數字）
+- **祈福登記總數**: 累計登記數與近 7 日新增數
+- **參加記錄總數**: 累計記錄數與近 7 日新增數
+- **贊助者人數**: 累計贊助者與本月活躍人數
 
-**展示內容：**
+### 2. 狀態監控卡片
 
-- 總參與人次（動畫數字）
-- 即將到來的活動（2筆）
-- 已完成的活動（2筆）
-- 活動狀態統計卡片
+- **待處理付款**: 未付款與未收尾款的記錄數（警告狀態）
+- **待開立收據/感謝狀**: 需要開立收據的記錄數，提供快速打印按鈕（危險狀態）
+- **待沖帳**: 已付款但未沖帳的記錄數（資訊狀態）
+- **待補齊資料**: 聯絡/消災/超度資料不完整的記錄數（警告狀態）
 
-**適用場景：**
+### 3. 贊助統計卡片
 
-- 活動管理人員查看活動概況
-- 關注參與人數和活動進度
+- **本月贊助總額**: 當月贊助金額與活躍贊助者人數
+- **未來 6 個月排定贊助**: 提前掌握可預期月贊助額
 
-**數據來源：**
+### 4. 活動管理
 
-- `activityStore.js`
+- **即將到來活動**: 顯示活動名稱、日期、參與人次
+- **已經完成活動**: 顯示活動名稱、日期、參與人次
 
----
+### 5. 近期記錄
 
-### Dashboard3.vue（新版）
+- **近期祈福登記**: 顯示聯絡人、電話、關係、建立時間
+- **近期參加記錄**: 顯示聯絡人、金額、建立時間
 
-**定位：** 系統綜合資訊牆
+### 6. 快速操作
 
-**展示內容：**
-
-#### 財務概覽
-
-- 本月收入（已付款總額）
-- 待收款項（未付款/部分付款金額與筆數）
-- 已沖帳（完成會計處理的總額）
-- 待處理（待沖帳記錄數）
-
-#### 業務統計
-
-- 本月登記（新增祈福登記表數量）
-- 消災人數（本月消災人員總數）
-- 超度人數（本月祖先超度總數）
-- 待開收據（需要開立收據的記錄數）
-
-#### 動態信息
-
-- 即將到來的活動（最近3場）
-- 巳經完成活動（最近3場）
-- 近期祈福登記（最近6筆）
-- 近期參加記錄（最近6筆，含付款狀態）
-
-**適用場景：**
-
-- 管理人員全面掌握系統運作狀況
-- 快速發現待處理事項
-- 財務與業務數據一目了然
-
-**數據來源：**
-
-- `dashboardStore.js`（匯總 registrations、joinRecords、activities）
-
----
+- **收據打印按鈕**: 點擊 🖨 按鈕直接打印待開立收據的記錄
 
 ## 技術架構
 
-### Dashboard.vue
+### 依賴套件
 
 ```javascript
-// Store
-import { useActivityStore } from "../stores/activityStore.js";
-
-// 主要 Computed
-- totalParticipants: 總參與人次
-- upcomingActivities: 即將到來的活動
-- completedActivities: 已完成的活動
-- upcomingCardActivities: 卡片顯示的即將到來活動（2筆）
-- completedCardActivities: 卡片顯示的已完成活動（2筆）
-```
-
-### Dashboard3.vue
-
-```javascript
-// Store
 import { useDashboardStore } from "../stores/dashboardStore.js";
-
-// 主要 Computed（財務）
-- monthlyIncome: 本月收入
-- pendingPayments: 待收款項
-- pendingPaymentCount: 待收款記錄數
-- reconciledAmount: 已沖帳金額
-- pendingAccountingCount: 待沖帳數
-
-// 主要 Computed（業務）
-- monthlyRegistrations: 本月登記數
-- monthlyBlessingCount: 消災人數
-- monthlySalvationCount: 超度人數
-- pendingReceiptCount: 待開收據數
-
-// 主要 Computed（動態）
-- upcomingActivities: 即將到來的活動（3筆）
-- recentRegistrations: 新期登記記錄（5筆）
-- recentJoinRecords: 近期參加記錄（5筆）
+import { useJoinRecordStore } from "../stores/joinRecordStore.js";
+import { DateUtils } from "../utils/dateUtils.js";
+import AnimatedNumber from "../components/AnimatedNumber.vue";
+import appConfig from "../config/appConfig.js";
 ```
 
----
+### Store 整合
+
+```javascript
+const dashboardStore = useDashboardStore();
+const joinRecordStore = useJoinRecordStore();
+
+// 業務統計
+const totalParticipants = computed(() => dashboardStore.totalParticipants);
+const totalRegistrations = computed(() => dashboardStore.totalRegistrations);
+const totalJoinRecords = computed(() => dashboardStore.totalJoinRecords);
+const totalDonors = computed(() => dashboardStore.totalDonors);
+const registrationsInLast7Days = computed(
+  () => dashboardStore.registrationsInLast7Days,
+);
+const joinRecordsInLast7Days = computed(
+  () => dashboardStore.joinRecordsInLast7Days,
+);
+
+// 贊助統計
+const currentMonthDonateSummary = computed(
+  () => dashboardStore.currentMonthDonateSummary,
+);
+const next6MonthsDonateTotal = computed(
+  () => dashboardStore.next6MonthsDonateTotal,
+);
+
+// 狀態監控
+const paymentSummary = computed(() => dashboardStore.paymentSummary);
+const receiptPendingCount = computed(() => dashboardStore.receiptPendingCount);
+const receiptPendingIds = computed(() => dashboardStore.receiptPendingIds);
+const accountingPendingCount = computed(
+  () => dashboardStore.accountingPendingCount,
+);
+const formsNeedAttentionCount = computed(
+  () => dashboardStore.formsNeedAttentionCount,
+);
+
+// 活動與記錄
+const upcomingActivityHighlights = computed(
+  () => dashboardStore.upcomingActivityHighlights,
+);
+const completedActivityHighlights = computed(
+  () => dashboardStore.completedActivityHighlights,
+);
+const recentRegistrations = computed(() => dashboardStore.recentRegistrations);
+const recentJoinRecords = computed(() => dashboardStore.recentJoinRecords);
+
+// 更新時間
+const lastUpdatedAt = computed(() => dashboardStore.lastUpdatedAt);
+```
+
+## 核心功能實現
+
+### 1. 數據初始化
+
+```javascript
+onMounted(async () => {
+  await dashboardStore.initialize();
+});
+```
+
+### 2. 快速收據打印
+
+```javascript
+const handleReceiptPrint = (record_id) => {
+  try {
+    const record = dashboardStore.getJoinRecordById(record_id);
+    if (!record) {
+      ElMessage.error("找不到對應的參加記錄");
+      return;
+    }
+
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(record);
+    const printId = `print_receipt_${record.id}`;
+    sessionStorage.setItem(printId, printData);
+
+    router.push({
+      path: "/join-record-receipt-print",
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+    });
+  } catch (error) {
+    console.error("導航到收據頁面失敗:", error);
+    ElMessage.error("導航到收據頁面失敗");
+  }
+};
+```
+
+### 3. 日期格式化
+
+```javascript
+const formatDate = (value) => DateUtils.formatDate(value);
+const formatDateTime = (value) => DateUtils.formatDateTime(value);
+const formatRelativeOrDateTime = (value) =>
+  DateUtils.formatRelativeOrDateTime(value);
+```
+
+## 頁面佈局
+
+### HTML 結構
+
+```vue
+<template>
+  <main class="dashboard2">
+    <!-- 頁面標題 -->
+    <section class="page-header">
+      <div>
+        <h2>資訊牆</h2>
+        <p class="sub-title">即時掌握登記、金流與活動概況</p>
+      </div>
+      <div class="header-meta">
+        <span class="meta-label">更新時間</span>
+        <span class="meta-value">{{ formatDateTime(lastUpdatedAt) }}</span>
+      </div>
+    </section>
+
+    <!-- 業務統計卡片 -->
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="summary-card">
+          <div class="summary-label">總參與人次</div>
+          <AnimatedNumber :value="totalParticipants" :duration="2000" />
+          <div class="summary-foot">啟用至今</div>
+        </el-card>
+      </el-col>
+      <!-- 其他統計卡片... -->
+    </el-row>
+
+    <!-- 狀態監控卡片 -->
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="status-card danger">
+          <div class="status-title">待開立收據/感謝狀</div>
+          <div class="status-value">{{ receiptPendingCount }}</div>
+          <div class="status-foot">
+            <!-- 快速打印按鈕 -->
+            <el-button
+              v-for="id in receiptPendingIds"
+              :key="id"
+              type="success"
+              size="small"
+              circle
+              @click="handleReceiptPrint(id)"
+            >
+              🖨
+            </el-button>
+          </div>
+        </el-card>
+      </el-col>
+      <!-- 其他狀態卡片... -->
+    </el-row>
+
+    <!-- 贊助統計卡片 -->
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :sm="12" :lg="12">
+        <el-card shadow="hover" class="donate-card">
+          <div class="card-title">本月贊助總額</div>
+          <div class="card-value">
+            {{ appConfig.formatCurrency(currentMonthDonateSummary.total) }}
+          </div>
+          <div class="card-foot">
+            活躍贊助者 {{ currentMonthDonateSummary.donors }} 人
+          </div>
+        </el-card>
+      </el-col>
+      <!-- 未來贊助卡片... -->
+    </el-row>
+
+    <!-- 活動列表 -->
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :lg="12">
+        <el-card shadow="hover" class="list-card">
+          <div class="list-title">即將到來活動</div>
+          <div v-if="upcomingActivityHighlights.length" class="list-body">
+            <div
+              v-for="activity in upcomingActivityHighlights"
+              :key="activity.id"
+              class="list-item"
+            >
+              <div class="list-main">
+                <span class="list-icon">{{ activity.icon }}</span>
+                <div>
+                  <div class="list-label">{{ activity.name }}</div>
+                  <div class="list-meta">{{ formatDate(activity.date) }}</div>
+                </div>
+              </div>
+              <div class="list-value">
+                {{ activity.participants || 0 }} 人次
+              </div>
+            </div>
+          </div>
+          <div v-else class="list-empty">暫無即將到來活動</div>
+        </el-card>
+      </el-col>
+      <!-- 已完成活動... -->
+    </el-row>
+
+    <!-- 近期記錄 -->
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :lg="12">
+        <el-card shadow="hover" class="list-card">
+          <div class="list-title">近期祈福登記</div>
+          <div v-if="recentRegistrations.length" class="list-body">
+            <div
+              v-for="registration in recentRegistrations"
+              :key="registration.id"
+              class="list-item"
+            >
+              <div class="list-main">
+                <div class="list-label">
+                  {{ registration.contact?.name || "未填聯絡人" }}
+                </div>
+                <div class="list-meta">
+                  {{
+                    registration.contact?.mobile || registration.contact?.phone
+                  }}
+                  {{ registration.contact?.relationship }}，
+                  {{
+                    formatRelativeOrDateTime(
+                      registration.createdAt || registration.date_created,
+                    )
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="list-empty">暫無登記資料</div>
+        </el-card>
+      </el-col>
+      <!-- 近期參加記錄... -->
+    </el-row>
+  </main>
+</template>
+```
+
+## 樣式設計
+
+### 頁面佈局
+
+```css
+.dashboard2 {
+  padding: 1.5rem 2rem 2.5rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.summary-row {
+  margin-bottom: 1.5rem;
+}
+```
+
+### 業務統計卡片
+
+```css
+.summary-card {
+  border-radius: 12px;
+  padding: 0.5rem 0;
+  min-height: 130px;
+}
+
+.summary-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.summary-foot {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+}
+```
+
+### 狀態監控卡片
+
+```css
+.status-card {
+  border-radius: 12px;
+  min-height: 120px;
+}
+
+.status-card.warning {
+  border-left: 4px solid #f2b24c;
+}
+
+.status-card.danger {
+  border-left: 4px solid #ef6c6c;
+}
+
+.status-card.info {
+  border-left: 4px solid #5a9cfb;
+}
+
+.status-title {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+
+.status-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+```
+
+### 列表卡片
+
+```css
+.list-card {
+  border-radius: 12px;
+}
+
+.list-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #eef1f4;
+}
+
+.list-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.list-icon {
+  font-size: 1.4rem;
+}
+
+.list-label {
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
+}
+
+.list-meta {
+  font-size: 0.85rem;
+  color: #9aa0a6;
+}
+```
+
+### 響應式設計
+
+```css
+@media (max-width: 768px) {
+  .dashboard2 {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .header-meta {
+    text-align: left;
+  }
+
+  .summary-card,
+  .status-card,
+  .finance-card,
+  .donate-card,
+  .list-card {
+    min-height: auto;
+  }
+}
+```
 
 ## Store 設計
 
@@ -120,217 +446,132 @@ import { useDashboardStore } from "../stores/dashboardStore.js";
 const initialize = async () => {
   // 支援 Mock 模式與 Directus 模式
   if (serviceAdapter.getIsMock()) {
-    // 載入 Mock 數據
     registrations.value = mockRegistrations;
     joinRecords.value = mockJoinRecords;
     activities.value = mockActivities;
   } else {
-    // 從 API 獲取數據
     const [regResult, joinResult, actResult] = await Promise.all([
       serviceAdapter.getAllRegistrations(),
       serviceAdapter.getAllParticipationRecords(),
       serviceAdapter.getAllActivities(),
     ]);
   }
+
+  lastUpdatedAt.value = new Date().toISOString();
 };
 ```
 
-#### 本月數據計算
+#### 業務統計計算
 
 ```javascript
-const getCurrentMonthRange = () => {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-  return { start, end };
-};
+// 總參與人次
+const totalParticipants = computed(() => {
+  return joinRecords.value.reduce((sum, record) => {
+    return (
+      sum +
+      (record.items?.reduce((itemSum, item) => {
+        return itemSum + (item.quantity || 0);
+      }, 0) || 0)
+    );
+  }, 0);
+});
 
-// 範例：本月新增登記數
-const monthlyRegistrations = computed(() => {
-  const { start, end } = getCurrentMonthRange();
+// 近 7 日新增登記數
+const registrationsInLast7Days = computed(() => {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
   return registrations.value.filter((r) => {
-    const date = new Date(r.createdAt);
-    return date >= start && date <= end;
+    const date = new Date(r.createdAt || r.date_created);
+    return date >= sevenDaysAgo;
   }).length;
 });
 ```
 
-#### 財務數據計算
+#### 狀態監控計算
 
 ```javascript
-// 本月收入（已付款）
-const monthlyIncome = computed(() => {
-  const { start, end } = getCurrentMonthRange();
+// 待開立收據記錄
+const receiptPendingIds = computed(() => {
   return joinRecords.value
-    .filter((r) => {
-      const date = new Date(r.createdAt);
-      return date >= start && date <= end && r.paymentState === "paid";
-    })
-    .reduce((sum, r) => sum + (r.finalAmount || 0), 0);
+    .filter((r) => r.needReceipt && !r.receiptIssued)
+    .map((r) => r.id);
 });
 
-// 待收款項
-const pendingPayments = computed(() => {
-  return joinRecords.value
-    .filter((r) => r.paymentState === "unpaid" || r.paymentState === "partial")
-    .reduce((sum, r) => sum + (r.finalAmount - r.paidAmount || 0), 0);
+const receiptPendingCount = computed(() => receiptPendingIds.value.length);
+
+// 待沖帳記錄
+const accountingPendingCount = computed(() => {
+  return joinRecords.value.filter(
+    (r) => r.paymentState === "paid" && r.accountingState !== "reconciled",
+  ).length;
 });
 ```
 
----
-
-## 使用方式
-
-### 在路由中配置
+#### 贊助統計計算
 
 ```javascript
-// router/index.js
-{
-  path: '/dashboard',
-  name: 'Dashboard',
-  component: () => import('../views/Dashboard.vue'),
-  meta: { requiresAuth: true }
-},
-{
-  path: '/dashboard3',
-  name: 'Dashboard3',
-  component: () => import('../views/Dashboard3.vue'),
-  meta: { requiresAuth: true }
-}
-```
+// 本月贊助總額
+const currentMonthDonateSummary = computed(() => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-### 在組件中使用
+  const monthlyDonations = joinRecords.value.filter((r) => {
+    const date = new Date(r.createdAt || r.date_created);
+    return date >= startOfMonth && date <= endOfMonth;
+  });
 
-```vue
-<script setup>
-import { onMounted } from "vue";
-import { useDashboardStore } from "../stores/dashboardStore.js";
-
-const store = useDashboardStore();
-
-onMounted(async () => {
-  await store.initialize();
+  return {
+    total: monthlyDonations.reduce((sum, r) => sum + (r.finalAmount || 0), 0),
+    donors: new Set(monthlyDonations.map((r) => r.contact?.name)).size,
+  };
 });
-</script>
 ```
 
----
+## 常見問題
 
-## 樣式設計
+### Q1: 如何新增自定義統計卡片？
 
-### 卡片顏色標識
+**A**: 在 dashboardStore.js 中新增 computed 屬性，然後在 Dashboard.vue 中新增對應的卡片組件。
 
-```css
-/* 財務相關 */
-.stat-card.financial {
-  border-left: 4px solid #4caf50;
-} /* 綠色 - 收入 */
-.stat-card.pending {
-  border-left: 4px solid #ff9800;
-} /* 橙色 - 待收 */
-.stat-card.reconciled {
-  border-left: 4px solid #2196f3;
-} /* 藍色 - 已沖帳 */
-.stat-card.warning {
-  border-left: 4px solid #f44336;
-} /* 紅色 - 待處理 */
-```
+### Q2: 快速打印按鈕如何工作？
 
-### 付款狀態標籤
+**A**: 點擊按鈕後，從 store 中獲取記錄數據，存入 sessionStorage，然後導航到收據打印頁面。
 
-```css
-.status.success {
-  background: #4caf50;
-} /* 已付款 */
-.status.warning {
-  background: #ff9800;
-} /* 部分付款 */
-.status.danger {
-  background: #f44336;
-} /* 未付款 */
-.status.info {
-  background: #2196f3;
-} /* 免付 */
-```
+### Q3: 如何調整近期記錄顯示數量？
 
----
+**A**: 在 dashboardStore.js 中修改 `recentRegistrations` 和 `recentJoinRecords` 的 `.slice()` 參數。
 
-## 擴展建議
+### Q4: 動畫數字如何實現？
 
-### 未來可新增功能
+**A**: 使用 `AnimatedNumber` 組件，傳入 `value` 和 `duration` 屬性即可。
 
-1. **圖表視覺化**
-   - 月度收入趨勢圖
-   - 活動參與人數統計圖
-   - 消災/超度比例圓餅圖
+### Q5: 如何隱藏財務相關卡片？
 
-2. **快速操作入口**
-   - 新增登記按鈕
-   - 新增參加記錄按鈕
-   - 快速開立收據
+**A**: 在對應的 `<el-row>` 標籤上加入 `v-if="false"` 條件渲染。
 
-3. **提醒通知**
-   - 待收款超過N天提醒
-   - 待沖帳數量警告
-   - 即將到來的活動提醒
+## 技術亮點
 
-4. **數據導出**
-   - 匯出本月財務報表
-   - 匯出活動統計報表
-
----
-
-## 開發注意事項
-
-### 數據一致性
-
-- 確保 `createdAt` 欄位格式統一（ISO 8601）
-- 付款狀態枚舉值：`paid`, `partial`, `unpaid`, `waived`
-- 會計狀態枚舉值：`pending`, `reconciled`
-
-### 效能優化
-
-- 使用 `computed` 避免重複計算
-- 大量數據時考慮分頁或虛擬滾動
-- 初始化時使用 `Promise.all` 並行載入數據
-
-### 錯誤處理
-
-- 數據載入失敗時顯示友善提示
-- Mock 模式與 API 模式無縫切換
-- 空數據時顯示 `el-empty` 組件
-
----
-
-## 測試建議
-
-### 單元測試
-
-- 測試本月日期範圍計算
-- 測試財務數據計算邏輯
-- 測試數據過濾與排序
-
-### 整合測試
-
-- 測試 Mock 模式數據載入
-- 測試 API 模式數據載入
-- 測試數據更新後的響應式更新
-
-### UI 測試
-
-- 測試響應式佈局（手機/平板/桌面）
-- 測試卡片懸停效果
-- 測試空數據狀態顯示
-
----
+1. **動畫數字效果**: 使用 AnimatedNumber 組件提升視覺體驗
+2. **響應式佈局**: 支援桌面、平板、手機多種設備
+3. **快速操作入口**: 待開立收據直接提供打印按鈕
+4. **狀態顏色標識**: 不同狀態使用不同顏色邊框區分
+5. **相對時間顯示**: 近期記錄使用相對時間（如「3 小時前」）
+6. **數據即時更新**: 使用 computed 屬性自動響應數據變化
 
 ## 相關文件
 
-- [業務邏輯說明](./business-logic.md)
-- [API 文檔](./api-documentation.md)
-- [Store 設計指南](./store-design-guide.md)
+- [dashboardStore 狀態管理](./dev-dashboardStore-guide.md)
+- [參加記錄收據打印功能](./dev-joinRecord-receipt-print-guide.md)
+- [AnimatedNumber 組件](./dev-animated-number-guide.md)
 
----
+## 未來優化
 
-**最後更新：** 2026-02-11  
-**維護者：** 開發團隊
+- [ ] 新增圖表視覺化（月度收入趨勢圖、活動參與統計圖）
+- [ ] 新增快速操作入口（新增登記、新增參加記錄）
+- [ ] 新增提醒通知（待收款超期提醒、活動提醒）
+- [ ] 新增數據導出功能（匯出財務報表、活動統計報表）
+- [ ] 新增自定義儀表板配置（用戶可選擇顯示哪些卡片）
+- [ ] 新增數據刷新按鈕（手動刷新數據）
+- [ ] 新增數據篩選功能（按日期範圍篩選）

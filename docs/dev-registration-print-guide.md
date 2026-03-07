@@ -32,6 +32,14 @@
 
 ## 技術架構
 
+### 依賴套件
+
+```bash
+npm install html2canvas
+```
+
+用於將 HTML 內容轉換為圖片格式下載。
+
 ### 頁面佈局
 
 ```vue
@@ -468,16 +476,14 @@ const handleDownloadJSON = () => {
 ### 4. 圖片下載
 
 ```javascript
+// 引入 html2canvas（npm 套件）
+import html2canvas from "html2canvas";
+
 const handleDownloadImage = async () => {
   loading.value = true;
   showDownloadMenu.value = false;
 
   try {
-    // 檢查是否已載入 html2canvas
-    if (typeof html2canvas === "undefined") {
-      await loadHtml2Canvas();
-    }
-
     const element = document.getElementById("print-content");
     const canvas = await html2canvas(element, {
       scale: 2,
@@ -497,23 +503,11 @@ const handleDownloadImage = async () => {
     loading.value = false;
   }
 };
+```
 
-// 動態載入 html2canvas
-const loadHtml2Canvas = () => {
-  return new Promise((resolve, reject) => {
-    if (typeof html2canvas !== "undefined") {
-      resolve();
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-};
+**安裝方式**:
+```bash
+npm install html2canvas
 ```
 
 ### 5. 文字檔下載
