@@ -93,7 +93,7 @@
                   </caption>
                   <thead>
                     <tr>
-                      <th v-if="false" width="5%">序號</th>
+                      <th width="5%">序號</th>
                       <th width="15%">參加項目</th>
                       <th width="5%">數量</th>
                       <th width="15%">小計</th>
@@ -106,7 +106,7 @@
                       v-for="(item, index) in printContent.items"
                       :key="index"
                     >
-                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">
                         {{ item.label || "未填寫" }}
                       </td>
@@ -153,7 +153,7 @@
                 <table class="participants-table">
                   <thead>
                     <tr>
-                      <th v-if="false" width="5%">序號</th>
+                      <th width="5%">序號</th>
                       <th width="20%">姓名/姓氏</th>
                       <th width="15%">生肖</th>
                       <th width="50%">備註</th>
@@ -165,7 +165,7 @@
                       v-for="(participant, index) in item.sourceData || []"
                       :key="index"
                     >
-                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">
                         {{
                           participant.name ||
@@ -210,6 +210,31 @@
           >
         </div>
         <div class="controls">
+          <div class="download-dropdown">
+            <button @click="toggleDownloadMenu" class="download-btn">
+              📥 下載
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div v-if="showDownloadMenu" class="download-menu">
+              <button @click="handleDownloadPDF" class="download-option">
+                📄 下載為 PDF
+              </button>
+              <button @click="handleDownloadExcel" class="download-option">
+                📊 下載為 Excel
+              </button>
+              <button @click="handleDownloadJSON" class="download-option">
+                ⚙️ 下載為 JSON
+              </button>
+              <button @click="handleDownloadImage" class="download-option">
+                🖼️ 下載為圖片
+              </button>
+              <button @click="handleDownloadText" class="download-option">
+                📝 下載為文字檔
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
           <el-button @click="handleBack" size="large">關閉</el-button>
         </div>
       </div>
@@ -224,6 +249,7 @@ import { ElMessage } from "element-plus";
 import { appConfig } from "../config/appConfig.js";
 import { useActivityStore } from "../stores/activityStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import html2canvas from "html2canvas";
 import { parse } from "marked";
 
 const activityStore = useActivityStore();
@@ -233,6 +259,8 @@ const isPrinting = ref(false);
 const printTime = ref("");
 const printTimestamp = ref("");
 const printId = ref("");
+const showDownloadMenu = ref(false);
+const loading = ref(false);
 
 // 根據 activityId 取得活動詳情
 const activityInfo = computed(() => {
@@ -329,6 +357,197 @@ const setPrintTime = () => {
   const now = new Date();
   printTime.value = DateUtils.formatDateTime(now);
   printTimestamp.value = DateUtils.getCurrentTimestamp(now);
+};
+
+// 切換下載選單
+const toggleDownloadMenu = () => {
+  showDownloadMenu.value = !showDownloadMenu.value;
+};
+
+// 1. 下載為 PDF（使用瀏覽器列印功能）
+const handleDownloadPDF = async () => {
+  loading.value = true;
+  showDownloadMenu.value = false;
+
+  try {
+    const printWindow = window.open("", "_blank");
+    const printContent = document.getElementById("print-content").innerHTML;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${document.title}</title>
+          <style>
+            body { font-family: "Microsoft JhengHei", "微軟正黑體", Arial, sans-serif; }
+            .print-content { max-width: 21cm; margin: 20; }
+            .print-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+            .print-section {page-break-inside: avoid;}
+            .print-section { margin-bottom: 10px; }
+            .section-title { font-size: 16pt; border-bottom: 1px solid #333; padding-bottom: 5px; }
+            table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f5f5f5; }
+            .text-center { text-align: center; }
+            .text-left { text-align: left; }
+            @page { size: A4; margin: 1cm; }
+          </style>
+        </head>
+        <body>
+          ${printContent}
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+
+    setTimeout(() => {
+      printWindow.print();
+      loading.value = false;
+      ElMessage.success("PDF 下載已開始");
+    }, 500);
+  } catch (error) {
+    console.error("PDF 下載失敗:", error);
+    ElMessage.error("PDF 下載失敗");
+    loading.value = false;
+  }
+};
+
+// 2. 下載為 Excel
+const handleDownloadExcel = () => {
+  loading.value = true;
+  showDownloadMenu.value = false;
+
+  try {
+    let excelContent = `${document.title}\n\n`;
+
+    excelContent += "聯絡人:\n";
+    excelContent += ",姓名,手機,電話,關係\n";
+    excelContent += `,${printContent.value.contact?.name || "未填寫"},${
+      printContent.value.contact?.mobile || "未填寫"
+    },${printContent.value.contact?.phone || "未填寫"},${
+      printContent.value.contact?.relationship || "未填寫"
+    }\n`;
+
+    excelContent += "\n參加項目:\n";
+    excelContent += ",項目,數量,小計,地址,參加者\n";
+    (printContent.value.items || []).forEach((item, index) => {
+      const participants = getParticipantNames(item.sourceData || []).join(
+        "、",
+      );
+      excelContent += `${index + 1},${item.label || ""},${item.quantity || 0},${
+        item.subtotal >= 1 ? item.subtotal : ""
+      },${item.subtotal >= 1 ? item.sourceAddress || "" : ""},${participants}\n`;
+    });
+
+    const blob = new Blob([excelContent], {
+      type: "application/vnd.ms-excel;charset=utf-8",
+    });
+    downloadBlob(blob, `${document.title}_${printContent.value.id}.xls`);
+    ElMessage.success("Excel 檔案下載成功");
+  } catch (error) {
+    console.error("Excel 下載失敗:", error);
+    ElMessage.error("Excel 下載失敗");
+  } finally {
+    loading.value = false;
+  }
+};
+
+// 3. 下載為 JSON
+const handleDownloadJSON = () => {
+  showDownloadMenu.value = false;
+
+  try {
+    const jsonData = {
+      printTime: printTime.value,
+      ...printContent.value,
+    };
+
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    downloadBlob(blob, `${document.title}_${printContent.value.id}.json`);
+    ElMessage.success("JSON 檔案下載成功");
+  } catch (error) {
+    console.error("JSON 下載失敗:", error);
+    ElMessage.error("JSON 下載失敗");
+  }
+};
+
+// 4. 下載為圖片（使用 html2canvas）
+const handleDownloadImage = async () => {
+  loading.value = true;
+  showDownloadMenu.value = false;
+
+  try {
+    const element = document.getElementById("print-content");
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+    });
+
+    canvas.toBlob((blob) => {
+      downloadBlob(blob, `${document.title}_${printContent.value.id}.png`);
+      ElMessage.success("圖片下載成功");
+      loading.value = false;
+    });
+  } catch (error) {
+    console.error("圖片下載失敗:", error);
+    ElMessage.error("圖片下載失敗，請稍後再試");
+    loading.value = false;
+  }
+};
+
+// 5. 下載為文字檔
+const handleDownloadText = () => {
+  showDownloadMenu.value = false;
+
+  try {
+    let textContent = `${document.title}\n`;
+    textContent += "=".repeat(50) + "\n\n";
+
+    textContent += `聯絡人: ${printContent.value.contact?.name || "未填寫"}\n`;
+    textContent += `手機: ${printContent.value.contact?.mobile || "未填寫"}\n`;
+    textContent += `電話: ${printContent.value.contact?.phone || "未填寫"}\n`;
+    textContent += `關係: ${
+      printContent.value.contact?.relationship || "未填寫"
+    }\n\n`;
+
+    textContent += "參加項目:\n";
+    textContent += "-".repeat(30) + "\n";
+    (printContent.value.items || []).forEach((item, index) => {
+      const participants = getParticipantNames(item.sourceData || []).join(
+        "、",
+      );
+      textContent += `${index + 1}. ${item.label || ""} x${item.quantity || 0}`;
+      if (item.subtotal >= 1) {
+        textContent += ` - ${appConfig.formatCurrency(item.subtotal)}`;
+      }
+      textContent += `\n   參加者: ${participants || "無"}\n`;
+    });
+
+    const blob = new Blob([textContent], {
+      type: "text/plain;charset=utf-8",
+    });
+    downloadBlob(blob, `${document.title}_${printContent.value.id}.txt`);
+    ElMessage.success("文字檔下載成功");
+  } catch (error) {
+    console.error("文字檔下載失敗:", error);
+    ElMessage.error("文字檔下載失敗");
+  }
+};
+
+// 通用下載函數
+const downloadBlob = (blob, filename) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };
 
 // 返回表單頁面
@@ -544,7 +763,7 @@ onUnmounted(() => {
   }
 
   .print-controls {
-    display: flex;
+    display: grid;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
@@ -556,7 +775,7 @@ onUnmounted(() => {
 
   .print-controls {
     margin-top: 20px;
-    display: flex;
+    display: grid;
     gap: 15px;
     justify-content: center;
   }
@@ -584,6 +803,73 @@ onUnmounted(() => {
 
   .back-btn:hover {
     background: #f0f0f0;
+  }
+
+  /* 下載下拉選單樣式 */
+  .download-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .download-btn {
+    padding: 10px 20px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+  }
+
+  .download-btn:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+  }
+
+  .dropdown-arrow {
+    font-size: 12px;
+    transition: transform 0.3s;
+  }
+
+  .download-dropdown:hover .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .download-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    min-width: 200px;
+    margin-top: 5px;
+  }
+
+  .download-option {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    border: none;
+    background: white;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    transition: background 0.3s;
+  }
+
+  .download-option:hover {
+    background: #f8f9fa;
+  }
+
+  .download-option:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
   }
 
   .print-btn {

@@ -1,6 +1,60 @@
 {
   "books": [
     {
+      "id": "dev-dashboard-guide",
+      "title": "Dashboard 開發指南",
+      "overview": "Dashboard（資訊牆）提供系統全面的數據概覽，包含業務統計、財務狀態、活動管理與近期記錄，讓管理人員即時掌握登記、金流與活動概況。",
+      "filename": "dev-dashboard-guide.md",
+      "path": "/doc/dev-dashboard-guide.md",
+      "modifiedDate": "2026-03-07T12:46:30.209Z",
+      "formattedDate": "2026/03/07 下午08:46"
+    },
+    {
+      "id": "dev-joinRecord-receipt-print-guide",
+      "title": "活動參加記錄 - 收據打印功能說明",
+      "overview": "實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模版切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。\n\n本文檔涵蓋：\n\n- **單筆打印**：從列表頁點擊單筆記錄進行打印\n- **批量打印**：多選記錄後批量進入打印頁面，透過數字按鈕快速切換並打印，每張打印完成後自動跳轉到下一張",
+      "filename": "dev-joinRecord-receipt-print-guide.md",
+      "path": "/doc/dev-joinRecord-receipt-print-guide.md",
+      "modifiedDate": "2026-03-07T12:45:41.233Z",
+      "formattedDate": "2026/03/07 下午08:45"
+    },
+    {
+      "id": "ai-talks",
+      "title": "ai talks records",
+      "overview": "與AI的記錄\n\n我要生成\"活動參加的記錄查詢\"，我們依照 ./client\\src\\views\\RegistrationList.vue, ./client\\src\\stores\\registrationQueryStore.js 的模版與代碼的建構的方式進行，命名為 JoinRecordList.vue, joinRecordQueryStore.js，列表的＂操作＂：列印表單，刪除，不用實作 等下一階段再實現，注意 分頁, storeToRefs, 調試信息 的實現。查詢條件是 state, items 欄位。列表的資料你可以參考 ./client\\src\\data\\mock_participation_records.json 檔案，有問題可以與我討論。",
+      "filename": "ai-talks.md",
+      "path": "/doc/ai-talks.md",
+      "modifiedDate": "2026-03-07T12:45:35.890Z",
+      "formattedDate": "2026/03/07 下午08:45"
+    },
+    {
+      "id": "dev-joinRecord-card-print-guide",
+      "title": "參加記錄牌位打印功能開發指南",
+      "overview": "參加記錄牌位打印頁面提供可視化拖拽式牌位設計功能，支援多種牌位模版切換、自由拖拽數據項目、調整字體大小與位置，並可高清打印輸出。",
+      "filename": "dev-joinRecord-card-print-guide.md",
+      "path": "/doc/dev-joinRecord-card-print-guide.md",
+      "modifiedDate": "2026-03-07T12:39:41.113Z",
+      "formattedDate": "2026/03/07 下午08:39"
+    },
+    {
+      "id": "dev-joinRecord-list-guide",
+      "title": "活動參加記錄查詢功能開發指南",
+      "overview": "本功能實現了\"活動參加記錄查詢\"，允許用戶查詢和管理已提交的活動參加記錄，`JoinRecordList.vue` 是參加記錄的查詢列表頁面，提供搜尋、篩選和分頁功能。",
+      "filename": "dev-joinRecord-list-guide.md",
+      "path": "/doc/dev-joinRecord-list-guide.md",
+      "modifiedDate": "2026-03-07T12:39:35.577Z",
+      "formattedDate": "2026/03/07 下午08:39"
+    },
+    {
+      "id": "dev-registration-print-guide",
+      "title": "祈福登記打印預覽功能開發指南",
+      "overview": "祈福登記打印預覽頁面提供已提交表單的詳細內容查看和打印功能，支援多種格式下載（PDF、Excel、JSON、圖片、文字檔），採用響應式佈局設計。",
+      "filename": "dev-registration-print-guide.md",
+      "path": "/doc/dev-registration-print-guide.md",
+      "modifiedDate": "2026-03-07T12:29:57.891Z",
+      "formattedDate": "2026/03/07 下午08:29"
+    },
+    {
       "id": "deployment-guide",
       "title": "部署指南",
       "overview": "本指南涵蓋 zhengkuo-behappy 系統的完整部署流程，包括開發環境、測試環境和生產環境的配置。",
@@ -163,15 +217,6 @@
       "formattedDate": "2026/03/06 下午09:46"
     },
     {
-      "id": "dev-registration-print-guide",
-      "title": "祈福登記打印預覽功能開發指南",
-      "overview": "祈福登記打印預覽頁面提供已提交表單的詳細內容查看和打印功能，支援多種格式下載（PDF、Excel、JSON、圖片、文字檔），採用響應式佈局設計。",
-      "filename": "dev-registration-print-guide.md",
-      "path": "/doc/dev-registration-print-guide.md",
-      "modifiedDate": "2026-03-06T13:46:25.853Z",
-      "formattedDate": "2026/03/06 下午09:46"
-    },
-    {
       "id": "dev-registration-list-guide",
       "title": "祈福登記查詢列表功能開發指南",
       "overview": "祈福登記查詢列表頁面提供已提交的消災超度報名資料查詢功能，支援關鍵字搜尋、分頁顯示、查看詳情、編輯表單等操作。",
@@ -244,30 +289,12 @@
       "formattedDate": "2026/03/06 下午09:46"
     },
     {
-      "id": "dev-joinRecord-receipt-print-guide",
-      "title": "活動參加記錄 - 收據打印功能說明",
-      "overview": "實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模版切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。\n\n本文檔涵蓋：\n\n- **單筆打印**：從列表頁點擊單筆記錄進行打印\n- **批量打印**：多選記錄後批量進入打印頁面，透過數字按鈕快速切換並打印，每張打印完成後自動跳轉到下一張",
-      "filename": "dev-joinRecord-receipt-print-guide.md",
-      "path": "/doc/dev-joinRecord-receipt-print-guide.md",
-      "modifiedDate": "2026-03-06T13:46:25.844Z",
-      "formattedDate": "2026/03/06 下午09:46"
-    },
-    {
       "id": "dev-joinRecord-print-guide",
       "title": "活動參加記錄打印功能開發指南",
       "overview": "本文檔說明活動參加記錄打印功能的實現，包括 `JoinRecordPrint.vue` 組件的開發和 `JoinRecordList.vue` 中打印功能的整合。",
       "filename": "dev-joinRecord-print-guide.md",
       "path": "/doc/dev-joinRecord-print-guide.md",
       "modifiedDate": "2026-03-06T13:46:25.842Z",
-      "formattedDate": "2026/03/06 下午09:46"
-    },
-    {
-      "id": "dev-joinRecord-list-guide",
-      "title": "活動參加記錄查詢功能開發指南",
-      "overview": "本功能實現了\"活動參加記錄查詢\"，允許用戶查詢和管理已提交的活動參加記錄，`JoinRecordList.vue` 是參加記錄的查詢列表頁面，提供搜尋、篩選和分頁功能。",
-      "filename": "dev-joinRecord-list-guide.md",
-      "path": "/doc/dev-joinRecord-list-guide.md",
-      "modifiedDate": "2026-03-06T13:46:25.841Z",
       "formattedDate": "2026/03/06 下午09:46"
     },
     {
@@ -280,30 +307,12 @@
       "formattedDate": "2026/03/06 下午09:46"
     },
     {
-      "id": "dev-joinRecord-card-print-guide",
-      "title": "活動參加記錄 - 牌位打印功能說明",
-      "overview": "實現特殊長條尺寸牌位打印功能，支援三種主要尺寸規格，採用中文直書排版（writing-mode: vertical-rl），並透過 `html-to-image` 與 `pixelRatio: 6` 生成高清圖像，確保長條牌位文字清晰不模糊。",
-      "filename": "dev-joinRecord-card-print-guide.md",
-      "path": "/doc/dev-joinRecord-card-print-guide.md",
-      "modifiedDate": "2026-03-06T13:46:25.838Z",
-      "formattedDate": "2026/03/06 下午09:46"
-    },
-    {
       "id": "dev-joinRecord-activity-selection-guide",
       "title": "JoinRecord 活動選擇功能開發指南",
       "overview": "本次修改在 JoinRecord.vue 的\"已選擇的祈福登記\"區塊中添加了活動選擇功能，允許用戶單選一個活動，並將活動的 id 綁定到 activityId。",
       "filename": "dev-joinRecord-activity-selection-guide.md",
       "path": "/doc/dev-joinRecord-activity-selection-guide.md",
       "modifiedDate": "2026-03-06T13:46:25.836Z",
-      "formattedDate": "2026/03/06 下午09:46"
-    },
-    {
-      "id": "dev-dashboard-guide",
-      "title": "Dashboard 開發指南",
-      "overview": "本系統提供三個版本的 Dashboard 頁面，分別針對不同的展示需求設計。",
-      "filename": "dev-dashboard-guide.md",
-      "path": "/doc/dev-dashboard-guide.md",
-      "modifiedDate": "2026-03-06T13:46:25.834Z",
       "formattedDate": "2026/03/06 下午09:46"
     },
     {
@@ -415,15 +424,6 @@
       "formattedDate": "2026/03/06 下午09:46"
     },
     {
-      "id": "ai-talks",
-      "title": "ai talks records",
-      "overview": "與AI的記錄\n\n我要生成\"活動參加的記錄查詢\"，我們依照 ./client\\src\\views\\RegistrationList.vue, ./client\\src\\stores\\registrationQueryStore.js 的模版與代碼的建構的方式進行，命名為 JoinRecordList.vue, joinRecordQueryStore.js，列表的＂操作＂：列印表單，刪除，不用實作 等下一階段再實現，注意 分頁, storeToRefs, 調試信息 的實現。查詢條件是 state, items 欄位。列表的資料你可以參考 ./client\\src\\data\\mock_participation_records.json 檔案，有問題可以與我討論。",
-      "filename": "ai-talks.md",
-      "path": "/doc/ai-talks.md",
-      "modifiedDate": "2026-03-06T13:46:25.818Z",
-      "formattedDate": "2026/03/06 下午09:46"
-    },
-    {
       "id": "README",
       "title": "文檔服務器",
       "overview": "前後端分離的文檔瀏覽系統，使用 Vue.js 前端 + Express 後端，支援即時搜尋功能。\n\n**改版重點**：\n\n- 從後端模版渲染改為前後端分離架構\n- 使用 Vue 3 CDN 實現前端互動，無需打包工具\n- 啟動時自動掃描 markdown 生成靜態 JSON 索引\n- 前端即時過濾搜尋，無需後端查詢，提升使用體驗\n- 提取文檔標題和「概述說明」區塊，方便快速定位文件\n- 關鍵字高亮顯示，解決文檔多時難以查找的問題從後端模版渲染改為前後端分離架構，使用 Vue 前端讀取靜態 JSON 實現即時搜尋功能。",
@@ -443,5 +443,5 @@
     }
   ],
   "total": 49,
-  "generatedAt": "2026-03-07T09:36:11.868Z"
+  "generatedAt": "2026-03-07T12:48:43.154Z"
 }

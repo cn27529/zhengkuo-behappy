@@ -77,7 +77,7 @@
                   </caption>
                   <thead>
                     <tr>
-                      <th v-if="false" width="5%">序號</th>
+                      <th width="5%">序號</th>
                       <th width="20%">姓名</th>
                       <th width="15%">生肖</th>
                       <th width="50%">備註</th>
@@ -89,7 +89,7 @@
                       v-for="(person, index) in availableBlessingPersons"
                       :key="person.id"
                     >
-                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">{{ person.name || "未填寫" }}</td>
                       <td class="text-center">
                         {{ person.zodiac || "未選擇" }}
@@ -137,7 +137,7 @@
                   </caption>
                   <thead>
                     <tr>
-                      <th v-if="false" width="10%">序號</th>
+                      <th width="10%">序號</th>
                       <th width="40%">祖先姓氏</th>
                       <th width="50%">備註</th>
                     </tr>
@@ -147,7 +147,7 @@
                       v-for="(ancestor, index) in availableAncestors"
                       :key="ancestor.id"
                     >
-                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">
                         {{ ancestor.surname || "未填寫" }} 氏歷代祖先
                       </td>
@@ -174,7 +174,7 @@
                   </caption>
                   <thead>
                     <tr>
-                      <th v-if="false" width="10%">序號</th>
+                      <th width="10%">序號</th>
                       <th width="25%">姓名</th>
                       <th width="15%">生肖</th>
                       <th width="50%">備註</th>
@@ -185,7 +185,7 @@
                       v-for="(survivor, index) in availableSurvivors"
                       :key="survivor.id"
                     >
-                      <td v-if="false" class="text-center">{{ index + 1 }}</td>
+                      <td class="text-center">{{ index + 1 }}</td>
                       <td class="text-center">
                         {{ survivor.name || "未填寫" }}
                       </td>
@@ -218,7 +218,12 @@
       <!-- 列印控制欄（僅在預覽時顯示） -->
       <div class="print-controls" v-if="!isPrinting">
         <div class="controls">
-          <div class="download-dropdown" style="display: none">
+          <el-button type="primary" @click="handlePrint" size="large"
+            >🖨️ 打印詳情</el-button
+          >
+        </div>
+        <div class="controls">
+          <div class="download-dropdown">
             <button @click="toggleDownloadMenu" class="download-btn">
               📥 下載
               <span class="dropdown-arrow">▼</span>
@@ -243,11 +248,6 @@
           </div>
         </div>
         <div class="controls">
-          <el-button type="primary" @click="handlePrint" size="large"
-            >🖨️ 打印詳情</el-button
-          >
-        </div>
-        <div class="controls">
           <el-button @click="handleBack" size="large">關閉</el-button>
         </div>
       </div>
@@ -267,6 +267,7 @@ const printContent = ref({});
 const isPrinting = ref(false);
 const printTime = ref("");
 const formId = ref("");
+const recordId = ref(0);
 const printId = ref(""); // URL 參數中的列印 ID
 const printData = ref(""); // URL 參數中的列印數據
 const showDownloadMenu = ref(false);
@@ -331,6 +332,7 @@ const loadPrintData = () => {
         throw new Error("解析後的列印數據不是有效對象");
       }
       formId.value = printContent.value.formId;
+      recordId.value = printContent.value.id;
     } catch (e) {
       console.error("解析列印數據失敗，可能格式錯誤", {
         printId,
@@ -483,7 +485,7 @@ const handleDownloadExcel = () => {
     const blob = new Blob([excelContent], {
       type: "application/vnd.ms-excel;charset=utf-8",
     });
-    downloadBlob(blob, `${document.title}_${formId.value}.xls`);
+    downloadBlob(blob, `${document.title}_${recordId.value}.xls`);
     ElMessage.success("Excel 檔案下載成功");
   } catch (error) {
     console.error("Excel 下載失敗:", error);
@@ -506,7 +508,7 @@ const handleDownloadJSON = () => {
 
     const jsonString = JSON.stringify(jsonData, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
-    downloadBlob(blob, `${document.title}_${formId.value}.json`);
+    downloadBlob(blob, `${document.title}_${recordId.value}.json`);
     ElMessage.success("JSON 檔案下載成功");
   } catch (error) {
     console.error("JSON 下載失敗:", error);
@@ -529,7 +531,7 @@ const handleDownloadImage = async () => {
     });
 
     canvas.toBlob((blob) => {
-      downloadBlob(blob, `${document.title}_${formId.value}.png`);
+      downloadBlob(blob, `${document.title}_${recordId.value}.png`);
       ElMessage.success("圖片下載成功");
       loading.value = false;
     });
@@ -582,7 +584,7 @@ const handleDownloadText = () => {
     const blob = new Blob([textContent], {
       type: "text/plain;charset=utf-8",
     });
-    downloadBlob(blob, `${document.title}_${formId.value}.txt`);
+    downloadBlob(blob, `${document.title}_${recordId.value}.txt`);
     ElMessage.success("文字檔下載成功");
   } catch (error) {
     console.error("文字檔下載失敗:", error);
@@ -849,7 +851,7 @@ onUnmounted(() => {
   }
 
   .print-controls {
-    display: flex;
+    display: grid;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
@@ -861,7 +863,7 @@ onUnmounted(() => {
 
   .print-controls {
     margin-top: 20px;
-    display: flex;
+    display: grid;
     gap: 15px;
   }
 

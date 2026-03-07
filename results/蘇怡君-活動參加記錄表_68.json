@@ -1,0 +1,195 @@
+{
+  "printTime": "2026/03/07 下午09:14",
+  "id": 68,
+  "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+  "date_created": "2026-03-06 10:17:03",
+  "registrationId": 103,
+  "activityId": 54,
+  "state": "confirmed",
+  "items": [
+    {
+      "label": "超度/超薦",
+      "price": 1000,
+      "quantity": 1,
+      "source": "salvation.ancestors",
+      "sourceAddress": "新北市永和區永和路二段200號",
+      "sourceData": [
+        {
+          "id": 1,
+          "notes": "九玄七祖",
+          "surname": "蘇蘇"
+        }
+      ],
+      "subtotal": 1000,
+      "type": "chaodu"
+    },
+    {
+      "label": "陽上人",
+      "price": 0,
+      "quantity": 2,
+      "source": "salvation.survivors",
+      "sourceAddress": "新北市永和區永和路二段200號",
+      "sourceData": [
+        {
+          "id": 5,
+          "name": "蘇小妹",
+          "notes": "妹妹",
+          "zodiac": "鼠"
+        },
+        {
+          "id": 6,
+          "name": "蘇媽媽",
+          "notes": "媽媽",
+          "zodiac": "牛"
+        }
+      ],
+      "subtotal": 0,
+      "type": "survivors"
+    },
+    {
+      "label": "點燈",
+      "lampDetails": [
+        {
+          "lampType": "guangming",
+          "lampTypeLabel": "光明燈",
+          "personId": 1,
+          "personName": "蘇怡君",
+          "price": 600
+        },
+        {
+          "lampType": "guangming",
+          "lampTypeLabel": "光明燈",
+          "personId": 2,
+          "personName": "蘇小妹",
+          "price": 600
+        },
+        {
+          "lampType": "guangming",
+          "lampTypeLabel": "光明燈",
+          "personId": 3,
+          "personName": "蘇媽媽",
+          "price": 600
+        }
+      ],
+      "price": 600,
+      "quantity": 3,
+      "source": "blessing.persons",
+      "sourceAddress": "新北市永和區永和路二段200號",
+      "sourceData": [
+        {
+          "id": 1,
+          "isHouseholdHead": true,
+          "name": "蘇怡君",
+          "notes": "",
+          "zodiac": "蛇"
+        },
+        {
+          "id": 2,
+          "isHouseholdHead": false,
+          "name": "蘇小妹",
+          "notes": "妹妹",
+          "zodiac": "鼠"
+        },
+        {
+          "id": 3,
+          "isHouseholdHead": false,
+          "name": "蘇媽媽",
+          "notes": "媽媽",
+          "zodiac": "牛"
+        }
+      ],
+      "subtotal": 1800,
+      "type": "diandeng"
+    },
+    {
+      "label": "消災祈福",
+      "price": 300,
+      "quantity": 3,
+      "source": "blessing.persons",
+      "sourceAddress": "新北市永和區永和路二段200號",
+      "sourceData": [
+        {
+          "id": 1,
+          "isHouseholdHead": true,
+          "name": "蘇怡君",
+          "notes": "",
+          "zodiac": "蛇"
+        },
+        {
+          "id": 2,
+          "isHouseholdHead": false,
+          "name": "蘇小妹",
+          "notes": "妹妹",
+          "zodiac": "鼠"
+        },
+        {
+          "id": 3,
+          "isHouseholdHead": false,
+          "name": "蘇媽媽",
+          "notes": "媽媽",
+          "zodiac": "牛"
+        }
+      ],
+      "subtotal": 900,
+      "type": "qifu"
+    },
+    {
+      "label": "固定消災",
+      "price": 100,
+      "quantity": 3,
+      "source": "blessing.persons",
+      "sourceAddress": "新北市永和區永和路二段200號",
+      "sourceData": [
+        {
+          "id": 1,
+          "isHouseholdHead": true,
+          "name": "蘇怡君",
+          "notes": "",
+          "zodiac": "蛇"
+        },
+        {
+          "id": 2,
+          "isHouseholdHead": false,
+          "name": "蘇小妹",
+          "notes": "妹妹",
+          "zodiac": "鼠"
+        },
+        {
+          "id": 3,
+          "isHouseholdHead": false,
+          "name": "蘇媽媽",
+          "notes": "媽媽",
+          "zodiac": "牛"
+        }
+      ],
+      "subtotal": 300,
+      "type": "xiaozai"
+    }
+  ],
+  "contact": {
+    "mobile": "0910-555-888",
+    "name": "蘇怡君",
+    "otherRelationship": "",
+    "phone": "",
+    "relationship": "朋友"
+  },
+  "totalAmount": 4000,
+  "discountAmount": 0,
+  "finalAmount": 4000,
+  "paidAmount": 0,
+  "needReceipt": "1",
+  "receiptNumber": "",
+  "receiptIssued": "",
+  "receiptIssuedAt": "",
+  "receiptIssuedBy": "",
+  "accountingState": "pending",
+  "accountingDate": "",
+  "accountingBy": "",
+  "accountingNotes": "",
+  "paymentState": "",
+  "paymentMethod": "",
+  "paymentDate": "",
+  "paymentNotes": "",
+  "notes": "870787089",
+  "createdAt": "2026-03-06T10:17:03.061Z"
+}

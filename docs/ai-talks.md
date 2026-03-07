@@ -358,3 +358,7 @@ client/src/views/JoinRecordCardPrint.vue 己經建構完成，請生成 docs/dev
 client/src/views/JoinRecordList.vue 己加入"牌位打印" 請更新，它是與 docs/dev-joinRecord-card-print-guide.md 有關聯的文檔
 
 client/src/views/Dashboard.vue 己有變更，請更新 docs/dev-dashboard-guide.md
+
+#
+
+依據 client/src/views/RegistrationPrint.vue 的 toggleDownloadMenu, handleDownloadPDF, handleDownloadExcel, handleDownloadJSON, handleDownloadImage, handleDownloadText 一樣實現在 client/src/views/JoinRecordPrint.vue 中。
