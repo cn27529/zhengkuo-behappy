@@ -222,7 +222,7 @@
             >🖨️ 打印詳情</el-button
           >
         </div>
-        <div class="controls">
+        <div class="controls" v-if="false">
           <div class="download-dropdown">
             <button @click="toggleDownloadMenu" class="download-btn">
               📥 下載
