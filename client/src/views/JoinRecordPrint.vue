@@ -209,14 +209,18 @@
             >🖨️ 打印詳情</el-button
           >
         </div>
-        <div class="controls" v-if="false">
+        <div class="controls">
           <div class="download-dropdown">
             <button @click="toggleDownloadMenu" class="download-btn">
               📥 下載
               <span class="dropdown-arrow">▼</span>
             </button>
             <div v-if="showDownloadMenu" class="download-menu">
-              <button @click="handleDownloadPDF" class="download-option">
+              <button
+                @click="handleDownloadPDF"
+                class="download-option"
+                v-if="false"
+              >
                 📄 下載為 PDF
               </button>
               <button @click="handleDownloadExcel" class="download-option">
@@ -255,6 +259,7 @@ import { parse } from "marked";
 const activityStore = useActivityStore();
 const router = useRouter();
 const printContent = ref({});
+const recordId = ref(0);
 const isPrinting = ref(false);
 const printTime = ref("");
 const printTimestamp = ref("");
@@ -324,6 +329,7 @@ const loadPrintData = () => {
       // };
 
       printContent.value = parsed;
+      recordId.value = printContent.value.id;
 
       if (!parsed || typeof parsed !== "object") {
         throw new Error("解析後的打印數據不是有效對象");
@@ -342,7 +348,7 @@ const loadPrintData = () => {
       const contactName = (printContent.value.contact?.name || "未填寫")
         .toString()
         .trim();
-      document.title = `${contactName}-活動參加記錄表`;
+      document.title = `${contactName}-活動參加記錄表_${recordId.value}`;
     } catch (e) {
       console.warn("設定 document.title 失敗:", e);
     }
@@ -443,7 +449,7 @@ const handleDownloadExcel = () => {
     const blob = new Blob([excelContent], {
       type: "application/vnd.ms-excel;charset=utf-8",
     });
-    downloadBlob(blob, `${document.title}_${printContent.value.id}.xls`);
+    downloadBlob(blob, `${document.title}.xls`);
     ElMessage.success("Excel 檔案下載成功");
   } catch (error) {
     console.error("Excel 下載失敗:", error);
@@ -465,7 +471,7 @@ const handleDownloadJSON = () => {
 
     const jsonString = JSON.stringify(jsonData, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
-    downloadBlob(blob, `${document.title}_${printContent.value.id}.json`);
+    downloadBlob(blob, `${document.title}.json`);
     ElMessage.success("JSON 檔案下載成功");
   } catch (error) {
     console.error("JSON 下載失敗:", error);
@@ -488,7 +494,7 @@ const handleDownloadImage = async () => {
     });
 
     canvas.toBlob((blob) => {
-      downloadBlob(blob, `${document.title}_${printContent.value.id}.png`);
+      downloadBlob(blob, `${document.title}.png`);
       ElMessage.success("圖片下載成功");
       loading.value = false;
     });
@@ -530,7 +536,7 @@ const handleDownloadText = () => {
     const blob = new Blob([textContent], {
       type: "text/plain;charset=utf-8",
     });
-    downloadBlob(blob, `${document.title}_${printContent.value.id}.txt`);
+    downloadBlob(blob, `${document.title}.txt`);
     ElMessage.success("文字檔下載成功");
   } catch (error) {
     console.error("文字檔下載失敗:", error);
