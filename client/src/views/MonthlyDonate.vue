@@ -71,7 +71,7 @@
         <template #header>
           <div class="stat-header">
             <span class="stat-icon">💰</span>
-            <span class="stat-title">總贊助金額</span>
+            <span class="stat-title">總贊助總額</span>
           </div>
         </template>
         <div class="stat-content">
@@ -157,20 +157,17 @@
             :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
             v-loading="loading"
           >
-            <el-table-column label="圖標" width="60" align="center">
+            <el-table-column
+              prop="name"
+              label="贊助人"
+              min-width="100"
+              align="center"
+            >
               <template #default="{ row }">
-                <el-tooltip :content="row.id" placement="top">
-                  <div class="donate-icon">
-                    {{ row.icon }}
-                  </div>
-                </el-tooltip>
-              </template>
-            </el-table-column>
-
-            <el-table-column prop="name" label="贊助人" width="90">
-              <template #default="{ row }">
-                <div class="donator-name" @click="handleViewDonatorDetail(row)">
-                  <strong>{{ row.name }}</strong>
+                <div class="donator-name">
+                  <el-tooltip :content="row.id" placement="top">
+                    <strong>{{ row.icon }} {{ row.name }}</strong>
+                  </el-tooltip>
                   <div class="donator-id" v-if="row.registrationId > 0">
                     編號: {{ row.registrationId }}
                   </div>
@@ -208,14 +205,11 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="統計" width="65" align="center">
+            <el-table-column label="贊助總額" width="100" align="center">
               <template #default="{ row }">
                 <div class="donate-stats">
-                  <div class="stat-item">
-                    <span class="stat-label" style="display: none">金額:</span>
-                    <span class="stat-value">{{
-                      appConfig.formatCurrency(row.totalAmount)
-                    }}</span>
+                  <div class="item-amount">
+                    {{ appConfig.formatCurrency(row.totalAmount) }}
                   </div>
                   <div class="stat-item" style="display: none">
                     <span class="stat-label">月份:</span>
@@ -227,16 +221,17 @@
 
             <el-table-column
               label="操作"
+              width="150"
               fixed="right"
               align="center"
-              width="180"
             >
               <template #default="{ row }">
-                <div class="action-buttons">
+                <div class="action-buttons-group">
                   <el-tooltip content="新增贊助項目" placement="top">
                     <el-button
                       circle
                       @click="handleAddDonateToDonator(row)"
+                      size="small"
                       type="info"
                     >
                       <el-icon><Plus /></el-icon>
@@ -248,6 +243,7 @@
                       type="primary"
                       circle
                       @click="handleViewDonatorDetail(row)"
+                      size="small"
                     >
                       👁️
                     </el-button>
@@ -258,6 +254,7 @@
                       style="display: none"
                       circle
                       @click="handleEditDonator(row)"
+                      size="small"
                       type="warning"
                     >
                       <el-icon><Edit /></el-icon>
@@ -268,6 +265,7 @@
                     <el-button
                       circle
                       @click="handleDeleteDonator(row)"
+                      size="small"
                       type="danger"
                       :loading="loading"
                       :disabled="loading"
@@ -381,7 +379,7 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="贊助金額" prop="amount">
+        <el-form-item label="贊助總額" prop="amount">
           <div class="amount-display"></div>
           <div class="amount-value">
             {{ newDonator.amount.toLocaleString() }} 元
@@ -509,7 +507,7 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="贊助金額" prop="amount">
+        <el-form-item label="贊助額" prop="amount">
           <div class="amount-display"></div>
           <div class="amount-value">
             {{ newDonateItem.amount.toLocaleString() }} 元
@@ -562,7 +560,7 @@
           </div>
           <div class="donator-stats">
             <el-statistic
-              title="總贊助金額"
+              title="贊助額"
               :value="appConfig.formatCurrency(selectedDonator.totalAmount)"
               suffix="元"
             />
@@ -590,7 +588,7 @@
             </el-table-column>
             <el-table-column
               prop="price"
-              label="金額"
+              label="贊助額"
               width="90"
               align="center"
             >
@@ -624,18 +622,25 @@
                 {{ formatRelativeOrDateTime(row.createdAt) }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="120" align="center">
+            <el-table-column
+              label="操作"
+              width="150"
+              fixed="right"
+              align="center"
+            >
               <template #default="{ row }">
-                <el-tooltip content="刪除贊助項目" placement="top">
-                </el-tooltip>
-                <el-button
-                  circle
-                  type="danger"
-                  size="small"
-                  @click="deleteDonateItem(selectedDonator, row)"
-                >
-                  🗑️
-                </el-button>
+                <div class="action-buttons-group">
+                  <el-tooltip content="刪除贊助項目" placement="top">
+                    <el-button
+                      circle
+                      type="danger"
+                      @click="deleteDonateItem(selectedDonator, row)"
+                      size="small"
+                    >
+                      🗑️
+                    </el-button>
+                  </el-tooltip>
+                </div>
               </template>
             </el-table-column>
           </el-table>
@@ -965,7 +970,7 @@ const getMonthTooltip = (monthItems) => {
   const totalAmount = monthItems.reduce((sum, item) => sum + item.price, 0);
   const itemCount = monthItems.length;
 
-  return `贊助金額: ${appConfig.formatCurrency(totalAmount)}元\n項目數: ${itemCount}個`;
+  return `贊助總額: ${appConfig.formatCurrency(totalAmount)}元\n項目數: ${itemCount}個`;
 };
 
 const formatMonth = (yearMonth) => {
@@ -1524,10 +1529,11 @@ onMounted(() => {
   color: var(--primary-color);
 }
 
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
+.item-amount {
+  color: var(--el-color-primary);
+  font-weight: 600;
+  margin-left: auto;
+  text-align: right;
 }
 
 /* 月份選擇器 */
@@ -1789,6 +1795,18 @@ onMounted(() => {
   padding: 1.5rem;
 }
 
+.action-buttons-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px; /* 統一設定按鈕間距 */
+  flex-wrap: wrap; /* 如果縮到很窄，允許按鈕自動換行而不溢出 */
+}
+
+/* 移除 Element Plus 按鈕預設的左邊距，改用 gap 控制 */
+.action-buttons-group .el-button + .el-button {
+  margin-left: 0;
+}
+
 /* 響應式設計 */
 
 @media (max-width: 768px) {
@@ -1822,6 +1840,10 @@ onMounted(() => {
 
   .month-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  .action-buttons-group {
+    flex-wrap: wrap;
   }
 }
 

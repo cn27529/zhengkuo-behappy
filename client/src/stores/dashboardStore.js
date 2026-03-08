@@ -7,59 +7,42 @@ import { useMonthlyDonateStore } from "./monthlyDonateStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { BoolUtils } from "../utils/boolUtils.js";
 
-// 安全解析日期字串，失敗回傳 null
 const parseDate = (value) => {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
-// 將數值字串轉為數字，非數字回傳 0
 const toNumber = (value) => {
   const num = Number(value);
   return Number.isFinite(num) ? num : 0;
 };
 
-// 付款狀態優先採用 record.paymentState，若無則以金額推導
 const resolvePaymentState = (record) => {
   const normalized = String(record?.paymentState || "").toLowerCase();
-  if (["paid", "partial", "unpaid", "waived"].includes(normalized)) {
+  if (["paid", "partial", "unpaid", "waived"].includes(normalized))
     return normalized;
-  }
-
   const finalAmount = toNumber(record?.finalAmount);
   const paidAmount = toNumber(record?.paidAmount);
-
   if (finalAmount <= 0) return "waived";
   if (paidAmount >= finalAmount) return "paid";
   if (paidAmount > 0) return "partial";
   return "unpaid";
 };
 
-// 取參加記錄建立時間（兼容多種欄位）
-const getRecordDate = (record) => {
-  return (
-    parseDate(record?.createdAt) || parseDate(record?.date_created) || null
-  );
-};
+const getRecordDate = (record) =>
+  parseDate(record?.createdAt) || parseDate(record?.date_created) || null;
+const getRegistrationDate = (registration) =>
+  parseDate(registration?.createdAt) ||
+  parseDate(registration?.date_created) ||
+  null;
 
-// 取祈福登記建立時間（兼容多種欄位）
-const getRegistrationDate = (registration) => {
-  return (
-    parseDate(registration?.createdAt) ||
-    parseDate(registration?.date_created) ||
-    null
-  );
-};
-
-// 取得 YYYYMM 格式
 const getYearMonth = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   return `${year}${month}`;
 };
 
-// 取得未來 N 個月的 YYYYMM 清單
 const getNextYearMonths = (count, { includeCurrent = false } = {}) => {
   const months = [];
   const base = new Date();
@@ -71,90 +54,27 @@ const getNextYearMonths = (count, { includeCurrent = false } = {}) => {
   return months;
 };
 
-// 判斷登記表是否有缺漏或不一致（對應 business-logic 驗證規則）
 const isRegistrationNeedsAttention = (registration) => {
   if (!registration) return false;
-
   const contact = registration.contact || {};
-  const hasContactName = Boolean(contact.name && contact.name.trim());
-  const hasContactPhone = Boolean(
-    (contact.phone && contact.phone.trim()) ||
-    (contact.mobile && contact.mobile.trim()),
-  );
-  const hasContactRelationship = Boolean(
-    contact.relationship && contact.relationship.trim(),
-  );
-  const hasOtherRelationship =
-    contact.relationship === "其它"
-      ? Boolean(contact.otherRelationship && contact.otherRelationship.trim())
-      : true;
-
   if (
-    !hasContactName ||
-    !hasContactPhone ||
-    !hasContactRelationship ||
-    !hasOtherRelationship
-  ) {
+    !contact.name?.trim() ||
+    !(contact.phone?.trim() || contact.mobile?.trim()) ||
+    !contact.relationship?.trim()
+  )
     return true;
-  }
-
   const blessing = registration.blessing || {};
-  const blessingPersons = Array.isArray(blessing.persons)
-    ? blessing.persons
-    : [];
-  const hasBlessingPerson = blessingPersons.some(
-    (person) => person?.name || person?.zodiac || person?.notes,
-  );
-  const hasBlessingAddress = Boolean(
-    blessing.address && blessing.address.trim(),
-  );
-  const hasIncompleteBlessingPerson = blessingPersons.some((person) => {
-    if (!person) return false;
-    if (!person.name && !person.zodiac && !person.notes) return false;
-    return !person.name || !person.zodiac;
-  });
-
-  if (hasBlessingPerson && !hasBlessingAddress) return true;
-  if (hasIncompleteBlessingPerson) return true;
-
+  if (
+    blessing.persons?.some((p) => p?.name || p?.zodiac) &&
+    !blessing.address?.trim()
+  )
+    return true;
   const salvation = registration.salvation || {};
-  const ancestors = Array.isArray(salvation.ancestors)
-    ? salvation.ancestors
-    : [];
-  const survivors = Array.isArray(salvation.survivors)
-    ? salvation.survivors
-    : [];
-
-  const hasAncestor = ancestors.some(
-    (ancestor) => ancestor?.surname || ancestor?.notes || ancestor?.zodiac,
-  );
-  const hasSurvivor = survivors.some(
-    (survivor) => survivor?.name || survivor?.notes || survivor?.zodiac,
-  );
-  const hasSalvationAddress = Boolean(
-    salvation.address && salvation.address.trim(),
-  );
-
-  const hasIncompleteAncestor = ancestors.some((ancestor) => {
-    if (!ancestor) return false;
-    if (!ancestor.surname && !ancestor.notes && !ancestor.zodiac) return false;
-    return !ancestor.surname;
-  });
-
-  const hasIncompleteSurvivor = survivors.some((survivor) => {
-    if (!survivor) return false;
-    if (!survivor.name && !survivor.notes && !survivor.zodiac) return false;
-    return !survivor.name;
-  });
-
-  if ((hasAncestor || hasSurvivor) && !hasSalvationAddress) return true;
-  if (hasAncestor && !hasSurvivor) return true;
-  if (hasIncompleteAncestor || hasIncompleteSurvivor) return true;
-
-  const isSubmitted =
-    registration.state && !["draft", "creating"].includes(registration.state);
-  if (isSubmitted && !hasBlessingPerson && !hasAncestor) return true;
-
+  if (
+    (salvation.ancestors?.length || salvation.survivors?.length) &&
+    !salvation.address?.trim()
+  )
+    return true;
   return false;
 };
 
@@ -163,31 +83,18 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const joinRecordStore = useJoinRecordStore();
   const monthlyDonateStore = useMonthlyDonateStore();
 
-  // 全域載入狀態與錯誤
   const loading = ref(false);
   const error = ref(null);
   const lastUpdatedAt = ref("");
 
-  // 來源資料（活動 / 參加記錄 / 贊助 / 登記）
-  const allActivities = computed(() => activityStore.activities || []);
-  const upcomingActivities = computed(
-    () => activityStore.upcomingActivities || [],
-  );
-  const completedActivities = computed(
-    () => activityStore.completedActivities || [],
-  );
-
-  // 參加記錄以 getAllJoinRecords() 回傳為主，避免 store 未同步
   const joinRecordsSource = ref([]);
-  const joinRecords = computed(() => joinRecordsSource.value || []);
-  // 登記資料以 getAllRegistrations() 回傳為主，避免 store 未同步
   const registrationsSource = ref([]);
-  const registrations = computed(() => registrationsSource.value || []);
-  // 贊助資料以 getAllDonates() 回傳為主，避免 store 未同步
   const allDonatesSource = ref([]);
+
+  const joinRecords = computed(() => joinRecordsSource.value || []);
+  const registrations = computed(() => registrationsSource.value || []);
   const allDonates = computed(() => allDonatesSource.value || []);
 
-  // 入口指標
   const totalParticipants = computed(
     () => activityStore.totalParticipants || 0,
   );
@@ -195,7 +102,40 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const totalJoinRecords = computed(() => joinRecords.value.length);
   const totalDonors = computed(() => allDonates.value.length);
 
-  // 付款概覽（筆數 + 金額）
+  // --- 流失預警計算 ---
+  const expiringDonors = computed(() => {
+    const currentMonth = getYearMonth(new Date());
+    const nextMonth = getNextYearMonths(1, { includeCurrent: false })[0];
+    const latestMonthMap = new Map();
+
+    allDonates.value.forEach((donate) => {
+      const name = donate.name;
+      if (!name) return;
+      donate.donateItems?.forEach((item) => {
+        item.months?.forEach((m) => {
+          const currentMax = latestMonthMap.get(name);
+          if (!currentMax || m > currentMax) latestMonthMap.set(name, m);
+        });
+      });
+    });
+
+    const list = [];
+    latestMonthMap.forEach((lastMonth, name) => {
+      if (lastMonth === currentMonth || lastMonth === nextMonth) {
+        const info = allDonates.value.find((d) => d.name === name);
+        list.push({
+          name,
+          lastMonth,
+          isExpiringThisMonth: lastMonth === currentMonth,
+          donateId: info?.donateId,
+        });
+      }
+    });
+    return list;
+  });
+
+  const expiringDonorsCount = computed(() => expiringDonors.value.length);
+
   const paymentSummary = computed(() => {
     return joinRecords.value.reduce(
       (acc, record) => {
@@ -216,270 +156,155 @@ export const useDashboardStore = defineStore("dashboard", () => {
     );
   });
 
-  // 未收金額 = 應收 - 已收
-  const totalUnpaidAmount = computed(() => {
-    const value =
-      paymentSummary.value.totalReceivable - paymentSummary.value.totalPaid;
-    return value > 0 ? value : 0;
-  });
-
-  // 需收據但尚未開立
-  const receiptPendingCount = computed(() => {
-    return joinRecords.value.filter(
-      // 收據是否已開立，經20260225決定修改定義默認為空值，
-      // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
-      (record) =>
-        BoolUtils.normalizeBool(record?.needReceipt) &&
-        (!record?.receiptIssuedAt ||
-          record?.receiptIssuedAt === "" ||
-          record?.receiptIssuedAt === null),
-    ).length;
-  });
-
-  // 需收據但尚未開立的參加記錄 ID 清單
-  const receiptPendingIds = computed(() => {
-    const ids = joinRecords.value
+  const totalUnpaidAmount = computed(() =>
+    Math.max(
+      0,
+      paymentSummary.value.totalReceivable - paymentSummary.value.totalPaid,
+    ),
+  );
+  const receiptPendingCount = computed(
+    () =>
+      joinRecords.value.filter(
+        (r) => BoolUtils.normalizeBool(r?.needReceipt) && !r?.receiptIssuedAt,
+      ).length,
+  );
+  const receiptPendingIds = computed(() =>
+    joinRecords.value
       .filter(
-        // 收據是否已開立，經20260225決定修改定義默認為空值，
-        // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
-        (record) =>
-          BoolUtils.normalizeBool(record?.needReceipt) &&
-          (!record?.receiptIssuedAt ||
-            record?.receiptIssuedAt === "" ||
-            record?.receiptIssuedAt === null),
+        (r) => BoolUtils.normalizeBool(r?.needReceipt) && !r?.receiptIssuedAt,
       )
-      .map((record) => record.id);
-    return ids;
-  });
+      .map((r) => r.id),
+  );
+  const accountingPendingCount = computed(
+    () =>
+      joinRecords.value.filter(
+        (r) =>
+          resolvePaymentState(r) === "paid" &&
+          r?.accountingState !== "reconciled",
+      ).length,
+  );
+  const formsNeedAttentionCount = computed(
+    () => registrations.value.filter(isRegistrationNeedsAttention).length,
+  );
 
-  // 已付款但未沖帳
-  const accountingPendingCount = computed(() => {
-    return joinRecords.value.filter((record) => {
-      const state = resolvePaymentState(record);
-      return record?.accountingState !== "reconciled" && state === "paid";
-    }).length;
-  });
-
-  // 需補件/資料不一致的登記表
-  const formsNeedAttentionCount = computed(() => {
-    return registrations.value.filter(isRegistrationNeedsAttention).length;
-  });
-
-  // 近期祈福登記
-  const recentRegistrations = computed(() => {
-    return [...registrations.value]
-      .map((reg) => ({
-        ...reg,
-        _date: getRegistrationDate(reg),
-      }))
-      .filter((reg) => reg._date)
+  const recentRegistrations = computed(() =>
+    [...registrations.value]
+      .map((reg) => ({ ...reg, _date: getRegistrationDate(reg) }))
+      .filter((r) => r._date)
       .sort((a, b) => b._date - a._date)
-      .slice(0, 6);
-  });
-
-  // 近期參加記錄
-  const recentJoinRecords = computed(() => {
-    return [...joinRecords.value]
-      .map((record) => ({
-        ...record,
-        _date: getRecordDate(record),
-      }))
-      .filter((record) => record._date)
+      .slice(0, 6),
+  );
+  const recentJoinRecords = computed(() =>
+    [...joinRecords.value]
+      .map((rec) => ({ ...rec, _date: getRecordDate(rec) }))
+      .filter((r) => r._date)
       .sort((a, b) => b._date - a._date)
-      .slice(0, 6);
-  });
+      .slice(0, 6),
+  );
 
-  // 近 7 日新增登記
-  const registrationsInLast7Days = computed(() => {
-    return registrations.value.filter((registration) =>
-      DateUtils.isWithinDays(
-        registration?.createdAt || registration?.date_created,
-        7,
-      ),
-    ).length;
-  });
+  const registrationsInLast7Days = computed(
+    () =>
+      registrations.value.filter((r) =>
+        DateUtils.isWithinDays(r?.createdAt || r?.date_created, 7),
+      ).length,
+  );
+  const joinRecordsInLast7Days = computed(
+    () =>
+      joinRecords.value.filter((r) =>
+        DateUtils.isWithinDays(r?.createdAt || r?.date_created, 7),
+      ).length,
+  );
 
-  // 近 7 日新增參加記錄
-  const joinRecordsInLast7Days = computed(() => {
-    return joinRecords.value.filter((record) =>
-      DateUtils.isWithinDays(record?.createdAt || record?.date_created, 7),
-    ).length;
-  });
-
-  // 本月贊助總額與贊助者數
   const currentMonthDonateSummary = computed(() => {
     const currentMonth = getYearMonth(new Date());
-    let total = 0;
-    let donors = 0;
-
-    allDonates.value.forEach((donate) => {
-      const hasMonth = donate?.donateItems?.some((item) =>
-        item?.months?.includes(currentMonth),
-      );
-      if (hasMonth) donors += 1;
-
-      donate?.donateItems?.forEach((item) => {
-        if (item?.months?.includes(currentMonth)) {
-          total += toNumber(item?.price);
-        }
+    let total = 0,
+      donors = 0;
+    allDonates.value.forEach((d) => {
+      if (d?.donateItems?.some((i) => i?.months?.includes(currentMonth)))
+        donors++;
+      d?.donateItems?.forEach((i) => {
+        if (i?.months?.includes(currentMonth)) total += toNumber(i?.price);
       });
     });
-
     return { total, donors };
   });
 
-  // 未來 3 個月已排定贊助總額
-  const next3MonthsDonateTotal = computed(() => {
-    const months = getNextYearMonths(3, { includeCurrent: false });
-    let total = 0;
-    allDonates.value.forEach((donate) => {
-      donate?.donateItems?.forEach((item) => {
-        const monthsMatch = item?.months?.some((month) =>
-          months.includes(month),
-        );
-        if (monthsMatch) {
-          total += toNumber(item?.price);
-        }
-      });
-    });
-    return total;
-  });
-
-  // 未來 6 個月已排定贊助總額
   const next6MonthsDonateTotal = computed(() => {
     const months = getNextYearMonths(6, { includeCurrent: false });
     let total = 0;
-    allDonates.value.forEach((donate) => {
-      donate?.donateItems?.forEach((item) => {
-        const monthsMatch = item?.months?.some((month) =>
-          months.includes(month),
-        );
-        if (monthsMatch) {
-          total += toNumber(item?.price);
-        }
-      });
-    });
+    allDonates.value.forEach((d) =>
+      d?.donateItems?.forEach((i) => {
+        if (i?.months?.some((m) => months.includes(m)))
+          total += toNumber(i?.price);
+      }),
+    );
     return total;
   });
 
-  // 未來 12 個月已排定贊助總額
-  const next12MonthsDonateTotal = computed(() => {
-    const months = getNextYearMonths(12, { includeCurrent: false });
-    let total = 0;
-    allDonates.value.forEach((donate) => {
-      donate?.donateItems?.forEach((item) => {
-        const monthsMatch = item?.months?.some((month) =>
-          months.includes(month),
-        );
-        if (monthsMatch) {
-          total += toNumber(item?.price);
-        }
-      });
-    });
-    return total;
-  });
-
-  // 即將到來活動（依日期排序）日期由大到小
-  const upcomingActivityHighlights = computed(() => {
-    return [...upcomingActivities.value]
-      .filter((activity) => activity?.date)
+  const upcomingActivityHighlights = computed(() =>
+    [...activityStore.upcomingActivities]
+      .filter((a) => a?.date)
       .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 4);
-  });
-
-  // 近期完成活動（依日期排序）
-  const completedActivityHighlights = computed(() => {
-    return [...completedActivities.value]
-      .filter((activity) => activity?.date)
+      .slice(0, 4),
+  );
+  const completedActivityHighlights = computed(() =>
+    [...activityStore.completedActivities]
+      .filter((a) => a?.date)
       .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 4);
-  });
+      .slice(0, 4),
+  );
 
-  // 儀表板一次載入所需資料
   const initialize = async () => {
     loading.value = true;
-    error.value = null;
     try {
-      const [, joinRecordsResult, registrationsResult, donatesResult] =
-        await Promise.all([
-          activityStore.initialize(),
-          joinRecordStore.getAllJoinRecords(),
-          joinRecordStore.getAllRegistrations(),
-          monthlyDonateStore.getAllDonates(),
-        ]);
-
-      if (Array.isArray(joinRecordsResult)) {
-        joinRecordsSource.value = joinRecordsResult;
-      } else if (Array.isArray(joinRecordsResult?.data)) {
-        joinRecordsSource.value = joinRecordsResult.data;
-      } else {
-        joinRecordsSource.value = joinRecordStore.allJoinRecords || [];
-      }
-
-      if (Array.isArray(registrationsResult)) {
-        registrationsSource.value = registrationsResult;
-      } else if (Array.isArray(registrationsResult?.data)) {
-        registrationsSource.value = registrationsResult.data;
-      } else {
-        registrationsSource.value = joinRecordStore.allRegistrations || [];
-      }
-
-      if (Array.isArray(donatesResult)) {
-        allDonatesSource.value = donatesResult;
-      } else if (Array.isArray(donatesResult?.data)) {
-        allDonatesSource.value = donatesResult.data;
-      } else if (Array.isArray(monthlyDonateStore.allDonates)) {
-        allDonatesSource.value = monthlyDonateStore.allDonates;
-      } else {
-        allDonatesSource.value = [];
-      }
+      const [, jrRes, regRes, donRes] = await Promise.all([
+        activityStore.initialize(),
+        joinRecordStore.getAllJoinRecords(),
+        joinRecordStore.getAllRegistrations(),
+        monthlyDonateStore.getAllDonates(),
+      ]);
+      joinRecordsSource.value = Array.isArray(jrRes)
+        ? jrRes
+        : jrRes?.data || [];
+      registrationsSource.value = Array.isArray(regRes)
+        ? regRes
+        : regRes?.data || [];
+      allDonatesSource.value = Array.isArray(donRes)
+        ? donRes
+        : donRes?.data || [];
       lastUpdatedAt.value = DateUtils.getCurrentISOTime();
     } catch (err) {
-      console.error("Dashboard 初始化失敗:", err);
       error.value = err?.message || "初始化失敗";
     } finally {
       loading.value = false;
     }
   };
 
-  // 根據 ID 取得參加記錄（從已載入的資料中尋找，避免 store 未同步問題）
-  const getJoinRecordById = (id) => {
-    return joinRecords.value.find((record) => record.id === id);
-  };
-
   return {
-    getJoinRecordById,
+    getJoinRecordById: (id) => joinRecords.value.find((r) => r.id === id),
     loading,
     error,
     lastUpdatedAt,
-
     totalParticipants,
     totalRegistrations,
     totalJoinRecords,
     totalDonors,
-
     paymentSummary,
     totalUnpaidAmount,
     receiptPendingCount,
     receiptPendingIds,
     accountingPendingCount,
     formsNeedAttentionCount,
-
     registrationsInLast7Days,
     joinRecordsInLast7Days,
-
     currentMonthDonateSummary,
-    next3MonthsDonateTotal,
     next6MonthsDonateTotal,
-    next12MonthsDonateTotal,
-
-    upcomingActivities,
-    completedActivities,
+    expiringDonors,
+    expiringDonorsCount,
     upcomingActivityHighlights,
     completedActivityHighlights,
     recentRegistrations,
     recentJoinRecords,
-
     initialize,
   };
 });

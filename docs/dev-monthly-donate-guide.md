@@ -348,12 +348,14 @@ async addDonateItem(donorName, newItem) {
   </el-table-column>
 
   <!-- 操作欄 -->
-  <el-table-column label="操作" width="200">
+  <el-table-column label="操作" width="150" fixed="right" align="center">
     <template #default="{ row }">
-      <el-button size="small" @click="openAddDonationDialog(row)">
-        加贊助
-      </el-button>
-      <el-button size="small" @click="viewDetails(row)"> 查看詳細 </el-button>
+      <div class="action-buttons-group">
+        <el-button size="small" @click="openAddDonationDialog(row)">
+          加贊助
+        </el-button>
+        <el-button size="small" @click="viewDetails(row)"> 查看詳細 </el-button>
+      </div>
     </template>
   </el-table-column>
 </el-table>

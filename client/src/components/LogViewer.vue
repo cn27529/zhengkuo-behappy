@@ -240,9 +240,9 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="180" fixed="right" align="center">
+        <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
-            <div class="action-buttons">
+            <div class="action-buttons-group">
               <el-tooltip content="查看詳情" placement="top">
                 <el-button circle @click="showLogDetail(row)" type="primary">
                   👁️
@@ -344,7 +344,15 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Refresh, Plus, Edit, Check, Delete, View, Search } from "@element-plus/icons-vue";
+import {
+  Refresh,
+  Plus,
+  Edit,
+  Check,
+  Delete,
+  View,
+  Search,
+} from "@element-plus/icons-vue";
 import { indexedDBLogger } from "../utils/indexedDB.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
@@ -403,7 +411,7 @@ watch(
     pagination.value.currentPage = 1;
     loadLogs();
   },
-  { deep: true }
+  { deep: true },
 );
 
 // 方法
@@ -457,7 +465,7 @@ async function clearOldLogs() {
         confirmButtonText: "確定",
         //cancelButtonText: "取消",
         type: "warning",
-      }
+      },
     );
 
     await indexedDBLogger.cleanupOldLogs(30);
@@ -506,7 +514,7 @@ async function clearAllLogs() {
             done();
           }
         },
-      }
+      },
     );
   } catch (err) {
     if (err !== "cancel") {
@@ -693,13 +701,6 @@ function getDurationClass(duration) {
   color: #666;
 }
 
-/* 操作按鈕 */
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
 /* 分頁 */
 .pagination {
   display: flex;
@@ -772,6 +773,19 @@ function getDurationClass(duration) {
   gap: 0.5rem;
 }
 
+/* 操作按鈕 */
+.action-buttons-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px; /* 統一設定按鈕間距 */
+  flex-wrap: wrap; /* 如果縮到很窄，允許按鈕自動換行而不溢出 */
+}
+
+/* 移除 Element Plus 按鈕預設的左邊距，改用 gap 控制 */
+.action-buttons-group .el-button + .el-button {
+  margin-left: 0;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .search-input-group .el-input,
@@ -806,7 +820,7 @@ function getDurationClass(duration) {
     padding: 8px 4px;
   }
 
-  .action-buttons {
+  .action-buttons-group {
     flex-wrap: wrap;
   }
 }

@@ -752,6 +752,10 @@ onMounted(() => {
   :deep(.el-table__cell) {
     padding: 8px 4px;
   }
+
+  .action-buttons-group {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 480px) {

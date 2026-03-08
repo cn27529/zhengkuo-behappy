@@ -242,16 +242,17 @@
 
               <el-table-column
                 label="操作"
-                width="180"
+                width="150"
                 fixed="right"
                 align="center"
               >
                 <template #default="{ row }">
-                  <div class="action-buttons">
+                  <div class="action-buttons-group">
                     <el-tooltip content="編輯活動" placement="top">
                       <el-button
                         circle
                         @click="handleEditShowModel(row)"
+                        size="small"
                         type="info"
                       >
                         📝
@@ -262,6 +263,7 @@
                       <el-button
                         circle
                         @click="handleComplete(row.id)"
+                        size="small"
                         type="success"
                       >
                         <el-icon><Check /></el-icon>
@@ -272,12 +274,14 @@
                       <el-button
                         circle
                         @click="handleDelete(row)"
+                        size="small"
                         type="danger"
                       >
                         🗑️
                       </el-button>
                     </el-tooltip>
                   </div>
+                  <div class="action-buttons"></div>
                 </template>
               </el-table-column>
             </el-table>
@@ -399,16 +403,17 @@
 
               <el-table-column
                 label="操作"
-                width="180"
+                width="150"
                 fixed="right"
                 align="center"
               >
                 <template #default="{ row }">
-                  <div class="action-buttons">
+                  <div class="action-buttons-group">
                     <el-tooltip content="編輯活動" placement="top">
                       <el-button
                         circle
                         @click="handleEditShowModel(row)"
+                        size="small"
                         type="primary"
                       >
                         📝
@@ -419,6 +424,7 @@
                       <el-button
                         circle
                         @click="handleDelete(row)"
+                        size="small"
                         type="danger"
                       >
                         刪
@@ -1336,13 +1342,6 @@ onMounted(() => {
   text-align: center;
 }
 
-/* 操作按鈕 */
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
 /* 分頁 */
 .pagination {
   display: flex;
@@ -1425,6 +1424,19 @@ onMounted(() => {
   /* width: 100%; */
 }
 
+/* 操作按鈕 */
+.action-buttons-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px; /* 統一設定按鈕間距 */
+  flex-wrap: wrap; /* 如果縮到很窄，允許按鈕自動換行而不溢出 */
+}
+
+/* 移除 Element Plus 按鈕預設的左邊距，改用 gap 控制 */
+.action-buttons-group .el-button + .el-button {
+  margin-left: 0;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .search-input-group .el-input,
@@ -1460,7 +1472,7 @@ onMounted(() => {
     padding: 8px 4px;
   }
 
-  .action-buttons {
+  .action-buttons-group {
     flex-wrap: wrap;
   }
 }
