@@ -454,7 +454,7 @@ const handleClose = () => {
 }
 
 .card-canvas {
-  border: 1px dashed #ccc;
+  border: 0px dashed #ccc;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
