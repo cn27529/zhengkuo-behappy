@@ -361,4 +361,4 @@ client/src/views/Dashboard.vue 己有變更，請更新 docs/dev-dashboard-guide
 
 ## 客戶端主機環境建置指南
 
-我們需要一份客戶端主機環境建置指南，這是要前往客戶端現場的環境配置指南文件，我們的選設是客戶端是一個全新的 windows 環境，我們需要準備這份文件，依據文件的指引完成環境的配置並成功的運行 docs/architecture-overview.md 的每個項目，雖然目前在我的 macos 運行的很正常，但是我們需要這份文件，依照 docs/setup-SOP-guide.md 的文件進行。也提供 all-tree.txt 全部項目的樹狀結構。
+我們需要一份客戶端主機環境建置指南，這是要前往客戶端現場的環境配置指南文件，我們的選設是客戶端是一個全新的 windows 環境，我們需要準備這份文件，依據文件的指引完成環境的配置並成功的運行 docs/architecture-overview.md 的每個項目，雖然目前在我的 macos 運行的很正常，但是我們需要這份文件，依照 docs/setup-SOP-guide.md 的文件進行。也提供 all-tree.txt 全部項目的樹狀結構。請將內容集成在 setup-SOP-guide.md 讓我能夠下載它。
