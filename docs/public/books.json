@@ -1,22 +1,13 @@
 {
   "books": [
     {
-      "id": "setup-windows-guide-for-deepseek",
-      "title": "客戶端主機環境建置指南 (Windows 全新環境)",
-      "overview": "無概述說明",
-      "filename": "setup-windows-guide-for-deepseek.md",
-      "path": "/doc/setup-windows-guide-for-deepseek.md",
-      "modifiedDate": "2026-03-09T12:17:19.844Z",
-      "formattedDate": "2026/03/09 下午08:17"
-    },
-    {
-      "id": "setup-windows-guide-for-claude",
-      "title": "zhengkuo-behappy — Windows 客戶端環境建置指南",
-      "overview": "無概述說明",
-      "filename": "setup-windows-guide-for-claude.md",
-      "path": "/doc/setup-windows-guide-for-claude.md",
-      "modifiedDate": "2026-03-09T12:17:18.479Z",
-      "formattedDate": "2026/03/09 下午08:17"
+      "id": "ai-talks",
+      "title": "ai talks records",
+      "overview": "與AI的記錄\n\n我要生成\"活動參加的記錄查詢\"，我們依照 ./client\\src\\views\\RegistrationList.vue, ./client\\src\\stores\\registrationQueryStore.js 的模版與代碼的建構的方式進行，命名為 JoinRecordList.vue, joinRecordQueryStore.js，列表的＂操作＂：列印表單，刪除，不用實作 等下一階段再實現，注意 分頁, storeToRefs, 調試信息 的實現。查詢條件是 state, items 欄位。列表的資料你可以參考 ./client\\src\\data\\mock_participation_records.json 檔案，有問題可以與我討論。",
+      "filename": "ai-talks.md",
+      "path": "/doc/ai-talks.md",
+      "modifiedDate": "2026-03-09T12:19:37.418Z",
+      "formattedDate": "2026/03/09 下午08:19"
     },
     {
       "id": "setup-windows-guide",
@@ -24,17 +15,26 @@
       "overview": "無概述說明",
       "filename": "setup-windows-guide.md",
       "path": "/doc/setup-windows-guide.md",
-      "modifiedDate": "2026-03-09T12:17:16.742Z",
-      "formattedDate": "2026/03/09 下午08:17"
+      "modifiedDate": "2026-03-09T12:19:24.664Z",
+      "formattedDate": "2026/03/09 下午08:19"
     },
     {
-      "id": "ai-talks",
-      "title": "ai talks records",
-      "overview": "與AI的記錄\n\n我要生成\"活動參加的記錄查詢\"，我們依照 ./client\\src\\views\\RegistrationList.vue, ./client\\src\\stores\\registrationQueryStore.js 的模版與代碼的建構的方式進行，命名為 JoinRecordList.vue, joinRecordQueryStore.js，列表的＂操作＂：列印表單，刪除，不用實作 等下一階段再實現，注意 分頁, storeToRefs, 調試信息 的實現。查詢條件是 state, items 欄位。列表的資料你可以參考 ./client\\src\\data\\mock_participation_records.json 檔案，有問題可以與我討論。",
-      "filename": "ai-talks.md",
-      "path": "/doc/ai-talks.md",
-      "modifiedDate": "2026-03-09T11:45:27.111Z",
-      "formattedDate": "2026/03/09 下午07:45"
+      "id": "setup-windows-guide-for-deepseek",
+      "title": "客戶端主機環境建置指南 (Windows 全新環境)",
+      "overview": "無概述說明",
+      "filename": "setup-windows-guide-for-deepseek.md",
+      "path": "/doc/setup-windows-guide-for-deepseek.md",
+      "modifiedDate": "2026-03-09T12:19:24.663Z",
+      "formattedDate": "2026/03/09 下午08:19"
+    },
+    {
+      "id": "setup-windows-guide-for-claude",
+      "title": "zhengkuo-behappy — Windows 客戶端環境建置指南",
+      "overview": "無概述說明",
+      "filename": "setup-windows-guide-for-claude.md",
+      "path": "/doc/setup-windows-guide-for-claude.md",
+      "modifiedDate": "2026-03-09T12:19:24.660Z",
+      "formattedDate": "2026/03/09 下午08:19"
     },
     {
       "id": "user-story-monthlyDonate",
@@ -470,5 +470,5 @@
     }
   ],
   "total": 52,
-  "generatedAt": "2026-03-09T12:18:10.059Z"
+  "generatedAt": "2026-03-09T12:20:05.254Z"
 }
