@@ -67,6 +67,7 @@
           class="draggable-tag"
           draggable="true"
           @dragstart="handleDragStart($event, tag)"
+          @click="addItemDirectly($event, tag)"
         >
           {{ tag.label }}
         </div>
@@ -349,6 +350,33 @@ const startMove = (event, index) => {
 // 拖拽處理邏輯
 const handleDragStart = (event, tag) => {
   event.dataTransfer.setData("text/plain", JSON.stringify(tag));
+};
+
+// 點擊添加功能
+const addItemDirectly = (event, tag) => {
+  // 透過 ref 或 querySelector 取得 DOM 元素
+
+  const el = getElementPosition();
+  //alert(`top:${el.top}, left:${el.left}`);
+
+  droppedItems.value.push({
+    text: tag.value,
+    top: el.top + 50, // 給予初始位置，避免在左上角 0,0 沒看到
+    left: el.left + 10,
+    fontSize: 16,
+    writingMode: "vertical-rl",
+  });
+};
+
+const getElementPosition = () => {
+  // 透過 ref 或 querySelector 取得 DOM 元素
+  const el = document.querySelector(".card-canvas");
+  if (el) {
+    const rect = el.getBoundingClientRect();
+    console.log("相對於視窗的 Top:", rect.top);
+    console.log("相對於視窗的 Left:", rect.left);
+    return rect;
+  }
 };
 
 const handleDrop = (event) => {
