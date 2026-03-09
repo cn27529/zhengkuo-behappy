@@ -1,6 +1,42 @@
 {
   "books": [
     {
+      "id": "setup-windows-guide-for-deepseek",
+      "title": "客戶端主機環境建置指南 (Windows 全新環境)",
+      "overview": "無概述說明",
+      "filename": "setup-windows-guide-for-deepseek.md",
+      "path": "/doc/setup-windows-guide-for-deepseek.md",
+      "modifiedDate": "2026-03-09T12:17:19.844Z",
+      "formattedDate": "2026/03/09 下午08:17"
+    },
+    {
+      "id": "setup-windows-guide-for-claude",
+      "title": "zhengkuo-behappy — Windows 客戶端環境建置指南",
+      "overview": "無概述說明",
+      "filename": "setup-windows-guide-for-claude.md",
+      "path": "/doc/setup-windows-guide-for-claude.md",
+      "modifiedDate": "2026-03-09T12:17:18.479Z",
+      "formattedDate": "2026/03/09 下午08:17"
+    },
+    {
+      "id": "setup-windows-guide",
+      "title": "Windows 客戶端環境建置指南",
+      "overview": "無概述說明",
+      "filename": "setup-windows-guide.md",
+      "path": "/doc/setup-windows-guide.md",
+      "modifiedDate": "2026-03-09T12:17:16.742Z",
+      "formattedDate": "2026/03/09 下午08:17"
+    },
+    {
+      "id": "ai-talks",
+      "title": "ai talks records",
+      "overview": "與AI的記錄\n\n我要生成\"活動參加的記錄查詢\"，我們依照 ./client\\src\\views\\RegistrationList.vue, ./client\\src\\stores\\registrationQueryStore.js 的模版與代碼的建構的方式進行，命名為 JoinRecordList.vue, joinRecordQueryStore.js，列表的＂操作＂：列印表單，刪除，不用實作 等下一階段再實現，注意 分頁, storeToRefs, 調試信息 的實現。查詢條件是 state, items 欄位。列表的資料你可以參考 ./client\\src\\data\\mock_participation_records.json 檔案，有問題可以與我討論。",
+      "filename": "ai-talks.md",
+      "path": "/doc/ai-talks.md",
+      "modifiedDate": "2026-03-09T11:45:27.111Z",
+      "formattedDate": "2026/03/09 下午07:45"
+    },
+    {
       "id": "user-story-monthlyDonate",
       "title": "每月贊助 user story",
       "overview": "整個`每月贊助`的使用情境是這樣開始的：\n`每月贊助`每個月固定贊助廟方一個基本金額，目前的基本單位是 100 元。這個金額未來有可能調整（例如改為 200 元），因此在系統設計上必須保留彈性，而不能寫死。以王小明為例，他選擇一次預繳 600 元，代表他贊助了 6 個月份。這時系統會建立 一筆 600 元的贊助紀錄，並在另一個欄位中，用陣列方式明確記錄這筆金額所對應的「實際月份」。\n需要特別說明的是，贊助月份不一定是連續的。例如，王小明這一次的預繳，是從 2025 年 12 月到 2026 年 5 月，共 6 個月。操作人員只需輸入金額與選擇月份，系統便會自動記錄一筆金額為 600 元、並包含這 6 個月份的贊助資料。\n在列表呈現上，我們採用「過去 12 個月 + 未來 12 個月」的方式，總共顯示 24 個月份欄位。每一位`每月贊助`在列表中只會顯示 一筆資料列，搭配這 24 個月份的欄位來呈現狀態。操作人員不需要知道背後的資料結構，只會直覺地看到：王小明在 2025 年 12 月到 2026 年 5 月 的欄位中有資料，其餘月份則是空值。之後，如果操作人員再替王小明新增一筆贊助，例如預繳 2026 年 10 月到 12 月，共 3 個月、金額 300 元，系統就會再建立 第二筆贊助紀錄。此時，王小明在列表中的呈現會變成：\n2025 年 12 月 ～ 2026 年 5 月：有資料\n2026 年 10 月 ～ 2026 年 12 月：有資料\n其餘月份：空值\n\n而在資料層面，王小明會同時擁有兩筆贊助紀錄，一筆是 600 元，一筆是 300 元。\n在列表的右側，會提供操作功能，其中包含一個「加贊助」的按鈕。點擊後會導向另一個視窗，這個視窗在畫面結構上分為三個區塊：\n上方頂部：負責查詢與篩選（初期先用硬編碼實作，之後再串接 API）\n左側區塊：顯示該`每月贊助`所有既有的贊助紀錄列表\n右側區塊：輸入金額，並勾選對應的贊助月份\n在這個畫面中，操作人員可以完整執行新增、修改、刪除等 CRUD 操作。狀態管理則統一使用 store 來處理。\n整體設計的核心目標，是讓操作流程保持直覺、資料結構清楚，同時保留未來「每月基本金額調整」的彈性。\n\n# 使用方法說明\n\n主要功能：\n每月單位金額設定：可調整每月基本`每月贊助`（預設100元）\n24個月顯示：自動生成過去12個月和未來12個月的欄位\n`每月贊助`管理：每個`每月贊助`顯示一筆，合併所有`贊助項目`\n月份選擇器：根據金額自動計算可贊助的月份數量\n詳細檢視：查看每個`每月贊助`的詳細贊助記錄\n統計資訊：即時統計贊助總金額、人數、月份等\n\n# 向需求的管理者的提問與回答\n\n問：每月百元贊助，這個功用除了在贊助人家裡需要助念時鎮國寺的同人會到贊助人家中助念，還有其他作用嗎，是否包含贊助人家裡的往生者的超度呢\n答：沒有喔，因為超度需要準備供品成本，所以並沒有包含這個服務～\n問：所以只有提供助念服務\n答：對～還有會員每年有七天的額度可以免費點佛前燈\n問：明白。這個條件 在贊助人的贊助過程什麼情況下成立的判定，什么判斷符合這個七次的點燈的條件。每月贊助滿一整年才算嗎，如果王小明2025年贊助前半年，2026年也贊助了前半年，這樣不連續的贊助能夠符合點燈的條件嗎，還是……沒有硬性規定🤣\n答：平常人不會點佛前燈，通常是開放給緊急需求、需要佛菩薩特別關照的人，例如：生病住院、手術、車禍意外、考試、官司……這類的。\n這個服務雖然是存在的，但是我們並沒有主動推薦，因為酥油燈成本也不便宜，這個服務就是基於一個感恩回饋的心來提供給有需求的人，如果對方是會員來報名佛前燈的話，我們會視對方的家境情況給予建議\n問：不綁定七次點燈規則，單純的每月百元贊助做進行紀錄，可以做個備註欄嗎？如果有人有使用這個服務，可以手動輸入．這樣。\n答：可以備註。但是備註欄的輸入內容太過語化，沒有辦法做查詢的條件\n問：沒事，只要能查詢會員狀態即可，這個只有在有人提出需求的時候，才會去看對方是否在今年內有使用過這項服務。\n答：明白。",
@@ -52,15 +88,6 @@
       "filename": "dev-dashboard-guide.md",
       "path": "/doc/dev-dashboard-guide.md",
       "modifiedDate": "2026-03-07T13:21:45.443Z",
-      "formattedDate": "2026/03/07 下午09:21"
-    },
-    {
-      "id": "ai-talks",
-      "title": "ai talks records",
-      "overview": "與AI的記錄\n\n我要生成\"活動參加的記錄查詢\"，我們依照 ./client\\src\\views\\RegistrationList.vue, ./client\\src\\stores\\registrationQueryStore.js 的模版與代碼的建構的方式進行，命名為 JoinRecordList.vue, joinRecordQueryStore.js，列表的＂操作＂：列印表單，刪除，不用實作 等下一階段再實現，注意 分頁, storeToRefs, 調試信息 的實現。查詢條件是 state, items 欄位。列表的資料你可以參考 ./client\\src\\data\\mock_participation_records.json 檔案，有問題可以與我討論。",
-      "filename": "ai-talks.md",
-      "path": "/doc/ai-talks.md",
-      "modifiedDate": "2026-03-07T13:21:45.442Z",
       "formattedDate": "2026/03/07 下午09:21"
     },
     {
@@ -442,6 +469,6 @@
       "formattedDate": "2026/02/08 下午08:55"
     }
   ],
-  "total": 49,
-  "generatedAt": "2026-03-09T03:17:13.951Z"
+  "total": 52,
+  "generatedAt": "2026-03-09T12:18:10.059Z"
 }
