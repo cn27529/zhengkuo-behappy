@@ -1,7 +1,0 @@
-./docker
-├── README.md
-├── docker-compose.yml
-├── extensions
-└── logs
-
-3 directories, 2 files
