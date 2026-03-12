@@ -1,4 +1,5 @@
 // test-batch-logs.js - 測試批次日誌寫入
+import { DateUtils } from "./utils/dateUtils.js";
 
 /**
  * 測試批次寫入多筆日誌到 MongoDB
@@ -49,7 +50,7 @@ function generateTestLog(index) {
       method !== "GET"
         ? {
             data: `Test data ${index}`,
-            timestamp: new Date().toISOString(),
+            timestamp: DateUtils.getCurrentISOTime(),
           }
         : null,
     responseData:

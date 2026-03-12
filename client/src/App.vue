@@ -66,7 +66,7 @@
     </div>
     <!-- 底部-->
     <footer v-if="layoutReady && showFooter">
-      <p>© 2025 {{ appTitle }} | 弘扬佛法、服务众生</p>
+      <p>© 2026 {{ appTitle }} | 弘扬佛法、服务众生</p>
     </footer>
     <!-- <DevTools /> -->
   </div>
@@ -147,6 +147,7 @@ const handleMenuClick = (menuItem) => {
 const computeVisibility = () => {
   const isPrint = route.path && route.path.includes("print");
   const tdClock = route.path && route.path.includes("td-clock");
+
   return {
     header: !isPrint && !tdClock, // 顶部导航栏：非打印页面显示
     sidebar:
@@ -217,16 +218,6 @@ onMounted(() => {
   // 修改用户昵称的计算方式
   userDisplayName.value = authStore.user ? authStore.user.displayName : "訪客";
 });
-
-// 增加粘性标题时的样式
-// window.addEventListener('scroll', function() {
-//     var header = document.querySelector('.form-header');
-//     if (window.pageYOffset > 0) {
-//         header.classList.add('sticky');
-//     } else {
-//         header.classList.remove('sticky');
-//     }
-// });
 </script>
 
 <style>

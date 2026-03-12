@@ -21,10 +21,13 @@ export class BaseRustService {
         refresh: "/api/auth/refresh",
         me: "/api/auth/me",
       },
+      directusUsers: "/api/directus-users", // DIRECTUS使用者
       activities: "/api/activities",
       registrations: "/api/registrations",
       monthlyDonates: "/api/monthly-donates",
       participationRecords: "/api/participation-records",
+      receiptNumber: "/api/receipt-numbers", //收據與感謝狀取號
+      myData: "/api/my-data",
       users: "/api/users",
       health: "/health",
       dbTest: "/db-test",

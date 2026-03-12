@@ -139,7 +139,7 @@ export default {
         "確認刪除",
         {
           confirmButtonText: "確定刪除",
-          cancelButtonText: "取消",
+          //cancelButtonText: "取消",
           type: "warning",
           center: true,
         }

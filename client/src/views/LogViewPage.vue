@@ -143,7 +143,7 @@ function reloadLogs() {
   loadLogs();
 }
 
-// 暴露方法給模板
+// 暴露方法給模版
 defineExpose({
   reloadLogs,
 });

@@ -80,7 +80,12 @@
         :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
         v-loading="isLoading"
       >
-        <el-table-column label="圖標" min-width="50" align="center">
+        <el-table-column
+          label="圖標"
+          min-width="50"
+          align="center"
+          v-if="false"
+        >
           <template #default="{ row }">
             <div>
               <el-tooltip :content="row.id" placement="top">
@@ -88,6 +93,22 @@
               </el-tooltip>
               <div class="form-name"></div>
             </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="createdAt"
+          label="資料時間"
+          width="110"
+          sortable
+          align="center"
+        >
+          <template #default="{ row }">
+            <el-tooltip :content="row.id" placement="top">
+              <span class="date-time">{{
+                formatRelativeOrDateTime(row.createdAt)
+              }}</span>
+            </el-tooltip>
           </template>
         </el-table-column>
 
@@ -133,33 +154,53 @@
         </el-table-column>
 
         <el-table-column
-          prop="createdAt"
-          label="建立時間"
-          min-width="150"
-          sortable
+          prop="user_created"
+          label="資料人員"
+          min-width="80"
+          align="center"
         >
           <template #default="{ row }">
-            <span class="date-time">{{ formatDateLong(row.createdAt) }}</span>
+            <span class="user-created">{{
+              recordUserName(row.user_created)
+            }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="200" fixed="right" align="center">
+        <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
-            <el-tooltip content="編輯表單" placement="top">
-              <el-button circle @click="handleEdit(row)" type="primary">
-                📝
-              </el-button>
-            </el-tooltip>
-            <el-tooltip content="列印表單" placement="top">
-              <el-button type="success" circle @click="handlePrint(row)"
-                >🖨️</el-button
-              >
-            </el-tooltip>
-            <el-tooltip content="卡片設計" placement="right">
-              <el-button circle @click="handleCardDesign(row)" v-if="false"
-                >💳</el-button
-              >
-            </el-tooltip>
+            <div class="action-buttons-group">
+              <el-tooltip content="查看詳情" placement="top">
+                <el-button
+                  type="primary"
+                  circle
+                  @click="handlePrint(row)"
+                  size="small"
+                >
+                  👁️
+                </el-button>
+              </el-tooltip>
+
+              <el-tooltip content="編輯表單" placement="top">
+                <el-button
+                  circle
+                  @click="handleEdit(row)"
+                  type="info"
+                  size="small"
+                >
+                  📝
+                </el-button>
+              </el-tooltip>
+
+              <el-tooltip content="卡片設計" placement="right">
+                <el-button
+                  circle
+                  @click="handleCardDesign(row)"
+                  size="small"
+                  v-if="false"
+                  >💳</el-button
+                >
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -261,6 +302,14 @@ const {
   currentPage,
   pageSize,
 } = storeToRefs(queryStore);
+
+// 取得資料列名稱顯示用
+const recordUserName = (recordUserId) => {
+  const user = currentAllUsers.value.find((item) => item.id === recordUserId);
+  return `${user?.firstName}${user?.lastName}` || "??";
+};
+
+const currentAllUsers = computed(() => authService.getCurrentUsers());
 
 // 計算屬性 - 添加防護檢查
 const totalItems = computed(() => {
@@ -382,12 +431,13 @@ const handleEdit = async (item) => {
 const handlePrint = (item) => {
   try {
     const formId = item.formId;
+    const recordId = item.id;
     const printData = JSON.stringify(item);
 
     console.log("準備列印數據:", { formId, printData });
     ElMessage.info(`準備列印表單: ${formId}`);
 
-    const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
+    const printId = `print_registration_${recordId}`;
     console.log("列印表單 ID:", printId);
 
     sessionStorage.setItem(printId, printData);
@@ -461,6 +511,8 @@ const getStatusText = (state) => {
 const formatDateLong = (dateString) => {
   return DateUtils.formatDateLong(dateString);
 };
+const formatRelativeOrDateTime = (value) =>
+  DateUtils.formatRelativeOrDateTime(value);
 
 const truncateAddress = (address) => {
   if (!address) return "-";
@@ -656,6 +708,18 @@ onMounted(() => {
   margin-left: 0.25rem;
 }
 
+.action-buttons-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px; /* 統一設定按鈕間距 */
+  flex-wrap: wrap; /* 如果縮到很窄，允許按鈕自動換行而不溢出 */
+}
+
+/* 移除 Element Plus 按鈕預設的左邊距，改用 gap 控制 */
+.action-buttons-group .el-button + .el-button {
+  margin-left: 0;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .results-header {
@@ -687,6 +751,10 @@ onMounted(() => {
 
   :deep(.el-table__cell) {
     padding: 8px 4px;
+  }
+
+  .action-buttons-group {
+    flex-wrap: wrap;
   }
 }
 

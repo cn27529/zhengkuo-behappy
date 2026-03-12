@@ -1,86 +1,278 @@
 <template>
-  <!-- 主内容区域 -->
-  <main class="main-content">
-    <div class="page-header">
-      <h2>儀表板</h2>
-      <p style="display: none">查看登記情況和統計數據</p>
-      <div style="" class="total-participants">
-        法會總參與人次&nbsp;
-        <AnimatedNumber
-          :value="totalParticipants"
-          :duration="2500"
-          separator=""
-          class=""
-        />
+  <main class="dashboard2">
+    <section class="page-header">
+      <div>
+        <h2>資訊牆</h2>
+        <p class="sub-title">即時掌握登記、金流與活動概況</p>
       </div>
-    </div>
+      <div class="header-meta">
+        <span class="meta-label">更新時間</span>
+        <span class="meta-value">{{ formatDateTime(lastUpdatedAt) }}</span>
+      </div>
+    </section>
 
-    <!-- 活動狀態統計 -->
-    <el-row :gutter="24" class="stats-grid">
-      <el-col :xs="24" :sm="12" :md="12" :lg="12">
-        <el-card shadow="hover" class="status-card upcoming">
-          <div class="status-icon">⏳</div>
-          <div class="status-info">
-            <h3>即將到來</h3>
-            <div class="status-count">{{ upcomingActivities.length }}</div>
-            <div class="status-label">場活動</div>
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="summary-card">
+          <div class="summary-label">總參與人次</div>
+          <AnimatedNumber :value="totalParticipants" :duration="2000" />
+          <div class="summary-foot">啟用至今</div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="summary-card">
+          <div class="summary-label">祈福登記總數</div>
+          <AnimatedNumber :value="totalRegistrations" :duration="2000" />
+          <div class="summary-foot">
+            近 7 日新增 {{ registrationsInLast7Days }} 筆
           </div>
         </el-card>
       </el-col>
-
-      <el-col :xs="24" :sm="12" :md="12" :lg="12">
-        <el-card shadow="hover" class="status-card completed">
-          <div class="status-icon">✅</div>
-          <div class="status-info">
-            <h3>已完成</h3>
-            <div class="status-count">{{ completedActivities.length }}</div>
-            <div class="status-label">場活動</div>
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="summary-card">
+          <div class="summary-label">參加記錄總數</div>
+          <AnimatedNumber :value="totalJoinRecords" :duration="2000" />
+          <div class="summary-foot">
+            近 7 日新增 {{ joinRecordsInLast7Days }} 筆
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="summary-card">
+          <div class="summary-label">贊助者人數</div>
+          <AnimatedNumber :value="totalDonors" :duration="2000" />
+          <div class="summary-foot">
+            本月活躍 {{ currentMonthDonateSummary.donors }} 人
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- 活動統計卡片 -->
-    <el-row :gutter="24" class="stats-grid">
-      <!-- 即將到來的活動卡片最近兩筆 -->
-      <el-col
-        v-for="activity in upcomingCardActivities"
-        :key="activity.id"
-        :xs="24"
-        :sm="12"
-        :md="8"
-        :lg="6"
-        :xl="6"
-      >
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-icon">{{ activity.icon }}</div>
-          <div class="stat-info">
-            <h3>{{ activity.name }}</h3>
-            <div class="stat-number">{{ activity.participants }}</div>
-            <div class="stat-label">參與人次</div>
-            <div class="activity-date">{{ formatDate(activity.date) }}</div>
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="status-card warning">
+          <div class="status-title">待處理付款</div>
+          <div class="status-value">{{ paymentSummary.unpaid }}</div>
+          <div class="status-foot">含未付款與未收尾款</div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="status-card danger">
+          <div class="status-title">待開立收據/感謝狀</div>
+          <div class="status-value">
+            {{ receiptPendingCount }}
+          </div>
+          <div class="status-foot">
+            <!-- 單筆打印 -->
+            <el-button
+              v-for="id in receiptPendingIds"
+              :key="id"
+              type="success"
+              size="small"
+              circle
+              @click="handleReceiptPrint(id)"
+            >
+              🖨
+            </el-button>
           </div>
         </el-card>
       </el-col>
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="status-card info">
+          <div class="status-title">待沖帳</div>
+          <div class="status-value">{{ accountingPendingCount }}</div>
+          <div class="status-foot">已付款仍未沖帳</div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :lg="6">
+        <el-card shadow="hover" class="status-card warning">
+          <div class="status-title">待補齊資料</div>
+          <div class="status-value">{{ formsNeedAttentionCount }}</div>
+          <div class="status-foot">聯絡/消災/超度不完整</div>
+        </el-card>
+      </el-col>
+    </el-row>
 
-      <!-- 己完成的活動卡片最近兩筆 -->
-      <el-col
-        v-for="activity in completedCardActivities"
-        :key="activity.id"
-        :xs="24"
-        :sm="12"
-        :md="8"
-        :lg="6"
-        :xl="6"
-      >
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-icon">{{ activity.icon }}</div>
-          <div class="stat-info">
-            <h3>{{ activity.name }}</h3>
-            <div class="stat-number">{{ activity.participants }}</div>
-            <div class="stat-label">參與人次</div>
-            <div class="activity-date">{{ formatDate(activity.date) }}</div>
+    <el-row :gutter="24" class="summary-row" v-if="false">
+      <el-col :xs="24" :sm="12" :lg="8">
+        <el-card shadow="hover" class="finance-card">
+          <div class="card-title">應收總額</div>
+          <div class="card-value">
+            {{ appConfig.formatCurrency(paymentSummary.totalReceivable) }}
           </div>
+          <div class="card-foot">含已收與未收款項</div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :lg="8">
+        <el-card shadow="hover" class="finance-card">
+          <div class="card-title">已收金額</div>
+          <div class="card-value">
+            {{ appConfig.formatCurrency(paymentSummary.totalPaid) }}
+          </div>
+          <div class="card-foot">付款狀態已更新</div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :lg="8">
+        <el-card shadow="hover" class="finance-card">
+          <div class="card-title">未收金額</div>
+          <div class="card-value">
+            {{ appConfig.formatCurrency(totalUnpaidAmount) }}
+          </div>
+          <div class="card-foot">仍需催收與追蹤</div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :sm="12" :lg="12">
+        <el-card shadow="hover" class="donate-card">
+          <div class="card-title">本月贊助總額</div>
+          <div class="card-value">
+            {{ appConfig.formatCurrency(currentMonthDonateSummary.total) }}
+          </div>
+          <div class="card-foot">
+            活躍贊助者 {{ currentMonthDonateSummary.donors }} 人
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="12" :lg="12">
+        <el-card shadow="hover" class="donate-card">
+          <div class="card-title">未來 6 個月排定贊助</div>
+          <div class="card-value">
+            {{ appConfig.formatCurrency(next6MonthsDonateTotal) }}
+          </div>
+          <div class="card-foot">提前掌握可預期月贊助額</div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :lg="12">
+        <el-card shadow="hover" class="list-card">
+          <div class="list-title">即將到來活動</div>
+          <div v-if="upcomingActivityHighlights.length" class="list-body">
+            <div
+              v-for="activity in upcomingActivityHighlights"
+              :key="activity.id"
+              class="list-item"
+            >
+              <div class="list-main">
+                <span class="list-icon">{{ activity.icon }}</span>
+                <div>
+                  <div class="list-label">{{ activity.name }}</div>
+                  <div class="list-meta">{{ formatDate(activity.date) }}</div>
+                </div>
+              </div>
+              <div class="list-value">
+                {{ activity.participants || 0 }} 人次
+              </div>
+            </div>
+          </div>
+          <div v-else class="list-empty">暫無即將到來活動</div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :lg="12">
+        <el-card shadow="hover" class="list-card">
+          <div class="list-title">巳經完成活動</div>
+          <div v-if="completedActivityHighlights.length" class="list-body">
+            <div
+              v-for="activity in completedActivityHighlights"
+              :key="activity.id"
+              class="list-item"
+            >
+              <div class="list-main">
+                <span class="list-icon">{{ activity.icon }}</span>
+                <div>
+                  <div class="list-label">{{ activity.name }}</div>
+                  <div class="list-meta">{{ formatDate(activity.date) }}</div>
+                </div>
+              </div>
+              <div class="list-value">
+                {{ activity.participants || 0 }} 人次
+              </div>
+            </div>
+          </div>
+          <div v-else class="list-empty">暫無完成活動</div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="24" class="summary-row">
+      <el-col :xs="24" :lg="12">
+        <el-card shadow="hover" class="list-card">
+          <div class="list-title">近期祈福登記</div>
+          <div v-if="recentRegistrations.length" class="list-body">
+            <div
+              v-for="registration in recentRegistrations"
+              :key="registration.id"
+              class="list-item"
+            >
+              <div class="list-main">
+                <div class="list-label">
+                  {{ registration.contact?.name || "未填聯絡人" }}
+                </div>
+                <div class="list-meta">
+                  {{
+                    registration.contact?.mobile || registration.contact?.phone
+                  }}
+                  {{ registration.contact?.relationship }}，{{
+                    formatRelativeOrDateTime(
+                      registration.createdAt || registration.date_created,
+                    )
+                  }}
+                </div>
+              </div>
+              <div v-if="false" class="list-value">
+                {{ registration.state || "-" }}
+              </div>
+            </div>
+          </div>
+          <div v-else class="list-empty">暫無登記資料</div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :lg="12">
+        <el-card shadow="hover" class="list-card">
+          <div class="list-title">近期參加記錄</div>
+          <div v-if="recentJoinRecords.length" class="list-body">
+            <div
+              v-for="record in recentJoinRecords"
+              :key="record.id"
+              class="list-item"
+            >
+              <div class="list-main">
+                <div class="list-label">
+                  {{ record.contact?.name || "未填聯絡人" }}
+                </div>
+                <div class="list-meta">
+                  <span v-for="item in record.items" v-if="false">
+                    <el-badge
+                      :value="item.quantity"
+                      class="item"
+                      color="lightblue"
+                      size="small"
+                      style="margin-right: 13px"
+                      v-if="false"
+                    >
+                      <el-button size="small">{{ item.label }}</el-button>
+                    </el-badge>
+
+                    <span v-if="item.label !== '陽上人'" class="stat-badge">
+                      {{ item.label }} {{ item.quantity }}
+                    </span>
+                  </span>
+                  {{ appConfig.formatCurrency(record.totalAmount) }} 元，{{
+                    formatRelativeOrDateTime(
+                      record.createdAt || record.date_created,
+                    )
+                  }}
+                </div>
+              </div>
+              <div v-if="false" class="list-value">
+                {{ appConfig.formatCurrency(record.finalAmount) }}
+              </div>
+            </div>
+          </div>
+          <div v-else class="list-empty">暫無參加記錄</div>
         </el-card>
       </el-col>
     </el-row>
@@ -88,269 +280,316 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from "vue";
-//import { useRouter } from "vue-router";
-//import { ElMessage, ElMessageBox } from "element-plus";
-//import { useAuthStore } from "../stores/authStore.js";
-import { useActivityStore } from "../stores/activityStore.js";
-import AnimatedNumber from "../components/AnimatedNumber.vue";
+import { computed, onMounted } from "vue";
+import { useDashboardStore } from "../stores/dashboardStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import AnimatedNumber from "../components/AnimatedNumber.vue";
+import appConfig from "../config/appConfig.js";
+import { ElMessage, ElMessageBox } from "element-plus";
+// import {
+//   Refresh,
+//   Plus,
+//   Edit,
+//   Check,
+//   Delete,
+//   View,
+//   Search,
+// } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+import { useJoinRecordStore } from "../stores/joinRecordStore.js";
 
-//const router = useRouter();
-//const authStore = useAuthStore();
-const activityStore = useActivityStore();
+const dashboardStore = useDashboardStore();
+const joinRecordStore = useJoinRecordStore();
+const router = useRouter();
 
-// 从store获取數據
-//const activities = computed(() => activityStore.activities);
-const totalParticipants = computed(() => activityStore.totalParticipants);
-const upcomingActivities = computed(() => activityStore.upcomingActivities);
-const completedActivities = computed(() => activityStore.completedActivities);
-const upcomingCardActivities = computed(
-  () => activityStore.upcomingCardActivities,
+const totalParticipants = computed(() => dashboardStore.totalParticipants);
+const totalRegistrations = computed(() => dashboardStore.totalRegistrations);
+const totalJoinRecords = computed(() => dashboardStore.totalJoinRecords);
+const totalDonors = computed(() => dashboardStore.totalDonors);
+const registrationsInLast7Days = computed(
+  () => dashboardStore.registrationsInLast7Days,
 );
-const completedCardActivities = computed(
-  () => activityStore.completedCardActivities,
+const joinRecordsInLast7Days = computed(
+  () => dashboardStore.joinRecordsInLast7Days,
 );
+const currentMonthDonateSummary = computed(
+  () => dashboardStore.currentMonthDonateSummary,
+);
+//
+const next3MonthsDonateTotal = computed(
+  () => dashboardStore.next3MonthsDonateTotal,
+);
+const next6MonthsDonateTotal = computed(
+  () => dashboardStore.next6MonthsDonateTotal,
+);
+const next12MonthsDonateTotal = computed(
+  () => dashboardStore.next12MonthsDonateTotal,
+);
+const paymentSummary = computed(() => dashboardStore.paymentSummary);
+const totalUnpaidAmount = computed(() => dashboardStore.totalUnpaidAmount);
+const receiptPendingCount = computed(() => dashboardStore.receiptPendingCount);
+const receiptPendingIds = computed(() => dashboardStore.receiptPendingIds);
 
-const formatDate = (dateString) => {
-  return DateUtils.formatDate(dateString);
+const accountingPendingCount = computed(
+  () => dashboardStore.accountingPendingCount,
+);
+const formsNeedAttentionCount = computed(
+  () => dashboardStore.formsNeedAttentionCount,
+);
+const upcomingActivityHighlights = computed(
+  () => dashboardStore.upcomingActivityHighlights,
+);
+const completedActivityHighlights = computed(
+  () => dashboardStore.completedActivityHighlights,
+);
+const recentRegistrations = computed(() => dashboardStore.recentRegistrations);
+const recentJoinRecords = computed(() => dashboardStore.recentJoinRecords);
+const lastUpdatedAt = computed(() => dashboardStore.lastUpdatedAt);
+
+const formatDate = (value) => DateUtils.formatDate(value);
+const formatDateTime = (value) => DateUtils.formatDateTime(value);
+const formatRelativeOrDateTime = (value) =>
+  DateUtils.formatRelativeOrDateTime(value);
+
+// 單筆打印
+const handleReceiptPrint = (record_id) => {
+  try {
+    const record = dashboardStore.getJoinRecordById(record_id);
+    if (!record) {
+      ElMessage.error("找不到對應的參加記錄");
+      return;
+    }
+    console.log("準備打印的參加記錄:", record);
+
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(record);
+    const printId = `print_receipt_${record.id}`;
+    sessionStorage.setItem(printId, printData);
+    router.push({
+      path: "/join-record-receipt-print",
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+    });
+  } catch (error) {
+    console.error("導航到收據頁面失敗:", error);
+    ElMessage.error("導航到收據頁面失敗");
+  }
 };
 
 onMounted(async () => {
-  // 初始化數據
-  try {
-    await activityStore.initialize();
-  } catch (error) {
-    console.error("初始化數據失败:", error);
-  }
-});
-
-onUnmounted(() => {
-  // 清理工作
+  await dashboardStore.initialize();
 });
 </script>
 
 <style scoped>
-.el-col {
-  margin-bottom: 24px; /* 增加卡片之間的垂直間距 */
-}
-
-/* 統計卡片网格 */
-.stats-grid {
-  margin-bottom: 2rem;
-}
-
-.stat-card {
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-  border-left: 4px solid var(--primary-color);
-  height: 100%;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card :deep(.el-card__body) {
-  display: flex;
-  align-items: center;
-  padding: 1.5rem;
-}
-
-.stat-icon {
-  font-size: 2.5rem;
-  margin-right: 1rem;
-  opacity: 0.8;
-  flex-shrink: 0;
-}
-
-.stat-info {
-  flex: 1;
-}
-
-.stat-info h3 {
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.stat-number {
-  font-size: 2rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  margin-bottom: 0.25rem;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: #888;
-}
-
-/* 图表容器 */
-.chart-container {
-  background: white;
-  border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e9ecef;
-}
-
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.chart-header h3 {
-  color: var(--primary-color);
-  margin: 0;
-  font-size: 1.3rem;
-}
-
-.chart-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
-}
-
-.btn-outline:hover {
+.stat-badge {
+  padding: 4px 8px;
   background: var(--primary-color);
   color: white;
-}
-
-.chart-wrapper {
-  position: relative;
-  height: 400px;
-  padding: 1rem;
-}
-
-.total-participants {
-  background: var(--light-color);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  display: inline-block;
-  margin-top: 0.5rem;
-  color: var(--primary-color);
-  font-weight: 500;
-}
-
-.activity-date {
+  border-radius: 4px;
   font-size: 0.75rem;
-  color: #888;
-  margin-top: 0.25rem;
+  margin-right: 10px;
 }
 
-.status-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
+.dashboard2 {
+  padding: 1.5rem 2rem 2.5rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--primary-color);
+}
+
+.sub-title {
+  margin: 0.35rem 0 0;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.header-meta {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.meta-label {
+  margin-right: 0.5rem;
+  color: #9aa0a6;
+}
+
+.meta-value {
+  font-weight: 700;
+  color: #3c3c3c;
+}
+
+.summary-row {
+  margin-bottom: 1.5rem;
+}
+
+.summary-card {
+  border-radius: 12px;
+  padding: 0.5rem 0;
+  min-height: 130px;
+}
+
+.summary-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.summary-foot {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #9aa0a6;
 }
 
 .status-card {
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  transition: transform 0.3s ease;
-  height: 100%;
+  border-radius: 12px;
+  min-height: 120px;
 }
 
-.status-card:hover {
-  transform: translateY(-3px);
+.status-card.warning {
+  border-left: 4px solid #f2b24c;
 }
 
-.status-card.upcoming {
-  border-left: 4px solid #ffa726;
+.status-card.danger {
+  border-left: 4px solid #ef6c6c;
 }
 
-.status-card.upcoming :deep(.el-card__body) {
-  display: flex;
-  align-items: center;
-  padding: 1.5rem;
+.status-card.info {
+  border-left: 4px solid #5a9cfb;
 }
 
-.status-card.completed {
-  border-left: 4px solid #66bb6a;
+.status-title {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
 }
 
-.status-card.completed :deep(.el-card__body) {
-  display: flex;
-  align-items: center;
-  padding: 1.5rem;
-}
-
-.status-card.all-participants {
-  border-left: 4px solid #26afff;
-}
-
-.status-icon {
-  font-size: 2rem;
-  margin-right: 1rem;
-  opacity: 0.8;
-}
-
-.status-info h3 {
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.status-count {
+.status-value {
   font-size: 1.8rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  margin-bottom: 0.25rem;
+  font-weight: 700;
+  color: #1f2937;
 }
 
-.status-label {
-  font-size: 0.875rem;
-  color: #888;
+.status-foot {
+  margin-top: 0.45rem;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+}
+
+.finance-card,
+.donate-card,
+.list-card {
+  border-radius: 12px;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+
+.card-value {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.card-foot {
+  margin-top: 0.45rem;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+}
+
+.list-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.list-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #eef1f4;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.list-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.list-icon {
+  font-size: 1.4rem;
+}
+
+.list-label {
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
+}
+
+.list-meta {
+  font-size: 0.85rem;
+  color: #9aa0a6;
+}
+
+.list-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.list-empty {
+  color: #9aa0a6;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
 }
 
 @media (max-width: 768px) {
-  .stat-card {
-    flex-direction: column;
-    text-align: center;
+  .dashboard2 {
+    padding: 1.25rem 1rem 2rem;
   }
 
-  .total-participants {
-    display: none;
-    text-align: center;
+  .header-meta {
+    text-align: left;
+  }
+
+  .summary-card,
+  .status-card,
+  .finance-card,
+  .donate-card,
+  .list-card {
+    min-height: auto;
   }
 }
 </style>

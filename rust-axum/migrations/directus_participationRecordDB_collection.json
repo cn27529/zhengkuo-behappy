@@ -318,7 +318,7 @@
         "interface": "input",
         "display": "raw",
         "width": "half",
-        "note": "收據號碼"
+        "note": "佛字第"
       },
       "schema": {
         "name": "receiptNumber",
@@ -379,7 +379,7 @@
         "display": "datetime",
         "width": "half",
         "readonly": true,
-        "note": "建立時間"
+        "note": "資料時間"
       },
       "schema": {
         "name": "createdAt",

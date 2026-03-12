@@ -17,3 +17,6 @@ git push origin zk-client-netlify --force
 
 echo "✅ 部署完成！"
 echo "📝 Netlify 會自動設置 NODE_ENV=production 來觸發 publish 過濾"
+
+# 5. 切回版本以免誤改到代碼
+git checkout zk-client-rustaxum

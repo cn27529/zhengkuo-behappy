@@ -6,6 +6,7 @@ import { DateUtils } from "../utils/dateUtils.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
 import { authService } from "../services/authService.js";
+import { useQueryStore } from "./registrationQueryStore.js";
 import mockRegistrationData from "../data/mock_registrations.json";
 import mockJoinRecordData from "../data/mock_participation_records.json";
 
@@ -144,59 +145,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   };
 
   /**
-   * 建立完整的參與記錄
-   * @param {*} registration
-   * @param {*} activity
-   * @param {*} selectedItems
-   * @returns
-   */
-  const createParticipationRecord = (registration, activity, selectedItems) => {
-    const items = selectedItems.map((item) => {
-      const sourceData = getSourceData(
-        registration,
-        activityConfigs[item.type].source,
-      );
-      return createParticipationItem(
-        item.type,
-        item.selectedData || sourceData,
-      );
-    });
-
-    // 計算總金額
-    const totalAmount = calculateTotalAmount(items);
-    const createISOTime = DateUtils.getCurrentISOTime();
-    // 建立完整的參與記錄
-    return {
-      registrationId: registration.id, // registration.id
-      activityId: activity.activityId, // activity.activityId
-      state: "confirmed", // confirmed=已確認，unconfirmed=未確認，canceled=已取消
-      items, // 超度/超薦、陽上人、點燈、祈福、固定消災、中元普度。資料來源：createParticipationItem
-      contact: registration.contact, // 聯絡人資訊
-      totalAmount, // 總金額
-      discountAmount: 0, // 折扣金額
-      finalAmount: totalAmount, // 最終金額
-      paidAmount: 0, // 付款金額
-      needReceipt: false, // 需要收據
-      receiptNumber: "", // 收據號碼
-      receiptIssued: false, // 收據已開立
-      receiptIssuedAt: "", // 收據開立日期
-      receiptIssuedBy: "", // 收據開立者
-      accountingState: "pending", // pending=未沖帳,reconciled=已沖帳
-      accountingDate: "", // 沖帳日期
-      accountingBy: "", // 沖帳者
-      accountingNotes: "", // 沖帳備註
-      paymentState: "unpaid", // paid=已付款，partial=部分付款，unpaid=未付款，waived=免付
-      paymentMethod: "", // cash=現金，transfer=轉帳
-      paymentDate: "", // 付款日期
-      paymentNotes: "", // 付款備註
-      notes: "", // 備註
-      createdAt: createISOTime,
-      createdUser: getCurrentUser(),
-    };
-  };
-
-  /**
-   * 生成收據號碼
+   * 生成佛字第
    * @returns
    */
   const generateReceiptNumber = () => {
@@ -215,9 +164,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const issueReceipt = (record) => {
     record.receiptNumber = generateReceiptNumber();
     record.receiptIssued = true;
-    record.receiptIssuedAt = new Date().toISOString();
-    record.receiptIssuedBy = getCurrentUser();
-    record.updatedAt = new Date().toISOString();
+    record.receiptIssuedAt = DateUtils.getCurrentISOTime();
+    record.receiptIssuedBy = getUserName();
+    record.updatedAt = DateUtils.getCurrentISOTime();
     record.updatedUser = getCurrentUser();
   };
 
@@ -229,10 +178,10 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
    */
   const reconcileAccounting = (record, accountingBy, notes = "") => {
     record.accountingState = "reconciled";
-    record.accountingDate = new Date().toISOString();
+    record.accountingDate = DateUtils.getCurrentISOTime();
     record.accountingBy = accountingBy;
     record.accountingNotes = notes;
-    record.updatedAt = new Date().toISOString();
+    record.updatedAt = DateUtils.getCurrentISOTime();
     record.updatedUser = accountingBy;
   };
 
@@ -248,7 +197,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
     record.paidAmount += amount;
     record.paymentMethod = method;
-    record.paymentDate = new Date().toISOString();
+    record.paymentDate = DateUtils.getCurrentISOTime();
     record.paymentNotes = notes;
 
     // 更新付款狀態
@@ -292,6 +241,16 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const error = ref(null);
   const allJoinRecords = ref(mockJoinRecordData || []); // 所有參加記錄
   const savedRecords = ref([]); // 獲取已保存的參加記錄
+  const searchKeyword = ref(""); // 搜尋關鍵字
+
+  // 使用 registrationQueryStore 的過濾功能
+  const filteredRegistrations = computed(() => {
+    const queryStore = useQueryStore();
+    return queryStore.getFilteredData(
+      { query: searchKeyword.value },
+      allRegistrations.value,
+    );
+  });
 
   // 取得所有參加記錄
   const getAllJoinRecords = async (params) => {
@@ -345,15 +304,10 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       if (result.success) {
         console.log(`✅ 成功獲取 ${result.data.length} 筆祈福登記資料`);
         return result.data;
-      } else {
-        console.warn("獲取祈福登記資料失敗，使用 Mock 資料");
-        allRegistrations.value = mockRegistrationData;
-        return mockRegistrationData;
       }
     } catch (error) {
       console.error("取得所有祈福登記資料失敗:", error);
-      allRegistrations.value = mockRegistrationData; // 失敗時回退到 Mock 資料
-      return mockRegistrationData; // 失敗時回退到 Mock 資料
+      return allRegistrations.value;
     } finally {
       isLoading.value = false;
     }
@@ -423,8 +377,18 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     selections.value[key] = [...data];
   };
 
-  // 送出存檔
-  const submitRecord = async (activityId = null, notes = "") => {
+  // 活動參加，提交參加記錄
+  const submitRecord = async (
+    activityId = null, // 活動 ID
+    notes = "", // 備註
+    needReceipt = false, // 是否需要收據
+  ) => {
+    console.log("活動參加，送出存檔:", {
+      activityId: activityId,
+      notes: notes,
+      needReceipt: needReceipt,
+    });
+
     isLoading.value = true;
     error.value = null;
 
@@ -453,15 +417,20 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         total: totalAmount.value,
         totalAmount: totalAmount.value,
         notes: notes, // 新增備註欄位
+        needReceipt: needReceipt, // 是否需要收據
         createdUser: getCurrentUser(),
         createdAt: createISOTime,
+        user_created: getCurrentUser(),
       };
       console.log("submitRecord:", payload);
-      // forUI 頁面顯示用
-      savedRecords.value.unshift(payload);
-
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不是 directus，無法創建數據");
+        const now = new Date();
+        const mockPlayload = {
+          id: DateUtils.getCurrentTimestamp(now), //mock id
+          ...payload,
+        };
+        savedRecords.value.unshift(mockPlayload); // 將新記錄加入 savedRecords
         return {
           success: true,
           data: payload,
@@ -473,6 +442,9 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
       const result = await joinRecordService.saveRecord(payload);
       if (result.success) {
         console.log("✅ 成功創建參加記錄:", result.data);
+        // forUI 頁面顯示用
+        savedRecords.value.unshift(result.data); // 將新記錄加入 savedRecords
+
         return result;
       } else {
         error.value = result.message;
@@ -493,6 +465,11 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     return authService.getCurrentUser();
   };
 
+  // 獲取用戶名稱
+  const getUserName = () => {
+    return authService.getUserName();
+  };
+
   // 暴露給元件使用的變數與方法
   return {
     // State
@@ -504,9 +481,11 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     allRegistrations,
     allJoinRecords,
     savedRecords,
+    searchKeyword,
 
     // Getters
     totalAmount,
+    filteredRegistrations,
     // Actions
     setRegistration,
     resetSelections,
@@ -514,18 +493,18 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     setGroupSelection,
     setPersonLampType,
     getPersonLampType,
-    submitRecord,
+    submitRecord, // // 提交參加記錄
     loadRegistrationData, // 載入祈福登記資料
     getAllRegistrations, // 獲取所有祈福登記
     getAllJoinRecords, // 獲取所有參加記錄
     // 獲取用戶信息
+    getUserName,
     getCurrentUser,
     // 其他方法
     getItemsSummary, // 取得項目摘要
     getItemsDetail, // 取得項目詳細清單
     recordPayment, // 記錄付款
     issueReceipt, // 開立收據
-    createParticipationRecord, // 建立完整的參與記錄
     reconcileAccounting, // 會計沖帳
     getSourceData, // 獲取資料來源
   };

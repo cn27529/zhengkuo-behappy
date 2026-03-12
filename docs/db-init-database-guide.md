@@ -1,22 +1,25 @@
 # 客戶資料庫初始化工具指南
 
-## 概述
+## 概述說明
 
 `scripts/init-database.js` 是專門用於初始化新客戶資料庫的工具。它會讀取 `db/databases.json` 配置檔案，自動識別未初始化的資料庫，並提供多種初始化方式。
 
 ## 功能特色
 
 ### 智慧配置讀取
+
 - 自動尋找 `databases.json` 配置檔案（優先級順序與 start-with-db.js 相同）
 - 解析配置並處理路徑格式
 - 自動處理 `db/` 路徑前綴
 
 ### 資料庫狀態分析
+
 - 檢查所有配置資料庫的初始化狀態
 - 顯示檔案大小和存在狀態
 - 自動過濾已完成初始化的資料庫
 
 ### 多種初始化方式
+
 - **範本複製**：從已初始化的資料庫複製（推薦）
 - **Directus 初始化**：全新建立並設定管理員帳號
 
@@ -95,16 +98,19 @@ node scripts/init-database.js
 ### 範本複製（推薦）
 
 **優點**：
+
 - 快速完成初始化
 - 保留完整的資料結構和設定
 - 包含預設資料和配置
 
 **適用情況**：
+
 - 需要與現有資料庫相同的結構
 - 快速建立測試環境
 - 標準化的客戶資料庫
 
 **操作流程**：
+
 1. 選擇要初始化的資料庫
 2. 選擇範本資料庫
 3. 自動複製並完成初始化
@@ -112,16 +118,19 @@ node scripts/init-database.js
 ### Directus 初始化
 
 **優點**：
+
 - 全新乾淨的資料庫
 - 可自訂管理員帳號
 - 完整的 Directus 設定流程
 
 **適用情況**：
+
 - 需要全新的資料庫結構
 - 特殊的客戶需求
 - 測試不同的配置
 
 **操作流程**：
+
 1. 選擇要初始化的資料庫
 2. 選擇 Directus 初始化
 3. 建立臨時符號連結
@@ -147,6 +156,7 @@ function isDatabaseInitialized(dbPath) {
 ### 符號連結管理
 
 初始化過程中會：
+
 1. 備份現有的 `db/current.db` 連結
 2. 建立指向新資料庫的臨時連結
 3. 執行初始化操作
@@ -164,6 +174,7 @@ function isDatabaseInitialized(dbPath) {
 ### 建議工作流程
 
 1. **準備範本**
+
    ```bash
    # 確保有可用的範本資料庫
    node scripts/start-with-db.js  # 選擇基礎資料庫
@@ -171,6 +182,7 @@ function isDatabaseInitialized(dbPath) {
    ```
 
 2. **初始化新資料庫**
+
    ```bash
    node scripts/init-database.js
    # 選擇要初始化的資料庫
@@ -187,6 +199,7 @@ function isDatabaseInitialized(dbPath) {
 ### 資料庫命名規範
 
 在 `db/databases.json` 中：
+
 ```json
 {
   "客戶代碼": {

@@ -144,7 +144,7 @@ export class IndexedDBLogger {
         const logData = {
           ...cleanedEntry,
           id: crypto.randomUUID(), // 標準且保證唯一
-          timestamp: new Date().toISOString(),
+          timestamp: DateUtils.getCurrentISOTime(),
           userAgent: navigator.userAgent,
           url: window.location.href,
         };

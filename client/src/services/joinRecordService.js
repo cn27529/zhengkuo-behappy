@@ -2,6 +2,7 @@
 import { baseService } from "./baseService.js";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { authService } from "./authService.js";
 
 export class JoinRecordService {
   constructor() {
@@ -301,6 +302,30 @@ export class JoinRecordService {
   }
 
   /**
+   * 更新收據打印狀態
+   * 如果收據己打印這裡會是 true，receiptNumber 會記錄佛字第，needReceipt 會記錄"standard" 是 "感謝狀", "stamp" 是 "收據"。
+   */
+  async updateByReceiptPrint(record) {
+    if (!record?.id) {
+      return { success: false, message: "缺少記錄 ID" };
+    }
+
+    console.log("更新收據打印狀態 - 原始記錄:", record);
+
+    const updateData = {
+      receiptNumber: record.receiptNumber || "", // 保持原有佛字第不變，如果沒有則為空字符串
+      // 直接使用 activeTemplate 的值來表示是否已開立收據（standard 或 stamp），如果沒有則為空值
+      //經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
+      receiptIssued: record.activeTemplate || "",
+      receiptIssuedAt: record.receiptIssuedAt,
+      receiptIssuedBy: record.receiptIssuedBy,
+      needReceipt: record.needReceipt,
+    };
+
+    return await this.updateParticipationRecord(record.id, updateData);
+  }
+
+  /**
    * 儲存記錄 (原有方法保持兼容)
    */
   async saveRecord(payload) {
@@ -320,11 +345,11 @@ export class JoinRecordService {
         notes: payload.notes || "", // 備註
         discountAmount: 0, // 折扣金額
         paidAmount: 0, // 付款金額
-        needReceipt: false, // 需要收據
-        receiptNumber: "", // 收據號碼
-        receiptIssued: false, // 收據已開立
+        needReceipt: payload.needReceipt, // 是否需要收據
+        receiptNumber: "", // 佛字第
+        receiptIssued: "", // 收據是否已開立。經20260225決定修改定義默認為空值，值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
         receiptIssuedAt: "", // 收據開立日期
-        receiptIssuedBy: "", // 收據開立者
+        receiptIssuedBy: "", // 收據開立者，也稱經手人
         accountingState: "pending", // pending=未沖帳,reconciled=已沖帳, none=無需沖帳
         accountingDate: "", // 沖帳日期
         accountingBy: "", // 沖帳者

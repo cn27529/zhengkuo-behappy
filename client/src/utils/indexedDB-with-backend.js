@@ -1,5 +1,6 @@
 // indexedDB-with-backend.js - 配合後端 API 的增強版日誌管理器
 import { IndexedDBLogger } from "./indexedDB.js";
+import { DateUtils } from "./dateUtils.js";
 
 /**
  * 透過後端 API 同步到 MongoDB 的日誌管理器
@@ -137,7 +138,7 @@ export class IndexedDBWithBackend extends IndexedDBLogger {
       // 準備資料
       const preparedLogs = logsToUpload.map((log) => ({
         ...this.deepClean(log),
-        uploadedAt: new Date().toISOString(),
+        uploadedAt: DateUtils.getCurrentISOTime(),
         source: "web-client",
       }));
 
@@ -158,7 +159,7 @@ export class IndexedDBWithBackend extends IndexedDBLogger {
           body: JSON.stringify({
             logs: preparedLogs,
             metadata: {
-              timestamp: new Date().toISOString(),
+              timestamp: DateUtils.getCurrentISOTime(),
               userAgent: navigator.userAgent,
               url: window.location.href,
             },

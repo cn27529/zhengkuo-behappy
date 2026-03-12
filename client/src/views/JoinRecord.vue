@@ -60,7 +60,7 @@
           </p>
 
           <div><strong>金額計算:</strong></div>
-          <p>總金額: ${{ totalAmount }}</p>
+          <p>總金額：{{ appConfig.formatCurrency(totalAmount) }}</p>
           <p>載入狀態: {{ isLoading ? "載入中..." : "已完成" }}</p>
 
           <div><strong>已保存記錄:</strong></div>
@@ -82,7 +82,7 @@
                 <strong>記錄 {{ index + 1 }}:</strong>
               </p>
               <p>聯絡人: {{ record.contact.name }}</p>
-              <p>總金額: ${{ record.totalAmount }}</p>
+              <p>總金額： {{ appConfig.formatCurrency(record.totalAmount) }}</p>
               <p>保存時間: {{ record.createdAt }}</p>
               <p>
                 {{ JSON.stringify(record.items) }}
@@ -194,7 +194,7 @@
             </span>
 
             <span>
-              <!-- <strong>關係：</strong> -->
+              <strong>資料表屬性：</strong>
               {{ selectedRegistration.contact.relationship }}
               <span v-if="selectedRegistration.contact.otherRelationship">
                 {{ selectedRegistration.contact.otherRelationship }}
@@ -229,18 +229,25 @@
                   :indeterminate.prop="isIndeterminate('chaodu')"
                   @click.stop="toggleActivity('chaodu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.chaodu.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.chaodu.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.chaodu.length > 0"
                 >
-                  (已選 {{ selections.chaodu.length }} 位)
+                  (已選 {{ selections.chaodu.length }} )
                 </span>
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.chaodu.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.chaodu.price)
+                  }}</span
                 >
               </div>
               {{ selectedRegistration.salvation.address }}
@@ -311,15 +318,20 @@
                   :indeterminate.prop="isIndeterminate('qifu')"
                   @click.stop="toggleActivity('qifu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
                   activityConfigs.qifu.label
-                }}</span>
+                }}</span> -->
+
+                <span class="stat-badge">{{ activityConfigs.qifu.label }}</span>
+
                 <span class="selected-count" v-if="selections.qifu.length > 0">
-                  (已選 {{ selections.qifu.length }} 位)
+                  (已選 {{ selections.qifu.length }} )
                 </span>
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.qifu.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.qifu.price)
+                  }}</span
                 >
               </div>
               <div class="address">
@@ -364,19 +376,26 @@
                   :indeterminate.prop="isIndeterminate('diandeng')"
                   @click.stop="toggleActivity('diandeng')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.diandeng.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.diandeng.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.diandeng.length > 0"
                 >
-                  (已選 {{ selections.diandeng.length }} 位)
+                  (已選 {{ selections.diandeng.length }} )
                 </span>
 
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.diandeng.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.diandeng.price)
+                  }}</span
                 >
               </div>
 
@@ -446,19 +465,26 @@
                   :indeterminate.prop="isIndeterminate('xiaozai')"
                   @click.stop="toggleActivity('xiaozai')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
+                  activityConfigs.xiaozai.label
+                }}</span> -->
+
+                <span class="stat-badge">{{
                   activityConfigs.xiaozai.label
                 }}</span>
+
                 <span
                   class="selected-count"
                   v-if="selections.xiaozai.length > 0"
                 >
-                  (已選 {{ selections.xiaozai.length }} 位)
+                  (已選 {{ selections.xiaozai.length }} )
                 </span>
 
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.xiaozai.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.xiaozai.price)
+                  }}</span
                 >
               </div>
               <div class="address">
@@ -503,16 +529,21 @@
                   :indeterminate.prop="isIndeterminate('pudu')"
                   @click.stop="toggleActivity('pudu')"
                 />
-                <span class="activity-title">{{
+                <!-- <span class="activity-title">{{
                   activityConfigs.pudu.label
-                }}</span>
+                }}</span> -->
+
+                <span class="stat-badge">{{ activityConfigs.pudu.label }}</span>
+
                 <span class="selected-count" v-if="selections.pudu.length > 0">
-                  (已選 {{ selections.pudu.length }} 位)
+                  (已選 {{ selections.pudu.length }} )
                 </span>
 
                 <span class="price-tag"
-                  >每位 {{ appConfig.dollarTitle
-                  }}{{ activityConfigs.pudu.price }}</span
+                  >每位
+                  {{
+                    appConfig.formatCurrency(activityConfigs.pudu.price)
+                  }}</span
                 >
               </div>
 
@@ -545,6 +576,25 @@
           </div>
         </div>
 
+        <!-- 是否需要收據 -->
+        <div
+          class="form-section need-receipt-section"
+          v-if="selectedRegistration"
+        >
+          <h3>收據需求</h3>
+          <div class="receipt-options">
+            <el-switch
+              v-model="needReceipt"
+              :active-value="'1'"
+              :inactive-value="'0'"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              active-text="需要打印收據"
+              inactive-text="不打印收據"
+            />
+          </div>
+        </div>
+
         <!-- 操作按鈕 -->
         <div class="form-actions" v-if="selectedRegistration">
           <button type="button" class="btn btn-secondary" @click="handleReset">
@@ -553,7 +603,7 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="handleSubmitRecord"
+            @click="handleSubmitForm"
             :disabled="isLoading || totalAmount === 0"
           >
             {{ isLoading ? "提交中..." : "提交參加記錄" }}
@@ -623,6 +673,16 @@
         <div class="results-section" v-if="savedRecords.length > 0">
           <div class="results-header">
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
+            <p class="search-hint">
+              <el-button
+                v-if="savedRecords.length > 1"
+                type="success"
+                size="large"
+                @click="handleBatchReceiptPrint"
+              >
+                批量打印
+              </el-button>
+            </p>
           </div>
           <div class="saved-records-list">
             <div
@@ -631,8 +691,22 @@
               class="saved-record-item"
             >
               <div class="record-header">
-                <span class="record-name">{{ record.contact.name }}</span>
-                <span class="record-amount">${{ record.totalAmount }}</span>
+                <!-- 單筆打印 -->
+                <span class="record-name"
+                  >{{ record.contact.name }}
+                  <el-button
+                    v-if="BoolUtils.normalizeBool(record.needReceipt)"
+                    type="success"
+                    size="small"
+                    circle
+                    @click="handleReceiptPrint(record)"
+                  >
+                    🖨
+                  </el-button>
+                </span>
+                <span class="record-amount"
+                  >${{ appConfig.formatCurrency(record.totalAmount) }}</span
+                >
               </div>
               <div class="record-time">{{ formatDate(record.createdAt) }}</div>
             </div>
@@ -666,7 +740,9 @@
         </div>
         <div class="total-final">
           <span>總金額：</span>
-          <span class="amount">${{ totalAmount }}</span>
+          <span class="amount">{{
+            appConfig.formatCurrency(totalAmount)
+          }}</span>
         </div>
       </div>
     </div>
@@ -677,21 +753,27 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { useJoinRecordStore } from "../stores/joinRecordStore.js";
 import { useActivityStore } from "../stores/activityStore.js";
+import { usePageStateStore } from "../stores/pageStateStore.js";
 import { storeToRefs } from "pinia";
 import appConfig from "../config/appConfig.js";
+import { el } from "element-plus/es/locale/index.mjs";
+import { BoolUtils } from "../utils/boolUtils.js";
 
 const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
+const pageStateStore = usePageStateStore();
+const router = useRouter();
 
 // 狀態管理
-const searchKeyword = ref("");
 const isDev = computed(() => authService.getCurrentDev());
 const selectedActivityId = ref(null);
+const needReceipt = ref("0"); // 是否需要收據（'0'=不需要，'1'=需要）
 
 const {
   activityConfigs,
@@ -701,6 +783,8 @@ const {
   allRegistrations,
   savedRecords,
   totalAmount,
+  searchKeyword,
+  filteredRegistrations,
 } = storeToRefs(joinRecordStore);
 
 const { activities: allActivities, loading: activitiesLoading } =
@@ -759,6 +843,8 @@ const handleActivityChange = (activityId) => {
       console.log("選中活動:", activity.name);
     }
   }
+  // 保存活動選擇到 pageState
+  pageStateStore.setPageState("joinRecord", { selectedActivityId: activityId });
 };
 
 // 格式化活動日期
@@ -823,41 +909,6 @@ const hasValidAncestors = (registration) => {
   return hasAddress && hasValidAncestorNames;
 };
 
-// 計算篩選後的祈福登記
-const filteredRegistrations = computed(() => {
-  if (!searchKeyword.value) {
-    return allRegistrations.value;
-  }
-
-  const keyword = searchKeyword.value.toLowerCase();
-  return allRegistrations.value.filter((reg) => {
-    return (
-      reg.formSource.toLowerCase().includes(keyword) ||
-      reg.formName.toLowerCase().includes(keyword) ||
-      reg.contact.name.toLowerCase().includes(keyword) ||
-      reg.contact.mobile.includes(keyword) ||
-      (reg.contact.phone && reg.contact.phone.includes(keyword)) ||
-      reg.contact.relationship.toLowerCase().includes(keyword) ||
-      // 消災地址
-      reg.blessing.address.toLowerCase().includes(keyword) ||
-      reg.blessing.persons.some(
-        (person) =>
-          person.name.toLowerCase().includes(keyword) ||
-          person.zodiac.toLowerCase().includes(keyword) ||
-          person.notes.toLowerCase().includes(keyword),
-      ) ||
-      // 超度地址
-      reg.salvation.address.toLowerCase().includes(keyword) ||
-      reg.salvation.survivors.some(
-        (survivor) =>
-          survivor.name.toLowerCase().includes(keyword) ||
-          survivor.zodiac.toLowerCase().includes(keyword) ||
-          survivor.notes.toLowerCase().includes(keyword),
-      )
-    );
-  });
-});
-
 // 獲取資料來源
 const getSourceData = (activityKey) => {
   if (!selectedRegistration.value) return [];
@@ -916,11 +967,12 @@ const handleReset = async () => {
   try {
     await ElMessageBox.confirm("確定要重置所有選擇嗎？", "確認操作", {
       confirmButtonText: "確定",
-      cancelButtonText: "取消",
+      //cancelButtonText: "取消",
       type: "warning",
     });
     joinRecordStore.resetSelections();
     selectedActivityId.value = null;
+    needReceipt.value = "0";
     ElMessage.success("選擇已重置");
   } catch (err) {
     if (err !== "cancel") {
@@ -930,7 +982,7 @@ const handleReset = async () => {
 };
 
 // 提交參加記錄
-const handleSubmitRecord = async () => {
+const handleSubmitForm = async () => {
   if (!selectedRegistration.value) {
     ElMessage.warning("請選擇祈福登記");
     return;
@@ -966,11 +1018,11 @@ const handleSubmitRecord = async () => {
   try {
     // 確認提交對話框
     const { value: notes } = await ElMessageBox.prompt(
-      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.dollarTitle}${totalAmount.value}\n\n請在下方備註欄填寫相關說明：`,
+      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n🖨️ 收據：${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不打印收據"}\n\n請在下方備註欄填寫相關說明：`,
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
-        cancelButtonText: "取消",
+        //cancelButtonText: "取消",
         inputPlaceholder: "請輸入備註說明（必填）",
         inputValidator: (value) => {
           if (!value || value.trim() === "") {
@@ -987,21 +1039,28 @@ const handleSubmitRecord = async () => {
     const result = await joinRecordStore.submitRecord(
       selectedActivityId.value,
       notes.trim(),
+      needReceipt.value,
     );
-    const createdISOTime = DateUtils.getCurrentISOTime();
+
+    console.log("活動參加，送出存檔:", {
+      activityId: selectedActivityId.value,
+      notes: notes.trim(),
+      needReceipt: needReceipt.value,
+    });
 
     if (result.success) {
       ElMessage.success({
-        message: "參加記錄已保存！",
+        message: result.message || "參加記錄已保存！",
         duration: 3000,
       });
       setTimeout(() => {
-        router.back();
+        //router.back();
       }, 1500);
 
       // 重置選擇（保留活動選擇）
       //selectedActivityId.value = null;
       joinRecordStore.resetSelections();
+      needReceipt.value = "0";
     } else {
       ElMessage.error("保存失敗，請稍後再試");
     }
@@ -1030,6 +1089,71 @@ const formatDate = (dateString) => {
   });
 };
 
+// 批量打印
+const handleBatchReceiptPrint = () => {
+  if (savedRecords.value.length === 0) {
+    ElMessage.warning("請先選擇要打印的記錄");
+    return;
+  }
+
+  // 只過濾需要打印收據的記錄
+  const printableRecords = savedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt),
+  );
+
+  if (printableRecords.length === 0) {
+    ElMessage.warning("目前沒有需要打印收據的記錄");
+    return;
+  }
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printDatas = printableRecords;
+    const printId = `print_receipt_ids_${ids}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+
+    router.push({
+      path: "/join-record-receipt-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "true",
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+
+// 單筆打印
+const handleReceiptPrint = (item) => {
+  try {
+    const record = item;
+    if (!record) {
+      ElMessage.error("找不到對應的參加記錄");
+      return;
+    }
+    console.log("準備打印的參加記錄:", record);
+
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(record);
+    const printId = `print_receipt_${record.id}`;
+    sessionStorage.setItem(printId, printData);
+    router.push({
+      path: "/join-record-receipt-print",
+      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+    });
+  } catch (error) {
+    console.error("導航到收據頁面失敗:", error);
+    ElMessage.error("導航到收據頁面失敗");
+  }
+};
+
 // 組件掛載
 onMounted(async () => {
   console.log("活動參加記錄頁面已載入");
@@ -1037,10 +1161,26 @@ onMounted(async () => {
   isDev.value = authService.getCurrentDev();
   await loadRegistrationData(); // 載入真實報名資料
   await loadActivityData(); // 載入活動資料
+
+  // 恢復活動選擇
+  const pageState = pageStateStore.getPageState("joinRecord");
+  if (pageState?.selectedActivityId) {
+    selectedActivityId.value = pageState.selectedActivityId;
+    console.log("恢復活動選擇:", selectedActivityId.value);
+  }
 });
 </script>
 
 <style scoped>
+.stat-badge {
+  padding: 4px 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-right: 10px;
+}
+
 .form-section,
 .search-section,
 .results-section {
@@ -1474,7 +1614,17 @@ onMounted(async () => {
   bottom: 20px;
 }
 
-/* 位置控制：  */
+/* 收據需求 */
+.need-receipt-section h3 {
+  margin-bottom: 0.75rem;
+}
+
+.receipt-options {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .total-float.bottom-left {
   left: 20px;
   right: auto;

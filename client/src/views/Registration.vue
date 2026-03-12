@@ -688,7 +688,7 @@ const handleDeleteForm = (index) => {
     "確認刪除",
     {
       confirmButtonText: "確定刪除",
-      cancelButtonText: "取消",
+      //cancelButtonText: "取消",
       type: "warning",
     },
   )
@@ -864,7 +864,7 @@ const handleResetForm = () => {
     "確認清空",
     {
       confirmButtonText: "確定清空",
-      cancelButtonText: "取消",
+      //cancelButtonText: "取消",
       type: "warning",
     },
   )
@@ -913,7 +913,7 @@ const handlePrintPage = () => {
     console.log("準備列印數據:", { formId, printData });
     ElMessage.info(`準備列印表單: ${formId}`);
 
-    const printId = `print_form_${formId}_${Math.floor(Math.random() * 1000)}`;
+    const printId = `print_registration_${formId}_${Math.floor(Math.random() * 1000)}`;
     console.log("列印表單 ID:", printId);
 
     sessionStorage.setItem(printId, printData);
@@ -931,7 +931,7 @@ const handlePrintPage = () => {
   }
 };
 
-// store 方法（直接暴露給模板使用）
+// store 方法（直接暴露給模版使用）
 const addBlessingPerson = registrationStore.addBlessingPerson;
 const removeBlessingPerson = registrationStore.removeBlessingPerson;
 const addAncestor = registrationStore.addAncestor;
@@ -983,29 +983,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.print-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  /* 
-  padding: 15px;
-  background: #f5f5f5; */
-  border-radius: 5px;
-  gap: 10px;
-}
-
-.controls-left {
-  display: flex;
-  align-items: center;
-}
-
-.controls-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .back-btn {
   padding: 10px 20px;
   border: 1px solid #ddd;
@@ -1416,17 +1393,6 @@ select:focus {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .print-controls {
-    /* flex-direction: column;
-    gap: 10px; */
-  }
-
-  .controls-left,
-  .controls-right {
-    /* width: 100%; */
-    justify-content: center;
-  }
-
   .print-tips {
     text-align: center;
     order: -1;

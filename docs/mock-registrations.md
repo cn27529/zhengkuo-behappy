@@ -2,7 +2,7 @@
 
 檔案位置：`/src/data/mock_registrations.json`
 
-## 概要
+## 概述說明
 
 此檔為測試用的假資料陣列（array），每一筆代表一組完整的報名資料，對應應用程式中的 `registrationForm` 結構（參見 `Registration.vue` 與 `stores/registration.js`）。
 

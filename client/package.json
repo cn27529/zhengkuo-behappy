@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "rm -rf dist && vite build",
     "build:analyze": "rm -rf dist && vite build --mode analyze",
     "preview": "vite preview"
   },
@@ -14,8 +14,10 @@
     "@supabase/supabase-js": "^2.76.1",
     "chart.js": "^4.5.1",
     "element-plus": "^2.11.8",
+    "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
     "pinia": "^2.1.4",
+    "print-js": "^1.6.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
   },

@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+import { DateUtils } from "./utils/dateUtils.js";
 
 // 載入環境變數
 dotenv.config();
@@ -45,7 +46,7 @@ const corsOptions = {
 //app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
-app.use(express.static('public'));
+app.use(express.static("public"));
 
 // 連接 MongoDB
 async function connectMongoDB() {
@@ -117,12 +118,12 @@ function cleanLogData(log) {
 
 // 根路由 - 主頁面
 app.get("/", (req, res) => {
-  res.sendFile('index.html', { root: 'public' });
+  res.sendFile("index.html", { root: "public" });
 });
 
 // MongoDB 日誌服務說明頁面
 app.get("/mongo/", (req, res) => {
-  res.sendFile('mongo.html', { root: 'public' });
+  res.sendFile("mongo.html", { root: "public" });
 });
 
 // API 路由
@@ -132,7 +133,7 @@ app.get("/health", (req, res) => {
   res.json({
     status: "ok",
     mongodb: mongoClient ? "connected" : "disconnected",
-    timestamp: new Date().toISOString(),
+    timestamp: DateUtils.getCurrentISOTime(),
   });
 });
 
@@ -156,8 +157,11 @@ app.post("/mongo/logentry/", async (req, res) => {
       uploadedAt: new Date(),
       source: "web-client",
       projectId: MONGO_CONFIG.projectId,
-      serverReceivedAt: new Date().toISOString(),
+      serverReceivedAt: DateUtils.getCurrentISOTime(),
     };
+
+    // 插入資料
+    const result = await collection.insertOne(preparedLog);
 
     console.log(
       `📝 收到日誌: ${logEntry.method || "GET"} ${logEntry.endpoint || "unknown"} - ${logEntry.status || "unknown"}`,
@@ -202,7 +206,7 @@ app.post("/mongo/logentry/batch", async (req, res) => {
       uploadedAt: new Date(),
       source: "web-client",
       projectId: MONGO_CONFIG.projectId,
-      serverReceivedAt: new Date().toISOString(),
+      serverReceivedAt: DateUtils.getCurrentISOTime(),
     }));
 
     // 批次插入
@@ -417,8 +421,12 @@ async function startServer() {
     console.log(
       `   🔍 查詢日誌: http://localhost:${MONGO_CONFIG.port}/mongo/logentry/`,
     );
-    console.log(`   📊 統計資料: http://localhost:${MONGO_CONFIG.port}/mongo/stats`);
-    console.log(`   🗑️ 清理日誌: http://localhost:${MONGO_CONFIG.port}/mongo/cleanup/:days`);
+    console.log(
+      `   📊 統計資料: http://localhost:${MONGO_CONFIG.port}/mongo/stats`,
+    );
+    console.log(
+      `   🗑️ 清理日誌: http://localhost:${MONGO_CONFIG.port}/mongo/cleanup/:days`,
+    );
     console.log(`   💚 健康檢查: http://localhost:${MONGO_CONFIG.port}/health`);
   });
 
@@ -454,7 +462,7 @@ function startCleanupJob() {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - CLEANUP_RETAIN_DAYS);
 
-    console.log(`⏰ [${new Date().toISOString()}] 開始自動清理...`);
+    console.log(`⏰ [${DateUtils.getCurrentISOTime()}] 開始自動清理...`);
     console.log(`   保留時間: 最近 ${CLEANUP_RETAIN_DAYS} 天`);
 
     if (!collection) {
@@ -467,7 +475,9 @@ function startCleanupJob() {
       // 🔧 檢查總日誌數量，少於 5 萬筆就不清理
       const totalCount = await collection.countDocuments();
       if (totalCount < 50000) {
-        console.log(`📊 日誌數量較少 (${totalCount.toLocaleString()} 筆)，跳過清理`);
+        console.log(
+          `📊 日誌數量較少 (${totalCount.toLocaleString()} 筆)，跳過清理`,
+        );
         return;
       }
 

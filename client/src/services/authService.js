@@ -17,19 +17,28 @@ export class AuthService {
   async login(username, password) {
     console.log(`登入請求 - 模式: ${this.base.mode}, 用戶: ${username}`);
 
-    // 在控制台輸出警告
-    if (this.base.mode === "mock") {
-      console.warn(
-        "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
-          "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
-          "🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01",
-      );
-
-      return this.mockLogin(username, password);
-    } else if (this.base.mode === "backend") {
-      return this.backendLogin(username, password);
-    } else if (this.base.mode === "directus") {
-      return this.directusLogin(username, password);
+    try {
+      // 在控制台輸出警告
+      if (this.base.mode === "mock") {
+        console.warn(
+          "🚨 當前使用前端模擬認證，密碼為明碼儲存！\n" +
+            "⚠️ 正式環境請切換到後端模式並移除密碼硬編碼。\n" +
+            "🔒 可用帳號：admin, zkuser01, temple_staff, volunteer, user01",
+        );
+        return this.mockLogin(username, password);
+      } else if (this.base.mode === "backend") {
+        return this.backendLogin(username, password);
+      } else if (this.base.mode === "directus") {
+        return this.directusLogin(username, password);
+      }
+    } catch (error) {
+      console.error("登入過程中發生錯誤:", error);
+      return {
+        success: false,
+        message: "登入過程中發生錯誤",
+        errorCode: "LOGIN_PROCESS_ERROR",
+        details: error.message,
+      };
     }
   }
 
@@ -241,8 +250,7 @@ export class AuthService {
           console.log("Directus 返回用戶資訊:", userResult.data);
           userData = userResult.data;
           // Directus 返回的用戶資訊沒有顯示名稱，displayName使用填寫的email
-          //userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
-          userData.displayName = `${userResult.data.title}(${userResult.data.first_name}${userResult.data.last_name})`;
+          userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;          
         } else {
           console.error("Directus 返回用戶資訊發生錯誤:", ...userResponse);
         }
@@ -438,8 +446,7 @@ export class AuthService {
       const userResult = await userResponse.json();
       console.log("Directus 返回用戶資訊:", userResult.data);
       userData = userResult.data;
-      //userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;
-      userData.displayName = `${userResult.data.title}(${userResult.data.first_name}${userResult.data.last_name})`;
+      userData.displayName = `${userResult.data.first_name}${userResult.data.last_name}`;      
     } else {
       console.error("Directus 返回用戶資訊發生錯誤:", userResponse.status);
     }
@@ -501,8 +508,6 @@ export class AuthService {
       return null;
     }
   }
-
-  
 
   async directusValidateToken() {
     try {
@@ -827,7 +832,7 @@ export class AuthService {
     } else {
       console.warn('無效的模式，請使用 "mock", "backend" 或 "directus"');
     }
-  } 
+  }
 
   getCurrentUser = () => {
     try {
@@ -858,7 +863,15 @@ export class AuthService {
     return user ? user.username || user.displayName || "unknown" : "unknown";
   }
 
-     
+  getCurrentUsers() {
+    try {
+      const allUsers = sessionStorage.getItem("allUsers");
+      return JSON.parse(allUsers);
+    } catch (error) {
+      console.error("獲取用戶資訊失敗:", error);
+      return null;
+    }
+  }
 }
 
 export const authService = new AuthService();

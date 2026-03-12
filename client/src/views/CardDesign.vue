@@ -104,7 +104,7 @@
             onDragStart(
               $event,
               'blessingAddress',
-              cardStore.cardData.blessingAddress
+              cardStore.cardData.blessingAddress,
             )
           "
           @dragend="onDragEnd"
@@ -136,7 +136,7 @@
             onDragStart(
               $event,
               'salvationAddress',
-              cardStore.cardData.salvationAddress
+              cardStore.cardData.salvationAddress,
             )
           "
           @dragend="onDragEnd"
@@ -230,6 +230,7 @@ import { Delete } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { usePageStateStore } from "../stores/pageStateStore.js";
 //import { useRegistrationStore } from "../stores/registrationStore.js";
+import html2canvas from "html2canvas";
 
 // 使用卡片 store
 const cardStore = useCardStore();
@@ -277,7 +278,7 @@ const calculateCardDimensions = () => {
   const containerHeight = container.clientHeight;
 
   // 計算圖片縮放比例（假設圖片原始比例）
-  const imageAspectRatio = 2 / 3; // 假設卡片模板是2:3比例
+  const imageAspectRatio = 2 / 3; // 假設卡片模版是2:3比例
   const containerAspectRatio = containerWidth / containerHeight;
 
   if (containerAspectRatio > imageAspectRatio) {
@@ -415,7 +416,7 @@ const onDragStart = (event, type, content = null) => {
     JSON.stringify({
       type: dragState.draggedItemType,
       content: dragState.draggedItemContent,
-    })
+    }),
   );
   event.dataTransfer.effectAllowed = "copy";
 
@@ -573,7 +574,7 @@ const onMouseMove = (event) => {
   const elementWidth = 150; // 固定寬度
   const elementHeight =
     cardStore.droppedItems.find(
-      (item) => item.id === itemDragState.draggingItemId
+      (item) => item.id === itemDragState.draggingItemId,
     )?.content?.length * 30 || 80;
 
   // 限制在卡片範圍內
@@ -614,31 +615,6 @@ const deleteItem = (itemId) => {
   });
 };
 
-// 動態加載 html2canvas（與 RegistrationPrint.vue 相同的方式）
-const loadHtml2Canvas = () => {
-  return new Promise((resolve, reject) => {
-    // 檢查是否已經加載
-    if (typeof window.html2canvas !== "undefined") {
-      resolve();
-      return;
-    }
-
-    // 創建 script 元素動態加載
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-    script.onload = () => {
-      console.log("html2canvas 加載成功");
-      resolve();
-    };
-    script.onerror = (error) => {
-      console.error("html2canvas 加載失敗:", error);
-      reject(new Error("html2canvas 加載失敗"));
-    };
-    document.head.appendChild(script);
-  });
-};
-
 // 保存設計
 const handleSaveDesign = async () => {
   try {
@@ -674,12 +650,6 @@ const handlePrintCard = async () => {
       type: "info",
       duration: 2000,
     });
-
-    // 檢查是否已載入 html2canvas
-    if (typeof window.html2canvas === "undefined") {
-      // 動態載入 html2canvas（與 RegistrationPrint.vue 相同的方式）
-      await loadHtml2Canvas();
-    }
 
     // 等待下一個渲染周期確保所有元素都已渲染
     await nextTick();
@@ -719,7 +689,7 @@ const handlePrintCard = async () => {
 
     console.log("開始捕捉卡片...", printElement);
 
-    const canvas = await window.html2canvas(printElement, {
+    const canvas = await html2canvas(printElement, {
       backgroundColor: null, // 設置為null以保持透明背景
       scale: 2, // 提高分辨率
       useCORS: true,
@@ -765,9 +735,6 @@ const handlePrintCard = async () => {
     console.error("生成圖片時出錯:", error);
 
     let errorMessage = "生成圖片時出錯，請重試";
-    if (error.message === "html2canvas 加載失敗") {
-      errorMessage = "html2canvas 庫加載失敗，請檢查網絡連接";
-    }
 
     ElMessage({
       message: errorMessage,
@@ -783,7 +750,7 @@ const handlePrintCard = async () => {
 const handleResetDesign = () => {
   ElMessageBox.confirm("確定要重置所有設計嗎？此操作不可撤銷。", "重置確認", {
     confirmButtonText: "確定",
-    cancelButtonText: "取消",
+    //cancelButtonText: "取消",
     type: "warning",
     center: true,
   })
@@ -983,7 +950,9 @@ h1 {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
   border: 1px dashed #aaaaaa;
   cursor: grab;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .data-item:hover {

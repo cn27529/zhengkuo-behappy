@@ -1,6 +1,6 @@
 # JoinRecord 活動選擇功能開發指南
 
-## 概述
+## 概述說明
 
 本次修改在 JoinRecord.vue 的"已選擇的祈福登記"區塊中添加了活動選擇功能，允許用戶單選一個活動，並將活動的 id 綁定到 activityId。
 
@@ -9,14 +9,16 @@
 ### 1. client/src/views/JoinRecord.vue
 
 #### 新增功能：
+
 - **活動選擇區塊**：在已選擇祈福登記下方添加活動選擇下拉選單
 - **活動詳細信息顯示**：選中活動後顯示活動的詳細信息卡片
 - **活動相關的計算屬性和方法**：處理活動數據的格式化和篩選
 
 #### 主要修改：
 
-**模板部分：**
-```vue
+**模版部分：**
+
+```html
 <!-- 活動選擇區塊 -->
 <div class="activity-selection-section">
   <h6>選擇活動</h6>
@@ -40,7 +42,7 @@
       </el-option>
     </el-select>
   </div>
-  
+
   <!-- 選中活動的詳細信息卡片 -->
   <div v-if="selectedActivity" class="selected-activity-info">
     <!-- 活動信息卡片 -->
@@ -49,12 +51,14 @@
 ```
 
 **腳本部分新增：**
+
 - 導入 `useActivityStore`
 - 添加 `selectedActivityId` 狀態
 - 添加活動相關的計算屬性和方法
 - 修改提交邏輯以包含活動 ID
 
 **樣式部分新增：**
+
 - 活動選擇區塊樣式
 - 活動選項樣式
 - 活動信息卡片樣式
@@ -62,6 +66,7 @@
 ### 2. client/src/stores/joinRecordStore.js
 
 #### 修改內容：
+
 - **submitRecord 方法**：添加 `activityId` 參數，允許傳入選中的活動 ID
 - **payload 結構**：將 `activityId` 從固定值改為動態傳入的參數
 
@@ -74,7 +79,7 @@ const submitRecord = async () => {
     activityId: selectedRegistration.value.activityId, // 固定值
     // ...
   };
-}
+};
 
 // 修改後
 const submitRecord = async (activityId = null) => {
@@ -84,32 +89,37 @@ const submitRecord = async (activityId = null) => {
     activityId: activityId || -1, // 動態傳入的值
     // ...
   };
-}
+};
 ```
 
 ## 新增功能特色
 
 ### 1. 活動篩選
+
 - 只顯示狀態為 `upcoming`（即將開始）或 `ongoing`（進行中）的活動
 - 按日期排序，最近的活動排在前面
 - 支援搜尋和篩選功能
 
 ### 2. 活動選擇界面
+
 - **下拉選單**：使用 Element Plus 的 `el-select` 組件
 - **可搜尋**：支援輸入關鍵字搜尋活動
 - **可清空**：支援清空選擇
 - **豐富的選項顯示**：顯示活動名稱、日期、類型、地點等信息
 
 ### 3. 活動詳細信息
+
 - **信息卡片**：選中活動後顯示詳細信息
 - **狀態標籤**：使用不同顏色的標籤顯示活動狀態
 - **網格佈局**：使用響應式網格顯示活動詳細信息
 
 ### 4. 表單驗證
+
 - 添加活動選擇的必填驗證
 - 在提交前檢查是否已選擇活動
 
 ### 5. 調試信息
+
 - 在開發模式下顯示活動相關的調試信息
 - 包含活動總數、可用活動數、選中活動 ID 等
 
@@ -136,6 +146,7 @@ const submitRecord = async (activityId = null) => {
 ## 活動類型和狀態
 
 ### 活動類型 (item_type)
+
 - `ceremony`: 法會
 - `lecture`: 講座
 - `meditation`: 禪修
@@ -145,6 +156,7 @@ const submitRecord = async (activityId = null) => {
 - `other`: 其他
 
 ### 活動狀態 (state)
+
 - `upcoming`: 即將開始（顯示為警告標籤）
 - `ongoing`: 進行中（顯示為成功標籤）
 - `completed`: 已完成（顯示為信息標籤）

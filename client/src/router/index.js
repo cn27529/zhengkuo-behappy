@@ -47,6 +47,46 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/join-record-card-print",
+    title: "牌位打印",
+    component: () => import("../views/JoinRecordCardPrint.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/join-record-receipt-print",
+    title: "收據打印",
+    component: () => import("../views/JoinRecordReceiptPrint.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/states-control",
+    title: "參加記錄狀態控制台",
+    name: "JoinRecordStatesControl",
+    component: () => import("../views/JoinRecordStatesControl.vue"),
+    beforeEnter: (to, from, next) => {
+      console.log("🚪 進入 JoinRecordStatesControl 路由");
+      const pageStateStore = usePageStateStore();
+      pageStateStore.clearPageState("joinRecordStates");
+      console.log("🚪 清除頁面狀態");
+      next();
+    },
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/report-control",
+    title: "參加記錄報表",
+    name: "JoinRecordReportControl",
+    component: () => import("../views/JoinRecordReportControl.vue"),
+    beforeEnter: (to, from, next) => {
+      console.log("🚪 進入 JoinRecordReportControl 路由");
+      const pageStateStore = usePageStateStore();
+      pageStateStore.clearPageState("joinRecordReport");
+      console.log("🚪 清除頁面狀態");
+      next();
+    },
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/animated-number",
     component: () => import("../views/AnimatedNumber.vue"),
   },

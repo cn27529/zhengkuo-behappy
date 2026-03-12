@@ -4,6 +4,9 @@ import { authService as directusAuth } from "../services/authService.js";
 import { registrationService as directusRegistration } from "../services/registrationService.js";
 import { monthlyDonateService as directusMonthlyDonate } from "../services/monthlyDonateService.js";
 import { joinRecordService as directusJoinRecord } from "../services/joinRecordService.js";
+import { mydataService as directusMydata } from "../services/mydataService.js";
+import { directusUsersService as directusUsers } from "../services/directusUsersService.js";
+import { DateUtils } from "../utils/dateUtils.js";
 
 // Rust 服務（延遲加載，避免初始化錯誤）
 let rustServices = null;
@@ -18,12 +21,16 @@ async function loadRustServices() {
       { rustRegistrationService },
       { rustMonthlyDonateService },
       { rustJoinRecordService },
+      { rustMyDataService },
+      { rustDirectusUsersService },
     ] = await Promise.all([
       import("../rustServices/rustActivityService.js"),
       import("../rustServices/rustAuthService.js"),
       import("../rustServices/rustRegistrationService.js"),
       import("../rustServices/rustMonthlyDonateService.js"),
       import("../rustServices/rustJoinRecordService.js"),
+      import("../rustServices/rustMyDataService.js"),
+      import("../rustServices/rustDirectusUsersService.js"),
     ]);
 
     rustServices = {
@@ -32,6 +39,8 @@ async function loadRustServices() {
       registration: rustRegistrationService,
       monthlyDonate: rustMonthlyDonateService,
       joinRecord: rustJoinRecordService,
+      mydata: rustMyDataService,
+      user: rustDirectusUsersService,
     };
 
     console.log("✅ Rust 服務加載完成");
@@ -66,6 +75,8 @@ class ServiceAdapter {
       registration: directusRegistration,
       monthlyDonate: directusMonthlyDonate,
       joinRecord: directusJoinRecord,
+      mydata: directusMydata,
+      user: directusUsers,
     };
 
     // 錯誤計數器
@@ -301,6 +312,7 @@ class ServiceAdapter {
       "getParticipationRecordsByRegistrationId",
       "getParticipationRecordsByActivityId",
       "updateParticipationRecord",
+      "updateByReceiptPrint",
       "deleteParticipationRecord",
       "saveRecord",
       "getActivityConfig",
@@ -312,6 +324,38 @@ class ServiceAdapter {
     joinRecordMethods.forEach((method) => {
       this[method] = (...args) =>
         this.callServiceMethod("joinRecord", method, ...args);
+    });
+
+    // Mydata 方法
+    const mydataMethods = [
+      "getAllMydata",
+      "getMydataById",
+      "createMydata",
+      "updateMydata",
+      "deleteMydata",
+      "getMydataByFormName",
+      "getMydataByState",
+      "searchMydata",
+      "handleMydataDirectusError",
+    ];
+
+    mydataMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("mydata", method, ...args);
+    });
+
+    // DirectusUsers 方法
+    const userMethods = [
+      "getUserById",
+      "getAllUsers",
+      "getUsersByStatus",
+      "getUsersByRole",
+      "handleUserError",
+    ];
+
+    userMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("user", method, ...args);
     });
   }
 
@@ -461,6 +505,7 @@ class ServiceAdapter {
       "getParticipationRecordsByRegistrationId",
       "getParticipationRecordsByActivityId",
       "updateParticipationRecord",
+      "updateByReceiptPrint",
       "deleteParticipationRecord",
       "saveRecord",
       "getActivityConfig",
@@ -472,6 +517,58 @@ class ServiceAdapter {
     methods.forEach((method) => {
       proxy[method] = (...args) =>
         this.callServiceMethod("joinRecord", method, ...args);
+    });
+
+    return proxy;
+  }
+
+  get mydataService() {
+    const proxy = {
+      getCurrentMode: () => this.getCurrentMode(),
+      setMode: (mode) => this.setMode(mode),
+      getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
+    };
+
+    const methods = [
+      "getAllMydata",
+      "getMydataById",
+      "createMydata",
+      "updateMydata",
+      "deleteMydata",
+      "getMydataByFormName",
+      "getMydataByState",
+      "searchMydata",
+      "handleMydataDirectusError",
+    ];
+
+    methods.forEach((method) => {
+      proxy[method] = (...args) =>
+        this.callServiceMethod("mydata", method, ...args);
+    });
+
+    return proxy;
+  }
+
+  get directusUsersService() {
+    const proxy = {
+      getCurrentMode: () => this.getCurrentMode(),
+      setMode: (mode) => this.setMode(mode),
+      getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
+    };
+
+    const methods = [
+      "getUserById",
+      "getAllUsers",
+      "getUsersByStatus",
+      "getUsersByRole",
+      "handleUserDirectusError",
+    ];
+
+    methods.forEach((method) => {
+      proxy[method] = (...args) =>
+        this.callServiceMethod("user", method, ...args);
     });
 
     return proxy;
@@ -517,7 +614,7 @@ class ServiceAdapter {
         success: true,
         backend,
         status: "healthy",
-        timestamp: new Date().toISOString(),
+        timestamp: DateUtils.getCurrentISOTime(),
       };
     } catch (error) {
       return {

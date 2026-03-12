@@ -1,5 +1,5 @@
 {
-  "name": "rust-axum",
+  "name": "temple-management-rust-axum",
   "version": "1.0.0",
   "description": "rust axum api server",
   "main": "index.js",

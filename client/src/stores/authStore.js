@@ -2,11 +2,15 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authService } from "../services/authService.js";
+//import { rustAuthService as authService } from "../rustServices/rustAuthService.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js";
 import userData from "../data/auth_user.json";
+import mockData from "../data/mock_directus_users.json";
 
 export const useAuthStore = defineStore("auth", () => {
+  const allUserInfo = ref(null);
   const userInfo = ref(null);
+
   const isAuthenticated = ref(false);
   const isLoading = ref(false);
 
@@ -44,7 +48,7 @@ export const useAuthStore = defineStore("auth", () => {
     });
   };
 
-  const login = async (username, password) => {
+  const submitLogin = async (username, password) => {
     isLoading.value = true;
 
     try {
@@ -68,6 +72,8 @@ export const useAuthStore = defineStore("auth", () => {
           );
         }
 
+        await getAllUsers();
+
         resetInactivityTimer();
         setupActivityListeners();
 
@@ -89,6 +95,33 @@ export const useAuthStore = defineStore("auth", () => {
       throw error;
     } finally {
       isLoading.value = false;
+    }
+  };
+
+  const getAllUsers = async () => {
+    try {
+      if (serviceAdapter.getIsMock()) {
+        console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
+        allUserInfo.value = mockData;
+        const usersStr = JSON.stringify(mockData);
+        console.log("usersStr:", usersStr);
+        sessionStorage.setItem("allUsers", usersStr);
+        return allUserInfo.value;
+      }
+
+      const result = await serviceAdapter.getAllUsers();
+      if (result.success) {
+        console.log(`✅ 成功獲取 ${result.data.length} 全部使用者`);
+        const usersStr = JSON.stringify(result.data);
+        console.log("usersStr:", usersStr);
+        sessionStorage.setItem("allUsers", usersStr);
+        allUserInfo.value = JSON.parse(usersStr);
+      }
+      allUserInfo.value;
+      return allUserInfo.value;
+    } catch (error) {
+      console.error("getAllUsers數據失敗:", error);
+      throw new Error("getAllUsers數據失敗:", error);
     }
   };
 
@@ -253,6 +286,7 @@ export const useAuthStore = defineStore("auth", () => {
       sessionStorage.removeItem("auth-user");
       sessionStorage.removeItem("auth-token");
       sessionStorage.removeItem("auth-refresh-token");
+      sessionStorage.removeItem("allUsers");
 
       console.log("用戶已退出登入");
     }
@@ -316,6 +350,10 @@ export const useAuthStore = defineStore("auth", () => {
 
   // 獲取所有用戶（僅管理員權限）
   const getUsers = async () => {
+    // const usersStr = sessionStorage.getItem("allUsers");
+    // const allUsers = JSON.parse(usersStr);
+    // return allUsers;
+
     if (!hasRole("admin")) {
       throw new Error("權限不足");
     }
@@ -387,13 +425,15 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   return {
+    allUser: allUserInfo,
     user: userInfo,
     isAuthenticated,
     isLoading,
     authMode,
     isDev,
+    getAllUsers,
     // 原有的登入方法
-    login,
+    submitLogin,
     // 新增的 2FA 方法
     loginWith2FA,
     verify2FA,

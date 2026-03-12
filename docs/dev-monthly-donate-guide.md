@@ -1,6 +1,6 @@
 # Monthly Donate（`每月贊助`）開發指南
 
-## 功能概述
+## 概述說明
 
 Monthly Donate 是寺廟管理系統中的`每月贊助`管理模組，專門處理信眾的定期月度贊助，支援預繳、不連續月份贊助、24個月視窗顯示等複雜業務邏輯。
 
@@ -348,12 +348,14 @@ async addDonateItem(donorName, newItem) {
   </el-table-column>
 
   <!-- 操作欄 -->
-  <el-table-column label="操作" width="200">
+  <el-table-column label="操作" width="150" fixed="right" align="center">
     <template #default="{ row }">
-      <el-button size="small" @click="openAddDonationDialog(row)">
-        加贊助
-      </el-button>
-      <el-button size="small" @click="viewDetails(row)"> 查看詳細 </el-button>
+      <div class="action-buttons-group">
+        <el-button size="small" @click="openAddDonationDialog(row)">
+          加贊助
+        </el-button>
+        <el-button size="small" @click="viewDetails(row)"> 查看詳細 </el-button>
+      </div>
     </template>
   </el-table-column>
 </el-table>

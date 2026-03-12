@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleSubmitForm">
       <div class="form-group">
         <label for="name">姓名</label>
         <input
@@ -148,7 +148,7 @@ export default {
       return isValid;
     };
 
-    const handleSubmit = () => {
+    const handleSubmitForm = () => {
       if (!validateForm()) return;
 
       loading.value = true;
@@ -177,7 +177,7 @@ export default {
       errors,
       success,
       loading,
-      handleSubmit,
+      handleSubmitForm,
     };
   },
 };
