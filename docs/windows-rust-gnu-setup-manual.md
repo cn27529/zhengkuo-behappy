@@ -87,30 +87,22 @@ Test-Path "D:\msys64\mingw64\bin\dlltool.exe"
 
 ## 3. 安裝 Rust（GNU 模式）
 
-### 3.1 下載 rustup-init.exe
+### 3.1 使用 git bash 安裝 rustup
 
-- 官方頁面：https://rustup.rs
-- 下載 `rustup-init.exe`
+在 git bash 中執行：
 
-### 3.2 執行安裝（選擇 GNU 工具鏈）
-
-在 PowerShell 中執行：
-
-```powershell
-./rustup-init.exe
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-安裝過程中：
+### 3.2 安裝並切換到 GNU 工具鏈
 
-1. 選擇 `2) Customize installation`
-2. 選擇 `x86_64-pc-windows-gnu` 作為預設工具鏈
-3. 其餘選項保持預設
+安裝完成後，在 git bash 中執行：
 
-> 若已安裝過 Rust（MSVC 路線），在 PowerShell 執行：
-> ```powershell
-> rustup toolchain install stable-x86_64-pc-windows-gnu
-> rustup default stable-x86_64-pc-windows-gnu
-> ```
+```bash
+rustup toolchain install stable-x86_64-pc-windows-gnu
+rustup default stable-x86_64-pc-windows-gnu
+```
 
 ### 3.3 驗證 Rust 安裝
 
