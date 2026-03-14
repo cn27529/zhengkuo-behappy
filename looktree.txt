@@ -19,5 +19,3 @@ tree -L 3 -I "node_modules|.git|dist|*.md" ./docker > docker-tree.txt
 
 
 tree -L 5 -I "node_modules|target|dist|.lock|.git|.kiro|.github|*.md|*.txt|*.log|*.yaml" ./ > all-tree.txt
-
-tree -L 2 -I "results|requitements|node_modules|target|dist|.lock|.git|.kiro|.github|*.md|*.txt|*.log|*.yaml" ./ > apps-tree.txt
