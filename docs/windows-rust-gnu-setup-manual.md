@@ -1,9 +1,5 @@
 # Windows Rust 建構環境設定手冊（MSYS2 + GNU 模式）
 
-## 概述說明
-
-本文檔提供在 Windows 環境下使用 MSYS2 與 GNU 工具鏈建構 Rust 專案的完整設定指南。適用於無法使用 MSVC 或需要 GNU 工具鏈的專案環境，包含 MSYS2 安裝、MinGW-w64 工具鏈配置、Rust GNU 模式設定，以及常見編譯問題的解決方案。
-
 ## 適用情境
 
 - 客戶端現場無法使用 MSVC（無 Windows SDK / C 槽空間不足）
@@ -152,14 +148,14 @@ RING_PREGENERATE_ASM = "1"
 
 ### 4.3 各欄位說明
 
-| 欄位                   | 用途                                                |
-| ---------------------- | --------------------------------------------------- |
-| `linker`               | 告訴 Rust 連結階段使用哪個 gcc                      |
-| `ar`                   | 靜態函式庫打包工具路徑                              |
-| `runner`               | 執行編譯結果的方式（Windows 原生用 cmd）            |
-| `CC_*`                 | C 編譯器路徑（給使用 `cc` crate 的套件）            |
-| `CXX_*`                | C++ 編譯器路徑（給使用 `cxx` / `bindgen` 的套件）   |
-| `AR_*`                 | ar 工具路徑（給 C/C++ 相關的 build script）         |
+| 欄位 | 用途 |
+|------|------|
+| `linker` | 告訴 Rust 連結階段使用哪個 gcc |
+| `ar` | 靜態函式庫打包工具路徑 |
+| `runner` | 執行編譯結果的方式（Windows 原生用 cmd） |
+| `CC_*` | C 編譯器路徑（給使用 `cc` crate 的套件） |
+| `CXX_*` | C++ 編譯器路徑（給使用 `cxx` / `bindgen` 的套件） |
+| `AR_*` | ar 工具路徑（給 C/C++ 相關的 build script） |
 | `RING_PREGENERATE_ASM` | 修正 `ring` 密碼學套件在 Windows GNU 路線的編譯問題 |
 
 ### 4.4 確認設定
@@ -263,27 +259,27 @@ directory = "vendor"
 
 ### ✅ 常見錯誤與解決
 
-| 錯誤訊息                                         | 原因                     | 解決方式                                        |
-| ------------------------------------------------ | ------------------------ | ----------------------------------------------- |
-| `linker link.exe not found`                      | 誤用 MSVC 工具鏈         | 確認 Rust 為 GNU 模式                           |
-| `gcc not found`                                  | PATH 未設定              | 檢查 MSYS2 bin 路徑                             |
-| `Compiler family detection failed`               | 缺少 CC 環境變數         | 設定 `$env:CC="gcc"`                            |
+| 錯誤訊息 | 原因 | 解決方式 |
+|----------|------|----------|
+| `linker link.exe not found` | 誤用 MSVC 工具鏈 | 確認 Rust 為 GNU 模式 |
+| `gcc not found` | PATH 未設定 | 檢查 MSYS2 bin 路徑 |
+| `Compiler family detection failed` | 缺少 CC 環境變數 | 設定 `$env:CC="gcc"` |
 | `could not find native static library 'pthread'` | MinGW64 工具鏈安裝不完整 | 重新執行 `pacman -S mingw-w64-x86_64-toolchain` |
 
 ---
 
 ## 8. 附錄：常用指令速查
 
-| 用途                  | 指令                                          |
-| --------------------- | --------------------------------------------- |
-| 更新 MSYS2 套件       | `pacman -Syu`                                 |
-| 安裝新套件            | `pacman -S <package>`                         |
+| 用途 | 指令 |
+|------|------|
+| 更新 MSYS2 套件 | `pacman -Syu` |
+| 安裝新套件 | `pacman -S <package>` |
 | 設定 GNU 工具鏈為預設 | `rustup default stable-x86_64-pc-windows-gnu` |
-| 列出已安裝工具鏈      | `rustup toolchain list`                       |
-| 清除編譯快取          | `cargo clean`                                 |
-| 顯示詳細編譯過程      | `cargo build --verbose`                       |
-| 預先打包所有依賴      | `cargo vendor`                                |
+| 列出已安裝工具鏈 | `rustup toolchain list` |
+| 清除編譯快取 | `cargo clean` |
+| 顯示詳細編譯過程 | `cargo build --verbose` |
+| 預先打包所有依賴 | `cargo vendor` |
 
 ---
 
-_文件版本：v1.0 ／ 適用平台：Windows 10 / 11 x86_64_
+*文件版本：v1.0 ／ 適用平台：Windows 10 / 11 x86_64*

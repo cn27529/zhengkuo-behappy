@@ -4,8 +4,6 @@
 
 與AI的記錄
 
-## 活動參加的記錄查詢
-
 我要生成"活動參加的記錄查詢"，我們依照 ./client\src\views\RegistrationList.vue, ./client\src\stores\registrationQueryStore.js 的模版與代碼的建構的方式進行，命名為 JoinRecordList.vue, joinRecordQueryStore.js，列表的＂操作＂：列印表單，刪除，不用實作 等下一階段再實現，注意 分頁, storeToRefs, 調試信息 的實現。查詢條件是 state, items 欄位。列表的資料你可以參考 ./client\src\data\mock_participation_records.json 檔案，有問題可以與我討論。
 
 ## kiro ai
@@ -366,16 +364,10 @@ client/src/views/Dashboard.vue 己有變更，請更新 docs/dev-dashboard-guide
 我們需要一份客戶端主機環境建置指南，這是要前往客戶端現場的環境配置指南文件，我們的選設是客戶端是一個全新的 windows 環境，我們需要準備這份文件，依據文件的指引完成環境的配置並成功的運行 docs/architecture-overview.md 的每個項目，雖然目前在我的 macos 運行的很正常，但是我們需要這份文件，依照 docs/setup-SOP-guide.md 的文件進行。也提供 all-tree.txt 全部項目的樹狀結構。請將內容集成在 setup-SOP-guide.md 讓我能夠下載它。
 
 ## 更新 Windows Rust 建構環境設定手冊（MSYS2 + GNU 模式）
-
 更新 docs\windows-rust-gnu-setup-manual.md, 內容在使用 powershell 安裝 rustup-init.exe 的執行改為 git bash 安裝 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 curl 完後接裝 rustup toolchain install stable-x86_64-pc-windows-gnu
 接著切換到gnu路線 rustup default stable-x86_64-pc-windows-gnu
 其餘不變
 
-## 更新所有服務的安裝
 
-依據 docs/windows-rust-gnu-setup-manual.md 內容，調適 docs/windows-run-apps-guide.md，己經不再使用 Visual Studio Build Tools 2022 或 MSVC 純走 GUN 管道
 
-兩份文檔依據文檔內容加上"## 概述說明" ，這是為了 docs/generate-books.js 運行要用的
-
-將 Node.js 不單獨安裝 要使用 nvm for Windows，方便切換Node.js版本
