@@ -471,6 +471,7 @@ node test-complete.js
 | `registry fetch failed`                          | 防火牆封鎖 crates.io           | 設定 Proxy 或開放 crates.io 的 443/80 Port                            |
 | `database is locked`                             | SQLite 多進程衝突              | 確認只有一個 Rust 後端實例在執行                                      |
 | `Cannot connect to MongoDB`                      | MONGODB_URI 錯誤或網路問題     | 確認 `.env` 設定正確，或改用本地 MongoDB                              |
+| Directus Admin 登入後無法載入資料                | Windows 防火牆封鎖 Node.js 外出連線 | 見 8.4 節：開放 Node.js 防火牆權限                               |
 | `Module not found`                               | npm install 未完成             | 刪除 `node_modules` 重新執行 `npm install`                            |
 | `Compiler family detection failed`               | 缺少 CC 環境變數               | 設定 `$env:CC="gcc"` 並加入 PowerShell Profile                        |
 | `could not find native static library 'pthread'` | MinGW64 工具鏈安裝不完整       | 重新執行 `pacman -S mingw-w64-x86_64-toolchain`                       |
@@ -519,7 +520,22 @@ bash scripts/test_rust_registration_api.sh
 - `%APPDATA%\npm-cache`
 - `D:\msys64`（或您的 MSYS2 安裝路徑）
 
-### 8.3 啟用 Windows 長路徑支援
+### 8.3 開放 Node.js 防火牆權限
+
+Windows 11 防火牆預設會封鎖 Node.js 的外出連線，導致 Directus Admin 登入後無法載入資料。
+
+**解決步驟：**
+
+1. 開啟「控制台」→「系統及安全性」→「Windows Defender 防火牆」
+2. 點選左側「允許應用程式或功能通過 Windows Defender 防火牆」
+3. 點選右上角「變更設定」（需管理員權限）
+4. 在清單中找到 **node.exe** 項目
+5. 將「私人」與「公用」兩個欄位都打勾
+6. 按「確定」儲存
+
+> 📌 若清單中找不到 node.exe，點選「允許其他應用程式」手動新增，路徑通常為 `C:\Program Files\nodejs\node.exe` 或 nvm 安裝路徑下的 `node.exe`。
+
+### 8.4 啟用 Windows 長路徑支援
 
 Rust crates 有時會超過 Windows 預設的 260 字元路徑限制，建議開啟長路徑支援：
 

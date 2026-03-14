@@ -379,3 +379,7 @@ curl 完後接裝 rustup toolchain install stable-x86_64-pc-windows-gnu
 兩份文檔依據文檔內容加上"## 概述說明" ，這是為了 docs/generate-books.js 運行要用的
 
 將 Node.js 不單獨安裝 要使用 nvm for Windows，方便切換Node.js版本
+
+## Windows Defender 防火牆
+
+允許應用程式透過 Windows Defender 防火牆，找 node.exe 項目，公用（打勾）內部（打勾），兩個都打勾
