@@ -62,11 +62,3 @@ curl -X POST http://localhost:3000/api/activities \
 curl -X POST http://localhost:3000/api/receipt-numbers/generate \
   -H "Content-Type: application/json" \
   -d '{"recordId": 123, "receiptType": "stamp"}'
-
-
-# 查看所有運行的服務進程
-ps aux | grep -E "node|rust-backend|directus"
-
-
-# 或者用 PowerShell 查看端口佔用
-netstat -ano | findstr :3000
