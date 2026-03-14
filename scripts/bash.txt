@@ -1,0 +1,109 @@
+# 检查 Directus 服务是否运行
+curl -s "http://localhost:8055/server/info" | jq '.'
+
+# 查看 mydata
+curl -s "http://localhost:8055/items/mydata" | jq '.'
+# 帶欄位的
+curl -s "http://localhost:8055/items/mydata?fields=id,formName,state,contact.name,contact.phone" | jq '.'
+curl -s "http://localhost:8055/items/mydata?fields=*,contact.*" | jq '.'
+
+
+# Directus
+# 祈福登記 - registrationDB
+curl -s "http://localhost:8055/items/registrationDB" | jq '.'
+# 法會活動 - activityDB
+curl -s "http://localhost:8055/items/activityDB" | jq '.'
+# 每月贊助 - monthlyDonateDB
+curl -s "http://localhost:8055/items/monthlyDonateDB" | jq '.'
+# 參加記錄 - participationRecordDB
+curl -s "http://localhost:8055/items/participationRecordDB" | jq '.'
+curl -s "http://localhost:8055/items/participationRecordDB?fields=*"  | jq '.'
+
+
+# 使用 curl 測試 OPTIONS 請求
+curl -X OPTIONS http://localhost:3000/api/activities \
+  -H "Origin: http://localhost:5173" \
+  -H "Access-Control-Request-Method: GET" \
+  -H "Access-Control-Request-Headers: content-type" \
+  -v
+
+
+# rust-axum 
+curl -s "http://localhost:3000/api/receipt-numbers?fields=*,contact.*" | jq '.'
+
+curl -s "http://localhost:3000/api/my-data?fields=*,contact.*" | jq '.'
+
+# 法會活動
+curl -s "http://localhost:3000/api/activities?fields=*,contact.*" | jq '.'
+
+# 祈福登記
+curl -s "http://localhost:3000/api/registrations?fields=*,contact.*" | jq '.'
+
+# 每月贊助
+curl -s "http://localhost:3000/api/monthly-donates?fields=*,contact.*" | jq '.'
+
+# 參加記錄
+curl -s "http://localhost:3000/api/participation-records?fields=*,contact.*" | jq '.'
+
+# 由 Rust 創建的活動
+curl -X POST http://localhost:3000/api/activities \
+ -H "Content-Type: application/json" \
+ -d '{
+"activityId": "ACT-RUST-001",
+"name": "Rust 創建的活動",
+"itemType": "ceremony",
+"participants": 100,
+"date": "2024-02-10T10:00:00Z",
+"state": "upcoming",
+"icon": "🦀"
+}'
+
+# 使用 curl 或 Postman 測試生成編號
+curl -X POST http://localhost:3000/api/receipt-numbers/generate \
+  -H "Content-Type: application/json" \
+  -d '{"recordId": 123, "receiptType": "stamp"}'
+
+
+# 查看所有運行的服務進程
+ps aux | grep -E "node|rust-backend|directus"
+
+
+# 或者用 PowerShell 查看端口佔用
+netstat -ano | findstr :3000
+
+# 查看目錄空量
+
+依大小排序（由大到小）
+du -sh * | sort -rh
+
+依大小排序（由小到大）
+du -sh * | sort -h
+
+依檔名排序
+du -sh * | sort
+
+# cp -a 與 -p 的差異
+
+# 保持檔案權限（避免權限問題）
+cp -rp /var/www/html/* /new/location/
+
+# -p：保持基本屬性
+cp -rp source/ dest/
+
+# -a：保持所有屬性（包含連結、ACL、xattr等）
+cp -a source/ dest/
+# -a 等於：cp -dR --preserve=all
+
+# 解壓縮
+
+# 1. 先解壓縮
+unzip msys64.zip
+
+# 2. 確認解壓出來的內容
+ls -la
+
+# 3. 如果需要移動到特定位置
+mv msys64/ /c/tools/
+
+# 或複製到其他位置
+cp -rv msys64/ /d/programs/
