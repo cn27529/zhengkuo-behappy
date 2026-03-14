@@ -382,4 +382,4 @@ curl 完後接裝 rustup toolchain install stable-x86_64-pc-windows-gnu
 
 ## Windows Defender 防火牆
 
-允許應用程式透過 Windows Defender 防火牆，找 node.exe 項目，公用（打勾）內部（打勾），兩個都打勾
+更新 docs/windows-run-apps-guide.md 文檔。今天發現 Windows 11 防火牆預設阻擋 Node.js 的『外出連線』，導致 Directus Admin 登入後無法載入資料；只需在『允許應用程式通過防火牆』中，將 Node.js 的『私人網路』權限打勾即可解決。允許應用程式透過 Windows Defender 防火牆，找 node.exe 項目，公用（打勾）內部（打勾），兩個都打勾。
