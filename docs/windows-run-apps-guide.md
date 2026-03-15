@@ -108,6 +108,14 @@ npm --version
 
 > ⚠️ **注意：** 若之前已安裝過 Node.js，建議先完全移除後再安裝 nvm，避免 PATH 衝突。
 
+> ⚠️ **PowerShell 執行原則問題：** 若執行 `npm` 時出現「因為這個系統上已停用指令碼執行，所以無法載入 npm.ps1」錯誤，請執行以下指令解除限制：
+>
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+> ```
+>
+> 之後重新執行 `npm --version` 確認正常。
+
 ### 2.3 安裝 MSYS2 與 GNU 工具鏈
 
 > 📌 此步驟為 Rust 編譯 native code 所必需，提供 gcc、ar、make 等 GNU 工具。
@@ -465,6 +473,7 @@ node test-complete.js
 | `cargo: command not found`                       | Rust 未安裝或 PATH 未設定      | 在 Git Bash 重新執行 rustup 安裝腳本，重開 Terminal                   |
 | `node: command not found`                        | nvm 未安裝或未設定 Node 版本   | 執行 `nvm use 20`，確認 `nvm list` 顯示已安裝版本                     |
 | `nvm: command not found`                         | nvm 未安裝或 PATH 未設定       | 重新安裝 nvm-windows，重開 Terminal                                   |
+| `npm : 無法載入 npm.ps1，已停用指令碼執行`       | PowerShell 執行原則限制        | 執行 `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` |
 | `Port 3000 already in use`                       | 其他程式佔用 Port              | `netstat -ano \| findstr :3000`，找出 PID 後 `taskkill /F /PID <PID>` |
 | `EACCES: permission denied (symlink)`            | Windows 符號連結需要管理員權限 | 以管理員開啟 Terminal 或啟用 Developer Mode                           |
 | 前端空白頁面                                     | Vite 未啟動或 API 連線失敗     | 確認 `npm run dev` 已執行，檢查 `.env.local` 設定                     |

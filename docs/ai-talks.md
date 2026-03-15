@@ -383,3 +383,26 @@ curl 完後接裝 rustup toolchain install stable-x86_64-pc-windows-gnu
 ## Windows Defender 防火牆
 
 更新 docs/windows-run-apps-guide.md 文檔。今天發現 Windows 11 防火牆預設阻擋 Node.js 的『外出連線』，導致 Directus Admin 登入後無法載入資料；只需在『允許應用程式通過防火牆』中，將 Node.js 的『私人網路』權限打勾即可解決。允許應用程式透過 Windows Defender 防火牆，找 node.exe 項目，公用（打勾）內部（打勾），兩個都打勾。
+
+## Windows PowerShell 阻擋 npm 解法
+
+更新 docs/windows-run-apps-guide.md 文檔，Windows PowerShell 阻擋 npm 的解法，將解法加入文檔適合的位置。
+
+```powershell
+PS C:\> nvm -v
+1.2.2
+PS C:\> node -v
+v22.21.0
+PS C:\> npm -v
+npm : 因為這個系統上已停用指令碼執行，所以無法載入 C:\nvm\nodejs\npm.ps1 檔
+案。如需詳細資訊，請參閱 about_Execution_Policies，網址為 https:/go.microsof
+t.com/fwlink/?LinkID=135170。
+位於 線路:1 字元:1
++ npm -v
++ ~~~
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+PS C:\> Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+PS C:\> npm -v
+10.9.4
+```
