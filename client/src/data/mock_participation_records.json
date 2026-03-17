@@ -1,10 +1,1398 @@
 [
   {
-    "id": 67,
+    "id": 76,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 14:13:18",
+    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_updated": "2026-03-17 14:13:52",
+    "registrationId": 111,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "木",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 3,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "卡卡西",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "鳴人",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 4,
+            "personName": "白眼",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 1800,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 300,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0928230520",
+      "name": "卡卡西",
+      "otherRelationship": "",
+      "phone": "08-89897766",
+      "relationship": "朋友"
+    },
+    "totalAmount": 4000,
+    "discountAmount": 0,
+    "finalAmount": 4000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "26030023",
+    "receiptIssued": "stamp",
+    "receiptIssuedAt": "2026-03-17T14:13:52.225Z",
+    "receiptIssuedBy": "釋測試",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "木葉村",
+    "createdAt": "2026-03-17T14:13:18.904Z",
+    "updatedAt": "2026-03-17T14:13:52.226Z"
+  },
+  {
+    "id": 75,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 14:08:40",
+    "registrationId": 109,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "美國舊金山灣區華人社區",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "三代",
+            "surname": "阮",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "美國舊金山灣區華人社區",
+        "sourceData": [
+          {
+            "id": 2,
+            "name": "阮今天",
+            "notes": "哥哥",
+            "zodiac": "牛"
+          },
+          {
+            "id": 3,
+            "name": "阮明天",
+            "notes": "弟弟",
+            "zodiac": "雞"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "美國舊金山灣區華人社區",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "阮今天",
+            "notes": "哥哥",
+            "zodiac": "牛"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "阮明天",
+            "notes": "弟弟",
+            "zodiac": "雞"
+          }
+        ],
+        "subtotal": 600,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "美國舊金山灣區華人社區",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "阮今天",
+            "notes": "哥哥",
+            "zodiac": "牛"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "阮明天",
+            "notes": "弟弟",
+            "zodiac": "雞"
+          }
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0988777666",
+      "name": "阮今天",
+      "otherRelationship": "五月天",
+      "phone": "",
+      "relationship": "其它"
+    },
+    "totalAmount": 1800,
+    "discountAmount": 0,
+    "finalAmount": 1800,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "oiuoiuiuouou",
+    "createdAt": "2026-03-17T14:08:40.007Z"
+  },
+  {
+    "id": 74,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 14:08:20",
+    "registrationId": 110,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "台北市永和區永福路二段200號33樓",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "五",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 1,
+        "source": "salvation.survivors",
+        "sourceAddress": "台北市永和區永福路二段200號33樓",
+        "sourceData": [
+          {
+            "id": 2,
+            "name": "五月天",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市永和區永福路二段200號33樓",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "五月天",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 300,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市永和區永福路二段200號33樓",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "五月天",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0955666222",
+      "name": "五月天",
+      "otherRelationship": "五月天",
+      "phone": "",
+      "relationship": "本家"
+    },
+    "totalAmount": 1400,
+    "discountAmount": 0,
+    "finalAmount": 1400,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "9980809",
+    "createdAt": "2026-03-17T14:08:20.128Z"
+  },
+  {
+    "id": 73,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 14:01:32",
+    "registrationId": 66,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "高雄市前鎮區中華五路200號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "張國華",
+            "notes": "",
+            "zodiac": "雞"
+          }
+        ],
+        "subtotal": 300,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "高雄市前鎮區中華五路200號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "張國華",
+            "notes": "",
+            "zodiac": "雞"
+          }
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0945-678-901",
+      "name": "張國華",
+      "otherRelationship": "姪子",
+      "phone": "",
+      "relationship": "其它"
+    },
+    "totalAmount": 400,
+    "discountAmount": 0,
+    "finalAmount": 400,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "123123",
+    "createdAt": "2026-03-17T14:01:32.254Z"
+  },
+  {
+    "id": 72,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 14:01:09",
+    "registrationId": 76,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "台中市西區五權路100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "劉府"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "台中市西區五權路100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "黃雅雯",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "name": "劉建國",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "黃雅雯",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "劉建國",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "劉小妹",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台中市西區五權路100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "黃雅雯",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "劉建國",
+            "notes": "先生",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "劉小妹",
+            "notes": "女兒",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 1800,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台中市西區五權路100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "黃雅雯",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "劉建國",
+            "notes": "先生",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "劉小妹",
+            "notes": "女兒",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台中市西區五權路100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "黃雅雯",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "劉建國",
+            "notes": "先生",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "劉小妹",
+            "notes": "女兒",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 300,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "",
+      "name": "黃雅雯",
+      "otherRelationship": "",
+      "phone": "04-23456789",
+      "relationship": "朋友"
+    },
+    "totalAmount": 4000,
+    "discountAmount": 0,
+    "finalAmount": 4000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "2312313",
+    "createdAt": "2026-03-17T14:01:09.451Z"
+  },
+  {
+    "id": 71,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 14:00:43",
+    "registrationId": 75,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "南投縣埔里鎮中山路三段1000號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "舅舅祖先",
+            "surname": "梁氏"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "南投縣埔里鎮中山路三段1000號",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "梁小琪",
+            "notes": "",
+            "zodiac": "狗"
+          },
+          {
+            "id": 2,
+            "name": "梁阿姨",
+            "notes": "阿姨",
+            "zodiac": "豬"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "梁小琪",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "南投縣埔里鎮中山路三段1000號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "梁小琪",
+            "notes": "",
+            "zodiac": "狗"
+          }
+        ],
+        "subtotal": 600,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "南投縣埔里鎮中山路三段1000號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "梁小琪",
+            "notes": "",
+            "zodiac": "狗"
+          }
+        ],
+        "subtotal": 300,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "南投縣埔里鎮中山路三段1000號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "梁小琪",
+            "notes": "",
+            "zodiac": "狗"
+          }
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0925-444-111",
+      "name": "梁小琪",
+      "otherRelationship": "外甥女",
+      "phone": "049-55667788",
+      "relationship": "其它"
+    },
+    "totalAmount": 2000,
+    "discountAmount": 0,
+    "finalAmount": 2000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "3241234",
+    "createdAt": "2026-03-17T14:00:43.395Z"
+  },
+  {
+    "id": 70,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 14:00:19",
+    "registrationId": 77,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "新竹市北區經國路一段800號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "馮家"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "新竹市北區經國路一段800號",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "馮雅婷",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "name": "馮小弟",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "馮雅婷",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "馮小弟",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "新竹市北區經國路一段800號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "馮雅婷",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "馮小弟",
+            "notes": "弟弟",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 1200,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "新竹市北區經國路一段800號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "馮雅婷",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "馮小弟",
+            "notes": "弟弟",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 600,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 2,
+        "source": "blessing.persons",
+        "sourceAddress": "新竹市北區經國路一段800號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "馮雅婷",
+            "notes": "",
+            "zodiac": "馬"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "馮小弟",
+            "notes": "弟弟",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 200,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0937-222-777",
+      "name": "馮雅婷",
+      "otherRelationship": "",
+      "phone": "",
+      "relationship": "朋友"
+    },
+    "totalAmount": 3000,
+    "discountAmount": 0,
+    "finalAmount": 3000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "1231231",
+    "createdAt": "2026-03-17T14:00:19.154Z"
+  },
+  {
+    "id": 69,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 13:59:57",
+    "registrationId": 101,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "台北市大安區仁愛路四段100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "歷代祖先",
+            "surname": "趙府"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "台北市大安區仁愛路四段100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "name": "趙文雄",
+            "notes": "",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "name": "趙美惠",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "趙文雄",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "趙美惠",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "趙小寶",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市大安區仁愛路四段100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "趙文雄",
+            "notes": "",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "趙美惠",
+            "notes": "配偶",
+            "zodiac": "兔"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "趙小寶",
+            "notes": "兒子",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 1800,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市大安區仁愛路四段100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "趙文雄",
+            "notes": "",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "趙美惠",
+            "notes": "配偶",
+            "zodiac": "兔"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "趙小寶",
+            "notes": "兒子",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市大安區仁愛路四段100號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "趙文雄",
+            "notes": "",
+            "zodiac": "虎"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "趙美惠",
+            "notes": "配偶",
+            "zodiac": "兔"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "趙小寶",
+            "notes": "兒子",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 300,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0988-123-456",
+      "name": "趙文雄999",
+      "otherRelationship": "",
+      "phone": "02-27894561",
+      "relationship": "本家"
+    },
+    "totalAmount": 4000,
+    "discountAmount": 0,
+    "finalAmount": 4000,
+    "paidAmount": 0,
+    "needReceipt": "0",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "不打印",
+    "createdAt": "2026-03-17T13:59:57.503Z"
+  },
+  {
+    "id": 68,
+    "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_created": "2026-03-06 10:17:03",
+    "registrationId": 103,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "新北市永和區永和路二段200號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "九玄七祖",
+            "surname": "蘇蘇"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "新北市永和區永和路二段200號",
+        "sourceData": [
+          {
+            "id": 5,
+            "name": "蘇小妹",
+            "notes": "妹妹",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 6,
+            "name": "蘇媽媽",
+            "notes": "媽媽",
+            "zodiac": "牛"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 1,
+            "personName": "蘇怡君",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "蘇小妹",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "蘇媽媽",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新北市永和區永和路二段200號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "蘇怡君",
+            "notes": "",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "蘇小妹",
+            "notes": "妹妹",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "蘇媽媽",
+            "notes": "媽媽",
+            "zodiac": "牛"
+          }
+        ],
+        "subtotal": 1800,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新北市永和區永和路二段200號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "蘇怡君",
+            "notes": "",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "蘇小妹",
+            "notes": "妹妹",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "蘇媽媽",
+            "notes": "媽媽",
+            "zodiac": "牛"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新北市永和區永和路二段200號",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "蘇怡君",
+            "notes": "",
+            "zodiac": "蛇"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "蘇小妹",
+            "notes": "妹妹",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "蘇媽媽",
+            "notes": "媽媽",
+            "zodiac": "牛"
+          }
+        ],
+        "subtotal": 300,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0910-555-888",
+      "name": "蘇怡君",
+      "otherRelationship": "",
+      "phone": "",
+      "relationship": "朋友"
+    },
+    "totalAmount": 4000,
+    "discountAmount": 0,
+    "finalAmount": 4000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "870787089",
+    "createdAt": "2026-03-06T10:17:03.061Z"
+  },
+  {
+    "id": 67,
+    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-03-02 11:39:48",
-    "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-    "date_updated": "2026-03-03 06:01:30",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:58:33",
     "registrationId": 49,
     "activityId": 54,
     "state": "confirmed",
@@ -125,7 +1513,7 @@
     "paidAmount": 0,
     "needReceipt": "1",
     "receiptNumber": "26030007",
-    "receiptIssued": "standard",
+    "receiptIssued": "stamp",
     "receiptIssuedAt": "2026-03-03T06:01:30.082Z",
     "receiptIssuedBy": "釋小空",
     "accountingState": "pending",
@@ -142,10 +1530,10 @@
   },
   {
     "id": 66,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-03-02 10:43:37",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-03-02 11:35:06",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:58:33",
     "registrationId": 78,
     "activityId": 54,
     "state": "confirmed",
@@ -221,7 +1609,7 @@
     "paidAmount": 0,
     "needReceipt": "1",
     "receiptNumber": "26030006",
-    "receiptIssued": "standard",
+    "receiptIssued": "stamp",
     "receiptIssuedAt": "2026-03-02T11:35:05.662Z",
     "receiptIssuedBy": "釋測試(test01)",
     "accountingState": "pending",
@@ -346,7 +1734,7 @@
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-03-02 05:31:33",
     "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "date_updated": "2026-03-02 06:01:12",
+    "date_updated": "2026-03-05 04:56:42",
     "registrationId": 73,
     "activityId": 54,
     "state": "confirmed",
@@ -439,10 +1827,6 @@
     "finalAmount": 1400,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "",
-    "receiptIssued": "",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -451,7 +1835,7 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "不需打印",
+    "notes": "不打印",
     "createdAt": "2026-03-02T05:31:33.945Z"
   },
   {
@@ -459,7 +1843,7 @@
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-03-02 05:31:04",
     "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "date_updated": "2026-03-02 06:01:25",
+    "date_updated": "2026-03-05 04:56:42",
     "registrationId": 76,
     "activityId": 54,
     "state": "confirmed",
@@ -580,10 +1964,6 @@
     "finalAmount": 2200,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "",
-    "receiptIssued": "",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -592,15 +1972,15 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "不需打印",
+    "notes": "不打印",
     "createdAt": "2026-03-02T05:31:03.733Z"
   },
   {
     "id": 62,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-03-02 05:30:39",
     "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "date_updated": "2026-03-03 06:04:14",
+    "date_updated": "2026-03-05 04:58:33",
     "registrationId": 77,
     "activityId": 54,
     "state": "confirmed",
@@ -749,7 +2129,7 @@
     "paidAmount": 0,
     "needReceipt": "1",
     "receiptNumber": "26030008",
-    "receiptIssued": "standard",
+    "receiptIssued": "stamp",
     "receiptIssuedAt": "2026-03-03T06:04:14.621Z",
     "receiptIssuedBy": "超級管理員",
     "accountingState": "pending",
@@ -1107,7 +2487,7 @@
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-03-01 11:50:24",
     "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "date_updated": "2026-03-02 06:02:36",
+    "date_updated": "2026-03-05 05:41:30",
     "registrationId": 102,
     "activityId": 54,
     "state": "confirmed",
@@ -1269,7 +2649,7 @@
     "paymentNotes": "",
     "notes": "需要打印",
     "createdAt": "2026-03-01T11:50:24.734Z",
-    "updatedAt": "2026-03-01T12:05:20.009Z"
+    "updatedAt": "2026-03-05T05:41:30.732Z"
   },
   {
     "id": 58,
@@ -1859,7 +3239,7 @@
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:40:27",
     "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "date_updated": "2026-03-03 06:08:33",
+    "date_updated": "2026-03-05 04:58:33",
     "registrationId": 96,
     "activityId": 1,
     "state": "confirmed",
@@ -1941,7 +3321,7 @@
     "paidAmount": 0,
     "needReceipt": "1",
     "receiptNumber": "26030001",
-    "receiptIssued": "standard",
+    "receiptIssued": "stamp",
     "receiptIssuedAt": "2026-03-01T08:45:00.530Z",
     "receiptIssuedBy": "釋測試(test01)",
     "accountingState": "pending",
@@ -2169,7 +3549,7 @@
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:19:21",
     "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "date_updated": "2026-03-01 10:11:47",
+    "date_updated": "2026-03-05 04:58:33",
     "registrationId": 91,
     "activityId": 42,
     "state": "confirmed",
@@ -2254,7 +3634,7 @@
     "paidAmount": 0,
     "needReceipt": "1",
     "receiptNumber": "26030005",
-    "receiptIssued": "standard",
+    "receiptIssued": "stamp",
     "receiptIssuedAt": "2026-03-01T10:11:47.353Z",
     "receiptIssuedBy": "超級管理員(AdminUser)",
     "accountingState": "pending",
@@ -2273,8 +3653,8 @@
     "id": 41,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:18:01",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-02-25 12:31:15",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 96,
     "activityId": 1,
     "state": "confirmed",
@@ -2328,10 +3708,6 @@
     "finalAmount": 400,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "A26020011",
-    "receiptIssued": "standard",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -2340,7 +3716,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "",
     "createdAt": "2026-01-27T05:18:01.725Z",
     "updatedAt": "2026-02-25T12:31:15.671Z"
   },
@@ -2348,8 +3723,8 @@
     "id": 40,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:16:03",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-02-25 12:32:02",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 97,
     "activityId": 1,
     "state": "confirmed",
@@ -2454,10 +3829,6 @@
     "finalAmount": 2700,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "A26020006",
-    "receiptIssued": "standard",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -2466,7 +3837,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "",
     "createdAt": "2026-01-27T05:16:03.046Z",
     "updatedAt": "2026-02-25T12:32:02.548Z"
   },
@@ -2474,8 +3844,8 @@
     "id": 39,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:15:39",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-02-25 12:32:03",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 98,
     "activityId": 1,
     "state": "confirmed",
@@ -2564,10 +3934,6 @@
     "finalAmount": 1300,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "A26020005",
-    "receiptIssued": "standard",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -2576,7 +3942,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "ha",
     "createdAt": "2026-01-27T05:15:39.663Z",
     "updatedAt": "2026-02-25T12:32:03.291Z"
   },
@@ -2584,8 +3949,8 @@
     "id": 38,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:15:11",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-02-25 12:32:04",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 99,
     "activityId": 1,
     "state": "confirmed",
@@ -2648,10 +4013,6 @@
     "finalAmount": 900,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "A26020004",
-    "receiptIssued": "standard",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -2660,7 +4021,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "",
     "createdAt": "2026-01-27T05:15:11.751Z",
     "updatedAt": "2026-02-25T12:32:04.261Z"
   },
@@ -2668,8 +4028,8 @@
     "id": 37,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:14:03",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-02-25 12:32:05",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 100,
     "activityId": 18,
     "state": "confirmed",
@@ -2732,10 +4092,6 @@
     "finalAmount": 700,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "A26020003",
-    "receiptIssued": "standard",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -2744,7 +4100,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "",
     "createdAt": "2026-01-27T05:14:03.613Z",
     "updatedAt": "2026-02-25T12:32:05.168Z"
   },
@@ -2752,8 +4107,8 @@
     "id": 36,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:13:48",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-02-25 12:32:06",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 101,
     "activityId": 18,
     "state": "confirmed",
@@ -2842,10 +4197,6 @@
     "finalAmount": 1900,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "26020003",
-    "receiptIssued": "stamp",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -2854,7 +4205,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "哈哈",
     "createdAt": "2026-01-27T05:13:48.559Z",
     "updatedAt": "2026-02-25T12:32:06.027Z"
   },
@@ -2862,8 +4212,8 @@
     "id": 34,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:12:55",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-02-25 12:32:07",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 103,
     "activityId": 18,
     "state": "confirmed",
@@ -2936,10 +4286,6 @@
     "finalAmount": 1800,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "26020002",
-    "receiptIssued": "stamp",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -2948,7 +4294,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "",
     "createdAt": "2026-01-27T05:12:55.759Z",
     "updatedAt": "2026-02-25T12:32:07.094Z"
   },
@@ -2956,8 +4301,8 @@
     "id": 33,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:03:08",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-02-25 12:32:08",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 104,
     "activityId": 42,
     "state": "confirmed",
@@ -3007,10 +4352,6 @@
     "finalAmount": 900,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "A26020001",
-    "receiptIssued": "standard",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -3019,7 +4360,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "",
     "createdAt": "2026-01-27T05:03:08.748Z",
     "updatedAt": "2026-02-25T12:32:08.066Z"
   },
@@ -3028,7 +4368,7 @@
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-01-27 05:02:49",
     "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "date_updated": "2026-02-27 15:33:19",
+    "date_updated": "2026-03-05 04:53:23",
     "registrationId": 105,
     "activityId": 42,
     "state": "confirmed",
@@ -3085,10 +4425,6 @@
     "finalAmount": 1000,
     "paidAmount": 0,
     "needReceipt": "0",
-    "receiptNumber": "26020001",
-    "receiptIssued": "stamp",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -3097,7 +4433,6 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "haha",
     "createdAt": "2026-01-27T05:02:49.629Z",
     "updatedAt": "2026-02-25T12:32:08.992Z"
   }
