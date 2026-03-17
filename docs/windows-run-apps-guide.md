@@ -8,7 +8,7 @@
 
 ## 概述說明
 
-zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈、Rust 安裝與配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。適用於現場部署與問題排除。
+zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈（同時提供 gcc / cargo / rustc）與 Cargo 配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。**本專案統一使用 `D:\msys64\mingw64` 編譯 Rust，不使用 rustup 安裝腳本，不切換工具鏈。** 適用於現場部署與問題排除。
 
 ## 0. 系統概覽
 
@@ -45,13 +45,12 @@ zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。
 - [ ] Git for Windows — https://git-scm.com/download/win
 - [ ] nvm for Windows — https://github.com/coreybutler/nvm-windows
 - [ ] Node.js 20 LTS (透過 nvm 安裝)
-- [ ] MSYS2 (提供 GNU 工具鏈) — https://www.msys2.org
-- [ ] Rust Toolchain (rustup) — https://rustup.rs
+- [ ] MSYS2 (提供 GNU 工具鏈 + cargo + rustc) — https://www.msys2.org　⚠️ 安裝後統一使用 MinGW64，不使用 rustup 安裝腳本，不切換工具鏈
 - [ ] Docker Desktop for Windows — https://www.docker.com/products/docker-desktop （選用，Directus 備用後端使用）
 - [ ] Windows Terminal 或 PowerShell 7 — 建議使用
 - [ ] Google Chrome / Edge — 用於測試前端介面
 
-> ⚠️ **注意：** 本專案使用 GNU 工具鏈編譯 Rust，不再依賴 Visual Studio Build Tools 或 MSVC。詳細設定請參考 `docs/windows-rust-gnu-setup-manual.md`。
+> ⚠️ **注意：** 本專案使用 GNU 工具鏈編譯 Rust，統一使用 `D:\msys64\mingw64` 提供的編譯器（含 cargo / rustc），不依賴 Visual Studio Build Tools 或 MSVC，**不使用 rustup 安裝腳本，不切換工具鏈**。詳細設定請參考 `docs/windows-rust-gnu-setup-manual.md`。
 
 ---
 
@@ -139,7 +138,7 @@ ar --version
 make --version
 ```
 
-5. 將 MSYS2 工具加入 Windows PATH（以 `D:\msys64` 為例）：
+5. 將 MSYS2 工具加入 Windows PATH（安裝於 `D:\msys64`）：
    - 開啟「系統內容」→「環境變數」
    - 在「系統變數」的 `Path` 中新增：
      - `D:\msys64\mingw64\bin`
@@ -154,34 +153,20 @@ make --version     # 應顯示版本資訊
 
 > ⚠️ **注意：** 若找不到指令，請確認 PATH 設定並**重新開啟** PowerShell。
 
-### 2.4 安裝 Rust Toolchain（GNU 模式）
+### 2.4 安裝 Rust 編譯工具（cargo / rustc 由 MSYS2 MinGW64 提供）
 
-1. 在 **Git Bash** 中執行：
+> 📌 **本專案統一使用 `D:\msys64\mingw64` 提供的 GNU 工具鏈編譯 Rust，包含 cargo 與 rustc。不使用 rustup 安裝腳本，不切換工具鏈（GNU / MSVC 均不切換）。** 完成第 2.3 節 MSYS2 安裝後，cargo 與 rustc 已隨 `mingw-w64-x86_64-toolchain` 一同安裝完畢。
 
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
+1. 確認 MSYS2 MinGW64 工具鏈已安裝完成（見 2.3 節）
 
-2. 安裝完成後，安裝並切換到 GNU 工具鏈：
+2. 在 **PowerShell** 中驗證 cargo 與 rustc：
 
-```bash
-rustup toolchain install stable-x86_64-pc-windows-gnu
-rustup default stable-x86_64-pc-windows-gnu
-```
-
-3. **重新開啟 Terminal** 驗證：
-
-```bash
-rustup --version
+```powershell
 cargo --version
 rustc --version
-
-# 確認 GNU toolchain
-rustup show
-# 應顯示 stable-x86_64-pc-windows-gnu 為 active toolchain
 ```
 
-4. 設定 Cargo 配置（`C:\Users\你的使用者名稱\.cargo\config.toml`）：
+3. 設定 Cargo 配置（`C:\Users\你的使用者名稱\.cargo\config.toml`）：
 
 ```toml
 [target.x86_64-pc-windows-gnu]
@@ -196,7 +181,7 @@ AR_x86_64_pc_windows_gnu  = "D:\\msys64\\mingw64\\bin\\ar.exe"
 RING_PREGENERATE_ASM = "1"
 ```
 
-5. 設定編譯器環境變數（在 PowerShell Profile 中）：
+4. 設定編譯器環境變數（在 PowerShell Profile 中）：
 
 ```powershell
 # 檢查 Profile 路徑
@@ -221,7 +206,7 @@ $env:AR = "ar"
 . $PROFILE
 ```
 
-> ⚠️ **注意：** 若出現 `linker 'link.exe' not found` 錯誤，代表未正確切換到 GNU 工具鏈，請確認 `rustup show` 輸出為 `x86_64-pc-windows-gnu`。
+> ⚠️ **注意：** 若出現 `linker 'link.exe' not found` 錯誤，代表 `config.toml` 未正確設定，請確認 `D:\msys64\mingw64\bin\gcc.exe` 路徑存在。
 
 ### 2.5 安裝 Docker Desktop（選用）
 
@@ -468,9 +453,9 @@ node test-complete.js
 
 | 錯誤訊息 / 症狀                                  | 可能原因                       | 解決方式                                                              |
 | ------------------------------------------------ | ------------------------------ | --------------------------------------------------------------------- |
-| `linker 'link.exe' not found`                    | 誤用 MSVC 工具鏈               | 確認 `rustup show` 顯示 `x86_64-pc-windows-gnu`                       |
+| `linker 'link.exe' not found`                    | `config.toml` 未正確設定       | 確認 `~/.cargo/config.toml` 的 linker 指向 `D:\msys64\mingw64\bin\gcc.exe`  |
 | `gcc not found`                                  | MSYS2 PATH 未設定              | 檢查 `D:\msys64\mingw64\bin` 是否在 PATH 中                           |
-| `cargo: command not found`                       | Rust 未安裝或 PATH 未設定      | 在 Git Bash 重新執行 rustup 安裝腳本，重開 Terminal                   |
+| `cargo: command not found`                       | MSYS2 工具鏈未安裝或 PATH 未設定 | 確認 `D:\msys64\mingw64\bin` 在 PATH 中，重新執行 `pacman -S mingw-w64-x86_64-toolchain`，重開 Terminal |
 | `node: command not found`                        | nvm 未安裝或未設定 Node 版本   | 執行 `nvm use 20`，確認 `nvm list` 顯示已安裝版本                     |
 | `nvm: command not found`                         | nvm 未安裝或 PATH 未設定       | 重新安裝 nvm-windows，重開 Terminal                                   |
 | `npm : 無法載入 npm.ps1，已停用指令碼執行`       | PowerShell 執行原則限制        | 執行 `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` |
@@ -525,9 +510,8 @@ bash scripts/test_rust_registration_api.sh
 
 - 整個 `zhengkuo-behappy` 專案資料夾
 - `%USERPROFILE%\.cargo`
-- `%USERPROFILE%\.rustup`
 - `%APPDATA%\npm-cache`
-- `D:\msys64`（或您的 MSYS2 安裝路徑）
+- `D:\msys64`（MSYS2 安裝路徑）
 
 ### 8.3 開放 Node.js 防火牆權限
 
@@ -631,9 +615,9 @@ await serviceAdapter.registrationService().getAllRegistrations();
 - [ ] `nvm version` 顯示版本號
 - [ ] `node --version` 顯示 v20.x.x
 - [ ] `gcc --version` 顯示版本號（MSYS2 MinGW64）
-- [ ] `cargo --version` 回應版本號
-- [ ] `rustup show` 顯示 stable-x86_64-pc-windows-gnu
-- [ ] `C:\Users\<使用者>\.cargo\config.toml` 已正確設定
+- [ ] `cargo --version` 回應版本號（MSYS2 MinGW64 提供）
+- [ ] `rustc --version` 回應版本號（MSYS2 MinGW64 提供）
+- [ ] `C:\Users\<使用者>\.cargo\config.toml` 已正確設定（linker 指向 `D:\msys64\mingw64\bin\gcc.exe`）
 
 ### 程式碼與相依套件
 

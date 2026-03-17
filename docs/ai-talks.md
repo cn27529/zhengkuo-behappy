@@ -406,3 +406,6 @@ PS C:\> Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 PS C:\> npm -v
 10.9.4
 ```
+
+## Rust 編譯環境從 rustup 遷移至 MinGW64
+不再使用 rustup 切換編譯 rust 項目, D:\msys64\mingw64 己安裝 pacman -S mingw-w64-x86_64-toolchain 不再使用 rustup 命令切換 gnu 或 msvc，統一運行 D:\msys64\mingw64 , 請更新 docs\windows-run-apps-guide.md 與 docs\windows-rust-gnu-setup-manual.md 文檔
