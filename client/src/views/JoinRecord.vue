@@ -673,7 +673,7 @@
         <div class="results-section" v-if="savedRecords.length > 0">
           <div class="results-header">
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
-            <p class="search-hint">
+            <p class="search-hint" v-if="false">
               <el-button
                 v-if="savedRecords.length > 1"
                 type="success"
