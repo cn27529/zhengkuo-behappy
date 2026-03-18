@@ -408,4 +408,55 @@ PS C:\> npm -v
 ```
 
 ## Rust 編譯環境從 rustup 遷移至 MinGW64
+
 不再使用 rustup 切換編譯 rust 項目, D:\msys64\mingw64 己安裝 pacman -S mingw-w64-x86_64-toolchain 不再使用 rustup 命令切換 gnu 或 msvc，統一運行 D:\msys64\mingw64 , 請更新 docs\windows-run-apps-guide.md 與 docs\windows-rust-gnu-setup-manual.md 文檔
+
+## dataUrlTojson.js
+
+生成一個 dataUrlTojson.js 代碼，獲取API的資料轉成各個.json檔案，以活動資料API為例子 "http://localhost:3000/api/activities?fields=\*" 回應的結構為：
+
+```json
+{
+  "success": true,
+  "data": [],
+  "message": null,
+  "meta": {
+    "total": 7,
+    "limit": 100,
+    "offset": 0
+  },
+  "errors": null
+}
+```
+
+，每個API都是相同結構。我們要獲取的是 "data" 欄位，將 "data" 欄位的內容生成 "mock_activities.json" 然後儲存，dataJsonObj 有每個API的位置與要生成的檔案名稱：
+
+```js
+const dataJsonObj = [
+  {
+    dataUrl: "http://localhost:3000/api/activities?fields=*",
+    fileName: "mock*activities.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/monthly-donates?fields=*",
+    fileName: "mock_monthlyDonates.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/participation-records?fields=*",
+    fileName: "mock_participation_records.json",
+  },
+
+  {
+    dataUrl: "http://localhost:3000/api/registrations?fields=*",
+    fileName: "mock_registrations.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/directus-users?fields=*",
+    fileName: "mock_directus_users.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/receipt-numbers?fields=*",
+    fileName: "mock_receipt_numbers.json",
+  },
+];
+```

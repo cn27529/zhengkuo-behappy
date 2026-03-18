@@ -27,7 +27,8 @@
     "deploy:netlify": "sh scripts/deploy-netlify.sh",
     "db": "node scripts/start-with-db.js",
     "sqlite:viewer": "node scripts/sqlite-viewer.js",
-    "all": "node scripts/start-all.js"
+    "all": "node scripts/start-all.js",
+    "mock": "node scripts/dataUrlTojson.js"
   },
   "keywords": [],
   "author": "cn27529",
