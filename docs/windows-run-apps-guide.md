@@ -238,13 +238,45 @@ cd C:\Users\<UserName>\Desktop\zhengkuo-behappy
 
 > 📌 若客戶端環境無法直接存取 Git Repository，可改用 USB 傳輸方式，將整個專案資料夾複製至目標機器後，從步驟 3.2 開始執行。
 
-### 3.2 安裝根目錄相依套件
+### 3.2 一鍵安裝所有 npm 相依套件（建議）
+
+專案根目錄提供 `install-all.bat` 批次腳本，可自動依序完成全部 npm 套件的安裝，**建議優先使用此方式**。
+
+```cmd
+# 在專案根目錄，以滑鼠雙擊或在 CMD / PowerShell 中執行：
+install-all.bat
+```
+
+腳本將依序執行以下 6 個步驟：
+
+| 步驟 | 目錄          | 說明                     |
+| ---- | ------------- | ------------------------ |
+| 1/6  | 根目錄 `./`   | 安裝根目錄套件           |
+| 2/6  | `client/`     | 安裝前端套件             |
+| 3/6  | `docs/`       | 安裝文檔服務器套件       |
+| 4/6  | `log-server/` | 安裝日誌服務器套件       |
+| 5/6  | `server/`     | 安裝 Node.js 備用後端套件 |
+| 6/6  | `rust-axum/`  | 安裝 rust-axum 相關套件  |
+
+執行完畢後終端機顯示 `All packages installed successfully!` 即代表全部安裝完成。
+
+> ⚠️ **注意：** 執行前請確認已完成 Node.js 安裝（`node --version` 有回應），且 PowerShell 執行原則已設定為 `RemoteSigned`（詳見 2.2 節）。
+
+> 📌 若腳本中途某個目錄安裝失敗，可進入該目錄手動執行 `npm install`，再繼續下一步。
+
+---
+
+### 3.3 手動逐一安裝（備用）
+
+若 `install-all.bat` 無法執行，可改為手動依序安裝：
+
+**根目錄**
 
 ```bash
 npm install
 ```
 
-### 3.3 安裝前端相依套件
+**前端**
 
 ```bash
 cd client
@@ -265,7 +297,7 @@ cd ..
 
 > ⚠️ **注意：** 若出現網路相關錯誤（如 `registry fetch failed`），請確認防火牆或 Proxy 設定未封鎖 https://crates.io。
 
-### 3.5 安裝日誌服務器相依套件
+**日誌服務器**
 
 ```bash
 cd log-server
@@ -273,7 +305,7 @@ npm install
 cd ..
 ```
 
-### 3.6 安裝文檔服務器相依套件
+**文檔服務器**
 
 ```bash
 cd docs
@@ -622,6 +654,7 @@ await serviceAdapter.registrationService().getAllRegistrations();
 ### 程式碼與相依套件
 
 - [ ] 專案程式碼已取得（git clone 或 USB 傳輸）
+- [ ] 執行 `install-all.bat` 完成所有 npm 套件安裝（或手動逐一安裝）
 - [ ] 根目錄 `npm install` 完成
 - [ ] `client/npm install` 完成
 - [ ] `log-server/npm install` 完成
