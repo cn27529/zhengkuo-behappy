@@ -1,4 +1,4 @@
-// dataUrlTojson.js
+// dataUrlToJson.js
 const fs = require("fs").promises;
 const path = require("path");
 const https = require("https");

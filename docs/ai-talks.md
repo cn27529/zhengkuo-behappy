@@ -411,9 +411,9 @@ PS C:\> npm -v
 
 不再使用 rustup 切換編譯 rust 項目, D:\msys64\mingw64 己安裝 pacman -S mingw-w64-x86_64-toolchain 不再使用 rustup 命令切換 gnu 或 msvc，統一運行 D:\msys64\mingw64 , 請更新 docs\windows-run-apps-guide.md 與 docs\windows-rust-gnu-setup-manual.md 文檔
 
-## dataUrlTojson.js
+## dataUrlToJson.json自動生成mock資料
 
-生成一個 dataUrlTojson.js 代碼，獲取API的資料轉成各個.json檔案，以活動資料API為例子 "http://localhost:3000/api/activities?fields=\*" 回應的結構為：
+生成一個 dataUrlToJson.js 代碼，獲取API的資料轉成各個.json檔案，以活動資料API為例子 "http://localhost:3000/api/activities?fields=\*" 回應的結構為：
 
 ```json
 {
