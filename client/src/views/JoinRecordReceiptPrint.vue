@@ -521,6 +521,10 @@ const handlePostPrintCheck = async () => {
         // 標記當前索引為已打印
         printedIndexes.value.add(currentIndex.value);
 
+        // 記錄己打印的資料
+        record.value.receiptNumber = result.data.receiptNumber;
+        record.value.receiptIssued = result.data.receiptIssued;
+
         // 顯示完整的 store 返回訊息
         const displayMessage =
           result?.message ||
@@ -568,7 +572,13 @@ const handlePostPrintCheck = async () => {
       }
 
       // 來源是參加頁面執行savedRecords同步
-      updateSavedRecords(result);
+      //updateSavedRecords(result);
+      // 之後（source 傳進 store）
+      const source = pageStateStore.getPageState("receiptPrint")?.from ?? null;
+      const result = await printStore.updateReceiptPrintStatus(
+        record.value,
+        source,
+      );
     } else {
       // 單筆打印
       record.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
@@ -577,6 +587,10 @@ const handlePostPrintCheck = async () => {
       console.log("單筆打印當前這筆:", result);
 
       if (result?.success) {
+        // 記錄己打印的資料
+        record.value.receiptNumber = result.data.receiptNumber;
+        record.value.receiptIssued = result.data.receiptIssued;
+
         ElMessage({
           type: "success",
           message: result?.message || "記錄打印完成狀態。👍",
@@ -600,7 +614,15 @@ const handlePostPrintCheck = async () => {
         }
 
         // 來源是參加頁面執行savedRecords同步
-        updateSavedRecords(result);
+        //updateSavedRecords(result);
+        //updateSavedRecords(result);
+        // 之後（source 傳進 store）
+        const source =
+          pageStateStore.getPageState("receiptPrint")?.from ?? null;
+        const result = await printStore.updateReceiptPrintStatus(
+          record.value,
+          source,
+        );
       } else {
         ElMessage({
           type: "warning",
