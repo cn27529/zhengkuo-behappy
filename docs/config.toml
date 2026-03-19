@@ -1,0 +1,18 @@
+#  在 Windows CMD 中成功編譯
+
+[target.x86_64-pc-windows-gnu]
+linker = "gcc"
+ar = "ar"
+
+[env]
+# 使用相对路径，让系统在 PATH 中查找
+CC = "gcc"
+TARGET_CC = "gcc"
+TARGET_AR = "ar"
+CC_x86_64-pc-windows-gnu = "gcc"
+CC_x86_64_pc_windows_gnu = "gcc"
+AR_x86_64-pc-windows-gnu = "ar"
+AR_x86_64_pc_windows_gnu = "ar"
+
+# 这个很重要 - 避免 MSYS2 路径转换
+MSYS2_PATH_TYPE = "inherit"
