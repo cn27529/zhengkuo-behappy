@@ -1,5 +1,19 @@
 [
   {
+    "id": 86,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "1970-01-01 00:00:02",
+    "receiptNumber": "26030024",
+    "receiptType": "stamp",
+    "yearMonth": "2603",
+    "serialNumber": 24,
+    "recordId": 80,
+    "state": "printed",
+    "voidReason": "打印完成",
+    "createdAt": "2026-03-19T20:26:10.726223+08:00",
+    "updatedAt": "2026-03-19T12:26:29.860Z"
+  },
+  {
     "id": 85,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "1970-01-01 00:00:02",

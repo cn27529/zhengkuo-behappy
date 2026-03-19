@@ -1,5 +1,591 @@
 [
   {
+    "id": 80,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-19 12:26:02",
+    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_updated": "2026-03-19 12:26:29",
+    "registrationId": 111,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "木",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 3,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "卡卡西",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "鳴人",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 4,
+            "personName": "白眼",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 1800,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 300,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0928230520",
+      "name": "卡卡西",
+      "otherRelationship": "",
+      "phone": "08-89897766",
+      "relationship": "朋友"
+    },
+    "totalAmount": 4000,
+    "discountAmount": 0,
+    "finalAmount": 4000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "26030024",
+    "receiptIssued": "stamp",
+    "receiptIssuedAt": "2026-03-19T12:26:29.496Z",
+    "receiptIssuedBy": "釋測試",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "232323",
+    "createdAt": "2026-03-19T12:26:02.598Z",
+    "updatedAt": "2026-03-19T12:26:29.496Z"
+  },
+  {
+    "id": 79,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-19 12:25:48",
+    "registrationId": 105,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "高雄市鳳山區光遠路700號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "岳家祖先",
+            "surname": "唐氏"
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 1,
+        "source": "salvation.survivors",
+        "sourceAddress": "高雄市鳳山區光遠路700號",
+        "sourceData": [
+          {
+            "id": 13,
+            "name": "唐建國999",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "高雄市鳳山區光遠路700號",
+        "sourceData": [
+          {
+            "id": 4,
+            "isHouseholdHead": true,
+            "name": "唐建國999",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 300,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "高雄市鳳山區光遠路700號",
+        "sourceData": [
+          {
+            "id": 4,
+            "isHouseholdHead": true,
+            "name": "唐建國999",
+            "notes": "",
+            "zodiac": "兔"
+          }
+        ],
+        "subtotal": 100,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0980999444",
+      "name": "唐建國999",
+      "otherRelationship": "",
+      "phone": "07-44556677",
+      "relationship": "娘家"
+    },
+    "totalAmount": 1400,
+    "discountAmount": 0,
+    "finalAmount": 1400,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "2323232",
+    "createdAt": "2026-03-19T12:25:48.165Z"
+  },
+  {
+    "id": 78,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-19 12:25:12",
+    "registrationId": 111,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "木",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 3,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "卡卡西",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "鳴人",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 4,
+            "personName": "白眼",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 1800,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 300,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0928230520",
+      "name": "卡卡西",
+      "otherRelationship": "",
+      "phone": "08-89897766",
+      "relationship": "朋友"
+    },
+    "totalAmount": 4000,
+    "discountAmount": 0,
+    "finalAmount": 4000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "2323233",
+    "createdAt": "2026-03-19T12:25:12.116Z"
+  },
+  {
+    "id": 77,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-19 12:16:20",
+    "registrationId": 110,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "台北市永和區永福路二段200號33樓",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "五",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 1,
+        "source": "salvation.survivors",
+        "sourceAddress": "台北市永和區永福路二段200號33樓",
+        "sourceData": [
+          {
+            "id": 2,
+            "name": "五月天",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 1,
+        "source": "blessing.persons",
+        "sourceAddress": "台北市永和區永福路二段200號33樓",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "五月天",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 300,
+        "type": "qifu"
+      }
+    ],
+    "contact": {
+      "mobile": "0955666222",
+      "name": "五月天",
+      "otherRelationship": "五月天",
+      "phone": "",
+      "relationship": "本家"
+    },
+    "totalAmount": 1300,
+    "discountAmount": 0,
+    "finalAmount": 1300,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "4444",
+    "createdAt": "2026-03-19T12:16:20.520Z"
+  },
+  {
     "id": 76,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-03-17 14:13:18",
@@ -4162,7 +4748,7 @@
           {
             "id": 1,
             "isHouseholdHead": true,
-            "name": "���文雄",
+            "name": "趙文雄",
             "notes": "",
             "zodiac": "虎"
           },

@@ -5,7 +5,7 @@
         "lastName": "後台管理員",
         "email": "admin@example.com",
         "username": "admin",
-        "displayName": "阿德民",
+        "displayName": "mock阿德民",
         "role": "admin",
         "permissions": [
             "dashboard",
@@ -20,7 +20,7 @@
         "lastName": "小空",
         "email": "zkuser01@example.com",
         "username": "zkuser01",
-        "displayName": "釋小空",
+        "displayName": "mock釋小空",
         "role": "user",
         "permissions": [
             "registration"
@@ -32,7 +32,7 @@
         "lastName": "測試",
         "email": "test01@example.com",
         "username": "user01",
-        "displayName": "釋測試",
+        "displayName": "mock釋測試",
         "role": "user",
         "permissions": [
             "registration"
@@ -44,7 +44,7 @@
         "lastName": "工作人員",
         "email": "temple_staff@example.com",
         "username": "temple_staff",
-        "displayName": "寺廟工作人員",
+        "displayName": "mock寺廟人員",
         "role": "staff",
         "permissions": [
             "dashboard",
@@ -58,7 +58,7 @@
         "lastName": "志工",
         "email": "volunteer@example.com",
         "username": "volunteer",
-        "displayName": "寺廟志工",
+        "displayName": "mock寺廟志工",
         "role": "volunteer",
         "permissions": [
             "dashboard",
