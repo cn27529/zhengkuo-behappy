@@ -1,4 +1,4 @@
-# zhengkuo-behappy — Windows 客戶端環境建置指南
+# Windows 客戶端環境建置指南
 
 > **文件路徑：** `docs/windows-run-apps-guide.md`
 > **適用系統：** Windows 10 (1903+) / Windows 11 64-bit
@@ -99,6 +99,7 @@ npm --version
 ```
 
 > 📌 **常用 nvm 指令：**
+>
 > - `nvm list` — 列出已安裝的 Node.js 版本
 > - `nvm list available` — 列出可安裝的版本
 > - `nvm install <version>` — 安裝指定版本
@@ -181,7 +182,11 @@ AR_x86_64_pc_windows_gnu  = "D:\\msys64\\mingw64\\bin\\ar.exe"
 RING_PREGENERATE_ASM = "1"
 ```
 
-4. 設定編譯器環境變數（在 PowerShell Profile 中）：
+4. 示意圖
+
+![An image](./config.toml.png)
+
+5. 設定編譯器環境變數（在 PowerShell Profile 中）：
 
 ```powershell
 # 檢查 Profile 路徑
@@ -249,14 +254,14 @@ install-all.bat
 
 腳本將依序執行以下 6 個步驟：
 
-| 步驟 | 目錄          | 說明                     |
-| ---- | ------------- | ------------------------ |
-| 1/6  | 根目錄 `./`   | 安裝根目錄套件           |
-| 2/6  | `client/`     | 安裝前端套件             |
-| 3/6  | `docs/`       | 安裝文檔服務器套件       |
-| 4/6  | `log-server/` | 安裝日誌服務器套件       |
+| 步驟 | 目錄          | 說明                      |
+| ---- | ------------- | ------------------------- |
+| 1/6  | 根目錄 `./`   | 安裝根目錄套件            |
+| 2/6  | `client/`     | 安裝前端套件              |
+| 3/6  | `docs/`       | 安裝文檔服務器套件        |
+| 4/6  | `log-server/` | 安裝日誌服務器套件        |
 | 5/6  | `server/`     | 安裝 Node.js 備用後端套件 |
-| 6/6  | `rust-axum/`  | 安裝 rust-axum 相關套件  |
+| 6/6  | `rust-axum/`  | 安裝 rust-axum 相關套件   |
 
 執行完畢後終端機顯示 `All packages installed successfully!` 即代表全部安裝完成。
 
@@ -483,24 +488,24 @@ node test-complete.js
 
 ## 7. 常見問題排除
 
-| 錯誤訊息 / 症狀                                  | 可能原因                       | 解決方式                                                              |
-| ------------------------------------------------ | ------------------------------ | --------------------------------------------------------------------- |
-| `linker 'link.exe' not found`                    | `config.toml` 未正確設定       | 確認 `~/.cargo/config.toml` 的 linker 指向 `D:\msys64\mingw64\bin\gcc.exe`  |
-| `gcc not found`                                  | MSYS2 PATH 未設定              | 檢查 `D:\msys64\mingw64\bin` 是否在 PATH 中                           |
-| `cargo: command not found`                       | MSYS2 工具鏈未安裝或 PATH 未設定 | 確認 `D:\msys64\mingw64\bin` 在 PATH 中，重新執行 `pacman -S mingw-w64-x86_64-toolchain`，重開 Terminal |
-| `node: command not found`                        | nvm 未安裝或未設定 Node 版本   | 執行 `nvm use 20`，確認 `nvm list` 顯示已安裝版本                     |
-| `nvm: command not found`                         | nvm 未安裝或 PATH 未設定       | 重新安裝 nvm-windows，重開 Terminal                                   |
-| `npm : 無法載入 npm.ps1，已停用指令碼執行`       | PowerShell 執行原則限制        | 執行 `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` |
-| `Port 3000 already in use`                       | 其他程式佔用 Port              | `netstat -ano \| findstr :3000`，找出 PID 後 `taskkill /F /PID <PID>` |
-| `EACCES: permission denied (symlink)`            | Windows 符號連結需要管理員權限 | 以管理員開啟 Terminal 或啟用 Developer Mode                           |
-| 前端空白頁面                                     | Vite 未啟動或 API 連線失敗     | 確認 `npm run dev` 已執行，檢查 `.env.local` 設定                     |
-| `registry fetch failed`                          | 防火牆封鎖 crates.io           | 設定 Proxy 或開放 crates.io 的 443/80 Port                            |
-| `database is locked`                             | SQLite 多進程衝突              | 確認只有一個 Rust 後端實例在執行                                      |
-| `Cannot connect to MongoDB`                      | MONGODB_URI 錯誤或網路問題     | 確認 `.env` 設定正確，或改用本地 MongoDB                              |
-| Directus Admin 登入後無法載入資料                | Windows 防火牆封鎖 Node.js 外出連線 | 見 8.4 節：開放 Node.js 防火牆權限                               |
-| `Module not found`                               | npm install 未完成             | 刪除 `node_modules` 重新執行 `npm install`                            |
-| `Compiler family detection failed`               | 缺少 CC 環境變數               | 設定 `$env:CC="gcc"` 並加入 PowerShell Profile                        |
-| `could not find native static library 'pthread'` | MinGW64 工具鏈安裝不完整       | 重新執行 `pacman -S mingw-w64-x86_64-toolchain`                       |
+| 錯誤訊息 / 症狀                                  | 可能原因                            | 解決方式                                                                                                |
+| ------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `linker 'link.exe' not found`                    | `config.toml` 未正確設定            | 確認 `~/.cargo/config.toml` 的 linker 指向 `D:\msys64\mingw64\bin\gcc.exe`                              |
+| `gcc not found`                                  | MSYS2 PATH 未設定                   | 檢查 `D:\msys64\mingw64\bin` 是否在 PATH 中                                                             |
+| `cargo: command not found`                       | MSYS2 工具鏈未安裝或 PATH 未設定    | 確認 `D:\msys64\mingw64\bin` 在 PATH 中，重新執行 `pacman -S mingw-w64-x86_64-toolchain`，重開 Terminal |
+| `node: command not found`                        | nvm 未安裝或未設定 Node 版本        | 執行 `nvm use 20`，確認 `nvm list` 顯示已安裝版本                                                       |
+| `nvm: command not found`                         | nvm 未安裝或 PATH 未設定            | 重新安裝 nvm-windows，重開 Terminal                                                                     |
+| `npm : 無法載入 npm.ps1，已停用指令碼執行`       | PowerShell 執行原則限制             | 執行 `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`                             |
+| `Port 3000 already in use`                       | 其他程式佔用 Port                   | `netstat -ano \| findstr :3000`，找出 PID 後 `taskkill /F /PID <PID>`                                   |
+| `EACCES: permission denied (symlink)`            | Windows 符號連結需要管理員權限      | 以管理員開啟 Terminal 或啟用 Developer Mode                                                             |
+| 前端空白頁面                                     | Vite 未啟動或 API 連線失敗          | 確認 `npm run dev` 已執行，檢查 `.env.local` 設定                                                       |
+| `registry fetch failed`                          | 防火牆封鎖 crates.io                | 設定 Proxy 或開放 crates.io 的 443/80 Port                                                              |
+| `database is locked`                             | SQLite 多進程衝突                   | 確認只有一個 Rust 後端實例在執行                                                                        |
+| `Cannot connect to MongoDB`                      | MONGODB_URI 錯誤或網路問題          | 確認 `.env` 設定正確，或改用本地 MongoDB                                                                |
+| Directus Admin 登入後無法載入資料                | Windows 防火牆封鎖 Node.js 外出連線 | 見 8.4 節：開放 Node.js 防火牆權限                                                                      |
+| `Module not found`                               | npm install 未完成                  | 刪除 `node_modules` 重新執行 `npm install`                                                              |
+| `Compiler family detection failed`               | 缺少 CC 環境變數                    | 設定 `$env:CC="gcc"` 並加入 PowerShell Profile                                                          |
+| `could not find native static library 'pthread'` | MinGW64 工具鏈安裝不完整            | 重新執行 `pacman -S mingw-w64-x86_64-toolchain`                                                         |
 
 ### 完整重置（清除重裝）
 

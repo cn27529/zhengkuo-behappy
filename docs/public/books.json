@@ -1,22 +1,31 @@
 {
   "books": [
     {
+      "id": "windows-run-apps-guide",
+      "title": "Windows 客戶端環境建置指南",
+      "overview": "zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈（同時提供 gcc / cargo / rustc）與 Cargo 配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。**本專案統一使用 `D:\\msys64\\mingw64` 編譯 Rust，不使用 rustup 安裝腳本，不切換工具鏈。** 適用於現場部署與問題排除。",
+      "filename": "windows-run-apps-guide.md",
+      "path": "/doc/windows-run-apps-guide.md",
+      "modifiedDate": "2026-03-19T11:32:55.301Z",
+      "formattedDate": "2026/03/19 下午07:32"
+    },
+    {
+      "id": "dev-rust-mydata-guide",
+      "title": "mydata CRUD API 實現說明",
+      "overview": "rust-axum 項目 mydata CRUD API 實現說明",
+      "filename": "dev-rust-mydata-guide.md",
+      "path": "/doc/dev-rust-mydata-guide.md",
+      "modifiedDate": "2026-03-19T11:21:40.753Z",
+      "formattedDate": "2026/03/19 下午07:21"
+    },
+    {
       "id": "windows-rust-gnu-setup-manual",
       "title": "Windows Rust 建構環境設定手冊（MSYS2 + GNU 模式）",
       "overview": "本文檔提供在 Windows 環境下使用 MSYS2 與 GNU 工具鏈建構 Rust 專案的完整設定指南。**本專案統一使用 `D:\\msys64\\mingw64` 工具鏈編譯 Rust，包含 cargo 與 rustc，不使用 rustup 安裝腳本，不切換 GNU / MSVC 工具鏈，亦不執行任何 `rustup` 相關指令。** 所有編譯行為均由 MSYS2 MinGW64 工具鏈與 `config.toml` 設定驅動。包含 MSYS2 安裝、MinGW-w64 工具鏈配置，以及常見編譯問題的解決方案。",
       "filename": "windows-rust-gnu-setup-manual.md",
       "path": "/doc/windows-rust-gnu-setup-manual.md",
-      "modifiedDate": "2026-03-18T13:07:27.072Z",
-      "formattedDate": "2026/03/18 下午09:07"
-    },
-    {
-      "id": "windows-run-apps-guide",
-      "title": "zhengkuo-behappy — Windows 客戶端環境建置指南",
-      "overview": "zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈（同時提供 gcc / cargo / rustc）與 Cargo 配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。**本專案統一使用 `D:\\msys64\\mingw64` 編譯 Rust，不使用 rustup 安裝腳本，不切換工具鏈。** 適用於現場部署與問題排除。",
-      "filename": "windows-run-apps-guide.md",
-      "path": "/doc/windows-run-apps-guide.md",
-      "modifiedDate": "2026-03-18T13:07:27.069Z",
-      "formattedDate": "2026/03/18 下午09:07"
+      "modifiedDate": "2026-03-19T11:10:27.019Z",
+      "formattedDate": "2026/03/19 下午07:10"
     },
     {
       "id": "mock-participationRecords",
@@ -469,6 +478,6 @@
       "formattedDate": "2026/03/12 下午09:32"
     }
   ],
-  "total": 52,
-  "generatedAt": "2026-03-19T10:46:29.073Z"
+  "total": 53,
+  "generatedAt": "2026-03-19T11:32:57.427Z"
 }
