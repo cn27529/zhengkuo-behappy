@@ -28,7 +28,7 @@
     "db": "node scripts/start-with-db.js",
     "sqlite:viewer": "node scripts/sqlite-viewer.js",
     "all": "node scripts/start-all.js",
-    "mock": "node scripts/dataUrlToJson.js"
+    "mock": "node scripts/dataUrlToJson.js && cp -rv mock_data/*.* client/src/data/"
   },
   "keywords": [],
   "author": "cn27529",
