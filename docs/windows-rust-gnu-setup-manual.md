@@ -16,15 +16,15 @@
 
 > 📌 第一次設定請直接從第 1 章開始逐步操作。本節為熟悉流程後的現場速查用。
 
-| 步驟 | 指令 / 動作 | 預期結果 |
-| ---- | ----------- | -------- |
-| 1 | 安裝 MSYS2，路徑設為 `D:\msys64` | 安裝完成 |
-| 2 | MINGW64 視窗執行 `pacman -Syu` | 更新完成（可能重啟視窗）|
-| 3 | MINGW64 視窗執行 `pacman -S mingw-w64-x86_64-toolchain` | gcc / cargo / rustc 安裝完成 |
-| 4 | 系統 PATH 加入 `D:\msys64\mingw64\bin` | 重開 PowerShell 後 `gcc --version` 有回應 |
-| 5 | 建立 `~\.cargo\config.toml`，填入 linker / ar / CC 設定 | `cat` 確認內容正確 |
-| 6 | PowerShell Profile 加入 `$env:CC="gcc"` 等三行 | `. $PROFILE` 後 `$env:CC` 有值 |
-| 7 | `cargo build` 建構專案 | `Finished dev [unoptimized + debuginfo]` |
+| 步驟 | 指令 / 動作                                             | 預期結果                                  |
+| ---- | ------------------------------------------------------- | ----------------------------------------- |
+| 1    | 安裝 MSYS2，路徑設為 `D:\msys64`                        | 安裝完成                                  |
+| 2    | MINGW64 視窗執行 `pacman -Syu`                          | 更新完成（可能重啟視窗）                  |
+| 3    | MINGW64 視窗執行 `pacman -S mingw-w64-x86_64-toolchain` | gcc / cargo / rustc 安裝完成              |
+| 4    | 系統 PATH 加入 `D:\msys64\mingw64\bin`                  | 重開 PowerShell 後 `gcc --version` 有回應 |
+| 5    | 建立 `~\.cargo\config.toml`，填入 linker / ar / CC 設定 | `cat` 確認內容正確                        |
+| 6    | PowerShell Profile 加入 `$env:CC="gcc"` 等三行          | `. $PROFILE` 後 `$env:CC` 有值            |
+| 7    | `cargo build` 建構專案                                  | `Finished dev [unoptimized + debuginfo]`  |
 
 > ⚠️ **重要**：所有 MSYS2 操作均在 **MINGW64** 視窗進行，不是 MSYS 或 UCRT64 視窗。
 
@@ -56,13 +56,13 @@ pacman -S mingw-w64-x86_64-toolchain  # 安裝 gcc, g++, rustc, cargo, make, ar 
 
 出現套件選單時直接按 Enter 選全部安裝。此套件包含：
 
-| 工具 | 用途 |
-| ---- | ---- |
-| `gcc` | C 編譯器 / 連結器入口 |
-| `ld` | GNU 連結器 |
-| `ar` | 靜態函式庫打包工具 |
-| `dlltool.exe` | DLL import library 工具（Rust GNU 路線必需） |
-| `cargo` / `rustc` | Rust 套件管理與編譯器本體 |
+| 工具              | 用途                                         |
+| ----------------- | -------------------------------------------- |
+| `gcc`             | C 編譯器 / 連結器入口                        |
+| `ld`              | GNU 連結器                                   |
+| `ar`              | 靜態函式庫打包工具                           |
+| `dlltool.exe`     | DLL import library 工具（Rust GNU 路線必需） |
+| `cargo` / `rustc` | Rust 套件管理與編譯器本體                    |
 
 ---
 
@@ -164,14 +164,14 @@ RING_PREGENERATE_ASM = "1"
 
 ### 4.3 各欄位說明
 
-| 欄位 | 用途 |
-| ---- | ---- |
-| `linker` | 告訴 Rust 連結階段使用哪個 gcc |
-| `ar` | 靜態函式庫打包工具路徑 |
-| `runner` | 執行編譯結果的方式（Windows 原生用 cmd） |
-| `CC_*` | C 編譯器路徑（給使用 `cc` crate 的套件） |
-| `CXX_*` | C++ 編譯器路徑（給使用 `cxx` / `bindgen` 的套件） |
-| `AR_*` | ar 工具路徑（給 C/C++ 相關的 build script） |
+| 欄位                   | 用途                                                |
+| ---------------------- | --------------------------------------------------- |
+| `linker`               | 告訴 Rust 連結階段使用哪個 gcc                      |
+| `ar`                   | 靜態函式庫打包工具路徑                              |
+| `runner`               | 執行編譯結果的方式（Windows 原生用 cmd）            |
+| `CC_*`                 | C 編譯器路徑（給使用 `cc` crate 的套件）            |
+| `CXX_*`                | C++ 編譯器路徑（給使用 `cxx` / `bindgen` 的套件）   |
+| `AR_*`                 | ar 工具路徑（給 C/C++ 相關的 build script）         |
 | `RING_PREGENERATE_ASM` | 修正 `ring` 密碼學套件在 Windows GNU 路線的編譯問題 |
 
 ### 4.4 確認設定
@@ -224,8 +224,8 @@ $env:AR = "ar"
 建立測試專案：
 
 ```powershell
-cargo new test-ring
-cd test-ring
+cargo new test-rust
+cd test-rust
 ```
 
 編輯 `Cargo.toml`，加入：
@@ -283,14 +283,14 @@ directory = "vendor"
 
 ## 8. 常見問題排查
 
-| 錯誤訊息 / 症狀 | 原因 | 解決方式 |
-| --------------- | ---- | -------- |
-| `error: linker 'gcc' not found` | `D:\msys64\mingw64\bin` 未加入系統 Path，或終端機未重新開啟 | 確認 Path 路徑正確，完全關閉並重新開啟終端機，執行 `where gcc` 確認 |
-| `linker 'link.exe' not found` | `config.toml` 未正確設定 | 確認 `~/.cargo/config.toml` linker 指向 `D:\msys64\mingw64\bin\gcc.exe` |
-| `could not find native static library 'pthread'` | MinGW64 工具鏈安裝不完整 | 在 MINGW64 視窗重新執行 `pacman -S mingw-w64-x86_64-toolchain` |
-| `where dlltool` 找不到但 MSYS2 有安裝 | Path 設定了 `usr\bin` 而非 `mingw64\bin` | 確認 Path 中是 `mingw64\bin` |
-| `Compiler family detection failed` | 缺少 CC 環境變數 | 設定 `$env:CC="gcc"` 並加入 PowerShell Profile |
-| `cargo build` 出現 `undefined reference` | GNU 工具鏈版本過舊或套件未安裝 | 在 MINGW64 視窗執行 `pacman -Syu` 更新所有套件 |
+| 錯誤訊息 / 症狀                                  | 原因                                                        | 解決方式                                                                |
+| ------------------------------------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `error: linker 'gcc' not found`                  | `D:\msys64\mingw64\bin` 未加入系統 Path，或終端機未重新開啟 | 確認 Path 路徑正確，完全關閉並重新開啟終端機，執行 `where gcc` 確認     |
+| `linker 'link.exe' not found`                    | `config.toml` 未正確設定                                    | 確認 `~/.cargo/config.toml` linker 指向 `D:\msys64\mingw64\bin\gcc.exe` |
+| `could not find native static library 'pthread'` | MinGW64 工具鏈安裝不完整                                    | 在 MINGW64 視窗重新執行 `pacman -S mingw-w64-x86_64-toolchain`          |
+| `where dlltool` 找不到但 MSYS2 有安裝            | Path 設定了 `usr\bin` 而非 `mingw64\bin`                    | 確認 Path 中是 `mingw64\bin`                                            |
+| `Compiler family detection failed`               | 缺少 CC 環境變數                                            | 設定 `$env:CC="gcc"` 並加入 PowerShell Profile                          |
+| `cargo build` 出現 `undefined reference`         | GNU 工具鏈版本過舊或套件未安裝                              | 在 MINGW64 視窗執行 `pacman -Syu` 更新所有套件                          |
 
 ---
 
@@ -298,12 +298,12 @@ directory = "vendor"
 
 ### 各工具角色
 
-| 工具 | 來源 | 用途 |
-| ---- | ---- | ---- |
-| `rustc` | MSYS2 MinGW64 | Rust 編譯器本體 |
-| `cargo` | MSYS2 MinGW64 | 專案建置與套件管理 |
-| `MSYS2` | msys2.org | 提供 Windows 上的 GNU 工具環境 |
-| `gcc` / `ld` | MSYS2 MinGW64 | C 工具鏈，負責最終連結 |
+| 工具          | 來源          | 用途                                |
+| ------------- | ------------- | ----------------------------------- |
+| `rustc`       | MSYS2 MinGW64 | Rust 編譯器本體                     |
+| `cargo`       | MSYS2 MinGW64 | 專案建置與套件管理                  |
+| `MSYS2`       | msys2.org     | 提供 Windows 上的 GNU 工具環境      |
+| `gcc` / `ld`  | MSYS2 MinGW64 | C 工具鏈，負責最終連結              |
 | `dlltool.exe` | MSYS2 MinGW64 | 處理 Windows DLL 連結，GNU 路線必需 |
 
 ### 工具目錄結構
@@ -321,15 +321,15 @@ D:\msys64\mingw64\bin\
 
 ### 常用指令
 
-| 用途 | 指令 |
-| ---- | ---- |
-| 更新 MSYS2 套件 | `pacman -Syu` |
-| 安裝新套件 | `pacman -S <package>` |
-| 確認工具路徑來源 | `which rustc` / `which gcc` / `which cargo` |
-| 確認 cargo / rustc 版本 | `cargo --version` / `rustc --version` |
-| 清除編譯快取 | `cargo clean` |
-| 顯示詳細編譯過程 | `cargo build --verbose` |
-| 預先打包所有依賴 | `cargo vendor` |
+| 用途                    | 指令                                        |
+| ----------------------- | ------------------------------------------- |
+| 更新 MSYS2 套件         | `pacman -Syu`                               |
+| 安裝新套件              | `pacman -S <package>`                       |
+| 確認工具路徑來源        | `which rustc` / `which gcc` / `which cargo` |
+| 確認 cargo / rustc 版本 | `cargo --version` / `rustc --version`       |
+| 清除編譯快取            | `cargo clean`                               |
+| 顯示詳細編譯過程        | `cargo build --verbose`                     |
+| 預先打包所有依賴        | `cargo vendor`                              |
 
 ---
 
