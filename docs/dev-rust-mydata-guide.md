@@ -1,8 +1,13 @@
-# MyData CRUD API 實現說明
+# mydata CRUD API 實現說明
+
+## 概述說明
+
+rust-axum 項目 mydata CRUD API 實現說明
 
 ## 已生成的文件
 
 ### 1. Model 層 (`src/models/my_data.rs`)
+
 - `MyData` - 資料庫模型，對應 `mydata` 表
 - `CreateMyDataRequest` - 創建請求 DTO
 - `UpdateMyDataRequest` - 更新請求 DTO
@@ -11,7 +16,9 @@
 - JSON 字段處理：`contact` 字段使用自定義序列化/反序列化函數
 
 ### 2. Handler 層 (`src/handlers/my_data.rs`)
+
 實現的 CRUD 操作：
+
 - `get_all_my_data` - 獲取所有記錄（支持分頁、過濾、排序）
 - `get_my_data_by_id` - 根據 ID 獲取單筆記錄
 - `create_my_data` - 創建新記錄（自動生成 UUID）
@@ -19,7 +26,9 @@
 - `delete_my_data` - 刪除記錄
 
 ### 3. Route 層 (`src/routes/my_data.rs`)
+
 API 端點：
+
 - `GET /api/my-data` - 獲取所有記錄
 - `POST /api/my-data` - 創建記錄
 - `GET /api/my-data/{id}` - 獲取單筆記錄
@@ -29,18 +38,23 @@ API 端點：
 ## 關鍵特性
 
 ### JSON 字段處理
+
 `contact` 字段使用與 `monthly_donate.rs` 相同的處理方式：
+
 - 資料庫存儲：JSON 字符串
 - API 輸入：接收 JSON 對象
 - API 輸出：返回 JSON 對象
 - 使用自定義 `serialize_json_string` 和 `deserialize_json_string` 函數
 
 ### UUID 主鍵
+
 - 使用 `uuid::Uuid::new_v4()` 生成 36 字符的 UUID
 - 符合 SQL schema 中的 `char(36)` 定義
 
 ### 查詢功能
+
 支持的查詢參數：
+
 - `state` - 狀態過濾
 - `formName` - 表單名稱模糊搜索
 - `limit` - 分頁限制（默認 100）
@@ -48,6 +62,7 @@ API 端點：
 - `sort` - 排序（支持 `-` 前綴表示降序）
 
 ### 時間戳處理
+
 - `date_created` 和 `date_updated` 從 Unix 毫秒時間戳轉換為 ISO 8601 格式
 - 使用 SQLite 的 `datetime()` 函數進行轉換
 
@@ -62,6 +77,7 @@ API 端點：
 ## 使用範例
 
 ### 創建記錄
+
 ```bash
 curl -X POST http://localhost:3000/api/my-data \
   -H "Content-Type: application/json" \
@@ -77,6 +93,7 @@ curl -X POST http://localhost:3000/api/my-data \
 ```
 
 ### 查詢記錄
+
 ```bash
 # 獲取所有記錄
 curl http://localhost:3000/api/my-data
@@ -89,6 +106,7 @@ curl http://localhost:3000/api/my-data/{uuid}
 ```
 
 ### 更新記錄
+
 ```bash
 curl -X PATCH http://localhost:3000/api/my-data/{uuid} \
   -H "Content-Type: application/json" \
@@ -102,6 +120,7 @@ curl -X PATCH http://localhost:3000/api/my-data/{uuid} \
 ```
 
 ### 刪除記錄
+
 ```bash
 curl -X DELETE http://localhost:3000/api/my-data/{uuid}
 ```
