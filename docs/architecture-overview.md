@@ -272,19 +272,19 @@ await serviceAdapter.registrationService().getAllRegistrations();
 
 ```bash
 # 前端開發服務器
-npm run dev:client    # http://127.0.0.1:5173
+npm run dev:client    # http://localhost:5173
 
 # Rust 後端
-npm run dev:rust      # http://127.0.0.1:3000
+npm run dev:rust      # http://localhost:3000
 
 # Directus 後端
-npm run dev:server    # http://127.0.0.1:8055
+npm run dev:server    # http://localhost:8055
 
 # 日誌服務器
-cd log-server && node mongoDBLogger.js  # http://127.0.0.1:3002
+cd log-server && node mongoDBLogger.js  # http://localhost:3002
 
 # 文檔服務器
-npm run docs          # http://127.0.0.1:3001
+npm run docs          # http://localhost:3001
 
 # 全棧開發
 npm run dev:full      # 同時啟動前端、Rust 後端、日誌服務器
@@ -465,11 +465,11 @@ tree -L 3 -I "target|.lock" ./rust-axum > rust-axum-tree.txt
    ```
 
 4. **訪問應用**
-   - 前端: http://127.0.0.1:5173
-   - Rust API: http://127.0.0.1:3000
-   - Directus: http://127.0.0.1:8055
-   - 日誌服務器: http://127.0.0.1:3002
-   - 文檔服務器: http://127.0.0.1:3001
+   - 前端: http://localhost:5173
+   - Rust API: http://localhost:3000
+   - Directus: http://localhost:8055
+   - 日誌服務器: http://localhost:3002
+   - 文檔服務器: http://localhost:3001
 
 5. **查看專案文檔**
 

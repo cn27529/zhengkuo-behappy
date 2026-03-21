@@ -18,11 +18,11 @@ zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。
 
 | 服務名稱             | Port | 存取網址              | 說明                   |
 | -------------------- | ---- | --------------------- | ---------------------- |
-| 前端 (Vue 3 + Vite)  | 5173 | http://127.0.0.1:5173 | 主要使用者介面         |
-| Rust Axum 後端       | 3000 | http://127.0.0.1:3000 | 主要 API 服務          |
-| Directus 後端 (備用) | 8055 | http://127.0.0.1:8055 | Node.js / CMS 管理介面 |
-| 文檔服務器           | 3001 | http://127.0.0.1:3001 | Markdown 文件瀏覽      |
-| 日誌服務器           | 3002 | http://127.0.0.1:3002 | API 日誌收集與查詢     |
+| 前端 (Vue 3 + Vite)  | 5173 | http://localhost:5173 | 主要使用者介面         |
+| Rust Axum 後端       | 3000 | http://localhost:3000 | 主要 API 服務          |
+| Directus 後端 (備用) | 8055 | http://localhost:8055 | Node.js / CMS 管理介面 |
+| 文檔服務器           | 3001 | http://localhost:3001 | Markdown 文件瀏覽      |
+| 日誌服務器           | 3002 | http://localhost:3002 | API 日誌收集與查詢     |
 
 ---
 
@@ -330,13 +330,13 @@ cd ..
 # client/.env.local
 
 # 後端 API 基底網址
-VITE_API_BASE_URL=http://127.0.0.1:3000
+VITE_API_BASE_URL=http://localhost:3000
 
 # Directus 備用後端（選用）
-VITE_DIRECTUS_URL=http://127.0.0.1:8055
+VITE_DIRECTUS_URL=http://localhost:8055
 
 # 日誌服務器
-VITE_LOG_SERVER_URL=http://127.0.0.1:3002
+VITE_LOG_SERVER_URL=http://localhost:3002
 
 # 服務模式：mock | directus | rust
 VITE_SERVICE_MODE=rust
@@ -355,7 +355,7 @@ PORT=3002
 MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>
 
 # 若使用本地 MongoDB（Docker）
-# MONGODB_URI=mongodb://127.0.0.1:27017/zk_logs
+# MONGODB_URI=mongodb://localhost:27017/zk_logs
 ```
 
 > 📌 若客戶端環境無法連接 MongoDB Atlas，日誌服務器仍可啟動，前端主要功能不受影響。
@@ -404,7 +404,7 @@ npm run dev:full
 ```bash
 cd client
 npm run dev
-# 預期：VITE ready — http://127.0.0.1:5173/
+# 預期：VITE ready — http://localhost:5173/
 ```
 
 **Rust Axum 後端**
@@ -413,7 +413,7 @@ npm run dev
 cd rust-axum
 cargo run
 # 或：npm run dev:rust（在根目錄）
-# 預期：Listening on 127.0.0.1:3000
+# 預期：Listening on localhost:3000
 ```
 
 **日誌服務器**
@@ -449,10 +449,10 @@ docker compose ps
 
 啟動所有服務後，依序確認各服務正常回應：
 
-- [ ] http://127.0.0.1:5173 — 前端頁面正常載入，顯示登入畫面
-- [ ] http://127.0.0.1:3000 — Rust API 有回應
-- [ ] http://127.0.0.1:3001 — 文檔服務器顯示文件列表
-- [ ] http://127.0.0.1:3002/health — 回應 `{"status":"ok"}`
+- [ ] http://localhost:5173 — 前端頁面正常載入，顯示登入畫面
+- [ ] http://localhost:3000 — Rust API 有回應
+- [ ] http://localhost:3001 — 文檔服務器顯示文件列表
+- [ ] http://localhost:3002/health — 回應 `{"status":"ok"}`
 - [ ] `db/current.db` 符號連結或檔案存在
 
 ### 6.2 API 功能測試腳本
@@ -671,10 +671,10 @@ await serviceAdapter.registrationService().getAllRegistrations();
 
 ### 服務運作
 
-- [ ] http://127.0.0.1:5173 前端頁面正常
-- [ ] http://127.0.0.1:3000 Rust API 有回應
-- [ ] http://127.0.0.1:3001 文檔服務器正常
-- [ ] http://127.0.0.1:3002/health 回應 ok
+- [ ] http://localhost:5173 前端頁面正常
+- [ ] http://localhost:3000 Rust API 有回應
+- [ ] http://localhost:3001 文檔服務器正常
+- [ ] http://localhost:3002/health 回應 ok
 - [ ] 使用者可登入，進入主畫面
 - [ ] 消災超度登記功能正常
 - [ ] 每月贊助功能正常

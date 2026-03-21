@@ -1,7 +1,7 @@
 #!/bin/bash
 # test_registration_api_simple.sh - 使用真實數據的 Registration API 測試腳本
 
-BASE_URL="http://127.0.0.1:3000"
+BASE_URL="http://localhost:3000"
 
 echo "🧪 開始測試 Registration API (使用真實數據)"
 echo "=============================================="

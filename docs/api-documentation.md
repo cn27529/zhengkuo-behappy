@@ -8,14 +8,14 @@
 
 #### 性能軌：Rust Axum API (讀取專用)
 
-- **端點**: `http://127.0.0.1:3000`
+- **端點**: `http://localhost:3000`
 - **職責**: 高性能數據查詢 (Read Operations)
 - **優勢**: 極速響應、零開銷、內存安全
 - **適用**: 列表查詢、搜索、統計、報表
 
 #### 管理軌：Directus API (寫入與管理)
 
-- **端點**: `http://127.0.0.1:8055`
+- **端點**: `http://localhost:8055`
 - **職責**: 數據寫入與系統管理 (CUD + Auth + Admin)
 - **優勢**: 完整認證、審計日誌、管理界面
 - **適用**: 新增、修改、刪除、用戶管理
@@ -733,13 +733,13 @@ Authorization: Bearer <token>
 
 ```bash
 # 健康檢查
-curl -X GET http://127.0.0.1:3000/health
+curl -X GET http://localhost:3000/health
 
 # 獲取所有報名記錄
-curl -X GET http://127.0.0.1:3000/api/registrations
+curl -X GET http://localhost:3000/api/registrations
 
 # 創建報名記錄
-curl -X POST http://127.0.0.1:3000/api/registrations \
+curl -X POST http://localhost:3000/api/registrations \
   -H "Content-Type: application/json" \
   -d '{"formName": "測試報名", "state": "draft", ...}'
 ```

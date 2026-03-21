@@ -60,7 +60,7 @@ ENABLE_AUTO_CLEANUP=true   # 啟用自動清理
 ```bash
 # Crontab 設定
 # 每週一凌晨 3:00 清理 90 天前的日誌
-0 3 * * 1 curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90
+0 3 * * 1 curl -X DELETE http://localhost:3002/mongo/cleanup/90
 ```
 
 **適用情境**:
@@ -112,7 +112,7 @@ ENABLE_AUTO_CLEANUP=true   # 啟用自動清理
 
 ```bash
 # 每週一和週四凌晨 3:00 清理
-0 3 * * 1,4 curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/60
+0 3 * * 1,4 curl -X DELETE http://localhost:3002/mongo/cleanup/60
 ```
 
 **適用情境**:
@@ -137,7 +137,7 @@ ENABLE_AUTO_CLEANUP=true   # 啟用自動清理
 
 ```bash
 # 每天凌晨 3:00 清理
-0 3 * * * curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/30
+0 3 * * * curl -X DELETE http://localhost:3002/mongo/cleanup/30
 ```
 
 **適用情境**:
@@ -208,7 +208,7 @@ crontab -e
 ```bash
 # MongoDB 日誌自動清理
 # 每週一凌晨 3:00 清理 90 天前的日誌
-0 3 * * 1 curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90 >> /var/log/mongo-cleanup.log 2>&1
+0 3 * * 1 curl -X DELETE http://localhost:3002/mongo/cleanup/90 >> /var/log/mongo-cleanup.log 2>&1
 
 # 每月 1 號凌晨 4:00 執行容量檢查
 0 4 1 * * cd /path/to/project && node capacity-monitor.js >> /var/log/mongo-capacity.log 2>&1
@@ -234,7 +234,7 @@ tail -f /var/log/mongo-cleanup.log
 
 ```batch
 @echo off
-curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90
+curl -X DELETE http://localhost:3002/mongo/cleanup/90
 echo Cleanup completed at %date% %time% >> C:\logs\mongo-cleanup.log
 ```
 
@@ -262,7 +262,7 @@ npm install node-cron
 ```javascript
 import cron from "node-cron";
 
-const CLEANUP_URL = "http://127.0.0.1:3002/mongo/cleanup";
+const CLEANUP_URL = "http://localhost:3002/mongo/cleanup";
 const DAYS_TO_KEEP = 90;
 
 // 每週一凌晨 3:00 執行清理
@@ -354,7 +354,7 @@ pm2 startup
 ```javascript
 // capacity-monitor-with-alert.js
 const CAPACITY_THRESHOLD = 80; // 80% 使用率警告
-const CLEANUP_URL = "http://127.0.0.1:3002/mongo/cleanup";
+const CLEANUP_URL = "http://localhost:3002/mongo/cleanup";
 
 async function checkAndAlert() {
   const stats = await getCapacityInfo();
@@ -443,7 +443,7 @@ ENABLE_AUTO_CLEANUP=true
 
 ```bash
 # 手動清理 90 天前的日誌
-curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90
+curl -X DELETE http://localhost:3002/mongo/cleanup/90
 ```
 
 ---
@@ -472,7 +472,7 @@ curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90
 
 ```bash
 # 測試清理 API
-curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90
+curl -X DELETE http://localhost:3002/mongo/cleanup/90
 
 # 預期回應
 {
@@ -486,7 +486,7 @@ curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90
 
 ```bash
 # 手動執行一次看看
-/bin/sh -c "curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90"
+/bin/sh -c "curl -X DELETE http://localhost:3002/mongo/cleanup/90"
 
 # 查看 cron 執行記錄
 grep CRON /var/log/syslog

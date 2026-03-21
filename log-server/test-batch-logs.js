@@ -6,7 +6,7 @@ import { DateUtils } from "./utils/dateUtils.js";
  * 使用方式: node test-batch-logs.js
  */
 
-const BASE_URL = "http://127.0.0.1:3002";
+const BASE_URL = "http://localhost:3002";
 
 // 生成隨機 HTTP 狀態碼
 function randomStatus() {
@@ -45,7 +45,7 @@ function generateTestLog(index) {
     responseTime: Math.floor(Math.random() * 500) + 50,
     timestamp: new Date(Date.now() - Math.random() * 86400000).toISOString(),
     userAgent: "Mozilla/5.0 (Test Client)",
-    url: `http://127.0.0.1:3000/test-${index}`,
+    url: `http://localhost:3000/test-${index}`,
     requestBody:
       method !== "GET"
         ? {

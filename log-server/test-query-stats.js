@@ -5,7 +5,7 @@
  * 使用方式: node test-query-stats.js
  */
 
-const BASE_URL = "http://127.0.0.1:3002";
+const BASE_URL = "http://localhost:3002";
 
 // 測試健康檢查
 async function testHealth() {
