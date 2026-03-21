@@ -7,7 +7,7 @@
           class="receipt-canvas font-kaiti"
         >
           <div class="title-group">
-            <h1 class="title">感謝狀</h1>
+            <h1 class="title-text">感謝狀</h1>
             <div class="receipt-serial">佛字第 {{ receiptSerialNum }} 號</div>
           </div>
 
@@ -62,7 +62,7 @@
 
         <div v-else class="receipt-canvas font-kaiti stamp-layout">
           <div class="title-group">
-            <h1 class="title">收據</h1>
+            <h1 class="title-text">收據</h1>
             <div class="receipt-serial">佛字第 {{ receiptSerialNum }} 號</div>
           </div>
 
@@ -71,8 +71,10 @@
               茲收到 <span class="highlight">{{ contactName }}</span> 大德
             </div>
             <div class="items-detail">
-              功德項目：
+              護持三寶、供齋、點燈、護持道場、助印經書、放生、
+              <p>其它：</p>
               <span
+                v-if="false"
                 v-for="(item, idx) in record.items"
                 :key="idx"
                 class="highlight"
@@ -897,7 +899,7 @@ onMounted(() => {
   height: 100%; /* 讓它撐滿高度以方便置中 */
 }
 
-.title {
+.title-text {
   font-size: 28pt;
   font-weight: bold;
   text-align: center;
