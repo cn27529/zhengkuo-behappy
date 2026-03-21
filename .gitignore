@@ -198,4 +198,4 @@ db/*.db-shm
 mock_data/
 
 # 略過
-docs/public/books.json
+**/books.json
