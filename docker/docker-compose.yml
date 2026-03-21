@@ -25,10 +25,10 @@ services:
 
       # CORS 配置 - 允許前端應用訪問
       CORS_ENABLED: "true"
-      CORS_ORIGIN: "http://localhost:5173"
+      CORS_ORIGIN: "http://127.0.0.1:5173"
 
       # 其他設定
-      PUBLIC_URL: "http://localhost:8055"
+      PUBLIC_URL: "http://127.0.0.1:8055"
 
       # 檔案儲存 - 使用本地儲存
       STORAGE_LOCATIONS: "local"

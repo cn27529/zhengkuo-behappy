@@ -13,7 +13,7 @@
 ```json
 {
   "timestamp": "2026-01-29T06:14:26.821Z",           // 操作時間戳記
-  "endpoint": "http://localhost:8055/items/activityDB/51", // API 端點
+  "endpoint": "http://127.0.0.1:8055/items/activityDB/51", // API 端點
   "method": "DELETE",                                 // HTTP 方法
   "status": 204,                                      // HTTP 狀態碼
   "statusText": "No Content",                         // 狀態文字
@@ -28,7 +28,7 @@
   "noContent": true,                                  // 是否無回應內容
   "id": "19fcb367-b6cb-4107-ab29-ec60828d3880",      // 記錄唯一識別碼
   "userAgent": "Mozilla/5.0...",                      // 使用者代理字串
-  "url": "http://localhost:5173/activity-list"       // 前端頁面 URL
+  "url": "http://127.0.0.1:5173/activity-list"       // 前端頁面 URL
 }
 ```
 
@@ -40,7 +40,7 @@
   "operation": "deleteActivity",                      // 操作名稱（方法名稱）
   "startTime": 1769667266718,                        // 操作開始時間戳記
   "method": "DELETE",                                 // HTTP 方法
-  "endpoint": "http://localhost:8055/items/activityDB/51", // API 端點
+  "endpoint": "http://127.0.0.1:8055/items/activityDB/51", // API 端點
   "requestBody": {...},                              // 請求資料內容（重要：資料恢復來源）
   "duration": 76                                      // 操作持續時間（毫秒）
 }

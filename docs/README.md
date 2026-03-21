@@ -63,7 +63,7 @@ docs/
 npm run docs
 ```
 
-服務器將在 http://localhost:3001 啟動
+服務器將在 http://127.0.0.1:3001 啟動
 
 ### 功能說明
 

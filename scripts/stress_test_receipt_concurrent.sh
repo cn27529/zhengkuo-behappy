@@ -1,5 +1,5 @@
 #!/bin/bash
-API_URL="http://localhost:3000/api"
+API_URL="http://127.0.0.1:3000/api"
 RECORD_ID=42  # 使用您測試成功的 ID
 
 echo "-----------------------------------------------"

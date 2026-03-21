@@ -1,7 +1,7 @@
 #!/bin/bash
 # test_api.sh - Activity API 測試腳本
 
-BASE_URL="http://localhost:3000"
+BASE_URL="http://127.0.0.1:3000"
 
 echo "🧪 開始測試 Activity API"
 echo "================================"

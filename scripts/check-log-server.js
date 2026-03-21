@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 
 // check-log-server.js - 檢查日誌服務器狀態
-const LOG_SERVER_URL = "http://localhost:3002";
+const LOG_SERVER_URL = "http://127.0.0.1:3002";
 
 async function checkLogServer() {
   try {
     console.log("🔍 檢查日誌服務器狀態...");
-    
+
     const response = await fetch(`${LOG_SERVER_URL}/health`);
     const data = await response.json();
-    
+
     if (response.ok && data.status === "ok") {
       console.log("✅ 日誌服務器運行正常");
       console.log(`📊 MongoDB 狀態: ${data.mongodb}`);
       console.log(`🕐 服務器時間: ${data.timestamp}`);
       console.log(`⚡ 運行時間: ${data.uptime}ms`);
-      
+
       // 檢查統計資料
       const statsResponse = await fetch(`${LOG_SERVER_URL}/mongo/stats`);
       if (statsResponse.ok) {
