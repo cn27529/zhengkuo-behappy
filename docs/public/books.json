@@ -1,6 +1,7 @@
 {
   "books": [
     {
+<<<<<<< Updated upstream
       "id": "windows-rust-gnu-setup-manual",
       "title": "Windows Rust 建構環境設定手冊（MSYS2 + GNU 模式）",
       "overview": "本文檔提供在 Windows 環境下使用 MSYS2 與 GNU 工具鏈建構 Rust 專案的完整設定指南。**本專案統一使用 `D:\\msys64\\mingw64` 工具鏈編譯 Rust，包含 cargo 與 rustc，不使用 rustup 安裝腳本，不切換 GNU / MSVC 工具鏈，亦不執行任何 `rustup` 相關指令。** 所有編譯行為均由 MSYS2 MinGW64 工具鏈與 `config.toml` 設定驅動。包含 MSYS2 安裝、MinGW-w64 工具鏈配置，以及常見編譯問題的解決方案。",
@@ -8,6 +9,15 @@
       "path": "/doc/windows-rust-gnu-setup-manual.md",
       "modifiedDate": "2026-03-19T12:53:48.796Z",
       "formattedDate": "2026/03/19 下午08:53"
+=======
+      "id": "windows-msys64-support-guide",
+      "title": "Windows Rust 開發環境建置 SOP（GNU 路線，不依賴 .NET / Visual Studio）",
+      "overview": "無概述說明",
+      "filename": "windows-msys64-support-guide.md",
+      "path": "/doc/windows-msys64-support-guide.md",
+      "modifiedDate": "2026-03-20T13:34:36.051Z",
+      "formattedDate": "2026/03/20 下午01:34"
+>>>>>>> Stashed changes
     },
     {
       "id": "windows-run-apps-guide",
@@ -15,8 +25,22 @@
       "overview": "zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈（同時提供 gcc / cargo / rustc）與 Cargo 配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。**本專案統一使用 `D:\\msys64\\mingw64` 編譯 Rust，不使用 rustup 安裝腳本，不切換工具鏈。** 適用於現場部署與問題排除。",
       "filename": "windows-run-apps-guide.md",
       "path": "/doc/windows-run-apps-guide.md",
+<<<<<<< Updated upstream
       "modifiedDate": "2026-03-19T12:53:48.795Z",
       "formattedDate": "2026/03/19 下午08:53"
+=======
+      "modifiedDate": "2026-03-20T13:34:36.051Z",
+      "formattedDate": "2026/03/20 下午01:34"
+    },
+    {
+      "id": "windows-rust-gnu-setup-manual",
+      "title": "Windows Rust 建構環境設定手冊（MSYS2 + GNU 模式）",
+      "overview": "本文檔提供在 Windows 環境下使用 MSYS2 與 GNU 工具鏈建構 Rust 專案的完整設定指南。**本專案統一使用 `D:\\msys64\\mingw64` 工具鏈編譯 Rust，包含 cargo 與 rustc，不使用 rustup 安裝腳本，不切換 GNU / MSVC 工具鏈，亦不執行任何 `rustup` 相關指令。** 所有編譯行為均由 MSYS2 MinGW64 工具鏈與 `config.toml` 設定驅動。包含 MSYS2 安裝、MinGW-w64 工具鏈配置，以及常見編譯問題的解決方案。",
+      "filename": "windows-rust-gnu-setup-manual.md",
+      "path": "/doc/windows-rust-gnu-setup-manual.md",
+      "modifiedDate": "2026-03-20T13:34:36.051Z",
+      "formattedDate": "2026/03/20 下午01:34"
+>>>>>>> Stashed changes
     },
     {
       "id": "dev-rust-mydata-guide",
@@ -24,8 +48,13 @@
       "overview": "rust-axum 項目 mydata CRUD API 實現說明",
       "filename": "dev-rust-mydata-guide.md",
       "path": "/doc/dev-rust-mydata-guide.md",
+<<<<<<< Updated upstream
       "modifiedDate": "2026-03-19T12:53:48.780Z",
       "formattedDate": "2026/03/19 下午08:53"
+=======
+      "modifiedDate": "2026-03-20T13:34:36.043Z",
+      "formattedDate": "2026/03/20 下午01:34"
+>>>>>>> Stashed changes
     },
     {
       "id": "mock-participationRecords",
@@ -33,8 +62,8 @@
       "overview": "參加記錄 (Participation Records) 是寺廟管理系統中記錄信眾參加各種宗教活動的核心資料結構，包含活動項目選擇、費用計算、付款狀態、收據開立及會計處理等完整資訊。",
       "filename": "mock-participationRecords.md",
       "path": "/doc/mock-participationRecords.md",
-      "modifiedDate": "2026-03-18T13:07:27.066Z",
-      "formattedDate": "2026/03/18 下午09:07"
+      "modifiedDate": "2026-03-20T13:34:36.043Z",
+      "formattedDate": "2026/03/20 下午01:34"
     },
     {
       "id": "ai-talks",
@@ -42,152 +71,8 @@
       "overview": "與AI的記錄",
       "filename": "ai-talks.md",
       "path": "/doc/ai-talks.md",
-      "modifiedDate": "2026-03-18T13:07:27.065Z",
-      "formattedDate": "2026/03/18 下午09:07"
-    },
-    {
-      "id": "windows-msys64-support-guide",
-      "title": "Windows Rust 開發環境建置 SOP（GNU 路線，不依賴 .NET / Visual Studio）",
-      "overview": "無概述說明",
-      "filename": "windows-msys64-support-guide.md",
-      "path": "/doc/windows-msys64-support-guide.md",
-      "modifiedDate": "2026-03-17T05:42:10.562Z",
-      "formattedDate": "2026/03/17 下午01:42"
-    },
-    {
-      "id": "zk-vlogs",
-      "title": "zk-client-rustaxum 分支",
-      "overview": "項目實現的歷程記錄",
-      "filename": "zk-vlogs.md",
-      "path": "/doc/zk-vlogs.md",
-      "modifiedDate": "2026-03-12T13:32:23.237Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "web-print-guide",
-      "title": "打印開發參考指南",
-      "overview": "要實現 特定尺寸 128mm (寬) x 182mm (高) 直式收據（感謝狀）如何實現，web程序能處理嗎，看起來這款收據（感謝狀）像是特有尺吋不像A4紙，特有尺吋是否需要特有的信息傳送給打印機，打印機支援打印各種尺吋嗎，若使用打印套件 Print.js (處理 PDF 或 HTML 局部打印)也是可以的嗎。這張收據看起來帶有垂直排版的特性（中文直書）。在 CSS 中，你可以使用 writing-mode: vertical-rl; 來完美實現這種傳統的直式排版。我測量了直式收據，目前收集到的信息：最接近的標準尺寸：JIS B6，標準規格： 128mm (寬) x 182mm (高)。",
-      "filename": "web-print-guide.md",
-      "path": "/doc/web-print-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.235Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "user-story-registration",
-      "title": "祈福登記 user story",
-      "overview": "整個`祈福登記`的使用情境是這樣開始的:\n寺廟的操作者，需要建構一個可以建立寺廟的信眾基本資料的功能，寺廟操作者可以藉由這個功能來對於來寺廟拜拜或者是來參與法會活動的時候可以記錄下他們的基本資料往後再信眾再一次前來寺廟的時候可以很快速的了解信眾的基本資訊包含聯絡人、祖先、陽上人（超渡祖先或者冤親債主的在世人員也可以稱為遺族）、消災人員、生肖、還有填寫資料的時候他是填自己家 也可以幫娘家填寫 能幫朋友填寫 還有一些屬於其他不在剛剛說的範圍內，消災人員及超度需要提供地址，消災人員需要有一位來當這個地址的戶長，在填完這些資料之後`祈福登記`的基本資料就已經算是填寫完成了，下雨回這位信眾只要再來參加法會或者一些祈福消災的活動只要提供電話號碼就可以很快速的能夠找到這位信眾的資料並且提供他需要參加法會的一些需求，比如可以告訴他上次超渡的祖先是誰誰誰，消災人員有誰誰誰，為祖先超度的有誰誰誰，這次法會有要參加消災及超渡嗎，能快速的完成參加法會的紀錄，參加法會的活動信眾需要收據時系統要提供收據給信眾，一位信眾可能會有自己家的祈福資料，會有太太妻子娘家的祈福資料，有可能也會幫朋友報名這個祈福資料，也有可能是公司企業的祈福資料。\n\n# 使用方法說明\n\n主要功能：\n建立`祈福登記`基本資料檔\n\n操作流程：\n基本的CRUD功能\n搜尋姓名、手機、電話、地址、祖先、生肖\n列印",
-      "filename": "user-story-registration.md",
-      "path": "/doc/user-story-registration.md",
-      "modifiedDate": "2026-03-12T13:32:23.234Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "user-story-monthlyDonate",
-      "title": "每月贊助 user story",
-      "overview": "整個`每月贊助`的使用情境是這樣開始的：\n`每月贊助`每個月固定贊助廟方一個基本金額，目前的基本單位是 100 元。這個金額未來有可能調整（例如改為 200 元），因此在系統設計上必須保留彈性，而不能寫死。以王小明為例，他選擇一次預繳 600 元，代表他贊助了 6 個月份。這時系統會建立 一筆 600 元的贊助紀錄，並在另一個欄位中，用陣列方式明確記錄這筆金額所對應的「實際月份」。\n需要特別說明的是，贊助月份不一定是連續的。例如，王小明這一次的預繳，是從 2025 年 12 月到 2026 年 5 月，共 6 個月。操作人員只需輸入金額與選擇月份，系統便會自動記錄一筆金額為 600 元、並包含這 6 個月份的贊助資料。\n在列表呈現上，我們採用「過去 12 個月 + 未來 12 個月」的方式，總共顯示 24 個月份欄位。每一位`每月贊助`在列表中只會顯示 一筆資料列，搭配這 24 個月份的欄位來呈現狀態。操作人員不需要知道背後的資料結構，只會直覺地看到：王小明在 2025 年 12 月到 2026 年 5 月 的欄位中有資料，其餘月份則是空值。之後，如果操作人員再替王小明新增一筆贊助，例如預繳 2026 年 10 月到 12 月，共 3 個月、金額 300 元，系統就會再建立 第二筆贊助紀錄。此時，王小明在列表中的呈現會變成：\n2025 年 12 月 ～ 2026 年 5 月：有資料\n2026 年 10 月 ～ 2026 年 12 月：有資料\n其餘月份：空值\n\n而在資料層面，王小明會同時擁有兩筆贊助紀錄，一筆是 600 元，一筆是 300 元。\n在列表的右側，會提供操作功能，其中包含一個「加贊助」的按鈕。點擊後會導向另一個視窗，這個視窗在畫面結構上分為三個區塊：\n上方頂部：負責查詢與篩選（初期先用硬編碼實作，之後再串接 API）\n左側區塊：顯示該`每月贊助`所有既有的贊助紀錄列表\n右側區塊：輸入金額，並勾選對應的贊助月份\n在這個畫面中，操作人員可以完整執行新增、修改、刪除等 CRUD 操作。狀態管理則統一使用 store 來處理。\n整體設計的核心目標，是讓操作流程保持直覺、資料結構清楚，同時保留未來「每月基本金額調整」的彈性。\n\n# 使用方法說明\n\n主要功能：\n每月單位金額設定：可調整每月基本`每月贊助`（預設100元）\n24個月顯示：自動生成過去12個月和未來12個月的欄位\n`每月贊助`管理：每個`每月贊助`顯示一筆，合併所有`贊助項目`\n月份選擇器：根據金額自動計算可贊助的月份數量\n詳細檢視：查看每個`每月贊助`的詳細贊助記錄\n統計資訊：即時統計贊助總金額、人數、月份等\n\n# 向需求的管理者的提問與回答\n\n問：每月百元贊助，這個功用除了在贊助人家裡需要助念時鎮國寺的同人會到贊助人家中助念，還有其他作用嗎，是否包含贊助人家裡的往生者的超度呢\n答：沒有喔，因為超度需要準備供品成本，所以並沒有包含這個服務～\n問：所以只有提供助念服務\n答：對～還有會員每年有七天的額度可以免費點佛前燈\n問：明白。這個條件 在贊助人的贊助過程什麼情況下成立的判定，什么判斷符合這個七次的點燈的條件。每月贊助滿一整年才算嗎，如果王小明2025年贊助前半年，2026年也贊助了前半年，這樣不連續的贊助能夠符合點燈的條件嗎，還是……沒有硬性規定🤣\n答：平常人不會點佛前燈，通常是開放給緊急需求、需要佛菩薩特別關照的人，例如：生病住院、手術、車禍意外、考試、官司……這類的。\n這個服務雖然是存在的，但是我們並沒有主動推薦，因為酥油燈成本也不便宜，這個服務就是基於一個感恩回饋的心來提供給有需求的人，如果對方是會員來報名佛前燈的話，我們會視對方的家境情況給予建議\n問：不綁定七次點燈規則，單純的每月百元贊助做進行紀錄，可以做個備註欄嗎？如果有人有使用這個服務，可以手動輸入．這樣。\n答：可以備註。但是備註欄的輸入內容太過語化，沒有辦法做查詢的條件\n問：沒事，只要能查詢會員狀態即可，這個只有在有人提出需求的時候，才會去看對方是否在今年內有使用過這項服務。\n答：明白。",
-      "filename": "user-story-monthlyDonate.md",
-      "path": "/doc/user-story-monthlyDonate.md",
-      "modifiedDate": "2026-03-12T13:32:23.233Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "user-story-joinRecord",
-      "title": "參加記錄 user story",
-      "overview": "整個`參加記錄`的使用情境是這樣開始的:\n寺廟的操作者，依據信眾的需求替信眾填寫活動`參加記錄`表單，活動`參加記錄`表單是依據祈福登記及活動管理兩種項目進行建立的，寺廟的操作者選擇某位信眾的祈福登記資料後視信眾的需要要參加的項目比如信眾告知：祈福登記的誰誰要參加超度、消災、點燈（要有生肖），寺廟的操作者會向信眾確認參加項目並做適合的內容選擇（視需要可能會回到祈福登記進行維護），這時本功能會有統計金額向信眾收取超度、消災、點燈（要有生肖）的費用，信眾交付金額後視需要可能會向寺廟的操作者要求取得收據或感謝狀，本功能會記錄當前參加的項目與細項，`參加記錄`資料會是這樣的結構：`./client/src/data/mock_participation_records.json`。本功能會將`參加記錄`的結果集成為輸出的功能並生成活動`參加記錄`報表，後續的工作與會計系統做帳務串接或媒合帳務（沖帳），活動`參加記錄`報表（沖帳）會是另外一個功能。",
-      "filename": "user-story-joinRecord.md",
-      "path": "/doc/user-story-joinRecord.md",
-      "modifiedDate": "2026-03-12T13:32:23.232Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "user-story-activity",
-      "title": "活動管理 user story",
-      "overview": "活動管理的使用者故事是這樣子的，Activity 是寺廟管理系統中的活動管理模組，專門用於管理各種宗教活動，包括法會、朝山、禪修、講座等寺廟活動的完整生命週期管理。頁面控制`活動管理`的CRUD操作包含分頁在一個頁面完成，可以搜尋活動名稱、描述、地點。\n\n# 使用方法說明\n\n主要功能：\n建立`活動管理`基本資料檔\n\n操作流程：\n基本的CRUD，分頁\n搜尋活動名稱、描述、地點",
-      "filename": "user-story-activity.md",
-      "path": "/doc/user-story-activity.md",
-      "modifiedDate": "2026-03-12T13:32:23.231Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "test-stress-test-wal",
-      "title": "驗證 WAL 機制是否生效",
-      "overview": "生成 stress-test-wal.js 調用 scripts/testMydata.js 頻繁寫入，然後我停止服務來驗證 WAL 機制是否生效\n\n# 現在可以用以下方式測試 WAL checkpoint 機制：\n\n使用方式：\n\nbash\n\n# 1. 啟動服務（包含 Directus 和 Rust）\n\nnpm run db # 選擇資料庫\n\n# 或\n\nnpm run dev\n\n# 2. 在另一個終端執行壓力測試\n\nnpm run test:wal\n\n# 3. 觀察寫入情況（預設每 500ms 寫入 1 筆）\n\n# 會顯示：✅ 已寫入: 123 筆 | 錯誤: 0 筆\n\n# 4. 按 Ctrl+C 停止測試\n\n# 5. 停止 Rust 服務（Ctrl+C）\n\n# 6. 檢查 db/ 目錄下的 WAL 檔案\n\nls -lh db/_.db_\n\n自訂參數：\n\nbash\n\n# 更頻繁寫入（每 100ms）\n\nINTERVAL_MS=100 npm run test:wal\n\n# 每次寫入多筆（每 500ms 寫入 5 筆）\n\nBATCH_SIZE=5 npm run test:wal\n\n# 組合使用（每 200ms 寫入 3 筆）\n\nINTERVAL_MS=200 BATCH_SIZE=3 npm run test:wal\n\n驗證重點：\n\n- 測試過程中會產生 zk.db-wal 和 zk.db-shm 檔案\n- 停止 Rust 服務後，如果 checkpoint 正常運作，這些檔案應該會被清理\n- 如果檔案還在，表示 checkpoint 沒有生效",
-      "filename": "test-stress-test-wal.md",
-      "path": "/doc/test-stress-test-wal.md",
-      "modifiedDate": "2026-03-12T13:32:23.230Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "nginx-setup-guide",
-      "title": "Nginx 設置指南 - 鎮國寺廟管理系統",
-      "overview": "使用 Nginx 啟動",
-      "filename": "nginx-setup-guide.md",
-      "path": "/doc/nginx-setup-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.225Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "mock-registrations",
-      "title": "mock-registrations.json 格式說明",
-      "overview": "此檔為測試用的假資料陣列（array），每一筆代表一組完整的報名資料，對應應用程式中的 `registrationForm` 結構（參見 `Registration.vue` 與 `stores/registration.js`）。",
-      "filename": "mock-registrations.md",
-      "path": "/doc/mock-registrations.md",
-      "modifiedDate": "2026-03-12T13:32:23.223Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "mock-monthlyDonates",
-      "title": "mock_monthlyDonates.json 格式說明",
-      "overview": "此檔為測試用的假資料陣列（array），每一筆代表一組完整的每月贊助資料，對應應用程式中的每月贊助功能結構。",
-      "filename": "mock-monthlyDonates.md",
-      "path": "/doc/mock-monthlyDonates.md",
-      "modifiedDate": "2026-03-12T13:32:23.222Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "mock-logEntry",
-      "title": "操作記錄資料結構說明",
-      "overview": "操作記錄 (Log Entries) 是寺廟管理系統中記錄所有 API 操作的核心資料結構，用於追蹤系統中的所有資料變更、API 呼叫狀態、錯誤處理及效能監控。當資料誤刪除時，可以從 `context.requestBody` 中找回完整的資料內容。",
-      "filename": "mock-logEntry.md",
-      "path": "/doc/mock-logEntry.md",
-      "modifiedDate": "2026-03-12T13:32:23.221Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "log-test-guide",
-      "title": "MongoDB 日誌系統測試指南",
-      "overview": "驗證本地 Node.js 服務器可以成功將日誌資料寫入雲端 MongoDB Atlas。",
-      "filename": "log-test-guide.md",
-      "path": "/doc/log-test-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.220Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "mock-activity",
-      "title": "Mock Activity 資料說明文件",
-      "overview": "本文件說明 `client/src/data/mock_activities.json` 中的模擬活動資料結構和內容，用於寺廟管理系統中的活動管理模組測試和開發。",
-      "filename": "mock-activity.md",
-      "path": "/doc/mock-activity.md",
-      "modifiedDate": "2026-03-12T13:32:23.220Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "log-server-guide",
-      "title": "MongoDB 日誌服務器",
-      "overview": "本地 Node.js 日誌服務器，透過 `mongoDBLogger.js` 啟動，接收來自前端的日誌並存入雲端 MongoDB Atlas。",
-      "filename": "log-server-guide.md",
-      "path": "/doc/log-server-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.219Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "log-cleanup-strategy",
-      "title": "🗑️ MongoDB 日誌定期清理指南",
-      "overview": "📊 容量規劃（預留 20% 安全空間）\n\n### 計算基礎\n\n```\n總容量: 512 MB\n安全使用: 80% = 409.6 MB\n預留空間: 20% = 102.4 MB (緊急緩衝)\n\n單筆日誌: 3 KB\n安全存儲上限: 409.6 MB ÷ 3 KB = 139,810 筆\n```\n\n---",
-      "filename": "log-cleanup-strategy.md",
-      "path": "/doc/log-cleanup-strategy.md",
-      "modifiedDate": "2026-03-12T13:32:23.218Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "modifiedDate": "2026-03-20T13:34:36.039Z",
+      "formattedDate": "2026/03/20 下午01:34"
     },
     {
       "id": "locatorQA",
@@ -195,278 +80,143 @@
       "overview": "無概述說明",
       "filename": "locatorQA.md",
       "path": "/doc/locatorQA.md",
-      "modifiedDate": "2026-03-12T13:32:23.217Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-registration-list-guide",
-      "title": "祈福登記查詢列表功能開發指南",
-      "overview": "祈福登記查詢列表頁面提供已提交的消災超度報名資料查詢功能，支援關鍵字搜尋、分頁顯示、查看詳情、編輯表單等操作。",
-      "filename": "dev-registration-list-guide.md",
-      "path": "/doc/dev-registration-list-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.215Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "log-cleanup-strategy",
+      "title": "🗑️ MongoDB 日誌定期清理指南",
+      "overview": "📊 容量規劃（預留 20% 安全空間）\n\n### 計算基礎\n\n```\n總容量: 512 MB\n安全使用: 80% = 409.6 MB\n預留空間: 20% = 102.4 MB (緊急緩衝)\n\n單筆日誌: 3 KB\n安全存儲上限: 409.6 MB ÷ 3 KB = 139,810 筆\n```\n\n---",
+      "filename": "log-cleanup-strategy.md",
+      "path": "/doc/log-cleanup-strategy.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-registration-print-guide",
-      "title": "祈福登記打印預覽功能開發指南",
-      "overview": "祈福登記打印預覽頁面提供已提交表單的詳細內容查看和打印功能，支援多種格式下載（PDF、Excel、JSON、圖片、文字檔），採用響應式佈局設計。",
-      "filename": "dev-registration-print-guide.md",
-      "path": "/doc/dev-registration-print-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.215Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "log-server-guide",
+      "title": "MongoDB 日誌服務器",
+      "overview": "本地 Node.js 日誌服務器，透過 `mongoDBLogger.js` 啟動，接收來自前端的日誌並存入雲端 MongoDB Atlas。",
+      "filename": "log-server-guide.md",
+      "path": "/doc/log-server-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-registration-guide",
-      "title": "Registration（祈福登記）開發指南",
-      "overview": "Registration 是寺廟管理系統的核心功能，用於建立和管理信眾的祈福基本資料檔。系統設計目標是讓寺廟操作者能夠快速記錄信眾資料，並在後續法會活動中透過電話號碼快速查詢和使用這些資料。",
-      "filename": "dev-registration-guide.md",
-      "path": "/doc/dev-registration-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.214Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "log-test-guide",
+      "title": "MongoDB 日誌系統測試指南",
+      "overview": "驗證本地 Node.js 服務器可以成功將日誌資料寫入雲端 MongoDB Atlas。",
+      "filename": "log-test-guide.md",
+      "path": "/doc/log-test-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-monthly-donate-guide",
-      "title": "Monthly Donate（`每月贊助`）開發指南",
-      "overview": "Monthly Donate 是寺廟管理系統中的`每月贊助`管理模組，專門處理信眾的定期月度贊助，支援預繳、不連續月份贊助、24個月視窗顯示等複雜業務邏輯。",
-      "filename": "dev-monthly-donate-guide.md",
-      "path": "/doc/dev-monthly-donate-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.213Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "mock-activity",
+      "title": "Mock Activity 資料說明文件",
+      "overview": "本文件說明 `client/src/data/mock_activities.json` 中的模擬活動資料結構和內容，用於寺廟管理系統中的活動管理模組測試和開發。",
+      "filename": "mock-activity.md",
+      "path": "/doc/mock-activity.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-menu-guide",
-      "title": "開發菜單管理指南",
-      "overview": "菜單系統架構\n\n### 雙重控制屬性\n\n每個菜單項目有兩個獨立的控制屬性：\n\n```javascript\n{\n  id: 1,\n  name: \"功能名稱\",\n  enabled: true,    // 開發時控制：true=顯示, false=隱藏\n  publish: true,    // 部署時控制：true=發布, false=不發布\n}\n```\n\n### 四種狀態組合\n\n| enabled | publish | 開發環境 | 生產環境 | 使用場景         |\n| ------- | ------- | -------- | -------- | ---------------- |\n| `true`  | `true`  | ✅ 顯示  | ✅ 顯示  | 完成的功能       |\n| `true`  | `false` | ✅ 顯示  | ❌ 隱藏  | 開發中功能       |\n| `false` | `true`  | ❌ 隱藏  | ✅ 顯示  | 暫時關閉但要發布 |\n| `false` | `false` | ❌ 隱藏  | ❌ 隱藏  | 完全停用         |",
-      "filename": "dev-menu-guide.md",
-      "path": "/doc/dev-menu-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.212Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "mock-logEntry",
+      "title": "操作記錄資料結構說明",
+      "overview": "操作記錄 (Log Entries) 是寺廟管理系統中記錄所有 API 操作的核心資料結構，用於追蹤系統中的所有資料變更、API 呼叫狀態、錯誤處理及效能監控。當資料誤刪除時，可以從 `context.requestBody` 中找回完整的資料內容。",
+      "filename": "mock-logEntry.md",
+      "path": "/doc/mock-logEntry.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecordService-guide",
-      "title": "參加記錄服務開發規劃",
-      "overview": "主表：joinRecordDB 資料庫模型設計\n\n### 1.1 主表：joinRecordDB\n\n```sql\nCREATE TABLE joinRecordDB (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  registrationId INTEGER NOT NULL,           -- 關聯祈福登記表ID\n  activityId INTEGER NOT NULL,           -- 關聯活動ID\n  registeredAt DATETIME NOT NULL,            -- 登記時間\n  registeredBy VARCHAR(100) NOT NULL,        -- 登記人\n  state VARCHAR(20) DEFAULT 'confirmed',     -- 狀態: confirmed/pending/canceled\n  items JSON NOT NULL,                       -- 參加項目詳細資料\n  totalAmount DECIMAL(10,2) NOT NULL,        -- 總金額\n  discountAmount DECIMAL(10,2) DEFAULT 0,    -- 折扣金額\n  finalAmount DECIMAL(10,2) NOT NULL,        -- 最終金額\n  paidAmount DECIMAL(10,2) DEFAULT 0,        -- 已付金額\n  needReceipt BOOLEAN DEFAULT false,         -- 是否需要收據\n  receiptNumber VARCHAR(50),                 -- 佛字第\n  receiptIssued BOOLEAN DEFAULT '',       -- 收據已開立。經20260225決定修改定義默認為空值，值等於 \"standard\" 是 \"感謝狀\", \"stamp\" 是 \"收據\"，空值表示：未打印\"收據\"或\"感謝狀\"。\n  receiptIssuedAt DATETIME,                  -- 收據開立時間\n  receiptIssuedBy VARCHAR(100),              -- 收據開立者，也稱經手人\n  accountingState VARCHAR(20) DEFAULT 'pending', -- 會計狀態: pending/reconciled\n  accountingDate DATETIME,                   -- 沖帳日期\n  accountingBy VARCHAR(100),                 -- 沖帳者\n  accountingNotes TEXT,                      -- 沖帳備註\n  paymentState VARCHAR(20) DEFAULT 'unpaid', -- 付款狀態: paid/partial/unpaid/waived\n  paymentMethod VARCHAR(20),                 -- 付款方式: cash/transfer\n  paymentDate DATETIME,                      -- 付款日期\n  paymentNotes TEXT,                         -- 付款備註\n  notes TEXT,                                -- 備註\n  createdAt DATETIME NOT NULL,               -- 建立時間\n  createdBy VARCHAR(100) NOT NULL,           -- 建立者\n  updatedAt DATETIME NOT NULL,               -- 更新時間\n  updatedBy VARCHAR(100)                     -- 更新者\n);\n```\n\n### 1.2 items JSON 結構\n\n```json\n[\n  {\n    \"type\": \"chaodu\",\n    \"label\": \"超度/超薦\",\n    \"price\": 1000,\n    \"quantity\": 1,\n    \"subtotal\": 1000,\n    \"source\": \"salvation.ancestors\",\n    \"sourceData\": [\n      {\n        \"id\": 1,\n        \"surname\": \"王府\",\n        \"notes\": \"歷代祖先\"\n      }\n    ]\n  },\n  {\n    \"type\": \"diandeng\",\n    \"label\": \"點燈\",\n    \"price\": 600,\n    \"quantity\": 2,\n    \"subtotal\": 1200,\n    \"source\": \"blessing.persons\",\n    \"lampType\": \"guangming\",\n    \"lampTypeLabel\": \"光明燈\",\n    \"sourceData\": [...]\n  }\n]\n```",
-      "filename": "dev-joinRecordService-guide.md",
-      "path": "/doc/dev-joinRecordService-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.211Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "mock-monthlyDonates",
+      "title": "mock_monthlyDonates.json 格式說明",
+      "overview": "此檔為測試用的假資料陣列（array），每一筆代表一組完整的每月贊助資料，對應應用程式中的每月贊助功能結構。",
+      "filename": "mock-monthlyDonates.md",
+      "path": "/doc/mock-monthlyDonates.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-states-control-guide",
-      "title": "參加記錄狀態控制台開發指南",
-      "overview": "參加記錄狀態控制台 (`JoinRecordStatesControl.vue`) 是一個專門用於批量管理參加記錄狀態的管理介面，允許管理員快速調整記錄的各項狀態。",
-      "filename": "dev-joinRecord-states-control-guide.md",
-      "path": "/doc/dev-joinRecord-states-control-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.210Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "mock-registrations",
+      "title": "mock-registrations.json 格式說明",
+      "overview": "此檔為測試用的假資料陣列（array），每一筆代表一組完整的報名資料，對應應用程式中的 `registrationForm` 結構（參見 `Registration.vue` 與 `stores/registration.js`）。",
+      "filename": "mock-registrations.md",
+      "path": "/doc/mock-registrations.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-report-control-guide",
-      "title": "參加記錄報表控制台開發文檔",
-      "overview": "參加記錄報表控制台 (`JoinRecordReportControl.vue`) 提供多條件查詢、欄位自訂、多格式匯出功能。",
-      "filename": "dev-joinRecord-report-control-guide.md",
-      "path": "/doc/dev-joinRecord-report-control-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.209Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "nginx-setup-guide",
+      "title": "Nginx 設置指南 - 鎮國寺廟管理系統",
+      "overview": "使用 Nginx 啟動",
+      "filename": "nginx-setup-guide.md",
+      "path": "/doc/nginx-setup-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-receiptNumber-guide",
-      "title": "活動參加記錄 - 收據編號生成機制說明",
-      "overview": "實現收據和感謝狀的唯一編號生成機制，確保在多使用者併發環境下不會產生重複編號。編號規則為年月4碼 + 流水號4碼，感謝狀額外加前綴 \"A\"。\n\n**技術方案**：\n\n- ✅ Rust Axum 後端原子性生成\n- ✅ 獨立 `receiptNumbersDB` 表管理編號\n- ✅ SQLite WAL 機制保證併發安全\n- ✅ 雙軌架構：寫入走 Rust，查詢走 Rust 高性能軌\n\n**性能優勢**：\n\n- ⚡ 編號生成：~1ms（只掃描當月編號，~100筆）\n- ⚡ 併發能力：鎖定範圍小，不影響其他操作\n- ⚡ 擴展性強：支援作廢、重新生成等功能",
-      "filename": "dev-joinRecord-receiptNumber-guide.md",
-      "path": "/doc/dev-joinRecord-receiptNumber-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.208Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "test-stress-test-wal",
+      "title": "驗證 WAL 機制是否生效",
+      "overview": "生成 stress-test-wal.js 調用 scripts/testMydata.js 頻繁寫入，然後我停止服務來驗證 WAL 機制是否生效\n\n# 現在可以用以下方式測試 WAL checkpoint 機制：\n\n使用方式：\n\nbash\n\n# 1. 啟動服務（包含 Directus 和 Rust）\n\nnpm run db # 選擇資料庫\n\n# 或\n\nnpm run dev\n\n# 2. 在另一個終端執行壓力測試\n\nnpm run test:wal\n\n# 3. 觀察寫入情況（預設每 500ms 寫入 1 筆）\n\n# 會顯示：✅ 已寫入: 123 筆 | 錯誤: 0 筆\n\n# 4. 按 Ctrl+C 停止測試\n\n# 5. 停止 Rust 服務（Ctrl+C）\n\n# 6. 檢查 db/ 目錄下的 WAL 檔案\n\nls -lh db/_.db_\n\n自訂參數：\n\nbash\n\n# 更頻繁寫入（每 100ms）\n\nINTERVAL_MS=100 npm run test:wal\n\n# 每次寫入多筆（每 500ms 寫入 5 筆）\n\nBATCH_SIZE=5 npm run test:wal\n\n# 組合使用（每 200ms 寫入 3 筆）\n\nINTERVAL_MS=200 BATCH_SIZE=3 npm run test:wal\n\n驗證重點：\n\n- 測試過程中會產生 zk.db-wal 和 zk.db-shm 檔案\n- 停止 Rust 服務後，如果 checkpoint 正常運作，這些檔案應該會被清理\n- 如果檔案還在，表示 checkpoint 沒有生效",
+      "filename": "test-stress-test-wal.md",
+      "path": "/doc/test-stress-test-wal.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-receipt-print-guide",
-      "title": "活動參加記錄 - 收據打印功能說明",
-      "overview": "實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模版切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。\n\n本文檔涵蓋：\n\n- **單筆打印**：從列表頁點擊單筆記錄進行打印\n- **批量打印**：多選記錄後批量進入打印頁面，透過數字按鈕快速切換並打印，每張打印完成後自動跳轉到下一張",
-      "filename": "dev-joinRecord-receipt-print-guide.md",
-      "path": "/doc/dev-joinRecord-receipt-print-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.207Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "user-story-activity",
+      "title": "活動管理 user story",
+      "overview": "活動管理的使用者故事是這樣子的，Activity 是寺廟管理系統中的活動管理模組，專門用於管理各種宗教活動，包括法會、朝山、禪修、講座等寺廟活動的完整生命週期管理。頁面控制`活動管理`的CRUD操作包含分頁在一個頁面完成，可以搜尋活動名稱、描述、地點。\n\n# 使用方法說明\n\n主要功能：\n建立`活動管理`基本資料檔\n\n操作流程：\n基本的CRUD，分頁\n搜尋活動名稱、描述、地點",
+      "filename": "user-story-activity.md",
+      "path": "/doc/user-story-activity.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-print-guide",
-      "title": "活動參加記錄打印功能開發指南",
-      "overview": "本文檔說明活動參加記錄打印功能的實現，包括 `JoinRecordPrint.vue` 組件的開發和 `JoinRecordList.vue` 中打印功能的整合。",
-      "filename": "dev-joinRecord-print-guide.md",
-      "path": "/doc/dev-joinRecord-print-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.206Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "user-story-joinRecord",
+      "title": "參加記錄 user story",
+      "overview": "整個`參加記錄`的使用情境是這樣開始的:\n寺廟的操作者，依據信眾的需求替信眾填寫活動`參加記錄`表單，活動`參加記錄`表單是依據祈福登記及活動管理兩種項目進行建立的，寺廟的操作者選擇某位信眾的祈福登記資料後視信眾的需要要參加的項目比如信眾告知：祈福登記的誰誰要參加超度、消災、點燈（要有生肖），寺廟的操作者會向信眾確認參加項目並做適合的內容選擇（視需要可能會回到祈福登記進行維護），這時本功能會有統計金額向信眾收取超度、消災、點燈（要有生肖）的費用，信眾交付金額後視需要可能會向寺廟的操作者要求取得收據或感謝狀，本功能會記錄當前參加的項目與細項，`參加記錄`資料會是這樣的結構：`./client/src/data/mock_participation_records.json`。本功能會將`參加記錄`的結果集成為輸出的功能並生成活動`參加記錄`報表，後續的工作與會計系統做帳務串接或媒合帳務（沖帳），活動`參加記錄`報表（沖帳）會是另外一個功能。",
+      "filename": "user-story-joinRecord.md",
+      "path": "/doc/user-story-joinRecord.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-guide",
-      "title": "參加記錄功能開發指南",
-      "overview": "「參加記錄」是寺廟管理系統中的核心功能，用於記錄信眾參加各種宗教活動的詳細資訊，包括超度、消災、點燈等項目的選擇、費用計算、收據開立及帳務處理。",
-      "filename": "dev-joinRecord-guide.md",
-      "path": "/doc/dev-joinRecord-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.205Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "user-story-monthlyDonate",
+      "title": "每月贊助 user story",
+      "overview": "整個`每月贊助`的使用情境是這樣開始的：\n`每月贊助`每個月固定贊助廟方一個基本金額，目前的基本單位是 100 元。這個金額未來有可能調整（例如改為 200 元），因此在系統設計上必須保留彈性，而不能寫死。以王小明為例，他選擇一次預繳 600 元，代表他贊助了 6 個月份。這時系統會建立 一筆 600 元的贊助紀錄，並在另一個欄位中，用陣列方式明確記錄這筆金額所對應的「實際月份」。\n需要特別說明的是，贊助月份不一定是連續的。例如，王小明這一次的預繳，是從 2025 年 12 月到 2026 年 5 月，共 6 個月。操作人員只需輸入金額與選擇月份，系統便會自動記錄一筆金額為 600 元、並包含這 6 個月份的贊助資料。\n在列表呈現上，我們採用「過去 12 個月 + 未來 12 個月」的方式，總共顯示 24 個月份欄位。每一位`每月贊助`在列表中只會顯示 一筆資料列，搭配這 24 個月份的欄位來呈現狀態。操作人員不需要知道背後的資料結構，只會直覺地看到：王小明在 2025 年 12 月到 2026 年 5 月 的欄位中有資料，其餘月份則是空值。之後，如果操作人員再替王小明新增一筆贊助，例如預繳 2026 年 10 月到 12 月，共 3 個月、金額 300 元，系統就會再建立 第二筆贊助紀錄。此時，王小明在列表中的呈現會變成：\n2025 年 12 月 ～ 2026 年 5 月：有資料\n2026 年 10 月 ～ 2026 年 12 月：有資料\n其餘月份：空值\n\n而在資料層面，王小明會同時擁有兩筆贊助紀錄，一筆是 600 元，一筆是 300 元。\n在列表的右側，會提供操作功能，其中包含一個「加贊助」的按鈕。點擊後會導向另一個視窗，這個視窗在畫面結構上分為三個區塊：\n上方頂部：負責查詢與篩選（初期先用硬編碼實作，之後再串接 API）\n左側區塊：顯示該`每月贊助`所有既有的贊助紀錄列表\n右側區塊：輸入金額，並勾選對應的贊助月份\n在這個畫面中，操作人員可以完整執行新增、修改、刪除等 CRUD 操作。狀態管理則統一使用 store 來處理。\n整體設計的核心目標，是讓操作流程保持直覺、資料結構清楚，同時保留未來「每月基本金額調整」的彈性。\n\n# 使用方法說明\n\n主要功能：\n每月單位金額設定：可調整每月基本`每月贊助`（預設100元）\n24個月顯示：自動生成過去12個月和未來12個月的欄位\n`每月贊助`管理：每個`每月贊助`顯示一筆，合併所有`贊助項目`\n月份選擇器：根據金額自動計算可贊助的月份數量\n詳細檢視：查看每個`每月贊助`的詳細贊助記錄\n統計資訊：即時統計贊助總金額、人數、月份等\n\n# 向需求的管理者的提問與回答\n\n問：每月百元贊助，這個功用除了在贊助人家裡需要助念時鎮國寺的同人會到贊助人家中助念，還有其他作用嗎，是否包含贊助人家裡的往生者的超度呢\n答：沒有喔，因為超度需要準備供品成本，所以並沒有包含這個服務～\n問：所以只有提供助念服務\n答：對～還有會員每年有七天的額度可以免費點佛前燈\n問：明白。這個條件 在贊助人的贊助過程什麼情況下成立的判定，什么判斷符合這個七次的點燈的條件。每月贊助滿一整年才算嗎，如果王小明2025年贊助前半年，2026年也贊助了前半年，這樣不連續的贊助能夠符合點燈的條件嗎，還是……沒有硬性規定🤣\n答：平常人不會點佛前燈，通常是開放給緊急需求、需要佛菩薩特別關照的人，例如：生病住院、手術、車禍意外、考試、官司……這類的。\n這個服務雖然是存在的，但是我們並沒有主動推薦，因為酥油燈成本也不便宜，這個服務就是基於一個感恩回饋的心來提供給有需求的人，如果對方是會員來報名佛前燈的話，我們會視對方的家境情況給予建議\n問：不綁定七次點燈規則，單純的每月百元贊助做進行紀錄，可以做個備註欄嗎？如果有人有使用這個服務，可以手動輸入．這樣。\n答：可以備註。但是備註欄的輸入內容太過語化，沒有辦法做查詢的條件\n問：沒事，只要能查詢會員狀態即可，這個只有在有人提出需求的時候，才會去看對方是否在今年內有使用過這項服務。\n答：明白。",
+      "filename": "user-story-monthlyDonate.md",
+      "path": "/doc/user-story-monthlyDonate.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-list-guide",
-      "title": "活動參加記錄查詢功能開發指南",
-      "overview": "本功能實現了\"活動參加記錄查詢\"，允許用戶查詢和管理已提交的活動參加記錄，`JoinRecordList.vue` 是參加記錄的查詢列表頁面，提供搜尋、篩選和分頁功能。",
-      "filename": "dev-joinRecord-list-guide.md",
-      "path": "/doc/dev-joinRecord-list-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.205Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "user-story-registration",
+      "title": "祈福登記 user story",
+      "overview": "整個`祈福登記`的使用情境是這樣開始的:\n寺廟的操作者，需要建構一個可以建立寺廟的信眾基本資料的功能，寺廟操作者可以藉由這個功能來對於來寺廟拜拜或者是來參與法會活動的時候可以記錄下他們的基本資料往後再信眾再一次前來寺廟的時候可以很快速的了解信眾的基本資訊包含聯絡人、祖先、陽上人（超渡祖先或者冤親債主的在世人員也可以稱為遺族）、消災人員、生肖、還有填寫資料的時候他是填自己家 也可以幫娘家填寫 能幫朋友填寫 還有一些屬於其他不在剛剛說的範圍內，消災人員及超度需要提供地址，消災人員需要有一位來當這個地址的戶長，在填完這些資料之後`祈福登記`的基本資料就已經算是填寫完成了，下雨回這位信眾只要再來參加法會或者一些祈福消災的活動只要提供電話號碼就可以很快速的能夠找到這位信眾的資料並且提供他需要參加法會的一些需求，比如可以告訴他上次超渡的祖先是誰誰誰，消災人員有誰誰誰，為祖先超度的有誰誰誰，這次法會有要參加消災及超渡嗎，能快速的完成參加法會的紀錄，參加法會的活動信眾需要收據時系統要提供收據給信眾，一位信眾可能會有自己家的祈福資料，會有太太妻子娘家的祈福資料，有可能也會幫朋友報名這個祈福資料，也有可能是公司企業的祈福資料。\n\n# 使用方法說明\n\n主要功能：\n建立`祈福登記`基本資料檔\n\n操作流程：\n基本的CRUD功能\n搜尋姓名、手機、電話、地址、祖先、生肖\n列印",
+      "filename": "user-story-registration.md",
+      "path": "/doc/user-story-registration.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-card-print-guide",
-      "title": "參加記錄牌位打印功能開發指南",
-      "overview": "參加記錄牌位打印頁面提供可視化拖拽式牌位設計功能，支援多種牌位模版切換、自由拖拽數據項目、調整字體大小與位置，並可高清打印輸出。",
-      "filename": "dev-joinRecord-card-print-guide.md",
-      "path": "/doc/dev-joinRecord-card-print-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.203Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "web-print-guide",
+      "title": "打印開發參考指南",
+      "overview": "要實現 特定尺寸 128mm (寬) x 182mm (高) 直式收據（感謝狀）如何實現，web程序能處理嗎，看起來這款收據（感謝狀）像是特有尺吋不像A4紙，特有尺吋是否需要特有的信息傳送給打印機，打印機支援打印各種尺吋嗎，若使用打印套件 Print.js (處理 PDF 或 HTML 局部打印)也是可以的嗎。這張收據看起來帶有垂直排版的特性（中文直書）。在 CSS 中，你可以使用 writing-mode: vertical-rl; 來完美實現這種傳統的直式排版。我測量了直式收據，目前收集到的信息：最接近的標準尺寸：JIS B6，標準規格： 128mm (寬) x 182mm (高)。",
+      "filename": "web-print-guide.md",
+      "path": "/doc/web-print-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
-      "id": "dev-joinRecord-activity-selection-guide",
-      "title": "JoinRecord 活動選擇功能開發指南",
-      "overview": "本次修改在 JoinRecord.vue 的\"已選擇的祈福登記\"區塊中添加了活動選擇功能，允許用戶單選一個活動，並將活動的 id 綁定到 activityId。",
-      "filename": "dev-joinRecord-activity-selection-guide.md",
-      "path": "/doc/dev-joinRecord-activity-selection-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.202Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "dev-activity-guide",
-      "title": "Activity（活動管理）功能說明",
-      "overview": "Activity 是寺廟管理系統中的活動管理模組，專門用於管理各種宗教活動，包括法會、朝山、禪修、講座等寺廟活動的完整生命週期管理。",
-      "filename": "dev-activity-guide.md",
-      "path": "/doc/dev-activity-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.201Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "dev-dashboard-guide",
-      "title": "Dashboard 開發指南",
-      "overview": "Dashboard（資訊牆）提供系統全面的數據概覽，包含業務統計、財務狀態、活動管理與近期記錄，讓管理人員即時掌握登記、金流與活動概況。",
-      "filename": "dev-dashboard-guide.md",
-      "path": "/doc/dev-dashboard-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.201Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "dev-DateUtils-guide",
-      "title": "DateUtils 日期時間工具函數說明文檔",
-      "overview": "`DateUtils` 提供統一的日期時間處理接口，自動處理 UTC 時間與本地時區轉換。\n\n**位置：** `client/src/utils/dateUtils.js`",
-      "filename": "dev-DateUtils-guide.md",
-      "path": "/doc/dev-DateUtils-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.200Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "dev-AnimatedNumber-guide",
-      "title": "AnimatedNumber 組件開發指南",
-      "overview": "AnimatedNumber 是一個純原生實現的數字動畫組件，提供平滑的數字跳動效果，從 0 動畫到目標數值。組件採用瀏覽器原生 API，無第三方依賴，具有高性能和完全可配置的特性。",
-      "filename": "dev-AnimatedNumber-guide.md",
-      "path": "/doc/dev-AnimatedNumber-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.199Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "deployment-guide",
-      "title": "部署指南",
-      "overview": "本指南涵蓋 zhengkuo-behappy 系統的完整部署流程，包括開發環境、測試環境和生產環境的配置。",
-      "filename": "deployment-guide.md",
-      "path": "/doc/deployment-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.198Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "deploy-netlify-guide",
-      "title": "Netlify 部署指南",
-      "overview": "在開發過程中，需要將 `zk-client-rustaxum` 分支的內容部署到 `zk-client-netlify` 分支，但某些功能（菜單項目）不希望在生產環境中顯示。",
-      "filename": "deploy-netlify-guide.md",
-      "path": "/doc/deploy-netlify-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.197Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "db-symlink-database-impact",
-      "title": "符號連結對 SQLite 資料庫的影響分析",
-      "overview": "符號連結對 SQLite 資料庫的影響分析",
-      "filename": "db-symlink-database-impact.md",
-      "path": "/doc/db-symlink-database-impact.md",
-      "modifiedDate": "2026-03-12T13:32:23.196Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "db-symlink-windows-guide",
-      "title": "Windows 符號連結問題解決指南",
-      "overview": "無概述說明",
-      "filename": "db-symlink-windows-guide.md",
-      "path": "/doc/db-symlink-windows-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.196Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "db-stress-test-guide",
-      "title": "壓力測試高並發讀寫指南",
-      "overview": "驗證 Rust Axum 後端與 Directus 共用 SQLite 資料庫時，在高並發讀寫情況下是否會出現資料庫鎖定問題。",
-      "filename": "db-stress-test-guide.md",
-      "path": "/doc/db-stress-test-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.195Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "db-start-with-db-guide",
-      "title": "客戶資料庫管理工具指南",
-      "overview": "本專案使用多資料庫架構，支援不同客戶的獨立資料庫管理。透過 `scripts/start-with-db.js` 腳本可以輕鬆切換和管理不同的資料庫，並自動啟動所有開發服務。",
-      "filename": "db-start-with-db-guide.md",
-      "path": "/doc/db-start-with-db-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.194Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "db-check-symlinks",
-      "title": "符號連結查看快速參考",
-      "overview": "🔍 快速查看命令\n\n### 最常用的命令\n\n```bash\n# 查看單個符號連結\nls -l db/current.db\n\n# 查看目錄下所有文件（符號連結會特別標示）\nls -l db/\n\n# 只顯示符號連結指向的目標\nreadlink db/current.db\n\n# 使用我們的檢查工具（推薦）\nnode scripts/check-symlinks.js\n```",
-      "filename": "db-check-symlinks.md",
-      "path": "/doc/db-check-symlinks.md",
-      "modifiedDate": "2026-03-12T13:32:23.193Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "db-init-database-guide",
-      "title": "客戶資料庫初始化工具指南",
-      "overview": "`scripts/init-database.js` 是專門用於初始化新客戶資料庫的工具。它會讀取 `db/databases.json` 配置檔案，自動識別未初始化的資料庫，並提供多種初始化方式。",
-      "filename": "db-init-database-guide.md",
-      "path": "/doc/db-init-database-guide.md",
-      "modifiedDate": "2026-03-12T13:32:23.193Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "business-logic",
-      "title": "業務邏輯說明",
-      "overview": "zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理消災超度登記、每月贊助管理、活動管理和太歲點燈等宗教服務。本文檔詳細說明各項業務功能的邏輯流程。\n\n---",
-      "filename": "business-logic.md",
-      "path": "/doc/business-logic.md",
-      "modifiedDate": "2026-03-12T13:32:23.192Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "architecture-overview",
-      "title": "系統架構總覽",
-      "overview": "**zhengkuo-behappy** 是一個完整的寺廟管理系統，主要功能包括消災超度登記、每月贊助管理、活動管理與太歲點燈服務。\n\n**專案統計：**\n\n- 總檔案數：4,410\n- 程式碼行數：17,790\n- 函數數量：354\n- 類別/結構：41",
-      "filename": "architecture-overview.md",
-      "path": "/doc/architecture-overview.md",
-      "modifiedDate": "2026-03-12T13:32:23.191Z",
-      "formattedDate": "2026/03/12 下午09:32"
-    },
-    {
-      "id": "api-documentation",
-      "title": "API 文檔",
-      "overview": "本系統採用「實用主義優先」的 API 設計理念，提供雙軌並行的後端支援：\n\n### 🚄 雙軌 API 架構\n\n#### 性能軌：Rust Axum API (讀取專用)\n\n- **端點**: `http://localhost:3000`\n- **職責**: 高性能數據查詢 (Read Operations)\n- **優勢**: 極速響應、零開銷、內存安全\n- **適用**: 列表查詢、搜索、統計、報表\n\n#### 管理軌：Directus API (寫入與管理)\n\n- **端點**: `http://localhost:8055`\n- **職責**: 數據寫入與系統管理 (CUD + Auth + Admin)\n- **優勢**: 完整認證、審計日誌、管理界面\n- **適用**: 新增、修改、刪除、用戶管理\n\n**一石二鳥效果：**\n\n- 🐦 獲得管理便利性 (Directus 的完整功能)\n- 🐦 獲得查詢高性能 (Rust 的極速響應)\n\n所有 API 回應都遵循統一的格式規範。",
-      "filename": "api-documentation.md",
-      "path": "/doc/api-documentation.md",
-      "modifiedDate": "2026-03-12T13:32:23.190Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "id": "zk-vlogs",
+      "title": "zk-client-rustaxum 分支",
+      "overview": "項目實現的歷程記錄",
+      "filename": "zk-vlogs.md",
+      "path": "/doc/zk-vlogs.md",
+      "modifiedDate": "2026-03-20T13:33:43.226Z",
+      "formattedDate": "2026/03/20 下午01:33"
     },
     {
       "id": "README",
@@ -474,10 +224,284 @@
       "overview": "前後端分離的文檔瀏覽系統，使用 Vue.js 前端 + Express 後端，支援即時搜尋功能。\n\n**改版重點**：\n\n- 從後端模版渲染改為前後端分離架構\n- 使用 Vue 3 CDN 實現前端互動，無需打包工具\n- 啟動時自動掃描 markdown 生成靜態 JSON 索引\n- 前端即時過濾搜尋，無需後端查詢，提升使用體驗\n- 提取文檔標題和「概述說明」區塊，方便快速定位文件\n- 關鍵字高亮顯示，解決文檔多時難以查找的問題從後端模版渲染改為前後端分離架構，使用 Vue 前端讀取靜態 JSON 實現即時搜尋功能。",
       "filename": "README.md",
       "path": "/doc/README.md",
-      "modifiedDate": "2026-03-12T13:32:23.187Z",
-      "formattedDate": "2026/03/12 下午09:32"
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "api-documentation",
+      "title": "API 文檔",
+      "overview": "本系統採用「實用主義優先」的 API 設計理念，提供雙軌並行的後端支援：\n\n### 🚄 雙軌 API 架構\n\n#### 性能軌：Rust Axum API (讀取專用)\n\n- **端點**: `http://localhost:3000`\n- **職責**: 高性能數據查詢 (Read Operations)\n- **優勢**: 極速響應、零開銷、內存安全\n- **適用**: 列表查詢、搜索、統計、報表\n\n#### 管理軌：Directus API (寫入與管理)\n\n- **端點**: `http://localhost:8055`\n- **職責**: 數據寫入與系統管理 (CUD + Auth + Admin)\n- **優勢**: 完整認證、審計日誌、管理界面\n- **適用**: 新增、修改、刪除、用戶管理\n\n**一石二鳥效果：**\n\n- 🐦 獲得管理便利性 (Directus 的完整功能)\n- 🐦 獲得查詢高性能 (Rust 的極速響應)\n\n所有 API 回應都遵循統一的格式規範。",
+      "filename": "api-documentation.md",
+      "path": "/doc/api-documentation.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "architecture-overview",
+      "title": "系統架構總覽",
+      "overview": "**zhengkuo-behappy** 是一個完整的寺廟管理系統，主要功能包括消災超度登記、每月贊助管理、活動管理與太歲點燈服務。\n\n**專案統計：**\n\n- 總檔案數：4,410\n- 程式碼行數：17,790\n- 函數數量：354\n- 類別/結構：41",
+      "filename": "architecture-overview.md",
+      "path": "/doc/architecture-overview.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "business-logic",
+      "title": "業務邏輯說明",
+      "overview": "zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理消災超度登記、每月贊助管理、活動管理和太歲點燈等宗教服務。本文檔詳細說明各項業務功能的邏輯流程。\n\n---",
+      "filename": "business-logic.md",
+      "path": "/doc/business-logic.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "db-check-symlinks",
+      "title": "符號連結查看快速參考",
+      "overview": "🔍 快速查看命令\n\n### 最常用的命令\n\n```bash\n# 查看單個符號連結\nls -l db/current.db\n\n# 查看目錄下所有文件（符號連結會特別標示）\nls -l db/\n\n# 只顯示符號連結指向的目標\nreadlink db/current.db\n\n# 使用我們的檢查工具（推薦）\nnode scripts/check-symlinks.js\n```",
+      "filename": "db-check-symlinks.md",
+      "path": "/doc/db-check-symlinks.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "db-init-database-guide",
+      "title": "客戶資料庫初始化工具指南",
+      "overview": "`scripts/init-database.js` 是專門用於初始化新客戶資料庫的工具。它會讀取 `db/databases.json` 配置檔案，自動識別未初始化的資料庫，並提供多種初始化方式。",
+      "filename": "db-init-database-guide.md",
+      "path": "/doc/db-init-database-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "db-start-with-db-guide",
+      "title": "客戶資料庫管理工具指南",
+      "overview": "本專案使用多資料庫架構，支援不同客戶的獨立資料庫管理。透過 `scripts/start-with-db.js` 腳本可以輕鬆切換和管理不同的資料庫，並自動啟動所有開發服務。",
+      "filename": "db-start-with-db-guide.md",
+      "path": "/doc/db-start-with-db-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "db-stress-test-guide",
+      "title": "壓力測試高並發讀寫指南",
+      "overview": "驗證 Rust Axum 後端與 Directus 共用 SQLite 資料庫時，在高並發讀寫情況下是否會出現資料庫鎖定問題。",
+      "filename": "db-stress-test-guide.md",
+      "path": "/doc/db-stress-test-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "db-symlink-database-impact",
+      "title": "符號連結對 SQLite 資料庫的影響分析",
+      "overview": "符號連結對 SQLite 資料庫的影響分析",
+      "filename": "db-symlink-database-impact.md",
+      "path": "/doc/db-symlink-database-impact.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "db-symlink-windows-guide",
+      "title": "Windows 符號連結問題解決指南",
+      "overview": "無概述說明",
+      "filename": "db-symlink-windows-guide.md",
+      "path": "/doc/db-symlink-windows-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "deploy-netlify-guide",
+      "title": "Netlify 部署指南",
+      "overview": "在開發過程中，需要將 `zk-client-rustaxum` 分支的內容部署到 `zk-client-netlify` 分支，但某些功能（菜單項目）不希望在生產環境中顯示。",
+      "filename": "deploy-netlify-guide.md",
+      "path": "/doc/deploy-netlify-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "deployment-guide",
+      "title": "部署指南",
+      "overview": "本指南涵蓋 zhengkuo-behappy 系統的完整部署流程，包括開發環境、測試環境和生產環境的配置。",
+      "filename": "deployment-guide.md",
+      "path": "/doc/deployment-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-AnimatedNumber-guide",
+      "title": "AnimatedNumber 組件開發指南",
+      "overview": "AnimatedNumber 是一個純原生實現的數字動畫組件，提供平滑的數字跳動效果，從 0 動畫到目標數值。組件採用瀏覽器原生 API，無第三方依賴，具有高性能和完全可配置的特性。",
+      "filename": "dev-AnimatedNumber-guide.md",
+      "path": "/doc/dev-AnimatedNumber-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-DateUtils-guide",
+      "title": "DateUtils 日期時間工具函數說明文檔",
+      "overview": "`DateUtils` 提供統一的日期時間處理接口，自動處理 UTC 時間與本地時區轉換。\n\n**位置：** `client/src/utils/dateUtils.js`",
+      "filename": "dev-DateUtils-guide.md",
+      "path": "/doc/dev-DateUtils-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-activity-guide",
+      "title": "Activity（活動管理）功能說明",
+      "overview": "Activity 是寺廟管理系統中的活動管理模組，專門用於管理各種宗教活動，包括法會、朝山、禪修、講座等寺廟活動的完整生命週期管理。",
+      "filename": "dev-activity-guide.md",
+      "path": "/doc/dev-activity-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-dashboard-guide",
+      "title": "Dashboard 開發指南",
+      "overview": "Dashboard（資訊牆）提供系統全面的數據概覽，包含業務統計、財務狀態、活動管理與近期記錄，讓管理人員即時掌握登記、金流與活動概況。",
+      "filename": "dev-dashboard-guide.md",
+      "path": "/doc/dev-dashboard-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-activity-selection-guide",
+      "title": "JoinRecord 活動選擇功能開發指南",
+      "overview": "本次修改在 JoinRecord.vue 的\"已選擇的祈福登記\"區塊中添加了活動選擇功能，允許用戶單選一個活動，並將活動的 id 綁定到 activityId。",
+      "filename": "dev-joinRecord-activity-selection-guide.md",
+      "path": "/doc/dev-joinRecord-activity-selection-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-card-print-guide",
+      "title": "參加記錄牌位打印功能開發指南",
+      "overview": "參加記錄牌位打印頁面提供可視化拖拽式牌位設計功能，支援多種牌位模版切換、自由拖拽數據項目、調整字體大小與位置，並可高清打印輸出。",
+      "filename": "dev-joinRecord-card-print-guide.md",
+      "path": "/doc/dev-joinRecord-card-print-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-guide",
+      "title": "參加記錄功能開發指南",
+      "overview": "「參加記錄」是寺廟管理系統中的核心功能，用於記錄信眾參加各種宗教活動的詳細資訊，包括超度、消災、點燈等項目的選擇、費用計算、收據開立及帳務處理。",
+      "filename": "dev-joinRecord-guide.md",
+      "path": "/doc/dev-joinRecord-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-list-guide",
+      "title": "活動參加記錄查詢功能開發指南",
+      "overview": "本功能實現了\"活動參加記錄查詢\"，允許用戶查詢和管理已提交的活動參加記錄，`JoinRecordList.vue` 是參加記錄的查詢列表頁面，提供搜尋、篩選和分頁功能。",
+      "filename": "dev-joinRecord-list-guide.md",
+      "path": "/doc/dev-joinRecord-list-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-print-guide",
+      "title": "活動參加記錄打印功能開發指南",
+      "overview": "本文檔說明活動參加記錄打印功能的實現，包括 `JoinRecordPrint.vue` 組件的開發和 `JoinRecordList.vue` 中打印功能的整合。",
+      "filename": "dev-joinRecord-print-guide.md",
+      "path": "/doc/dev-joinRecord-print-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-receipt-print-guide",
+      "title": "活動參加記錄 - 收據打印功能說明",
+      "overview": "實現特殊尺寸（128mm x 182mm）直式收據打印功能，支援雙模版切換（感謝狀/收據），採用中文直書排版（writing-mode: vertical-rl），並使用 html-to-image 生成高清圖像打印。\n\n本文檔涵蓋：\n\n- **單筆打印**：從列表頁點擊單筆記錄進行打印\n- **批量打印**：多選記錄後批量進入打印頁面，透過數字按鈕快速切換並打印，每張打印完成後自動跳轉到下一張",
+      "filename": "dev-joinRecord-receipt-print-guide.md",
+      "path": "/doc/dev-joinRecord-receipt-print-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-receiptNumber-guide",
+      "title": "活動參加記錄 - 收據編號生成機制說明",
+      "overview": "實現收據和感謝狀的唯一編號生成機制，確保在多使用者併發環境下不會產生重複編號。編號規則為年月4碼 + 流水號4碼，感謝狀額外加前綴 \"A\"。\n\n**技術方案**：\n\n- ✅ Rust Axum 後端原子性生成\n- ✅ 獨立 `receiptNumbersDB` 表管理編號\n- ✅ SQLite WAL 機制保證併發安全\n- ✅ 雙軌架構：寫入走 Rust，查詢走 Rust 高性能軌\n\n**性能優勢**：\n\n- ⚡ 編號生成：~1ms（只掃描當月編號，~100筆）\n- ⚡ 併發能力：鎖定範圍小，不影響其他操作\n- ⚡ 擴展性強：支援作廢、重新生成等功能",
+      "filename": "dev-joinRecord-receiptNumber-guide.md",
+      "path": "/doc/dev-joinRecord-receiptNumber-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-report-control-guide",
+      "title": "參加記錄報表控制台開發文檔",
+      "overview": "參加記錄報表控制台 (`JoinRecordReportControl.vue`) 提供多條件查詢、欄位自訂、多格式匯出功能。",
+      "filename": "dev-joinRecord-report-control-guide.md",
+      "path": "/doc/dev-joinRecord-report-control-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecord-states-control-guide",
+      "title": "參加記錄狀態控制台開發指南",
+      "overview": "參加記錄狀態控制台 (`JoinRecordStatesControl.vue`) 是一個專門用於批量管理參加記錄狀態的管理介面，允許管理員快速調整記錄的各項狀態。",
+      "filename": "dev-joinRecord-states-control-guide.md",
+      "path": "/doc/dev-joinRecord-states-control-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-joinRecordService-guide",
+      "title": "參加記錄服務開發規劃",
+      "overview": "主表：joinRecordDB 資料庫模型設計\n\n### 1.1 主表：joinRecordDB\n\n```sql\nCREATE TABLE joinRecordDB (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  registrationId INTEGER NOT NULL,           -- 關聯祈福登記表ID\n  activityId INTEGER NOT NULL,           -- 關聯活動ID\n  registeredAt DATETIME NOT NULL,            -- 登記時間\n  registeredBy VARCHAR(100) NOT NULL,        -- 登記人\n  state VARCHAR(20) DEFAULT 'confirmed',     -- 狀態: confirmed/pending/canceled\n  items JSON NOT NULL,                       -- 參加項目詳細資料\n  totalAmount DECIMAL(10,2) NOT NULL,        -- 總金額\n  discountAmount DECIMAL(10,2) DEFAULT 0,    -- 折扣金額\n  finalAmount DECIMAL(10,2) NOT NULL,        -- 最終金額\n  paidAmount DECIMAL(10,2) DEFAULT 0,        -- 已付金額\n  needReceipt BOOLEAN DEFAULT false,         -- 是否需要收據\n  receiptNumber VARCHAR(50),                 -- 佛字第\n  receiptIssued BOOLEAN DEFAULT '',       -- 收據已開立。經20260225決定修改定義默認為空值，值等於 \"standard\" 是 \"感謝狀\", \"stamp\" 是 \"收據\"，空值表示：未打印\"收據\"或\"感謝狀\"。\n  receiptIssuedAt DATETIME,                  -- 收據開立時間\n  receiptIssuedBy VARCHAR(100),              -- 收據開立者，也稱經手人\n  accountingState VARCHAR(20) DEFAULT 'pending', -- 會計狀態: pending/reconciled\n  accountingDate DATETIME,                   -- 沖帳日期\n  accountingBy VARCHAR(100),                 -- 沖帳者\n  accountingNotes TEXT,                      -- 沖帳備註\n  paymentState VARCHAR(20) DEFAULT 'unpaid', -- 付款狀態: paid/partial/unpaid/waived\n  paymentMethod VARCHAR(20),                 -- 付款方式: cash/transfer\n  paymentDate DATETIME,                      -- 付款日期\n  paymentNotes TEXT,                         -- 付款備註\n  notes TEXT,                                -- 備註\n  createdAt DATETIME NOT NULL,               -- 建立時間\n  createdBy VARCHAR(100) NOT NULL,           -- 建立者\n  updatedAt DATETIME NOT NULL,               -- 更新時間\n  updatedBy VARCHAR(100)                     -- 更新者\n);\n```\n\n### 1.2 items JSON 結構\n\n```json\n[\n  {\n    \"type\": \"chaodu\",\n    \"label\": \"超度/超薦\",\n    \"price\": 1000,\n    \"quantity\": 1,\n    \"subtotal\": 1000,\n    \"source\": \"salvation.ancestors\",\n    \"sourceData\": [\n      {\n        \"id\": 1,\n        \"surname\": \"王府\",\n        \"notes\": \"歷代祖先\"\n      }\n    ]\n  },\n  {\n    \"type\": \"diandeng\",\n    \"label\": \"點燈\",\n    \"price\": 600,\n    \"quantity\": 2,\n    \"subtotal\": 1200,\n    \"source\": \"blessing.persons\",\n    \"lampType\": \"guangming\",\n    \"lampTypeLabel\": \"光明燈\",\n    \"sourceData\": [...]\n  }\n]\n```",
+      "filename": "dev-joinRecordService-guide.md",
+      "path": "/doc/dev-joinRecordService-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-menu-guide",
+      "title": "開發菜單管理指南",
+      "overview": "菜單系統架構\n\n### 雙重控制屬性\n\n每個菜單項目有兩個獨立的控制屬性：\n\n```javascript\n{\n  id: 1,\n  name: \"功能名稱\",\n  enabled: true,    // 開發時控制：true=顯示, false=隱藏\n  publish: true,    // 部署時控制：true=發布, false=不發布\n}\n```\n\n### 四種狀態組合\n\n| enabled | publish | 開發環境 | 生產環境 | 使用場景         |\n| ------- | ------- | -------- | -------- | ---------------- |\n| `true`  | `true`  | ✅ 顯示  | ✅ 顯示  | 完成的功能       |\n| `true`  | `false` | ✅ 顯示  | ❌ 隱藏  | 開發中功能       |\n| `false` | `true`  | ❌ 隱藏  | ✅ 顯示  | 暫時關閉但要發布 |\n| `false` | `false` | ❌ 隱藏  | ❌ 隱藏  | 完全停用         |",
+      "filename": "dev-menu-guide.md",
+      "path": "/doc/dev-menu-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-monthly-donate-guide",
+      "title": "Monthly Donate（`每月贊助`）開發指南",
+      "overview": "Monthly Donate 是寺廟管理系統中的`每月贊助`管理模組，專門處理信眾的定期月度贊助，支援預繳、不連續月份贊助、24個月視窗顯示等複雜業務邏輯。",
+      "filename": "dev-monthly-donate-guide.md",
+      "path": "/doc/dev-monthly-donate-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-registration-guide",
+      "title": "Registration（祈福登記）開發指南",
+      "overview": "Registration 是寺廟管理系統的核心功能，用於建立和管理信眾的祈福基本資料檔。系統設計目標是讓寺廟操作者能夠快速記錄信眾資料，並在後續法會活動中透過電話號碼快速查詢和使用這些資料。",
+      "filename": "dev-registration-guide.md",
+      "path": "/doc/dev-registration-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-registration-list-guide",
+      "title": "祈福登記查詢列表功能開發指南",
+      "overview": "祈福登記查詢列表頁面提供已提交的消災超度報名資料查詢功能，支援關鍵字搜尋、分頁顯示、查看詳情、編輯表單等操作。",
+      "filename": "dev-registration-list-guide.md",
+      "path": "/doc/dev-registration-list-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
+    },
+    {
+      "id": "dev-registration-print-guide",
+      "title": "祈福登記打印預覽功能開發指南",
+      "overview": "祈福登記打印預覽頁面提供已提交表單的詳細內容查看和打印功能，支援多種格式下載（PDF、Excel、JSON、圖片、文字檔），採用響應式佈局設計。",
+      "filename": "dev-registration-print-guide.md",
+      "path": "/doc/dev-registration-print-guide.md",
+      "modifiedDate": "2026-03-20T13:33:43.222Z",
+      "formattedDate": "2026/03/20 下午01:33"
     }
   ],
   "total": 53,
+<<<<<<< Updated upstream
   "generatedAt": "2026-03-21T00:17:12.530Z"
+=======
+  "generatedAt": "2026-03-21T05:55:03.076Z"
+>>>>>>> Stashed changes
 }
