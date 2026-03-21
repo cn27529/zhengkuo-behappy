@@ -7,27 +7,27 @@ const http = require("http");
 // 定義 API 端點與對應的檔案名稱
 const dataJsonObj = [
   {
-    dataUrl: "http://0.0.0.0:3000/api/activities?fields=*",
+    dataUrl: "http://127.0.0.1:3000/api/activities?fields=*",
     fileName: "mock_activities.json",
   },
   {
-    dataUrl: "http://0.0.0.0:3000/api/monthly-donates?fields=*",
+    dataUrl: "http://127.0.0.1:3000/api/monthly-donates?fields=*",
     fileName: "mock_monthlyDonates.json",
   },
   {
-    dataUrl: "http://0.0.0.0:3000/api/participation-records?fields=*",
+    dataUrl: "http://127.0.0.1:3000/api/participation-records?fields=*",
     fileName: "mock_participation_records.json",
   },
   {
-    dataUrl: "http://0.0.0.0:3000/api/registrations?fields=*",
+    dataUrl: "http://127.0.0.1:3000/api/registrations?fields=*",
     fileName: "mock_registrations.json",
   },
   {
-    dataUrl: "http://0.0.0.0:3000/api/directus-users?fields=*",
+    dataUrl: "http://127.0.0.1:3000/api/directus-users?fields=*",
     fileName: "mock_directus_users.json",
   },
   {
-    dataUrl: "http://0.0.0.0:3000/api/receipt-numbers?fields=*",
+    dataUrl: "http://127.0.0.1:3000/api/receipt-numbers?fields=*",
     fileName: "mock_receipt_numbers.json",
   },
 ];

@@ -1,11 +1,11 @@
 // test_logger.js
 import { DateUtils } from "./utils/dateUtils.js";
 
-const SERVER_URL = "http://0.0.0.0:3002/mongo/logentry/";
+const SERVER_URL = "http://127.0.0.1:3002/mongo/logentry/";
 
 const testLog = {
   timestamp: DateUtils.getCurrentISOTime(),
-  endpoint: "http://0.0.0.0:8055/items/activityDB",
+  endpoint: "http://127.0.0.1:8055/items/activityDB",
   method: "POST",
   status: 200,
   statusText: "OK",
@@ -14,7 +14,7 @@ const testLog = {
     operation: "createActivity",
     startTime: Date.now(),
     method: "POST",
-    endpoint: "http://0.0.0.0:8055/items/activityDB",
+    endpoint: "http://127.0.0.1:8055/items/activityDB",
     requestBody: { name: "測試法會", participants: 50 },
     duration: 120,
   },
@@ -22,7 +22,7 @@ const testLog = {
   success: true,
   error: false,
   userAgent: "Mozilla/5.0 (Test Script)",
-  url: "http://0.0.0.0:5173/test",
+  url: "http://127.0.0.1:5173/test",
 };
 
 async function sendTestLog() {

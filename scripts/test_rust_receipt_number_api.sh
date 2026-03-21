@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 設定 API 基礎路徑
-API_URL="http://0.0.0.0:3000/api"
+API_URL="http://127.0.0.1:3000/api"
 RECORD_ID=40  # 測試用的參加記錄 ID
 RECORD_ID2=41  # 第二筆測試用的參加記錄 ID
 TEST_ADMIN="a4954ebc-8591-4288-8ebe-a4af19e718f7"

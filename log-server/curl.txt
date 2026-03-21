@@ -1,4 +1,4 @@
-curl -X POST http://0.0.0.0:3002/mongo/logentry/ \
+curl -X POST http://127.0.0.1:3002/mongo/logentry/ \
  -H "Content-Type: application/json" \
  -d '{
 "timestamp": "2024-05-17T10:00:00.000Z",
@@ -11,7 +11,7 @@ curl -X POST http://0.0.0.0:3002/mongo/logentry/ \
 
 # open browser console enter a script
 
-fetch('http://0.0.0.0:3002/mongo/logentry/', {
+fetch('http://127.0.0.1:3002/mongo/logentry/', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({

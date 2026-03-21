@@ -4,7 +4,7 @@ echo "🧪 測試 Participation Record API 端點"
 echo "======================================="
 
 # 基礎 URL
-BASE_URL="http://0.0.0.0:3000"
+BASE_URL="http://127.0.0.1:3000"
 
 echo ""
 echo "📋 可用的 API 端點："

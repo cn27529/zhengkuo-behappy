@@ -8,7 +8,7 @@
 
 1. ✅ Node.js 服務器已啟動 (`npm start`)
 2. ✅ MongoDB Atlas 已連接（看到 "✅ 遠程 MongoDB 連接成功！"）
-3. ✅ 服務器運行在 http://0.0.0.0:3002
+3. ✅ 服務器運行在 http://127.0.0.1:3002
 
 ## 🧪 測試腳本說明
 
@@ -309,7 +309,7 @@ node test-query-stats.js
 
 ```bash
 # 刪除所有測試日誌（包含 context.test: true 的）
-curl -X DELETE "http://0.0.0.0:3002/mongo/cleanup/0"
+curl -X DELETE "http://127.0.0.1:3002/mongo/cleanup/0"
 ```
 
 ### 方法 2: 在 MongoDB Atlas 手動刪除

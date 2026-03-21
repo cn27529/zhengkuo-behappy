@@ -4,7 +4,7 @@
 
 const http = require("http");
 
-const RUST_URL = process.env.RUST_URL || "http://0.0.0.0:3000";
+const RUST_URL = process.env.RUST_URL || "http://127.0.0.1:3000";
 const INTERVAL_MS = parseInt(process.env.INTERVAL_MS) || 100; // 預設 100ms 查詢一次
 const CONCURRENT = parseInt(process.env.CONCURRENT) || 5; // 並發請求數
 

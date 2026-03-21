@@ -145,6 +145,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`數據庫服務器運行在: http://0.0.0.0:${PORT}`);
+  console.log(`數據庫服務器運行在: http://127.0.0.1:${PORT}`);
   console.log(`📊 數據庫文件: ${DB_PATH}`);
 });

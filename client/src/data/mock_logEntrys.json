@@ -1,7 +1,7 @@
 [
     {
         "timestamp": "2026-01-29T06:14:26.821Z",
-        "endpoint": "http://0.0.0.0:8055/items/activityDB/51",
+        "endpoint": "http://127.0.0.1:8055/items/activityDB/51",
         "method": "DELETE",
         "status": 204,
         "statusText": "No Content",
@@ -10,7 +10,7 @@
             "operation": "deleteActivity",
             "startTime": 1769667266718,
             "method": "DELETE",
-            "endpoint": "http://0.0.0.0:8055/items/activityDB/51",
+            "endpoint": "http://127.0.0.1:8055/items/activityDB/51",
             "requestBody": {
                 "id": 51,
                 "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
@@ -43,11 +43,11 @@
         "noContent": true,
         "id": "19fcb367-b6cb-4107-ab29-ec60828d3880",
         "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-        "url": "http://0.0.0.0:5173/activity-list"
+        "url": "http://127.0.0.1:5173/activity-list"
     },
     {
         "timestamp": "2026-01-29T06:12:36.284Z",
-        "endpoint": "http://0.0.0.0:8055/items/activityDB",
+        "endpoint": "http://127.0.0.1:8055/items/activityDB",
         "method": "POST",
         "status": 200,
         "statusText": "OK",
@@ -56,7 +56,7 @@
             "operation": "createActivity",
             "startTime": 1769667156236,
             "method": "POST",
-            "endpoint": "http://0.0.0.0:8055/items/activityDB",
+            "endpoint": "http://127.0.0.1:8055/items/activityDB",
             "requestBody": {
                 "activityId": "baee208",
                 "name": "1341234",
@@ -82,11 +82,11 @@
         "noContent": false,
         "id": "229b9671-e4b4-4310-b124-9fd664af2ba5",
         "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-        "url": "http://0.0.0.0:5173/activity-list"
+        "url": "http://127.0.0.1:5173/activity-list"
     },
     {
         "timestamp": "2026-01-29T04:17:52.425Z",
-        "endpoint": "http://0.0.0.0:8055/items/registrationDB/108",
+        "endpoint": "http://127.0.0.1:8055/items/registrationDB/108",
         "method": "POST",
         "status": 200,
         "statusText": "OK",
@@ -95,7 +95,7 @@
             "operation": "updateRegistration",
             "startTime": 1769660272410,
             "method": "POST",
-            "endpoint": "http://0.0.0.0:8055/items/registrationDB",
+            "endpoint": "http://127.0.0.1:8055/items/registrationDB",
             "requestBody": {
                 "id": 108,
                 "state": "updated",
@@ -175,6 +175,6 @@
         "noContent": false,
         "id": "20bff0e5-f373-42f9-a258-ee0da0e688b4",
         "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-        "url": "http://0.0.0.0:5173/registration-edit"
+        "url": "http://127.0.0.1:5173/registration-edit"
     }
 ]

@@ -6,7 +6,7 @@ import { DateUtils } from "./utils/dateUtils.js";
  * 使用方式: node test-single-log.js
  */
 
-const BASE_URL = "http://0.0.0.0:3002";
+const BASE_URL = "http://127.0.0.1:3002";
 
 async function testSingleLog() {
   console.log("🧪 開始測試單筆日誌寫入...\n");
@@ -20,7 +20,7 @@ async function testSingleLog() {
     responseTime: 125,
     timestamp: DateUtils.getCurrentISOTime(),
     userAgent: "Mozilla/5.0 (Test Client)",
-    url: "http://0.0.0.0:3000/test",
+    url: "http://127.0.0.1:3000/test",
     requestBody: {
       title: "Test Item",
       description: "This is a test log entry",

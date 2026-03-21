@@ -44,7 +44,7 @@ node scripts/check-db-locks-detailed.js
 
 **環境變數：**
 
-- `DIRECTUS_URL` - Directus 地址（默認：`http://0.0.0.0:8055`）
+- `DIRECTUS_URL` - Directus 地址（默認：`http://127.0.0.1:8055`）
 - `INTERVAL_MS` - 寫入間隔毫秒（默認：`500`）
 - `BATCH_SIZE` - 每次寫入筆數（默認：`1`）
 
@@ -67,7 +67,7 @@ INTERVAL_MS=50 BATCH_SIZE=5 node scripts/stress-test-wal.js
 
 **環境變數：**
 
-- `RUST_URL` - Rust 服務地址（默認：`http://0.0.0.0:3000`）
+- `RUST_URL` - Rust 服務地址（默認：`http://127.0.0.1:3000`）
 - `INTERVAL_MS` - 查詢間隔毫秒（默認：`100`）
 - `CONCURRENT` - 並發請求數（默認：`5`）
 
@@ -95,8 +95,8 @@ npm run dev:full
 
 等待服務啟動完成：
 
-- ✅ Directus 運行在 http://0.0.0.0:8055
-- ✅ Rust Axum 運行在 http://0.0.0.0:3000
+- ✅ Directus 運行在 http://127.0.0.1:8055
+- ✅ Rust Axum 運行在 http://127.0.0.1:3000
 
 ### 步驟 2：開啟監控（終端 2）
 

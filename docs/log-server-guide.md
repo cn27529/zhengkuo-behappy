@@ -37,7 +37,7 @@ node mongoDBLogger.js
 npm start
 ```
 
-服務器將在 `http://0.0.0.0:3002` 啟動
+服務器將在 `http://127.0.0.1:3002` 啟動
 
 ## API 端點
 
@@ -99,7 +99,7 @@ ENABLE_AUTO_CLEANUP=true   # 啟用自動清理
 
 ```bash
 # 清理 90 天前的日誌
-curl -X DELETE http://0.0.0.0:3002/mongo/cleanup/90
+curl -X DELETE http://127.0.0.1:3002/mongo/cleanup/90
 ```
 
 ## Client 端整合
@@ -111,7 +111,7 @@ curl -X DELETE http://0.0.0.0:3002/mongo/cleanup/90
 在 `client/.env` 中設定：
 
 ```bash
-VITE_REMOTE_LOG_URL=http://0.0.0.0:3002
+VITE_REMOTE_LOG_URL=http://127.0.0.1:3002
 ```
 
 ### 自動日誌發送
@@ -144,7 +144,7 @@ async sendToRemoteLog(logEntry) {
 ### 發送單筆日誌
 
 ```javascript
-const response = await fetch("http://0.0.0.0:3002/mongo/logentry/", {
+const response = await fetch("http://127.0.0.1:3002/mongo/logentry/", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -163,7 +163,7 @@ const response = await fetch("http://0.0.0.0:3002/mongo/logentry/", {
 ### 批次發送日誌
 
 ```javascript
-const response = await fetch("http://0.0.0.0:3002/mongo/logentry/batch", {
+const response = await fetch("http://127.0.0.1:3002/mongo/logentry/batch", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -182,17 +182,17 @@ const response = await fetch("http://0.0.0.0:3002/mongo/logentry/batch", {
 ```javascript
 // 查詢失敗的日誌
 const response = await fetch(
-  "http://0.0.0.0:3002/mongo/logentry/?success=false&limit=50",
+  "http://127.0.0.1:3002/mongo/logentry/?success=false&limit=50",
 );
 
 // 查詢特定端點的日誌
 const response = await fetch(
-  "http://0.0.0.0:3002/mongo/logentry/?endpoint=/api/items",
+  "http://127.0.0.1:3002/mongo/logentry/?endpoint=/api/items",
 );
 
 // 查詢日期範圍內的日誌
 const response = await fetch(
-  "http://0.0.0.0:3002/mongo/logentry/?dateFrom=2026-01-01&dateTo=2026-01-31",
+  "http://127.0.0.1:3002/mongo/logentry/?dateFrom=2026-01-01&dateTo=2026-01-31",
 );
 ```
 
