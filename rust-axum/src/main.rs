@@ -173,7 +173,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(cors); // ⭐ 新增：啟用 CORS 中介軟體
 
     // 啟動服務器
-    let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let host = std::env::var("HOST").unwrap_or_else(|_| "34.81.85.198".to_string());
     let port = std::env::var("PORT")
         .unwrap_or_else(|_| "3000".to_string())
         .parse::<u16>()?;
@@ -224,7 +224,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn root_handler() -> Json<Value> {
-     let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+     let host = std::env::var("HOST").unwrap_or_else(|_| "34.81.85.198".to_string());
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
     
     Json(json!({
