@@ -1,103 +1,13 @@
 {
   "books": [
     {
-      "id": "windows-run-apps-guide",
-      "title": "Windows 客戶端環境建置指南",
-      "overview": "zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈（同時提供 gcc / cargo / rustc）與 Cargo 配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。**本專案統一使用 `D:\\msys64\\mingw64` 編譯 Rust，不使用 rustup 安裝腳本，不切換工具鏈。** 適用於現場部署與問題排除。",
-      "filename": "windows-run-apps-guide.md",
-      "path": "/doc/windows-run-apps-guide.md",
-      "modifiedDate": "2026-03-21T07:07:31.884Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "mock-logEntry",
-      "title": "操作記錄資料結構說明",
-      "overview": "操作記錄 (Log Entries) 是寺廟管理系統中記錄所有 API 操作的核心資料結構，用於追蹤系統中的所有資料變更、API 呼叫狀態、錯誤處理及效能監控。當資料誤刪除時，可以從 `context.requestBody` 中找回完整的資料內容。",
-      "filename": "mock-logEntry.md",
-      "path": "/doc/mock-logEntry.md",
-      "modifiedDate": "2026-03-21T07:07:31.882Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "nginx-setup-guide",
-      "title": "Nginx 設置指南 - 鎮國寺廟管理系統",
-      "overview": "使用 Nginx 啟動",
-      "filename": "nginx-setup-guide.md",
-      "path": "/doc/nginx-setup-guide.md",
-      "modifiedDate": "2026-03-21T07:07:31.882Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
       "id": "log-test-guide",
       "title": "MongoDB 日誌系統測試指南",
       "overview": "驗證本地 Node.js 服務器可以成功將日誌資料寫入雲端 MongoDB Atlas。",
       "filename": "log-test-guide.md",
       "path": "/doc/log-test-guide.md",
-      "modifiedDate": "2026-03-21T07:07:31.881Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "log-cleanup-strategy",
-      "title": "🗑️ MongoDB 日誌定期清理指南",
-      "overview": "📊 容量規劃（預留 20% 安全空間）\n\n### 計算基礎\n\n```\n總容量: 512 MB\n安全使用: 80% = 409.6 MB\n預留空間: 20% = 102.4 MB (緊急緩衝)\n\n單筆日誌: 3 KB\n安全存儲上限: 409.6 MB ÷ 3 KB = 139,810 筆\n```\n\n---",
-      "filename": "log-cleanup-strategy.md",
-      "path": "/doc/log-cleanup-strategy.md",
-      "modifiedDate": "2026-03-21T07:07:31.880Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "log-server-guide",
-      "title": "MongoDB 日誌服務器",
-      "overview": "本地 Node.js 日誌服務器，透過 `mongoDBLogger.js` 啟動，接收來自前端的日誌並存入雲端 MongoDB Atlas。",
-      "filename": "log-server-guide.md",
-      "path": "/doc/log-server-guide.md",
-      "modifiedDate": "2026-03-21T07:07:31.880Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "dev-rust-mydata-guide",
-      "title": "mydata CRUD API 實現說明",
-      "overview": "rust-axum 項目 mydata CRUD API 實現說明",
-      "filename": "dev-rust-mydata-guide.md",
-      "path": "/doc/dev-rust-mydata-guide.md",
-      "modifiedDate": "2026-03-21T07:07:31.878Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "deployment-guide",
-      "title": "部署指南",
-      "overview": "本指南涵蓋 zhengkuo-behappy 系統的完整部署流程，包括開發環境、測試環境和生產環境的配置。",
-      "filename": "deployment-guide.md",
-      "path": "/doc/deployment-guide.md",
-      "modifiedDate": "2026-03-21T07:07:31.877Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "dev-joinRecord-receiptNumber-guide",
-      "title": "活動參加記錄 - 收據編號生成機制說明",
-      "overview": "實現收據和感謝狀的唯一編號生成機制，確保在多使用者併發環境下不會產生重複編號。編號規則為年月4碼 + 流水號4碼，感謝狀額外加前綴 \"A\"。\n\n**技術方案**：\n\n- ✅ Rust Axum 後端原子性生成\n- ✅ 獨立 `receiptNumbersDB` 表管理編號\n- ✅ SQLite WAL 機制保證併發安全\n- ✅ 雙軌架構：寫入走 Rust，查詢走 Rust 高性能軌\n\n**性能優勢**：\n\n- ⚡ 編號生成：~1ms（只掃描當月編號，~100筆）\n- ⚡ 併發能力：鎖定範圍小，不影響其他操作\n- ⚡ 擴展性強：支援作廢、重新生成等功能",
-      "filename": "dev-joinRecord-receiptNumber-guide.md",
-      "path": "/doc/dev-joinRecord-receiptNumber-guide.md",
-      "modifiedDate": "2026-03-21T07:07:31.877Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "db-stress-test-guide",
-      "title": "壓力測試高並發讀寫指南",
-      "overview": "驗證 Rust Axum 後端與 Directus 共用 SQLite 資料庫時，在高並發讀寫情況下是否會出現資料庫鎖定問題。",
-      "filename": "db-stress-test-guide.md",
-      "path": "/doc/db-stress-test-guide.md",
-      "modifiedDate": "2026-03-21T07:07:31.876Z",
-      "formattedDate": "2026/03/21 下午03:07"
-    },
-    {
-      "id": "api-documentation",
-      "title": "API 文檔",
-      "overview": "本系統採用「實用主義優先」的 API 設計理念，提供雙軌並行的後端支援：\n\n### 🚄 雙軌 API 架構\n\n#### 性能軌：Rust Axum API (讀取專用)\n\n- **端點**: `http://localhost:3000`\n- **職責**: 高性能數據查詢 (Read Operations)\n- **優勢**: 極速響應、零開銷、內存安全\n- **適用**: 列表查詢、搜索、統計、報表\n\n#### 管理軌：Directus API (寫入與管理)\n\n- **端點**: `http://localhost:8055`\n- **職責**: 數據寫入與系統管理 (CUD + Auth + Admin)\n- **優勢**: 完整認證、審計日誌、管理界面\n- **適用**: 新增、修改、刪除、用戶管理\n\n**一石二鳥效果：**\n\n- 🐦 獲得管理便利性 (Directus 的完整功能)\n- 🐦 獲得查詢高性能 (Rust 的極速響應)\n\n所有 API 回應都遵循統一的格式規範。",
-      "filename": "api-documentation.md",
-      "path": "/doc/api-documentation.md",
-      "modifiedDate": "2026-03-21T07:07:31.875Z",
-      "formattedDate": "2026/03/21 下午03:07"
+      "modifiedDate": "2026-03-21T07:19:01.301Z",
+      "formattedDate": "2026/03/21 下午03:19"
     },
     {
       "id": "architecture-overview",
@@ -105,8 +15,8 @@
       "overview": "**zhengkuo-behappy** 是一個完整的寺廟管理系統，主要功能包括消災超度登記、每月贊助管理、活動管理與太歲點燈服務。\n\n**專案統計：**\n\n- 總檔案數：4,410\n- 程式碼行數：17,790\n- 函數數量：354\n- 類別/結構：41",
       "filename": "architecture-overview.md",
       "path": "/doc/architecture-overview.md",
-      "modifiedDate": "2026-03-21T07:07:31.875Z",
-      "formattedDate": "2026/03/21 下午03:07"
+      "modifiedDate": "2026-03-21T07:19:01.014Z",
+      "formattedDate": "2026/03/21 下午03:19"
     },
     {
       "id": "README",
@@ -114,8 +24,35 @@
       "overview": "前後端分離的文檔瀏覽系統，使用 Vue.js 前端 + Express 後端，支援即時搜尋功能。\n\n**改版重點**：\n\n- 從後端模版渲染改為前後端分離架構\n- 使用 Vue 3 CDN 實現前端互動，無需打包工具\n- 啟動時自動掃描 markdown 生成靜態 JSON 索引\n- 前端即時過濾搜尋，無需後端查詢，提升使用體驗\n- 提取文檔標題和「概述說明」區塊，方便快速定位文件\n- 關鍵字高亮顯示，解決文檔多時難以查找的問題從後端模版渲染改為前後端分離架構，使用 Vue 前端讀取靜態 JSON 實現即時搜尋功能。",
       "filename": "README.md",
       "path": "/doc/README.md",
-      "modifiedDate": "2026-03-21T07:07:31.874Z",
-      "formattedDate": "2026/03/21 下午03:07"
+      "modifiedDate": "2026-03-21T07:19:00.948Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "deployment-guide",
+      "title": "部署指南",
+      "overview": "本指南涵蓋 zhengkuo-behappy 系統的完整部署流程，包括開發環境、測試環境和生產環境的配置。",
+      "filename": "deployment-guide.md",
+      "path": "/doc/deployment-guide.md",
+      "modifiedDate": "2026-03-21T07:19:00.910Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "dev-joinRecord-receiptNumber-guide",
+      "title": "活動參加記錄 - 收據編號生成機制說明",
+      "overview": "實現收據和感謝狀的唯一編號生成機制，確保在多使用者併發環境下不會產生重複編號。編號規則為年月4碼 + 流水號4碼，感謝狀額外加前綴 \"A\"。\n\n**技術方案**：\n\n- ✅ Rust Axum 後端原子性生成\n- ✅ 獨立 `receiptNumbersDB` 表管理編號\n- ✅ SQLite WAL 機制保證併發安全\n- ✅ 雙軌架構：寫入走 Rust，查詢走 Rust 高性能軌\n\n**性能優勢**：\n\n- ⚡ 編號生成：~1ms（只掃描當月編號，~100筆）\n- ⚡ 併發能力：鎖定範圍小，不影響其他操作\n- ⚡ 擴展性強：支援作廢、重新生成等功能",
+      "filename": "dev-joinRecord-receiptNumber-guide.md",
+      "path": "/doc/dev-joinRecord-receiptNumber-guide.md",
+      "modifiedDate": "2026-03-21T07:19:00.834Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "db-stress-test-guide",
+      "title": "壓力測試高並發讀寫指南",
+      "overview": "驗證 Rust Axum 後端與 Directus 共用 SQLite 資料庫時，在高並發讀寫情況下是否會出現資料庫鎖定問題。",
+      "filename": "db-stress-test-guide.md",
+      "path": "/doc/db-stress-test-guide.md",
+      "modifiedDate": "2026-03-21T07:19:00.645Z",
+      "formattedDate": "2026/03/21 下午03:19"
     },
     {
       "id": "ai-talks",
@@ -123,8 +60,71 @@
       "overview": "與AI的記錄",
       "filename": "ai-talks.md",
       "path": "/doc/ai-talks.md",
-      "modifiedDate": "2026-03-21T07:07:31.874Z",
-      "formattedDate": "2026/03/21 下午03:07"
+      "modifiedDate": "2026-03-21T07:19:00.485Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "mock-logEntry",
+      "title": "操作記錄資料結構說明",
+      "overview": "操作記錄 (Log Entries) 是寺廟管理系統中記錄所有 API 操作的核心資料結構，用於追蹤系統中的所有資料變更、API 呼叫狀態、錯誤處理及效能監控。當資料誤刪除時，可以從 `context.requestBody` 中找回完整的資料內容。",
+      "filename": "mock-logEntry.md",
+      "path": "/doc/mock-logEntry.md",
+      "modifiedDate": "2026-03-21T07:19:00.348Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "windows-run-apps-guide",
+      "title": "Windows 客戶端環境建置指南",
+      "overview": "zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈（同時提供 gcc / cargo / rustc）與 Cargo 配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。**本專案統一使用 `D:\\msys64\\mingw64` 編譯 Rust，不使用 rustup 安裝腳本，不切換工具鏈。** 適用於現場部署與問題排除。",
+      "filename": "windows-run-apps-guide.md",
+      "path": "/doc/windows-run-apps-guide.md",
+      "modifiedDate": "2026-03-21T07:19:00.306Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "log-cleanup-strategy",
+      "title": "🗑️ MongoDB 日誌定期清理指南",
+      "overview": "📊 容量規劃（預留 20% 安全空間）\n\n### 計算基礎\n\n```\n總容量: 512 MB\n安全使用: 80% = 409.6 MB\n預留空間: 20% = 102.4 MB (緊急緩衝)\n\n單筆日誌: 3 KB\n安全存儲上限: 409.6 MB ÷ 3 KB = 139,810 筆\n```\n\n---",
+      "filename": "log-cleanup-strategy.md",
+      "path": "/doc/log-cleanup-strategy.md",
+      "modifiedDate": "2026-03-21T07:19:00.164Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "log-server-guide",
+      "title": "MongoDB 日誌服務器",
+      "overview": "本地 Node.js 日誌服務器，透過 `mongoDBLogger.js` 啟動，接收來自前端的日誌並存入雲端 MongoDB Atlas。",
+      "filename": "log-server-guide.md",
+      "path": "/doc/log-server-guide.md",
+      "modifiedDate": "2026-03-21T07:19:00.077Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "nginx-setup-guide",
+      "title": "Nginx 設置指南 - 鎮國寺廟管理系統",
+      "overview": "使用 Nginx 啟動",
+      "filename": "nginx-setup-guide.md",
+      "path": "/doc/nginx-setup-guide.md",
+      "modifiedDate": "2026-03-21T07:19:00.031Z",
+      "formattedDate": "2026/03/21 下午03:19"
+    },
+    {
+      "id": "api-documentation",
+      "title": "API 文檔",
+      "overview": "本系統採用「實用主義優先」的 API 設計理念，提供雙軌並行的後端支援：\n\n### 🚄 雙軌 API 架構\n\n#### 性能軌：Rust Axum API (讀取專用)\n\n- **端點**: `http://localhost:3000`\n- **職責**: 高性能數據查詢 (Read Operations)\n- **優勢**: 極速響應、零開銷、內存安全\n- **適用**: 列表查詢、搜索、統計、報表\n\n#### 管理軌：Directus API (寫入與管理)\n\n- **端點**: `http://localhost:8055`\n- **職責**: 數據寫入與系統管理 (CUD + Auth + Admin)\n- **優勢**: 完整認證、審計日誌、管理界面\n- **適用**: 新增、修改、刪除、用戶管理\n\n**一石二鳥效果：**\n\n- 🐦 獲得管理便利性 (Directus 的完整功能)\n- 🐦 獲得查詢高性能 (Rust 的極速響應)\n\n所有 API 回應都遵循統一的格式規範。",
+      "filename": "api-documentation.md",
+      "path": "/doc/api-documentation.md",
+      "modifiedDate": "2026-03-21T07:18:59.934Z",
+      "formattedDate": "2026/03/21 下午03:18"
+    },
+    {
+      "id": "dev-rust-mydata-guide",
+      "title": "mydata CRUD API 實現說明",
+      "overview": "rust-axum 項目 mydata CRUD API 實現說明",
+      "filename": "dev-rust-mydata-guide.md",
+      "path": "/doc/dev-rust-mydata-guide.md",
+      "modifiedDate": "2026-03-21T07:18:59.526Z",
+      "formattedDate": "2026/03/21 下午03:18"
     },
     {
       "id": "windows-rust-gnu-setup-manual",
@@ -190,7 +190,6 @@
       "formattedDate": "2026/03/12 下午09:32"
     },
     {
-<<<<<<< HEAD
       "id": "user-story-joinRecord",
       "title": "參加記錄 user story",
       "overview": "整個`參加記錄`的使用情境是這樣開始的:\n寺廟的操作者，依據信眾的需求替信眾填寫活動`參加記錄`表單，活動`參加記錄`表單是依據祈福登記及活動管理兩種項目進行建立的，寺廟的操作者選擇某位信眾的祈福登記資料後視信眾的需要要參加的項目比如信眾告知：祈福登記的誰誰要參加超度、消災、點燈（要有生肖），寺廟的操作者會向信眾確認參加項目並做適合的內容選擇（視需要可能會回到祈福登記進行維護），這時本功能會有統計金額向信眾收取超度、消災、點燈（要有生肖）的費用，信眾交付金額後視需要可能會向寺廟的操作者要求取得收據或感謝狀，本功能會記錄當前參加的項目與細項，`參加記錄`資料會是這樣的結構：`./client/src/data/mock_participation_records.json`。本功能會將`參加記錄`的結果集成為輸出的功能並生成活動`參加記錄`報表，後續的工作與會計系統做帳務串接或媒合帳務（沖帳），活動`參加記錄`報表（沖帳）會是另外一個功能。",
@@ -198,15 +197,6 @@
       "path": "/doc/user-story-joinRecord.md",
       "modifiedDate": "2026-03-12T13:32:23.232Z",
       "formattedDate": "2026/03/12 下午09:32"
-=======
-      "id": "api-documentation",
-      "title": "API 文檔",
-      "overview": "本系統採用「實用主義優先」的 API 設計理念，提供雙軌並行的後端支援：\n\n### 🚄 雙軌 API 架構\n\n#### 性能軌：Rust Axum API (讀取專用)\n\n- **端點**: `http://localhost:3000`\n- **職責**: 高性能數據查詢 (Read Operations)\n- **優勢**: 極速響應、零開銷、內存安全\n- **適用**: 列表查詢、搜索、統計、報表\n\n#### 管理軌：Directus API (寫入與管理)\n\n- **端點**: `http://localhost:8055`\n- **職責**: 數據寫入與系統管理 (CUD + Auth + Admin)\n- **優勢**: 完整認證、審計日誌、管理界面\n- **適用**: 新增、修改、刪除、用戶管理\n\n**一石二鳥效果：**\n\n- 🐦 獲得管理便利性 (Directus 的完整功能)\n- 🐦 獲得查詢高性能 (Rust 的極速響應)\n\n所有 API 回應都遵循統一的格式規範。",
-      "filename": "api-documentation.md",
-      "path": "/doc/api-documentation.md",
-      "modifiedDate": "2026-03-20T13:33:43.222Z",
-      "formattedDate": "2026/03/20 下午01:33"
->>>>>>> c8325cfc5fddc0da44725029126ceaf409cfb034
     },
     {
       "id": "user-story-activity",
@@ -489,5 +479,5 @@
     }
   ],
   "total": 53,
-  "generatedAt": "2026-03-21T07:07:48.518Z"
+  "generatedAt": "2026-03-21T08:07:01.420Z"
 }
