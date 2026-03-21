@@ -71,23 +71,23 @@
               茲收到 <span class="highlight">{{ contactName }}</span> 大德
             </div>
             <div class="items-detail">
-              護持三寶、供齋、點燈、護持道場、助印經書、放生、
-              <p>其它：</p>
-              <span
-                v-if="false"
-                v-for="(item, idx) in record.items"
-                :key="idx"
-                class="highlight"
-              >
-                {{
-                  item.subtotal > 0
-                    ? item.label +
-                      "(" +
-                      appConfig.formatCurrency(item.subtotal) +
-                      ")&nbsp;&nbsp;"
-                    : ""
-                }}
-              </span>
+              護持三寶、供齋、護持道場、助印經書、放生、其它：
+              <p>
+                <span
+                  v-for="(item, idx) in record.items"
+                  :key="idx"
+                  class="highlight"
+                >
+                  {{
+                    item.subtotal > 0
+                      ? item.label +
+                        "(" +
+                        appConfig.formatCurrency(item.subtotal) +
+                        ")&nbsp;&nbsp;"
+                      : ""
+                  }}
+                </span>
+              </p>
             </div>
             <div class="total-amount">
               共計新台幣：<span class="highlight">{{
@@ -918,9 +918,10 @@ onMounted(() => {
   white-space: nowrap; /* 確保字號不會意外換行 */
 }
 
+/* 每行間距 */
 .content-section {
   font-size: 15pt;
-  line-height: 1.8;
+  line-height: 1.6;
   margin-right: 2mm;
 }
 
