@@ -323,7 +323,7 @@
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="http://localhost:5173" target="_blank" class="btn">
+                    <a href="http://127.0.0.1:5173" target="_blank" class="btn">
                         訪問應用 →
                     </a>
                 </div>
@@ -346,7 +346,7 @@
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="http://localhost:3000" target="_blank" class="btn">
+                    <a href="http://127.0.0.1:3000" target="_blank" class="btn">
                         API 服務 →
                     </a>
                 </div>
@@ -370,7 +370,7 @@
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="http://localhost:8055" target="_blank" class="btn">
+                    <a href="http://127.0.0.1:8055" target="_blank" class="btn">
                         管理後台 →
                     </a>
                 </div>
@@ -393,7 +393,7 @@
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="http://localhost:3002" target="_blank" class="btn">
+                    <a href="http://127.0.0.1:3002" target="_blank" class="btn">
                         查看日誌 →
                     </a>
                 </div>
@@ -416,7 +416,7 @@
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="http://localhost:3001" target="_blank" class="btn">
+                    <a href="http://127.0.0.1:3001" target="_blank" class="btn">
                         瀏覽文檔 →
                     </a>
                 </div>
@@ -440,7 +440,7 @@
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="http://localhost:9000" target="_blank" class="btn">
+                    <a href="http://127.0.0.1:9000" target="_blank" class="btn">
                         查看數據庫 →
                     </a>
                 </div>
@@ -462,12 +462,12 @@
             <div class="quick-links">
                 <h4>快速連結</h4>
                 <div class="links-grid">
-                    <a href="http://localhost:3001/doc/architecture-overview.md" target="_blank">📋 架構總覽</a>
-                    <a href="http://localhost:3001/doc/deployment-guide.md" target="_blank">🚀 部署指南</a>
-                    <a href="http://localhost:3001/doc/api-documentation.md" target="_blank">📖 API 文檔</a>
-                    <a href="http://localhost:3002/mongo.html" target="_blank">📊 日誌監控</a>
-                    <a href="http://localhost:3001/doc/log-server-guide.md" target="_blank">📝 日誌指南</a>
-                    <a href="http://localhost:3001/doc/dev-joinRecord-guide.md" target="_blank">🎯 開發指南</a>
+                    <a href="http://127.0.0.1:3001/doc/architecture-overview.md" target="_blank">📋 架構總覽</a>
+                    <a href="http://127.0.0.1:3001/doc/deployment-guide.md" target="_blank">🚀 部署指南</a>
+                    <a href="http://127.0.0.1:3001/doc/api-documentation.md" target="_blank">📖 API 文檔</a>
+                    <a href="http://127.0.0.1:3002/mongo.html" target="_blank">📊 日誌監控</a>
+                    <a href="http://127.0.0.1:3001/doc/log-server-guide.md" target="_blank">📝 日誌指南</a>
+                    <a href="http://127.0.0.1:3001/doc/dev-joinRecord-guide.md" target="_blank">🎯 開發指南</a>
                 </div>
             </div>
 
@@ -489,12 +489,12 @@
         // 簡單的健康檢查
         async function checkHealth() {
             const services = [
-                { name: '前端', url: 'http://localhost:5173' },
-                { name: 'Rust API', url: 'http://localhost:3000' },
-                { name: 'Directus', url: 'http://localhost:8055' },
-                { name: '日誌服務', url: 'http://localhost:3002' },
-                { name: '文檔服務', url: 'http://localhost:3001' },
-                { name: '數據庫服務', url: 'http://localhost:9000' }
+                { name: '前端', url: 'http://127.0.0.1:5173' },
+                { name: 'Rust API', url: 'http://127.0.0.1:3000' },
+                { name: 'Directus', url: 'http://127.0.0.1:8055' },
+                { name: '日誌服務', url: 'http://127.0.0.1:3002' },
+                { name: '文檔服務', url: 'http://127.0.0.1:3001' },
+                { name: '數據庫服務', url: 'http://127.0.0.1:9000' }
             ];
 
             let healthyCount = 0;

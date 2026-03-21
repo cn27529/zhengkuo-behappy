@@ -809,7 +809,7 @@ describe("併發測試", () => {
 ```bash
 # 使用 Apache Bench 測試
 ab -n 100 -c 10 -p request.json -T application/json \
-   http://localhost:3000/api/generate-receipt-number
+   http://127.0.0.1:3000/api/generate-receipt-number
 
 # 預期結果：
 # - 100 個請求全部成功
@@ -995,7 +995,7 @@ GROUP BY hour;
 1. **雙軌 API 架構**
 
    ```
-   編號生成（寫入） → Rust Axum API (http://localhost:3000)
+   編號生成（寫入） → Rust Axum API (http://127.0.0.1:3000)
    收據查詢（讀取） → Rust Axum API (高性能軌)
    ```
 
@@ -1079,7 +1079,7 @@ npm run test:receipt
 // scripts/stress-test-receipt-number.js
 const http = require("http");
 
-const RUST_URL = "http://localhost:3000";
+const RUST_URL = "http://127.0.0.1:3000";
 const CONCURRENT = parseInt(process.env.CONCURRENT) || 10;
 const INTERVAL_MS = parseInt(process.env.INTERVAL_MS) || 100;
 

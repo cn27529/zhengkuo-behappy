@@ -12,7 +12,7 @@ import { DateUtils } from "./utils/dateUtils.js";
  * 使用方式: node test-complete.js
  */
 
-const BASE_URL = "http://localhost:3002";
+const BASE_URL = "http://127.0.0.1:3002";
 
 // ==========================================
 // 測試輔助函數

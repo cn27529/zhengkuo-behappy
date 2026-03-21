@@ -32,7 +32,7 @@ app.use((req, res) => {
 
 // 啟動服務器
 app.listen(PORT, () => {
-  console.log(`🏛️  服務入口頁面已啟動: http://localhost:${PORT}`);
+  console.log(`🏛️  服務入口頁面已啟動: http://127.0.0.1:${PORT}`);
   console.log(`📁 靜態文件目錄: ${__dirname}`);
   console.log(`📄 主頁文件: index.html`);
 

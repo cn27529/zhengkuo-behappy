@@ -21,7 +21,7 @@ Method Diff Tool 是一個輕量級的代碼方法比對工具，用於快速分
 在開發服務器運行時，訪問：
 
 ```
-http://localhost:5173/tools/method-diff.html
+http://127.0.0.1:5173/tools/method-diff.html
 ```
 
 ### 2. 使用步驟

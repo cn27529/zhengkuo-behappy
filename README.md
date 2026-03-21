@@ -19,9 +19,10 @@ npm run dev:full
 ```
 
 這會同時啟動：
-- 前端開發服務器 (http://localhost:5173)
-- Rust API 服務器 (http://localhost:3000)  
-- 日誌服務器 (http://localhost:3002)
+
+- 前端開發服務器 (http://127.0.0.1:5173)
+- Rust API 服務器 (http://127.0.0.1:3000)
+- 日誌服務器 (http://127.0.0.1:3002)
 
 ### 文檔服務器
 
@@ -29,7 +30,7 @@ npm run dev:full
 npm run docs
 ```
 
-文檔瀏覽界面：http://localhost:3001
+文檔瀏覽界面：http://127.0.0.1:3001
 
 ## 上版
 
@@ -55,16 +56,19 @@ git push origin zk-client-netlify --force
 ## 日誌系統
 
 ### 檢查日誌服務器狀態
+
 ```bash
 npm run check:logs
 ```
 
 ### 測試日誌系統
+
 ```bash
 npm run test:logs
 ```
 
 ### 手動啟動日誌服務器
+
 ```bash
 npm run start:logs
 ```
