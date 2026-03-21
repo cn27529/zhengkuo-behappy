@@ -107,7 +107,7 @@ docs/mock-logEntry-guide.md「操作記錄資料說明文檔」、client/src/dat
 
 # 生成 log-server connect mongoDB
 
-我要生成 scripts/start-mongodb-logger.js，它會創建一個nodejs web API 接口，實現對mongo的串接，串接過程可以參考查看 mongodb-logger/usage-example.js 它引用了 mongodb-logger/mongoDBLogger.js, mongodb-logger/indexedDB-enhanced.js，由 start-mongodb-logger.js 產生的運行假設接口 "http://127.0.0.1:3002/mongo/logentry/"，那麼我會在 client/ 的環境變數設定 VITE_REMOTE_LOG_URL="http://127.0.0.1:3002/mongo/logentry/" 這樣 client/ 就可以調用 VITE_REMOTE_LOG_URL 將 indexedDB 的內容轉送一份到遠程做記錄。你能理解我的思路嗎。
+我要生成 scripts/start-mongodb-logger.js，它會創建一個nodejs web API 接口，實現對mongo的串接，串接過程可以參考查看 mongodb-logger/usage-example.js 它引用了 mongodb-logger/mongoDBLogger.js, mongodb-logger/indexedDB-enhanced.js，由 start-mongodb-logger.js 產生的運行假設接口 "http://0.0.0.0:3002/mongo/logentry/"，那麼我會在 client/ 的環境變數設定 VITE_REMOTE_LOG_URL="http://0.0.0.0:3002/mongo/logentry/" 這樣 client/ 就可以調用 VITE_REMOTE_LOG_URL 將 indexedDB 的內容轉送一份到遠程做記錄。你能理解我的思路嗎。
 
 開心！！本地日誌服務器 log-server/ 接通了，我們透過 mongoDBLogger.js 啟動本地服務，實現 client/src/services/baseService.js 與 client/src/rustServices/baseRustService.js 的 sendToRemoteLog 方法，透過前端 client/ 環境變數 VITE_REMOTE_LOG_URL 直接調用本地日誌服務器 log-server/ 將 logContext 發送到雲 mongoDB。現在我們檢視 docs/log-server-guide.md, docs/log-test-guide.md 文檔並將文檔做適當的更新。
 
@@ -117,7 +117,7 @@ scripts/docs-server.js 移到 docs/docs-server.js
 
 # 生成 log-server 頁面
 
-為 log-server/mongoDBLogger.js 的路由，建構 http://127.0.0.1:3002/mongodb/ 頁面，在它啟動時可以看到這個app的說明，不然點擊 http://127.0.0.1:3002/mongo/ 會沒有東西，在 http://127.0.0.1:3002/ 也生成根路由頁面，可以連接到 http://127.0.0.1:3002/mongo/ 可以以後會有 http://127.0.0.1:3002/other2, http://127.0.0.1:3002/other3，如果不知道要說明什麼內容可以參考 docs/log-server-guide.md 文檔，也要好維護。
+為 log-server/mongoDBLogger.js 的路由，建構 http://0.0.0.0:3002/mongodb/ 頁面，在它啟動時可以看到這個app的說明，不然點擊 http://0.0.0.0:3002/mongo/ 會沒有東西，在 http://0.0.0.0:3002/ 也生成根路由頁面，可以連接到 http://0.0.0.0:3002/mongo/ 可以以後會有 http://0.0.0.0:3002/other2, http://0.0.0.0:3002/other3，如果不知道要說明什麼內容可以參考 docs/log-server-guide.md 文檔，也要好維護。
 
 ## 全棧連接
 
@@ -229,7 +229,7 @@ docs/architecture-overview.md 的 **核心模組：** 還缺少 client/src/store
 
 生成 rustMyDataService.js，如同 client/src/rustServices/rustMonthlyDonateService.js，方法名稱比照 client/src/services/mydataService.js，為什麼要比照 因為之後還需要結合到 client/src/adapters/serviceAdapter.js 之中使用。
 
-需要script測一下, 如同 scripts/stress-test-wal.js，我做查詢，用 http://127.0.0.1:3000/api/my-data
+需要script測一下, 如同 scripts/stress-test-wal.js，我做查詢，用 http://0.0.0.0:3000/api/my-data
 
 scripts/stress-test-wal.js 與 scripts/stress-test-mydata-query.js 一起運行好像沒有出現 db locks 耶 哈哈，我有運行 scripts/check-db-locks.js 查看 XD。
 
@@ -413,7 +413,7 @@ PS C:\> npm -v
 
 ## dataUrlToJson.json自動生成mock資料
 
-生成一個 dataUrlToJson.js 代碼，獲取API的資料轉成各個.json檔案，以活動資料API為例子 "http://127.0.0.1:3000/api/activities?fields=\*" 回應的結構為：
+生成一個 dataUrlToJson.js 代碼，獲取API的資料轉成各個.json檔案，以活動資料API為例子 "http://0.0.0.0:3000/api/activities?fields=\*" 回應的結構為：
 
 ```json
 {
@@ -434,28 +434,28 @@ PS C:\> npm -v
 ```js
 const dataJsonObj = [
   {
-    dataUrl: "http://127.0.0.1:3000/api/activities?fields=*",
+    dataUrl: "http://0.0.0.0:3000/api/activities?fields=*",
     fileName: "mock*activities.json",
   },
   {
-    dataUrl: "http://127.0.0.1:3000/api/monthly-donates?fields=*",
+    dataUrl: "http://0.0.0.0:3000/api/monthly-donates?fields=*",
     fileName: "mock_monthlyDonates.json",
   },
   {
-    dataUrl: "http://127.0.0.1:3000/api/participation-records?fields=*",
+    dataUrl: "http://0.0.0.0:3000/api/participation-records?fields=*",
     fileName: "mock_participation_records.json",
   },
 
   {
-    dataUrl: "http://127.0.0.1:3000/api/registrations?fields=*",
+    dataUrl: "http://0.0.0.0:3000/api/registrations?fields=*",
     fileName: "mock_registrations.json",
   },
   {
-    dataUrl: "http://127.0.0.1:3000/api/directus-users?fields=*",
+    dataUrl: "http://0.0.0.0:3000/api/directus-users?fields=*",
     fileName: "mock_directus_users.json",
   },
   {
-    dataUrl: "http://127.0.0.1:3000/api/receipt-numbers?fields=*",
+    dataUrl: "http://0.0.0.0:3000/api/receipt-numbers?fields=*",
     fileName: "mock_receipt_numbers.json",
   },
 ];

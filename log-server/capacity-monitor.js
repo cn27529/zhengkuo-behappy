@@ -5,7 +5,7 @@
  * 使用方式: node capacity-monitor.js
  */
 
-const BASE_URL = "http://127.0.0.1:3002";
+const BASE_URL = "http://0.0.0.0:3002";
 const M0_CAPACITY_MB = 512;
 const AVG_LOG_SIZE_KB = 3; // 你的日誌平均大小
 

@@ -148,7 +148,7 @@ server {
 
     # API 代理
     location /api/ {
-        proxy_pass http://127.0.0.1:3000/;
+        proxy_pass http://0.0.0.0:3000/;
         # ... 其他代理設置
     }
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 # test_registration_with_user_created.sh
 
-BASE_URL="http://127.0.0.1:3000"
+BASE_URL="http://0.0.0.0:3000"
 
 echo "🧪 測試 Registration API - 包含 user_created 字段"
 echo "=================================================="

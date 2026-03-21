@@ -51,8 +51,8 @@ cd ..
 
 ```bash
 # client/.env.development
-VITE_API_BASE_URL=http://127.0.0.1:3000
-VITE_DIRECTUS_URL=http://127.0.0.1:8055
+VITE_API_BASE_URL=http://0.0.0.0:3000
+VITE_DIRECTUS_URL=http://0.0.0.0:8055
 VITE_APP_MODE=development
 VITE_ENABLE_MOCK=true
 ```
@@ -73,7 +73,7 @@ DATABASE_URL=sqlite:../db/current.db
 RUST_LOG=debug
 SERVER_HOST=0.0.0.0
 SERVER_PORT=3000
-CORS_ORIGIN=http://127.0.0.1:5173
+CORS_ORIGIN=http://0.0.0.0:5173
 JWT_SECRET=your-jwt-secret-key
 ```
 
@@ -90,8 +90,8 @@ SECRET=your-random-secret-here
 ACCESS_TOKEN_TTL=24h
 REFRESH_TOKEN_TTL=30d
 CORS_ENABLED=true
-CORS_ORIGIN=http://127.0.0.1:5173
-PUBLIC_URL=http://127.0.0.1:8055
+CORS_ORIGIN=http://0.0.0.0:5173
+PUBLIC_URL=http://0.0.0.0:8055
 ```
 
 ### 3. 資料庫初始化
@@ -139,9 +139,9 @@ npm run dev
 
 訪問以下 URL 確認服務正常：
 
-- **前端應用**: http://127.0.0.1:5173
-- **Rust API**: http://127.0.0.1:3000/health
-- **Directus 管理**: http://127.0.0.1:8055
+- **前端應用**: http://0.0.0.0:5173
+- **Rust API**: http://0.0.0.0:3000/health
+- **Directus 管理**: http://0.0.0.0:8055
 
 ---
 
@@ -306,7 +306,7 @@ server {
 
     # API 代理
     location /api/ {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://0.0.0.0:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -319,7 +319,7 @@ server {
 
     # Directus 管理界面 (可選)
     location /admin/ {
-        proxy_pass http://127.0.0.1:8055/;
+        proxy_pass http://0.0.0.0:8055/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -490,7 +490,7 @@ sqlite3 /path/to/new/current.db "PRAGMA integrity_check;"
 # scripts/health-check.sh
 
 # 檢查 API 健康狀態
-curl -f http://127.0.0.1:3000/health || echo "API health check failed"
+curl -f http://0.0.0.0:3000/health || echo "API health check failed"
 
 # 檢查資料庫連接
 sqlite3 /opt/zhengkuo-behappy/db/current.db "SELECT 1;" || echo "Database check failed"

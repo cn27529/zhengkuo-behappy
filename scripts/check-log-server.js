@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // check-log-server.js - 檢查日誌服務器狀態
-const LOG_SERVER_URL = "http://127.0.0.1:3002";
+const LOG_SERVER_URL = "http://0.0.0.0:3002";
 
 async function checkLogServer() {
   try {

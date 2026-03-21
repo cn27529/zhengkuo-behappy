@@ -31,7 +31,7 @@ const MONGO_CONFIG = {
   projectId: process.env.MONGO_PROJECT_ID,
 };
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://127.0.0.1:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://0.0.0.0:5173";
 
 let mongoClient = null;
 let collection = null;
@@ -409,25 +409,25 @@ async function startServer() {
   // 啟動 HTTP 服務器
   app.listen(MONGO_CONFIG.port, () => {
     console.log(
-      `✅ 本地 MongoDB 日誌服務器已啟動: http://127.0.0.1:${MONGO_CONFIG.port}`,
+      `✅ 本地 MongoDB 日誌服務器已啟動: http://0.0.0.0:${MONGO_CONFIG.port}`,
     );
     console.log("📚 系統端點:");
     console.log(
-      `   📡 日誌接收: http://127.0.0.1:${MONGO_CONFIG.port}/mongo/logentry/`,
+      `   📡 日誌接收: http://0.0.0.0:${MONGO_CONFIG.port}/mongo/logentry/`,
     );
     console.log(
-      `   📦 批次日誌: http://127.0.0.1:${MONGO_CONFIG.port}/mongo/logentry/batch`,
+      `   📦 批次日誌: http://0.0.0.0:${MONGO_CONFIG.port}/mongo/logentry/batch`,
     );
     console.log(
-      `   🔍 查詢日誌: http://127.0.0.1:${MONGO_CONFIG.port}/mongo/logentry/`,
+      `   🔍 查詢日誌: http://0.0.0.0:${MONGO_CONFIG.port}/mongo/logentry/`,
     );
     console.log(
-      `   📊 統計資料: http://127.0.0.1:${MONGO_CONFIG.port}/mongo/stats`,
+      `   📊 統計資料: http://0.0.0.0:${MONGO_CONFIG.port}/mongo/stats`,
     );
     console.log(
-      `   🗑️ 清理日誌: http://127.0.0.1:${MONGO_CONFIG.port}/mongo/cleanup/:days`,
+      `   🗑️ 清理日誌: http://0.0.0.0:${MONGO_CONFIG.port}/mongo/cleanup/:days`,
     );
-    console.log(`   💚 健康檢查: http://127.0.0.1:${MONGO_CONFIG.port}/health`);
+    console.log(`   💚 健康檢查: http://0.0.0.0:${MONGO_CONFIG.port}/health`);
   });
 
   // 啟動定時清理任務

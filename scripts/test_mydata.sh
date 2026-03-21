@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directus 配置
-DIRECTUS_URL="http://127.0.0.1:8055"
+DIRECTUS_URL="http://0.0.0.0:8055"
 EMAIL="admin@example.com"
 PASSWORD="123456"
 

@@ -79,7 +79,7 @@ API 端點：
 ### 創建記錄
 
 ```bash
-curl -X POST http://127.0.0.1:3000/api/my-data \
+curl -X POST http://0.0.0.0:3000/api/my-data \
   -H "Content-Type: application/json" \
   -d '{
     "state": "active",
@@ -96,19 +96,19 @@ curl -X POST http://127.0.0.1:3000/api/my-data \
 
 ```bash
 # 獲取所有記錄
-curl http://127.0.0.1:3000/api/my-data
+curl http://0.0.0.0:3000/api/my-data
 
 # 帶查詢參數
-curl "http://127.0.0.1:3000/api/my-data?state=active&limit=10&offset=0&sort=-date_created"
+curl "http://0.0.0.0:3000/api/my-data?state=active&limit=10&offset=0&sort=-date_created"
 
 # 獲取單筆記錄
-curl http://127.0.0.1:3000/api/my-data/{uuid}
+curl http://0.0.0.0:3000/api/my-data/{uuid}
 ```
 
 ### 更新記錄
 
 ```bash
-curl -X PATCH http://127.0.0.1:3000/api/my-data/{uuid} \
+curl -X PATCH http://0.0.0.0:3000/api/my-data/{uuid} \
   -H "Content-Type: application/json" \
   -d '{
     "state": "completed",
@@ -122,7 +122,7 @@ curl -X PATCH http://127.0.0.1:3000/api/my-data/{uuid} \
 ### 刪除記錄
 
 ```bash
-curl -X DELETE http://127.0.0.1:3000/api/my-data/{uuid}
+curl -X DELETE http://0.0.0.0:3000/api/my-data/{uuid}
 ```
 
 ## 注意事項

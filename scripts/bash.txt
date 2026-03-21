@@ -1,52 +1,52 @@
 # 检查 Directus 服务是否运行
-curl -s "http://127.0.0.1:8055/server/info" | jq '.'
+curl -s "http://0.0.0.0:8055/server/info" | jq '.'
 
 # 查看 mydata
-curl -s "http://127.0.0.1:8055/items/mydata" | jq '.'
+curl -s "http://0.0.0.0:8055/items/mydata" | jq '.'
 # 帶欄位的
-curl -s "http://127.0.0.1:8055/items/mydata?fields=id,formName,state,contact.name,contact.phone" | jq '.'
-curl -s "http://127.0.0.1:8055/items/mydata?fields=*,contact.*" | jq '.'
+curl -s "http://0.0.0.0:8055/items/mydata?fields=id,formName,state,contact.name,contact.phone" | jq '.'
+curl -s "http://0.0.0.0:8055/items/mydata?fields=*,contact.*" | jq '.'
 
 
 # Directus
 # 祈福登記 - registrationDB
-curl -s "http://127.0.0.1:8055/items/registrationDB" | jq '.'
+curl -s "http://0.0.0.0:8055/items/registrationDB" | jq '.'
 # 法會活動 - activityDB
-curl -s "http://127.0.0.1:8055/items/activityDB" | jq '.'
+curl -s "http://0.0.0.0:8055/items/activityDB" | jq '.'
 # 每月贊助 - monthlyDonateDB
-curl -s "http://127.0.0.1:8055/items/monthlyDonateDB" | jq '.'
+curl -s "http://0.0.0.0:8055/items/monthlyDonateDB" | jq '.'
 # 參加記錄 - participationRecordDB
-curl -s "http://127.0.0.1:8055/items/participationRecordDB" | jq '.'
-curl -s "http://127.0.0.1:8055/items/participationRecordDB?fields=*"  | jq '.'
+curl -s "http://0.0.0.0:8055/items/participationRecordDB" | jq '.'
+curl -s "http://0.0.0.0:8055/items/participationRecordDB?fields=*"  | jq '.'
 
 
 # 使用 curl 測試 OPTIONS 請求
-curl -X OPTIONS http://127.0.0.1:3000/api/activities \
-  -H "Origin: http://127.0.0.1:5173" \
+curl -X OPTIONS http://0.0.0.0:3000/api/activities \
+  -H "Origin: http://0.0.0.0:5173" \
   -H "Access-Control-Request-Method: GET" \
   -H "Access-Control-Request-Headers: content-type" \
   -v
 
 
 # rust-axum 
-curl -s "http://127.0.0.1:3000/api/receipt-numbers?fields=*,contact.*" | jq '.'
+curl -s "http://0.0.0.0:3000/api/receipt-numbers?fields=*,contact.*" | jq '.'
 
-curl -s "http://127.0.0.1:3000/api/my-data?fields=*,contact.*" | jq '.'
+curl -s "http://0.0.0.0:3000/api/my-data?fields=*,contact.*" | jq '.'
 
 # 法會活動
-curl -s "http://127.0.0.1:3000/api/activities?fields=*,contact.*" | jq '.'
+curl -s "http://0.0.0.0:3000/api/activities?fields=*,contact.*" | jq '.'
 
 # 祈福登記
-curl -s "http://127.0.0.1:3000/api/registrations?fields=*,contact.*" | jq '.'
+curl -s "http://0.0.0.0:3000/api/registrations?fields=*,contact.*" | jq '.'
 
 # 每月贊助
-curl -s "http://127.0.0.1:3000/api/monthly-donates?fields=*,contact.*" | jq '.'
+curl -s "http://0.0.0.0:3000/api/monthly-donates?fields=*,contact.*" | jq '.'
 
 # 參加記錄
-curl -s "http://127.0.0.1:3000/api/participation-records?fields=*,contact.*" | jq '.'
+curl -s "http://0.0.0.0:3000/api/participation-records?fields=*,contact.*" | jq '.'
 
 # 由 Rust 創建的活動
-curl -X POST http://127.0.0.1:3000/api/activities \
+curl -X POST http://0.0.0.0:3000/api/activities \
  -H "Content-Type: application/json" \
  -d '{
 "activityId": "ACT-RUST-001",
@@ -59,7 +59,7 @@ curl -X POST http://127.0.0.1:3000/api/activities \
 }'
 
 # 使用 curl 或 Postman 測試生成編號
-curl -X POST http://127.0.0.1:3000/api/receipt-numbers/generate \
+curl -X POST http://0.0.0.0:3000/api/receipt-numbers/generate \
   -H "Content-Type: application/json" \
   -d '{"recordId": 123, "receiptType": "stamp"}'
 

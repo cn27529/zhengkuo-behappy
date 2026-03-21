@@ -10,7 +10,7 @@ export class BaseRustService {
     // 是否為開發模式
     this.isDev = import.meta.env.VITE_DEV === "true";
     this.rustApiBaseUrl =
-      import.meta.env.VITE_RUST_API_URL || "http://127.0.0.1:3000";
+      import.meta.env.VITE_RUST_API_URL || "http://0.0.0.0:3000";
     this.mode = import.meta.env.VITE_RUST_MODE || "rust";
 
     // API 端點
@@ -181,10 +181,10 @@ export class BaseRustService {
         type: "application/json",
       });
 
-      // ✅ 本地 MongoDB 日誌服務器已啟動: http://127.0.0.1:3002
-      // 📡 日誌接收端點: http://127.0.0.1:3002/mongo/logentry/
-      // 📊 健康檢查: http://127.0.0.1:3002/health
-      // 📈 統計資料: http://127.0.0.1:3002/mongo/stats
+      // ✅ 本地 MongoDB 日誌服務器已啟動: http://0.0.0.0:3002
+      // 📡 日誌接收端點: http://0.0.0.0:3002/mongo/logentry/
+      // 📊 健康檢查: http://0.0.0.0:3002/health
+      // 📈 統計資料: http://0.0.0.0:3002/mongo/stats
       let BASE_URL = `${import.meta.env.VITE_REMOTE_LOG_URL}`;
       const logServer = navigator.sendBeacon?.(
         `${BASE_URL}/mongo/logentry/`,

@@ -11,7 +11,7 @@ export class IndexedDBWithBackend extends IndexedDBLogger {
     super(dbName, version);
 
     const VITE_MONGODB_URI =
-      import.meta.env.VITE_MONGODB_URI || "http://127.0.0.1:3002";
+      import.meta.env.VITE_MONGODB_URI || "http://0.0.0.0:3002";
     const VITE_MONGODB_DB_NAME =
       import.meta.env.VITE_MONGODB_DB_NAME || "logEntryDB";
     const VITE_MONGODB_COLLECTION_NAME =
@@ -317,7 +317,7 @@ export class IndexedDBWithBackend extends IndexedDBLogger {
 
 // 導出配置好的單例
 export const logger = new IndexedDBWithBackend("DirectusLogsDB", 1, {
-  baseURL: "http://127.0.0.1:3002",
+  baseURL: "http://0.0.0.0:3002",
   logEndpoint: "/mongo/logentry/",
   statsEndpoint: "/mongo/stats",
   healthEndpoint: "/health",
