@@ -196,3 +196,6 @@ db/*.db-shm
 
 # npm run mock 不要上 git repo
 mock_data/
+
+# 略過
+**/books.json
