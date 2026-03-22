@@ -58,6 +58,12 @@ const enterFullscreen = () => {
   color: #fff;
 }
 
+.login-container h1 {
+  color: #fff;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
 .title {
   font-size: 30px;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -67,6 +73,21 @@ const enterFullscreen = () => {
 
 .welcome-message {
   color: #fff;
+}
+
+.form-options {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-left: 2px;
+  color: #fff;
+}
+
+/* 讓 Checkbox 的文字顏色更柔和 */
+:deep(.el-checkbox__label) {
+  color: #fff;
+  font-weight: 400;
 }
 
 @media (max-width: 768px) {
@@ -88,6 +109,12 @@ const enterFullscreen = () => {
     box-shadow: none;
     border: none;
     color: #000;
+  }
+
+  .login-container h1 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
   }
 
   h1 {
