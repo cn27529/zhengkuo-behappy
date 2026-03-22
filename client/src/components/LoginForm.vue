@@ -213,6 +213,7 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 20px;
   padding-left: 2px;
+  color: #fff;
 }
 
 .btn-block {
