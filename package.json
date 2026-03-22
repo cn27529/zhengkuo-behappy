@@ -30,7 +30,7 @@
     "sqlite:viewer": "node scripts/sqlite-viewer.js",
     "all": "node scripts/start-all.js",
     "mock": "node scripts/dataUrlToJson.js && cp -rv mock_data/*.* client/src/data/",
-    "pm2": "pm2 start --watch scripts/start-all.js --name \"zk-client\" "
+    "pm2": "pm2 start scripts/start-all.js --name \"zk-client\" "
   },
   "keywords": [],
   "author": "cn27529",
