@@ -51,6 +51,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.login-page {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: #606266;
+}
+
 .logout-container {
   max-width: 300px;
   margin: 50px auto;

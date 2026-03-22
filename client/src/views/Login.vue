@@ -33,8 +33,6 @@ const enterFullscreen = () => {
 <style scoped>
 .login-page {
   min-height: 100vh;
-  background: url("/zk4-bg.webp") no-repeat center center;
-  background-size: cover;
 
   display: flex;
   justify-content: center;
@@ -47,15 +45,19 @@ const enterFullscreen = () => {
   max-width: 400px;
   padding: 40px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.15); /* 白底卡片 */
-  margin-right: 12%;
+  background-color: #fff;
 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+}
+
+.login-container h1 {
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .title {
@@ -78,6 +80,12 @@ const enterFullscreen = () => {
   color: #fff;
 }
 
+/* 讓 Checkbox 的文字顏色更柔和 */
+:deep(.el-checkbox__label) {
+  color: #606266;
+  font-weight: 400;
+}
+
 @media (max-width: 768px) {
   .login-page {
     background: none;
@@ -97,6 +105,12 @@ const enterFullscreen = () => {
     box-shadow: none;
     border: none;
     color: #000;
+  }
+
+  .login-container h1 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
   }
 
   h1 {
