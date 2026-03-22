@@ -117,5 +117,10 @@ const enterFullscreen = () => {
     text-align: center;
     text-shadow: none;
   }
+
+  :deep(.el-checkbox__label) {
+    color: #606266;
+    font-weight: 400;
+  }
 }
 </style>
