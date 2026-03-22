@@ -25,12 +25,7 @@
 
       <div class="form-group">
         <div class="form-options">
-          <el-checkbox
-            v-model="rememberMe"
-            class="highlight-bg"
-            label="記住用戶名"
-            size="large"
-          />
+          <el-checkbox v-model="rememberMe" label="記住用戶名" size="large" />
         </div>
       </div>
 
