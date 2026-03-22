@@ -235,7 +235,7 @@ onMounted(() => {
 
 /* 讓 Checkbox 的文字顏色更柔和 */
 :deep(.el-checkbox__label) {
-  color: #606266;
+  color: #fff;
   font-weight: 400;
 }
 
