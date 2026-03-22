@@ -66,7 +66,7 @@ const enterFullscreen = () => {
 
 .title {
   font-size: 30px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   margin-bottom: 25px;
   text-align: center;
 }
@@ -116,6 +116,13 @@ const enterFullscreen = () => {
     margin-bottom: 2rem;
     text-align: center;
     text-shadow: none;
+  }
+
+  .title {
+    font-size: 30px;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    text-align: center;
   }
 
   :deep(.el-checkbox__label) {
