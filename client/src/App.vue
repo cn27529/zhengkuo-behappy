@@ -147,15 +147,13 @@ const handleMenuClick = (menuItem) => {
 const computeVisibility = () => {
   const isPrint = route.path && route.path.includes("print");
   const tdClock = route.path && route.path.includes("td-clock");
+  const login = route.path && route.path.includes("login");
+  const logout = route.path && route.path.includes("logout");
 
   return {
-    header: !isPrint && !tdClock, // 顶部导航栏：非打印页面显示
-    sidebar:
-      !isPrint &&
-      !tdClock &&
-      route.path !== "/login" &&
-      route.path !== "/logout", // 側邊菜單栏：非打印页面且非登录/登出页面显示
-    footer: !isPrint && !tdClock, // 底部：非打印页面显示
+    header: !isPrint && !tdClock && !login && !logout, // 顶部导航栏：非打印页面显示
+    sidebar: !isPrint && !tdClock && !login && !logout, // 側邊菜單栏：非打印页面且非登录/登出页面显示
+    footer: !isPrint && !tdClock && !login && !logout, // 底部：非打印页面显示
   };
 };
 
