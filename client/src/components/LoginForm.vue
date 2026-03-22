@@ -25,7 +25,12 @@
 
       <div class="form-group">
         <div class="form-options">
-          <el-checkbox v-model="rememberMe" label="記住用戶名" size="large" />
+          <el-checkbox
+            v-model="rememberMe"
+            class="highlight-bg"
+            label="記住用戶名"
+            size="large"
+          />
         </div>
       </div>
 
@@ -213,7 +218,13 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 20px;
   padding-left: 2px;
-  color: #fff;
+}
+
+/* 做「背景高亮」（像標記一樣） */
+.highlight-bg {
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .btn-block {
