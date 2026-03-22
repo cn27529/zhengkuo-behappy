@@ -46,7 +46,7 @@ onMounted(() => {
   // 可选：添加延迟后自动跳转到登录页
   setTimeout(() => {
     router.push("/login");
-  }, 1500); // 3秒后跳转
+  }, 3000); // 3秒后跳转
 });
 </script>
 

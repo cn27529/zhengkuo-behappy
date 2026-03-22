@@ -113,13 +113,9 @@ const enterFullscreen = () => {
 
   .login-container h1 {
     color: var(--primary-color);
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     text-align: center;
-  }
-
-  h1 {
     text-shadow: none;
-    color: #000;
   }
 }
 </style>

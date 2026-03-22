@@ -111,11 +111,7 @@ const enterFullscreen = () => {
     color: var(--primary-color);
     margin-bottom: 1rem;
     text-align: center;
-  }
-
-  h1 {
     text-shadow: none;
-    color: #000;
   }
 }
 </style>
