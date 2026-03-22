@@ -113,13 +113,15 @@ const enterFullscreen = () => {
 
   .login-container h1 {
     color: var(--primary-color);
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     text-align: center;
+    text-shadow: none;
   }
 
-  h1 {
-    text-shadow: none;
-    color: #000;
+  /* 讓 Checkbox 的文字顏色更柔和 */
+  :deep(.el-checkbox__label) {
+    color: #606266;
+    font-weight: 400;
   }
 }
 </style>

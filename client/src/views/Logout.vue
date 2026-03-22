@@ -46,11 +46,21 @@ onMounted(() => {
   // 可选：添加延迟后自动跳转到登录页
   setTimeout(() => {
     router.push("/login");
-  }, 1500); // 3秒后跳转
+  }, 3000); // 3秒后跳转
 });
 </script>
 
 <style scoped>
+.login-page {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: #606266;
+}
+
 .logout-container {
   max-width: 300px;
   margin: 50px auto;
