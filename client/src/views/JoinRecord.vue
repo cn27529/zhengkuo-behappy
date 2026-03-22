@@ -1925,8 +1925,8 @@ onMounted(async () => {
   .total-position-bottom-left,
   .total-position-bottom-center,
   .total-position-bottom-right {
-    left: 50%;
-    transform: translateX(-50%);
+    left: 1%;
+    transform: translateX(1%);
     right: auto;
   }
 
