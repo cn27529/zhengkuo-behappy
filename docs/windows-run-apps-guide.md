@@ -1,4 +1,4 @@
-# zhengkuo-behappy — Windows 客戶端環境建置指南
+# Windows 客戶端環境建置指南
 
 > **文件路徑：** `docs/windows-run-apps-guide.md`
 > **適用系統：** Windows 10 (1903+) / Windows 11 64-bit
@@ -8,7 +8,7 @@
 
 ## 概述說明
 
-zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈、Rust 安裝與配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。適用於現場部署與問題排除。
+zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。涵蓋從零開始的環境建置，包含 Git、Node.js、MSYS2 GNU 工具鏈（同時提供 gcc / cargo / rustc）與 Cargo 配置，以及前端、Rust 後端、日誌服務器、文檔服務器的啟動與驗收測試流程。**本專案統一使用 `D:\msys64\mingw64` 編譯 Rust，不使用 rustup 安裝腳本，不切換工具鏈。** 適用於現場部署與問題排除。
 
 ## 0. 系統概覽
 
@@ -45,13 +45,12 @@ zhengkuo-behappy 寺廟管理系統在 Windows 客戶端的完整部署指南。
 - [ ] Git for Windows — https://git-scm.com/download/win
 - [ ] nvm for Windows — https://github.com/coreybutler/nvm-windows
 - [ ] Node.js 20 LTS (透過 nvm 安裝)
-- [ ] MSYS2 (提供 GNU 工具鏈) — https://www.msys2.org
-- [ ] Rust Toolchain (rustup) — https://rustup.rs
+- [ ] MSYS2 (提供 GNU 工具鏈 + cargo + rustc) — https://www.msys2.org　⚠️ 安裝後統一使用 MinGW64，不使用 rustup 安裝腳本，不切換工具鏈
 - [ ] Docker Desktop for Windows — https://www.docker.com/products/docker-desktop （選用，Directus 備用後端使用）
 - [ ] Windows Terminal 或 PowerShell 7 — 建議使用
 - [ ] Google Chrome / Edge — 用於測試前端介面
 
-> ⚠️ **注意：** 本專案使用 GNU 工具鏈編譯 Rust，不再依賴 Visual Studio Build Tools 或 MSVC。詳細設定請參考 `docs/windows-rust-gnu-setup-manual.md`。
+> ⚠️ **注意：** 本專案使用 GNU 工具鏈編譯 Rust，統一使用 `D:\msys64\mingw64` 提供的編譯器（含 cargo / rustc），不依賴 Visual Studio Build Tools 或 MSVC，**不使用 rustup 安裝腳本，不切換工具鏈**。詳細設定請參考 `docs/windows-rust-gnu-setup-manual.md`。
 
 ---
 
@@ -100,6 +99,7 @@ npm --version
 ```
 
 > 📌 **常用 nvm 指令：**
+>
 > - `nvm list` — 列出已安裝的 Node.js 版本
 > - `nvm list available` — 列出可安裝的版本
 > - `nvm install <version>` — 安裝指定版本
@@ -107,6 +107,14 @@ npm --version
 > - `nvm uninstall <version>` — 移除指定版本
 
 > ⚠️ **注意：** 若之前已安裝過 Node.js，建議先完全移除後再安裝 nvm，避免 PATH 衝突。
+
+> ⚠️ **PowerShell 執行原則問題：** 若執行 `npm` 時出現「因為這個系統上已停用指令碼執行，所以無法載入 npm.ps1」錯誤，請執行以下指令解除限制：
+>
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+> ```
+>
+> 之後重新執行 `npm --version` 確認正常。
 
 ### 2.3 安裝 MSYS2 與 GNU 工具鏈
 
@@ -131,7 +139,7 @@ ar --version
 make --version
 ```
 
-5. 將 MSYS2 工具加入 Windows PATH（以 `D:\msys64` 為例）：
+5. 將 MSYS2 工具加入 Windows PATH（安裝於 `D:\msys64`）：
    - 開啟「系統內容」→「環境變數」
    - 在「系統變數」的 `Path` 中新增：
      - `D:\msys64\mingw64\bin`
@@ -146,34 +154,20 @@ make --version     # 應顯示版本資訊
 
 > ⚠️ **注意：** 若找不到指令，請確認 PATH 設定並**重新開啟** PowerShell。
 
-### 2.4 安裝 Rust Toolchain（GNU 模式）
+### 2.4 安裝 Rust 編譯工具（cargo / rustc 由 MSYS2 MinGW64 提供）
 
-1. 在 **Git Bash** 中執行：
+> 📌 **本專案統一使用 `D:\msys64\mingw64` 提供的 GNU 工具鏈編譯 Rust，包含 cargo 與 rustc。不使用 rustup 安裝腳本，不切換工具鏈（GNU / MSVC 均不切換）。** 完成第 2.3 節 MSYS2 安裝後，cargo 與 rustc 已隨 `mingw-w64-x86_64-toolchain` 一同安裝完畢。
 
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
+1. 確認 MSYS2 MinGW64 工具鏈已安裝完成（見 2.3 節）
 
-2. 安裝完成後，安裝並切換到 GNU 工具鏈：
+2. 在 **PowerShell** 中驗證 cargo 與 rustc：
 
-```bash
-rustup toolchain install stable-x86_64-pc-windows-gnu
-rustup default stable-x86_64-pc-windows-gnu
-```
-
-3. **重新開啟 Terminal** 驗證：
-
-```bash
-rustup --version
+```powershell
 cargo --version
 rustc --version
-
-# 確認 GNU toolchain
-rustup show
-# 應顯示 stable-x86_64-pc-windows-gnu 為 active toolchain
 ```
 
-4. 設定 Cargo 配置（`C:\Users\你的使用者名稱\.cargo\config.toml`）：
+3. 設定 Cargo 配置（`C:\Users\你的使用者名稱\.cargo\config.toml`）：
 
 ```toml
 [target.x86_64-pc-windows-gnu]
@@ -187,6 +181,10 @@ CXX_x86_64_pc_windows_gnu = "D:\\msys64\\mingw64\\bin\\g++.exe"
 AR_x86_64_pc_windows_gnu  = "D:\\msys64\\mingw64\\bin\\ar.exe"
 RING_PREGENERATE_ASM = "1"
 ```
+
+4. 示意圖
+
+![An image](./config.toml.png)
 
 5. 設定編譯器環境變數（在 PowerShell Profile 中）：
 
@@ -213,7 +211,7 @@ $env:AR = "ar"
 . $PROFILE
 ```
 
-> ⚠️ **注意：** 若出現 `linker 'link.exe' not found` 錯誤，代表未正確切換到 GNU 工具鏈，請確認 `rustup show` 輸出為 `x86_64-pc-windows-gnu`。
+> ⚠️ **注意：** 若出現 `linker 'link.exe' not found` 錯誤，代表 `config.toml` 未正確設定，請確認 `D:\msys64\mingw64\bin\gcc.exe` 路徑存在。
 
 ### 2.5 安裝 Docker Desktop（選用）
 
@@ -245,13 +243,45 @@ cd C:\Users\<UserName>\Desktop\zhengkuo-behappy
 
 > 📌 若客戶端環境無法直接存取 Git Repository，可改用 USB 傳輸方式，將整個專案資料夾複製至目標機器後，從步驟 3.2 開始執行。
 
-### 3.2 安裝根目錄相依套件
+### 3.2 一鍵安裝所有 npm 相依套件（建議）
+
+專案根目錄提供 `install-all.bat` 批次腳本，可自動依序完成全部 npm 套件的安裝，**建議優先使用此方式**。
+
+```cmd
+# 在專案根目錄，以滑鼠雙擊或在 CMD / PowerShell 中執行：
+install-all.bat
+```
+
+腳本將依序執行以下 6 個步驟：
+
+| 步驟 | 目錄          | 說明                      |
+| ---- | ------------- | ------------------------- |
+| 1/6  | 根目錄 `./`   | 安裝根目錄套件            |
+| 2/6  | `client/`     | 安裝前端套件              |
+| 3/6  | `docs/`       | 安裝文檔服務器套件        |
+| 4/6  | `log-server/` | 安裝日誌服務器套件        |
+| 5/6  | `server/`     | 安裝 Node.js 備用後端套件 |
+| 6/6  | `rust-axum/`  | 安裝 rust-axum 相關套件   |
+
+執行完畢後終端機顯示 `All packages installed successfully!` 即代表全部安裝完成。
+
+> ⚠️ **注意：** 執行前請確認已完成 Node.js 安裝（`node --version` 有回應），且 PowerShell 執行原則已設定為 `RemoteSigned`（詳見 2.2 節）。
+
+> 📌 若腳本中途某個目錄安裝失敗，可進入該目錄手動執行 `npm install`，再繼續下一步。
+
+---
+
+### 3.3 手動逐一安裝（備用）
+
+若 `install-all.bat` 無法執行，可改為手動依序安裝：
+
+**根目錄**
 
 ```bash
 npm install
 ```
 
-### 3.3 安裝前端相依套件
+**前端**
 
 ```bash
 cd client
@@ -272,7 +302,7 @@ cd ..
 
 > ⚠️ **注意：** 若出現網路相關錯誤（如 `registry fetch failed`），請確認防火牆或 Proxy 設定未封鎖 https://crates.io。
 
-### 3.5 安裝日誌服務器相依套件
+**日誌服務器**
 
 ```bash
 cd log-server
@@ -280,7 +310,7 @@ npm install
 cd ..
 ```
 
-### 3.6 安裝文檔服務器相依套件
+**文檔服務器**
 
 ```bash
 cd docs
@@ -383,7 +413,7 @@ npm run dev
 cd rust-axum
 cargo run
 # 或：npm run dev:rust（在根目錄）
-# 預期：Listening on 0.0.0.0:3000
+# 預期：Listening on localhost:3000
 ```
 
 **日誌服務器**
@@ -458,22 +488,24 @@ node test-complete.js
 
 ## 7. 常見問題排除
 
-| 錯誤訊息 / 症狀                                  | 可能原因                       | 解決方式                                                              |
-| ------------------------------------------------ | ------------------------------ | --------------------------------------------------------------------- |
-| `linker 'link.exe' not found`                    | 誤用 MSVC 工具鏈               | 確認 `rustup show` 顯示 `x86_64-pc-windows-gnu`                       |
-| `gcc not found`                                  | MSYS2 PATH 未設定              | 檢查 `D:\msys64\mingw64\bin` 是否在 PATH 中                           |
-| `cargo: command not found`                       | Rust 未安裝或 PATH 未設定      | 在 Git Bash 重新執行 rustup 安裝腳本，重開 Terminal                   |
-| `node: command not found`                        | nvm 未安裝或未設定 Node 版本   | 執行 `nvm use 20`，確認 `nvm list` 顯示已安裝版本                     |
-| `nvm: command not found`                         | nvm 未安裝或 PATH 未設定       | 重新安裝 nvm-windows，重開 Terminal                                   |
-| `Port 3000 already in use`                       | 其他程式佔用 Port              | `netstat -ano \| findstr :3000`，找出 PID 後 `taskkill /F /PID <PID>` |
-| `EACCES: permission denied (symlink)`            | Windows 符號連結需要管理員權限 | 以管理員開啟 Terminal 或啟用 Developer Mode                           |
-| 前端空白頁面                                     | Vite 未啟動或 API 連線失敗     | 確認 `npm run dev` 已執行，檢查 `.env.local` 設定                     |
-| `registry fetch failed`                          | 防火牆封鎖 crates.io           | 設定 Proxy 或開放 crates.io 的 443/80 Port                            |
-| `database is locked`                             | SQLite 多進程衝突              | 確認只有一個 Rust 後端實例在執行                                      |
-| `Cannot connect to MongoDB`                      | MONGODB_URI 錯誤或網路問題     | 確認 `.env` 設定正確，或改用本地 MongoDB                              |
-| `Module not found`                               | npm install 未完成             | 刪除 `node_modules` 重新執行 `npm install`                            |
-| `Compiler family detection failed`               | 缺少 CC 環境變數               | 設定 `$env:CC="gcc"` 並加入 PowerShell Profile                        |
-| `could not find native static library 'pthread'` | MinGW64 工具鏈安裝不完整       | 重新執行 `pacman -S mingw-w64-x86_64-toolchain`                       |
+| 錯誤訊息 / 症狀                                  | 可能原因                            | 解決方式                                                                                                |
+| ------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `linker 'link.exe' not found`                    | `config.toml` 未正確設定            | 確認 `~/.cargo/config.toml` 的 linker 指向 `D:\msys64\mingw64\bin\gcc.exe`                              |
+| `gcc not found`                                  | MSYS2 PATH 未設定                   | 檢查 `D:\msys64\mingw64\bin` 是否在 PATH 中                                                             |
+| `cargo: command not found`                       | MSYS2 工具鏈未安裝或 PATH 未設定    | 確認 `D:\msys64\mingw64\bin` 在 PATH 中，重新執行 `pacman -S mingw-w64-x86_64-toolchain`，重開 Terminal |
+| `node: command not found`                        | nvm 未安裝或未設定 Node 版本        | 執行 `nvm use 20`，確認 `nvm list` 顯示已安裝版本                                                       |
+| `nvm: command not found`                         | nvm 未安裝或 PATH 未設定            | 重新安裝 nvm-windows，重開 Terminal                                                                     |
+| `npm : 無法載入 npm.ps1，已停用指令碼執行`       | PowerShell 執行原則限制             | 執行 `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`                             |
+| `Port 3000 already in use`                       | 其他程式佔用 Port                   | `netstat -ano \| findstr :3000`，找出 PID 後 `taskkill /F /PID <PID>`                                   |
+| `EACCES: permission denied (symlink)`            | Windows 符號連結需要管理員權限      | 以管理員開啟 Terminal 或啟用 Developer Mode                                                             |
+| 前端空白頁面                                     | Vite 未啟動或 API 連線失敗          | 確認 `npm run dev` 已執行，檢查 `.env.local` 設定                                                       |
+| `registry fetch failed`                          | 防火牆封鎖 crates.io                | 設定 Proxy 或開放 crates.io 的 443/80 Port                                                              |
+| `database is locked`                             | SQLite 多進程衝突                   | 確認只有一個 Rust 後端實例在執行                                                                        |
+| `Cannot connect to MongoDB`                      | MONGODB_URI 錯誤或網路問題          | 確認 `.env` 設定正確，或改用本地 MongoDB                                                                |
+| Directus Admin 登入後無法載入資料                | Windows 防火牆封鎖 Node.js 外出連線 | 見 8.4 節：開放 Node.js 防火牆權限                                                                      |
+| `Module not found`                               | npm install 未完成                  | 刪除 `node_modules` 重新執行 `npm install`                                                              |
+| `Compiler family detection failed`               | 缺少 CC 環境變數                    | 設定 `$env:CC="gcc"` 並加入 PowerShell Profile                                                          |
+| `could not find native static library 'pthread'` | MinGW64 工具鏈安裝不完整            | 重新執行 `pacman -S mingw-w64-x86_64-toolchain`                                                         |
 
 ### 完整重置（清除重裝）
 
@@ -515,11 +547,25 @@ bash scripts/test_rust_registration_api.sh
 
 - 整個 `zhengkuo-behappy` 專案資料夾
 - `%USERPROFILE%\.cargo`
-- `%USERPROFILE%\.rustup`
 - `%APPDATA%\npm-cache`
-- `D:\msys64`（或您的 MSYS2 安裝路徑）
+- `D:\msys64`（MSYS2 安裝路徑）
 
-### 8.3 啟用 Windows 長路徑支援
+### 8.3 開放 Node.js 防火牆權限
+
+Windows 11 防火牆預設會封鎖 Node.js 的外出連線，導致 Directus Admin 登入後無法載入資料。
+
+**解決步驟：**
+
+1. 開啟「控制台」→「系統及安全性」→「Windows Defender 防火牆」
+2. 點選左側「允許應用程式或功能通過 Windows Defender 防火牆」
+3. 點選右上角「變更設定」（需管理員權限）
+4. 在清單中找到 **node.exe** 項目
+5. 將「私人」與「公用」兩個欄位都打勾
+6. 按「確定」儲存
+
+> 📌 若清單中找不到 node.exe，點選「允許其他應用程式」手動新增，路徑通常為 `C:\Program Files\nodejs\node.exe` 或 nvm 安裝路徑下的 `node.exe`。
+
+### 8.4 啟用 Windows 長路徑支援
 
 Rust crates 有時會超過 Windows 預設的 260 字元路徑限制，建議開啟長路徑支援：
 
@@ -606,13 +652,14 @@ await serviceAdapter.registrationService().getAllRegistrations();
 - [ ] `nvm version` 顯示版本號
 - [ ] `node --version` 顯示 v20.x.x
 - [ ] `gcc --version` 顯示版本號（MSYS2 MinGW64）
-- [ ] `cargo --version` 回應版本號
-- [ ] `rustup show` 顯示 stable-x86_64-pc-windows-gnu
-- [ ] `C:\Users\<使用者>\.cargo\config.toml` 已正確設定
+- [ ] `cargo --version` 回應版本號（MSYS2 MinGW64 提供）
+- [ ] `rustc --version` 回應版本號（MSYS2 MinGW64 提供）
+- [ ] `C:\Users\<使用者>\.cargo\config.toml` 已正確設定（linker 指向 `D:\msys64\mingw64\bin\gcc.exe`）
 
 ### 程式碼與相依套件
 
 - [ ] 專案程式碼已取得（git clone 或 USB 傳輸）
+- [ ] 執行 `install-all.bat` 完成所有 npm 套件安裝（或手動逐一安裝）
 - [ ] 根目錄 `npm install` 完成
 - [ ] `client/npm install` 完成
 - [ ] `log-server/npm install` 完成

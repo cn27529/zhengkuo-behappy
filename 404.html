@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
             box-sizing: border-box;
         }
 
-        body { 
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -33,7 +34,7 @@
             font-size: 8rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             background: linear-gradient(45deg, #ff6b6b, #feca57);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -42,14 +43,21 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .error-title {
             font-size: 2.5rem;
             margin-bottom: 1rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .error-message {
@@ -70,20 +78,20 @@
         .btn {
             color: white;
             text-decoration: none;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
             transition: all 0.3s ease;
             font-weight: 500;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .btn:hover {
-            background: rgba(255,255,255,0.3);
-            border-color: rgba(255,255,255,0.5);
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
             transform: translateY(-2px);
         }
 
@@ -97,7 +105,7 @@
         }
 
         .suggestions {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 2rem;
             margin-top: 2rem;
@@ -137,16 +145,16 @@
             .error-code {
                 font-size: 5rem;
             }
-            
+
             .error-title {
                 font-size: 2rem;
             }
-            
+
             .actions {
                 flex-direction: column;
                 align-items: center;
             }
-            
+
             .btn {
                 width: 200px;
                 justify-content: center;
@@ -188,11 +196,19 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="floating-elements">
         <div class="floating-element">🏛️</div>
@@ -251,7 +267,7 @@
         }
 
         // 添加鍵盤快捷鍵
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             // 按 H 鍵返回首頁
             if (e.key === 'h' || e.key === 'H') {
                 window.location.href = '/';
@@ -280,10 +296,10 @@
             `;
             hint.textContent = '提示: 按 H 返回首頁，按 B 返回上一頁';
             document.body.appendChild(hint);
-            
+
             // 淡入效果
             setTimeout(() => hint.style.opacity = '1', 100);
-            
+
             // 5秒後淡出並移除
             setTimeout(() => {
                 hint.style.opacity = '0';
@@ -292,4 +308,5 @@
         }, 3000);
     </script>
 </body>
+
 </html>

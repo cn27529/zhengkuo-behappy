@@ -1,6 +1,6 @@
 <template>
-  <main class="dashboard2">
-    <section class="page-header">
+  <div class="main-content">
+    <div class="page-header">
       <div>
         <h2>資訊牆</h2>
         <p class="sub-title">即時掌握登記、金流與活動概況</p>
@@ -9,274 +9,282 @@
         <span class="meta-label">更新時間</span>
         <span class="meta-value">{{ formatDateTime(lastUpdatedAt) }}</span>
       </div>
-    </section>
+    </div>
 
-    <el-row :gutter="24" class="summary-row">
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="summary-card">
-          <div class="summary-label">總參與人次</div>
-          <AnimatedNumber :value="totalParticipants" :duration="2000" />
-          <div class="summary-foot">啟用至今</div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="summary-card">
-          <div class="summary-label">祈福登記總數</div>
-          <AnimatedNumber :value="totalRegistrations" :duration="2000" />
-          <div class="summary-foot">
-            近 7 日新增 {{ registrationsInLast7Days }} 筆
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="summary-card">
-          <div class="summary-label">參加記錄總數</div>
-          <AnimatedNumber :value="totalJoinRecords" :duration="2000" />
-          <div class="summary-foot">
-            近 7 日新增 {{ joinRecordsInLast7Days }} 筆
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="summary-card">
-          <div class="summary-label">贊助者人數</div>
-          <AnimatedNumber :value="totalDonors" :duration="2000" />
-          <div class="summary-foot">
-            本月活躍 {{ currentMonthDonateSummary.donors }} 人
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <!-- 表單管理区域 -->
+    <div class="form-header"></div>
 
-    <el-row :gutter="24" class="summary-row">
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="status-card warning">
-          <div class="status-title">待處理付款</div>
-          <div class="status-value">{{ paymentSummary.unpaid }}</div>
-          <div class="status-foot">含未付款與未收尾款</div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="status-card danger">
-          <div class="status-title">待開立收據/感謝狀</div>
-          <div class="status-value">
-            {{ receiptPendingCount }}
-          </div>
-          <div class="status-foot">
-            <!-- 單筆打印 -->
-            <el-button
-              v-for="id in receiptPendingIds"
-              :key="id"
-              type="success"
-              size="small"
-              circle
-              @click="handleReceiptPrint(id)"
-            >
-              🖨
-            </el-button>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="status-card info">
-          <div class="status-title">待沖帳</div>
-          <div class="status-value">{{ accountingPendingCount }}</div>
-          <div class="status-foot">已付款仍未沖帳</div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="status-card warning">
-          <div class="status-title">待補齊資料</div>
-          <div class="status-value">{{ formsNeedAttentionCount }}</div>
-          <div class="status-foot">聯絡/消災/超度不完整</div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <div class="form-content">
+      <!-- 内容区域 -->
 
-    <el-row :gutter="24" class="summary-row" v-if="false">
-      <el-col :xs="24" :sm="12" :lg="8">
-        <el-card shadow="hover" class="finance-card">
-          <div class="card-title">應收總額</div>
-          <div class="card-value">
-            {{ appConfig.formatCurrency(paymentSummary.totalReceivable) }}
-          </div>
-          <div class="card-foot">含已收與未收款項</div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="8">
-        <el-card shadow="hover" class="finance-card">
-          <div class="card-title">已收金額</div>
-          <div class="card-value">
-            {{ appConfig.formatCurrency(paymentSummary.totalPaid) }}
-          </div>
-          <div class="card-foot">付款狀態已更新</div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="8">
-        <el-card shadow="hover" class="finance-card">
-          <div class="card-title">未收金額</div>
-          <div class="card-value">
-            {{ appConfig.formatCurrency(totalUnpaidAmount) }}
-          </div>
-          <div class="card-foot">仍需催收與追蹤</div>
-        </el-card>
-      </el-col>
-    </el-row>
+      <el-row :gutter="24" class="summary-row">
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-card shadow="hover" class="summary-card">
+            <div class="summary-label">總參與人次</div>
+            <AnimatedNumber :value="totalParticipants" :duration="2000" />
+            <div class="summary-foot">啟用至今</div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-card shadow="hover" class="summary-card">
+            <div class="summary-label">祈福登記總數</div>
+            <AnimatedNumber :value="totalRegistrations" :duration="2000" />
+            <div class="summary-foot">
+              近 7 日新增 {{ registrationsInLast7Days }} 筆
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-card shadow="hover" class="summary-card">
+            <div class="summary-label">參加記錄總數</div>
+            <AnimatedNumber :value="totalJoinRecords" :duration="2000" />
+            <div class="summary-foot">
+              近 7 日新增 {{ joinRecordsInLast7Days }} 筆
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-card shadow="hover" class="summary-card">
+            <div class="summary-label">贊助者人數</div>
+            <AnimatedNumber :value="totalDonors" :duration="2000" />
+            <div class="summary-foot">
+              本月活躍 {{ currentMonthDonateSummary.donors }} 人
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
 
-    <el-row :gutter="24" class="summary-row">
-      <el-col :xs="24" :sm="12" :lg="12">
-        <el-card shadow="hover" class="donate-card">
-          <div class="card-title">本月贊助總額</div>
-          <div class="card-value">
-            {{ appConfig.formatCurrency(currentMonthDonateSummary.total) }}
-          </div>
-          <div class="card-foot">
-            活躍贊助者 {{ currentMonthDonateSummary.donors }} 人
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :lg="12">
-        <el-card shadow="hover" class="donate-card">
-          <div class="card-title">未來 6 個月排定贊助</div>
-          <div class="card-value">
-            {{ appConfig.formatCurrency(next6MonthsDonateTotal) }}
-          </div>
-          <div class="card-foot">提前掌握可預期月贊助額</div>
-        </el-card>
-      </el-col>
-    </el-row>
+      <el-row :gutter="24" class="summary-row">
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-card shadow="hover" class="status-card warning">
+            <div class="status-title">待處理付款</div>
+            <div class="status-value">{{ paymentSummary.unpaid }}</div>
+            <div class="status-foot">含未付款與未收尾款</div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-card shadow="hover" class="status-card danger">
+            <div class="status-title">待開立收據/感謝狀</div>
+            <div class="status-value">
+              {{ receiptPendingCount }}
+            </div>
+            <div class="status-foot">
+              <!-- 單筆打印 -->
+              <el-button
+                v-for="id in receiptPendingIds"
+                :key="id"
+                type="success"
+                size="small"
+                circle
+                @click="handleReceiptPrint(id)"
+              >
+                🖨
+              </el-button>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-card shadow="hover" class="status-card info">
+            <div class="status-title">待沖帳</div>
+            <div class="status-value">{{ accountingPendingCount }}</div>
+            <div class="status-foot">已付款仍未沖帳</div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-card shadow="hover" class="status-card warning">
+            <div class="status-title">待補齊資料</div>
+            <div class="status-value">{{ formsNeedAttentionCount }}</div>
+            <div class="status-foot">聯絡/消災/超度不完整</div>
+          </el-card>
+        </el-col>
+      </el-row>
 
-    <el-row :gutter="24" class="summary-row">
-      <el-col :xs="24" :lg="12">
-        <el-card shadow="hover" class="list-card">
-          <div class="list-title">即將到來活動</div>
-          <div v-if="upcomingActivityHighlights.length" class="list-body">
-            <div
-              v-for="activity in upcomingActivityHighlights"
-              :key="activity.id"
-              class="list-item"
-            >
-              <div class="list-main">
-                <span class="list-icon">{{ activity.icon }}</span>
-                <div>
-                  <div class="list-label">{{ activity.name }}</div>
-                  <div class="list-meta">{{ formatDate(activity.date) }}</div>
+      <el-row :gutter="24" class="summary-row" v-if="false">
+        <el-col :xs="24" :sm="12" :lg="8">
+          <el-card shadow="hover" class="finance-card">
+            <div class="card-title">應收總額</div>
+            <div class="card-value">
+              {{ appConfig.formatCurrency(paymentSummary.totalReceivable) }}
+            </div>
+            <div class="card-foot">含已收與未收款項</div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="8">
+          <el-card shadow="hover" class="finance-card">
+            <div class="card-title">已收金額</div>
+            <div class="card-value">
+              {{ appConfig.formatCurrency(paymentSummary.totalPaid) }}
+            </div>
+            <div class="card-foot">付款狀態已更新</div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="8">
+          <el-card shadow="hover" class="finance-card">
+            <div class="card-title">未收金額</div>
+            <div class="card-value">
+              {{ appConfig.formatCurrency(totalUnpaidAmount) }}
+            </div>
+            <div class="card-foot">仍需催收與追蹤</div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="24" class="summary-row">
+        <el-col :xs="24" :sm="12" :lg="12">
+          <el-card shadow="hover" class="donate-card">
+            <div class="card-title">本月贊助總額</div>
+            <div class="card-value">
+              {{ appConfig.formatCurrency(currentMonthDonateSummary.total) }}
+            </div>
+            <div class="card-foot">
+              活躍贊助者 {{ currentMonthDonateSummary.donors }} 人
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :sm="12" :lg="12">
+          <el-card shadow="hover" class="donate-card">
+            <div class="card-title">未來 6 個月排定贊助</div>
+            <div class="card-value">
+              {{ appConfig.formatCurrency(next6MonthsDonateTotal) }}
+            </div>
+            <div class="card-foot">提前掌握可預期月贊助額</div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="24" class="summary-row">
+        <el-col :xs="24" :lg="12">
+          <el-card shadow="hover" class="list-card">
+            <div class="list-title">即將到來活動</div>
+            <div v-if="upcomingActivityHighlights.length" class="list-body">
+              <div
+                v-for="activity in upcomingActivityHighlights"
+                :key="activity.id"
+                class="list-item"
+              >
+                <div class="list-main">
+                  <span class="list-icon">{{ activity.icon }}</span>
+                  <div>
+                    <div class="list-label">{{ activity.name }}</div>
+                    <div class="list-meta">{{ formatDate(activity.date) }}</div>
+                  </div>
                 </div>
-              </div>
-              <div class="list-value">
-                {{ activity.participants || 0 }} 人次
+                <div class="list-value">
+                  {{ activity.participants || 0 }} 人次
+                </div>
               </div>
             </div>
-          </div>
-          <div v-else class="list-empty">暫無即將到來活動</div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :lg="12">
-        <el-card shadow="hover" class="list-card">
-          <div class="list-title">巳經完成活動</div>
-          <div v-if="completedActivityHighlights.length" class="list-body">
-            <div
-              v-for="activity in completedActivityHighlights"
-              :key="activity.id"
-              class="list-item"
-            >
-              <div class="list-main">
-                <span class="list-icon">{{ activity.icon }}</span>
-                <div>
-                  <div class="list-label">{{ activity.name }}</div>
-                  <div class="list-meta">{{ formatDate(activity.date) }}</div>
+            <div v-else class="list-empty">暫無即將到來活動</div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :lg="12">
+          <el-card shadow="hover" class="list-card">
+            <div class="list-title">巳經完成活動</div>
+            <div v-if="completedActivityHighlights.length" class="list-body">
+              <div
+                v-for="activity in completedActivityHighlights"
+                :key="activity.id"
+                class="list-item"
+              >
+                <div class="list-main">
+                  <span class="list-icon">{{ activity.icon }}</span>
+                  <div>
+                    <div class="list-label">{{ activity.name }}</div>
+                    <div class="list-meta">{{ formatDate(activity.date) }}</div>
+                  </div>
                 </div>
-              </div>
-              <div class="list-value">
-                {{ activity.participants || 0 }} 人次
+                <div class="list-value">
+                  {{ activity.participants || 0 }} 人次
+                </div>
               </div>
             </div>
-          </div>
-          <div v-else class="list-empty">暫無完成活動</div>
-        </el-card>
-      </el-col>
-    </el-row>
+            <div v-else class="list-empty">暫無完成活動</div>
+          </el-card>
+        </el-col>
+      </el-row>
 
-    <el-row :gutter="24" class="summary-row">
-      <el-col :xs="24" :lg="12">
-        <el-card shadow="hover" class="list-card">
-          <div class="list-title">近期祈福登記</div>
-          <div v-if="recentRegistrations.length" class="list-body">
-            <div
-              v-for="registration in recentRegistrations"
-              :key="registration.id"
-              class="list-item"
-            >
-              <div class="list-main">
-                <div class="list-label">
-                  {{ registration.contact?.name || "未填聯絡人" }}
+      <el-row :gutter="24" class="summary-row">
+        <el-col :xs="24" :lg="12">
+          <el-card shadow="hover" class="list-card">
+            <div class="list-title">近期祈福登記</div>
+            <div v-if="recentRegistrations.length" class="list-body">
+              <div
+                v-for="registration in recentRegistrations"
+                :key="registration.id"
+                class="list-item"
+              >
+                <div class="list-main">
+                  <div class="list-label">
+                    {{ registration.contact?.name || "未填聯絡人" }}
+                  </div>
+                  <div class="list-meta">
+                    {{
+                      registration.contact?.mobile ||
+                      registration.contact?.phone
+                    }}
+                    {{ registration.contact?.relationship }}，{{
+                      formatRelativeOrDateTime(
+                        registration.createdAt || registration.date_created,
+                      )
+                    }}
+                  </div>
                 </div>
-                <div class="list-meta">
-                  {{
-                    registration.contact?.mobile || registration.contact?.phone
-                  }}
-                  {{ registration.contact?.relationship }}，{{
-                    formatRelativeOrDateTime(
-                      registration.createdAt || registration.date_created,
-                    )
-                  }}
+                <div v-if="false" class="list-value">
+                  {{ registration.state || "-" }}
                 </div>
-              </div>
-              <div v-if="false" class="list-value">
-                {{ registration.state || "-" }}
               </div>
             </div>
-          </div>
-          <div v-else class="list-empty">暫無登記資料</div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :lg="12">
-        <el-card shadow="hover" class="list-card">
-          <div class="list-title">近期參加記錄</div>
-          <div v-if="recentJoinRecords.length" class="list-body">
-            <div
-              v-for="record in recentJoinRecords"
-              :key="record.id"
-              class="list-item"
-            >
-              <div class="list-main">
-                <div class="list-label">
-                  {{ record.contact?.name || "未填聯絡人" }}
-                </div>
-                <div class="list-meta">
-                  <span v-for="item in record.items" v-if="false">
-                    <el-badge
-                      :value="item.quantity"
-                      class="item"
-                      color="lightblue"
-                      size="small"
-                      style="margin-right: 13px"
-                      v-if="false"
-                    >
-                      <el-button size="small">{{ item.label }}</el-button>
-                    </el-badge>
+            <div v-else class="list-empty">暫無登記資料</div>
+          </el-card>
+        </el-col>
+        <el-col :xs="24" :lg="12">
+          <el-card shadow="hover" class="list-card">
+            <div class="list-title">近期參加記錄</div>
+            <div v-if="recentJoinRecords.length" class="list-body">
+              <div
+                v-for="record in recentJoinRecords"
+                :key="record.id"
+                class="list-item"
+              >
+                <div class="list-main">
+                  <div class="list-label">
+                    {{ record.contact?.name || "未填聯絡人" }}
+                  </div>
+                  <div class="list-meta">
+                    <span v-for="item in record.items" v-if="false">
+                      <el-badge
+                        :value="item.quantity"
+                        class="item"
+                        color="lightblue"
+                        size="small"
+                        style="margin-right: 13px"
+                        v-if="false"
+                      >
+                        <el-button size="small">{{ item.label }}</el-button>
+                      </el-badge>
 
-                    <span v-if="item.label !== '陽上人'" class="stat-badge">
-                      {{ item.label }} {{ item.quantity }}
+                      <span v-if="item.label !== '陽上人'" class="stat-badge">
+                        {{ item.label }} {{ item.quantity }}
+                      </span>
                     </span>
-                  </span>
-                  {{ appConfig.formatCurrency(record.totalAmount) }} 元，{{
-                    formatRelativeOrDateTime(
-                      record.createdAt || record.date_created,
-                    )
-                  }}
+                    {{ appConfig.formatCurrency(record.totalAmount) }} 元，{{
+                      formatRelativeOrDateTime(
+                        record.createdAt || record.date_created,
+                      )
+                    }}
+                  </div>
+                </div>
+                <div v-if="false" class="list-value">
+                  {{ appConfig.formatCurrency(record.finalAmount) }}
                 </div>
               </div>
-              <div v-if="false" class="list-value">
-                {{ appConfig.formatCurrency(record.finalAmount) }}
-              </div>
             </div>
-          </div>
-          <div v-else class="list-empty">暫無參加記錄</div>
-        </el-card>
-      </el-col>
-    </el-row>
-  </main>
+            <div v-else class="list-empty">暫無參加記錄</div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -390,10 +398,6 @@ onMounted(async () => {
   margin-right: 10px;
 }
 
-.dashboard2 {
-  padding: 1.5rem 2rem 2.5rem;
-}
-
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -401,12 +405,6 @@ onMounted(async () => {
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
-}
-
-.page-header h2 {
-  margin: 0;
-  font-size: 1.8rem;
-  color: var(--primary-color);
 }
 
 .sub-title {
@@ -576,12 +574,9 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .dashboard2 {
-    padding: 1.25rem 1rem 2rem;
-  }
-
+  .sub-title,
   .header-meta {
-    text-align: left;
+    display: none;
   }
 
   .summary-card,
