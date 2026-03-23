@@ -55,6 +55,7 @@ function startServices(projectRoot) {
   log("  • 📚文檔服務 (port 3001)", "blue");
   log("  • 📦服務入口總覽 (port 8080)", "blue");
   log("  • 📊數據庫文件 (port 9000)", "blue");
+  log("  • 🌍前台應用 (port 5174)", "blue");
   log("");
 
   log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
@@ -67,10 +68,10 @@ function startServices(projectRoot) {
         "concurrently",
         "--kill-others",
         "--names",
-        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS,📊SQLITE",
+        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS,📊SQLITE,🌍BACKEND",
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
-        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold,bgRed.bold",
+        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold,bgRed.bold,bgYellow.bold",
         '"npm run start:server"',
         '"npm run start:client"',
         '"npm run start:rust"',
@@ -78,6 +79,7 @@ function startServices(projectRoot) {
         '"npm run start:docs"',
         '"npm run start:apps"',
         '"npm run sqlite:viewer"',
+        '"npm run start:backend"',
       ],
       {
         stdio: "inherit",
