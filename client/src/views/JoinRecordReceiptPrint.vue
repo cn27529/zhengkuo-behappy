@@ -99,11 +99,12 @@
             </div>
             <div class="blessing">功德無量，特此致謝</div>
             <div class="seal-container">
-              <div class="seal-box">財團法人鎮國基金會印信處</div>
+              <div class="seal-box">{{ sealBoxText }}</div>
             </div>
             <div class="temple-info">
               <span class="temple-subtitle highlight">財團法人鎮國基金會</span
               ><br />
+              核准字號：(90) 投府民宗字第九OOO七八八七號<br />
               會址：南投縣集集鎮廣明里鎮國巷101號<br />
               電話：(O四九) 二七六二七二六<br />
               董事長：釋廣心（游天木）<br />
@@ -251,6 +252,8 @@ const isBatch = ref(false);
 const batchRecords = ref([]);
 const currentIndex = ref(0);
 const printedIndexes = ref(new Set()); // 追蹤已打印完成的索引
+
+const sealBoxText = ref(""); //財團法人鎮國基金會印信處
 
 /**
  * 當大德姓名修改時的處理
@@ -871,22 +874,31 @@ onMounted(() => {
 .seal-container {
   position: absolute;
   left: 10mm;
-  top: 55mm;
+  top: 34mm;
+  z-index: 0; /* 🔥 在最上層 */
 }
-/* 印信處 */
+/* 財團法人鎮國基金會印信處 */
 .seal-box {
   width: 35mm;
-  height: 35mm;
-  border: 0.5pt dashed #f6a7a7;
-  color: #f6a7a7;
+  height: 55mm;
+  /* border: 0.5pt dashed #f6a7a7;
+  color: #f6a7a7; */
+
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   font-size: 14pt;
-  opacity: 0.5;
-  padding: 5px;
+
+  opacity: 0.8;
+  padding: 30px;
+
   background-image: url("/zk-in-bg.png");
+  background-repeat: no-repeat;
+  background-position: center;
+
+  /* 核心關鍵 ↓ */
+  background-size: contain;
 }
 
 /* 修改標題群組佈局 */
@@ -942,10 +954,10 @@ onMounted(() => {
 }
 
 .temple-subtitle {
-  font-size: 14pt;
+  font-size: 16pt;
   font-weight: bold;
   text-align: center;
-  letter-spacing: 5px;
+  letter-spacing: 6px;
 }
 
 /* 頁腳資訊 */
