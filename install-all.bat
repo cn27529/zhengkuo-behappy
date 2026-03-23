@@ -18,6 +18,13 @@ call npm install
 cd ..
 echo.
 
+echo [2.1/6] Installing backend packages...
+echo 安裝 backend 套件...
+cd backend
+call npm install
+cd ..
+echo.
+
 echo [3/6] Installing docs packages...
 echo 安裝 docs 套件...
 cd docs
@@ -32,8 +39,8 @@ call npm install
 cd ..
 echo.
 
-echo [5/6] Installing directus packages...
-echo 安裝 directus 套件...
+echo [5/6] Installing server packages...
+echo 安裝 server 套件...
 cd server
 call npm install
 cd ..
@@ -45,6 +52,8 @@ cd rust-axum
 call npm install
 cd ..
 echo.
+
+
 
 echo ====================================
 echo All packages installed successfully!
