@@ -215,6 +215,13 @@ onMounted(() => {
   padding-left: 2px;
 }
 
+/* 做「背景高亮」（像標記一樣） */
+.highlight-bg {
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 .btn-block {
   width: 100%;
   height: 40px;
@@ -223,7 +230,7 @@ onMounted(() => {
 
 /* 讓 Checkbox 的文字顏色更柔和 */
 :deep(.el-checkbox__label) {
-  color: #606266;
+  color: #fff;
   font-weight: 400;
 }
 

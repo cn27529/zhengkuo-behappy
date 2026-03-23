@@ -1,5 +1,5 @@
 export const appConfig = {
-  title: "祈福登記系統",
+  title: "鎮國寺祈福登記系統",
   dollarTitle: "NT$ ", //NT$, 💰
   formatCurrency: (value) => {
     const currencyAmount = new Intl.NumberFormat("zh-TW", {

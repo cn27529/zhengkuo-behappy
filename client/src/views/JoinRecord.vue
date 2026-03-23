@@ -673,7 +673,7 @@
         <div class="results-section" v-if="savedRecords.length > 0">
           <div class="results-header">
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
-            <p class="search-hint">
+            <p class="search-hint" v-if="false">
               <el-button
                 v-if="savedRecords.length > 1"
                 type="success"
@@ -698,15 +698,29 @@
                     v-if="BoolUtils.normalizeBool(record.needReceipt)"
                     type="success"
                     size="small"
+                    style="margin-left: 3px"
                     circle
                     @click="handleReceiptPrint(record)"
                   >
                     🖨
                   </el-button>
                 </span>
-                <span class="record-amount"
-                  >${{ appConfig.formatCurrency(record.totalAmount) }}</span
-                >
+                <span class="receipt-number">
+                  <el-tag
+                    v-if="
+                      record.receiptNumber &&
+                      BoolUtils.normalizeBool(record.needReceipt)
+                    "
+                    type="danger"
+                    size="small"
+                    style="margin-top: 0px"
+                  >
+                    {{ record.receiptNumber || "" }}
+                  </el-tag>
+                </span>
+                <span class="record-amount">{{
+                  appConfig.formatCurrency(record.totalAmount)
+                }}</span>
               </div>
               <div class="record-time">{{ formatDate(record.createdAt) }}</div>
             </div>
@@ -1106,6 +1120,9 @@ const handleBatchReceiptPrint = () => {
     return;
   }
 
+  // 在導向打印頁面前進行標記。🔥 精準標記來源為 'joinRecord'
+  pageStateStore.setPageState("receiptPrint", { from: "joinRecord" });
+
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
@@ -1139,6 +1156,9 @@ const handleReceiptPrint = (item) => {
       return;
     }
     console.log("準備打印的參加記錄:", record);
+
+    // 在導向打印頁面前進行標記。🔥 精準標記來源為 'joinRecord'
+    pageStateStore.setPageState("receiptPrint", { from: "joinRecord" });
 
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(record);
@@ -1774,7 +1794,7 @@ onMounted(async () => {
 
 /* 已保存記錄 */
 .saved-records-list {
-  max-height: 300px;
+  max-height: 450px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -1802,6 +1822,11 @@ onMounted(async () => {
 .record-amount {
   color: var(--primary-color);
   font-weight: bold;
+}
+
+/* 佛字第 | 經手人 */
+.receipt-number {
+  text-align: right;
 }
 
 .record-time {
@@ -1900,8 +1925,8 @@ onMounted(async () => {
   .total-position-bottom-left,
   .total-position-bottom-center,
   .total-position-bottom-right {
-    left: 50%;
-    transform: translateX(-50%);
+    left: 1%;
+    transform: translateX(1%);
     right: auto;
   }
 

@@ -379,3 +379,84 @@ curl 完後接裝 rustup toolchain install stable-x86_64-pc-windows-gnu
 兩份文檔依據文檔內容加上"## 概述說明" ，這是為了 docs/generate-books.js 運行要用的
 
 將 Node.js 不單獨安裝 要使用 nvm for Windows，方便切換Node.js版本
+
+## Windows Defender 防火牆
+
+更新 docs/windows-run-apps-guide.md 文檔。今天發現 Windows 11 防火牆預設阻擋 Node.js 的『外出連線』，導致 Directus Admin 登入後無法載入資料；只需在『允許應用程式通過防火牆』中，將 Node.js 的『私人網路』權限打勾即可解決。允許應用程式透過 Windows Defender 防火牆，找 node.exe 項目，公用（打勾）內部（打勾），兩個都打勾。
+
+## Windows PowerShell 阻擋 npm 解法
+
+更新 docs/windows-run-apps-guide.md 文檔，Windows PowerShell 阻擋 npm 的解法，將解法加入文檔適合的位置。
+
+```powershell
+PS C:\> nvm -v
+1.2.2
+PS C:\> node -v
+v22.21.0
+PS C:\> npm -v
+npm : 因為這個系統上已停用指令碼執行，所以無法載入 C:\nvm\nodejs\npm.ps1 檔
+案。如需詳細資訊，請參閱 about_Execution_Policies，網址為 https:/go.microsof
+t.com/fwlink/?LinkID=135170。
+位於 線路:1 字元:1
++ npm -v
++ ~~~
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+PS C:\> Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+PS C:\> npm -v
+10.9.4
+```
+
+## Rust 編譯環境從 rustup 遷移至 MinGW64
+
+不再使用 rustup 切換編譯 rust 項目, D:\msys64\mingw64 己安裝 pacman -S mingw-w64-x86_64-toolchain 不再使用 rustup 命令切換 gnu 或 msvc，統一運行 D:\msys64\mingw64 , 請更新 docs\windows-run-apps-guide.md 與 docs\windows-rust-gnu-setup-manual.md 文檔
+
+## dataUrlToJson.json自動生成mock資料
+
+生成一個 dataUrlToJson.js 代碼，獲取API的資料轉成各個.json檔案，以活動資料API為例子 "http://localhost:3000/api/activities?fields=\*" 回應的結構為：
+
+```json
+{
+  "success": true,
+  "data": [],
+  "message": null,
+  "meta": {
+    "total": 7,
+    "limit": 100,
+    "offset": 0
+  },
+  "errors": null
+}
+```
+
+，每個API都是相同結構。我們要獲取的是 "data" 欄位，將 "data" 欄位的內容生成 "mock_activities.json" 然後儲存，dataJsonObj 有每個API的位置與要生成的檔案名稱：
+
+```js
+const dataJsonObj = [
+  {
+    dataUrl: "http://localhost:3000/api/activities?fields=*",
+    fileName: "mock*activities.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/monthly-donates?fields=*",
+    fileName: "mock_monthlyDonates.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/participation-records?fields=*",
+    fileName: "mock_participation_records.json",
+  },
+
+  {
+    dataUrl: "http://localhost:3000/api/registrations?fields=*",
+    fileName: "mock_registrations.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/directus-users?fields=*",
+    fileName: "mock_directus_users.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/receipt-numbers?fields=*",
+    fileName: "mock_receipt_numbers.json",
+  },
+];
+```

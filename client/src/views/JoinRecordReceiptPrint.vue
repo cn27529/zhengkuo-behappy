@@ -7,7 +7,7 @@
           class="receipt-canvas font-kaiti"
         >
           <div class="title-group">
-            <h1 class="title">感謝狀</h1>
+            <h1 class="title-text">感謝狀</h1>
             <div class="receipt-serial">佛字第 {{ receiptSerialNum }} 號</div>
           </div>
 
@@ -62,7 +62,7 @@
 
         <div v-else class="receipt-canvas font-kaiti stamp-layout">
           <div class="title-group">
-            <h1 class="title">收據</h1>
+            <h1 class="title-text">收據</h1>
             <div class="receipt-serial">佛字第 {{ receiptSerialNum }} 號</div>
           </div>
 
@@ -71,21 +71,23 @@
               茲收到 <span class="highlight">{{ contactName }}</span> 大德
             </div>
             <div class="items-detail">
-              功德項目：
-              <span
-                v-for="(item, idx) in record.items"
-                :key="idx"
-                class="highlight"
-              >
-                {{
-                  item.subtotal > 0
-                    ? item.label +
-                      "(" +
-                      appConfig.formatCurrency(item.subtotal) +
-                      ")&nbsp;&nbsp;"
-                    : ""
-                }}
-              </span>
+              護持三寶、供齋、護持道場、助印經書、放生、其它：
+              <p>
+                <span
+                  v-for="(item, idx) in record.items"
+                  :key="idx"
+                  class="highlight"
+                >
+                  {{
+                    item.subtotal > 0
+                      ? item.label +
+                        "(" +
+                        appConfig.formatCurrency(item.subtotal) +
+                        ")&nbsp;&nbsp;"
+                      : ""
+                  }}
+                </span>
+              </p>
             </div>
             <div class="total-amount">
               共計新台幣：<span class="highlight">{{
@@ -222,6 +224,13 @@ import { useJoinRecordPrintStore } from "../stores/joinRecordPrintStore.js";
 import { useReceiptNumberStore } from "../stores/receiptNumberStore.js";
 import appConfig from "../config/appConfig.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
+
+// 確保已引入所需的 Store
+import { useJoinRecordStore } from "../stores/joinRecordStore.js";
+import { usePageStateStore } from "../stores/pageStateStore.js";
+
+const joinRecordStore = useJoinRecordStore();
+const pageStateStore = usePageStateStore();
 
 const printStore = useJoinRecordPrintStore();
 const receiptStore = useReceiptNumberStore(); // 生成編號的 store
@@ -508,6 +517,7 @@ const handlePostPrintCheck = async () => {
       record.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
       record.value.receiptIssuedBy = receiptStore.getUserName(); // 更新領取人
       const result = await printStore.updateReceiptPrintStatus(record.value);
+      console.log("批量打印當前這筆:", result);
 
       if (result?.success) {
         // 標記當前索引為已打印
@@ -558,11 +568,15 @@ const handlePostPrintCheck = async () => {
           message: result?.message || "狀態更新失敗，但打印已完成。",
         });
       }
+
+      // 來源是參加頁面執行savedRecords同步
+      updateSavedRecords(result);
     } else {
       // 單筆打印
       record.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
       record.value.receiptIssuedBy = receiptStore.getUserName(); // 更新領取人
       const result = await printStore.updateReceiptPrintStatus(record.value);
+      console.log("單筆打印當前這筆:", result);
 
       if (result?.success) {
         ElMessage({
@@ -586,6 +600,9 @@ const handlePostPrintCheck = async () => {
         } else {
           console.warn("缺少 receiptNumberId，無法更新編號狀態");
         }
+
+        // 來源是參加頁面執行savedRecords同步
+        updateSavedRecords(result);
       } else {
         ElMessage({
           type: "warning",
@@ -647,6 +664,55 @@ const handlePostPrintCheck = async () => {
       // 可以在這裡加入額外邏輯，例如：
       // 1. 如果是批量打印，是否需要停留在當前頁面不跳轉？（目前邏輯本來就不會跳轉）
       // 2. 是否需要記錄該編號雖然領取但未實際打印？
+    }
+  }
+};
+
+// 刷新保存記錄
+const updateSavedRecords = (result) => {
+  console.log("刷新保存記錄:", result);
+
+  // 獲取導航來源
+  const printState = pageStateStore.getPageState("receiptPrint");
+  const source = printState?.from;
+
+  const reqData = {
+    source: source,
+    receiptNumber: result.data.receiptNumber,
+    receiptIssued: result.data.receiptIssued,
+    receiptIssuedAt: result.data.receiptIssuedAt,
+    receiptIssuedBy: result.data.receiptIssuedBy,
+  };
+  console.log("檢查「刷新保存記錄」需要的參數:", reqData);
+
+  // 來源是參加頁面執行savedRecords同步
+  if (
+    source === "joinRecord" &&
+    result.data.receiptNumber &&
+    result.data.receiptIssued &&
+    result.data.receiptIssuedAt &&
+    result.data.receiptIssuedBy
+  ) {
+    console.log(`來源是 ${source} 頁面，更新 ${source} 頁面，側邊欄的緩存數據`);
+    const index = joinRecordStore.savedRecords.findIndex(
+      (r) => r.id === result.data.id,
+    );
+    console.log("保存記錄的索引:", index);
+    if (index !== -1) {
+      console.log("己找到的保存記錄項目:", joinRecordStore.savedRecords[index]);
+
+      joinRecordStore.savedRecords[index] = {
+        ...joinRecordStore.savedRecords[index],
+        receiptNumber: result.data.receiptNumber,
+        receiptIssued: result.data.receiptIssued,
+        receiptIssuedAt: result.data.receiptIssuedAt,
+        receiptIssuedBy: result.data.receiptIssuedBy,
+      };
+      console.log(`已同步更新 ${source} 頁面的 Pinia Store`);
+      console.log(
+        `savedRecords[${index}]:`,
+        joinRecordStore.savedRecords[index],
+      );
     }
   }
 };
@@ -833,7 +899,7 @@ onMounted(() => {
   height: 100%; /* 讓它撐滿高度以方便置中 */
 }
 
-.title {
+.title-text {
   font-size: 28pt;
   font-weight: bold;
   text-align: center;
@@ -852,9 +918,10 @@ onMounted(() => {
   white-space: nowrap; /* 確保字號不會意外換行 */
 }
 
+/* 每行間距 */
 .content-section {
   font-size: 15pt;
-  line-height: 1.8;
+  line-height: 1.6;
   margin-right: 2mm;
 }
 

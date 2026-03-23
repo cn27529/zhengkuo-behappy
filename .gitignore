@@ -194,3 +194,8 @@ db/*.db-shm
 **/apikey.txt
 **/*-apikey.txt
 
+# npm run mock 不要上 git repo
+mock_data/
+
+# 略過
+**/books.json

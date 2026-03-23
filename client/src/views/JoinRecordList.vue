@@ -350,6 +350,7 @@
                   circle
                   @click="handleCardPrint(row)"
                   size="small"
+                  v-if="false"
                 >
                   💳
                 </el-button>
@@ -597,6 +598,9 @@ const handlePrint = (item) => {
 // 單筆收據打印
 const handleReceiptPrint = (item) => {
   try {
+    // 在導向打印頁面前進行標記。🔥 精準標記來源為 'joinRecordList'
+    pageStateStore.setPageState("receiptPrint", { from: "joinRecordList" });
+
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(item);
     const printId = `print_receipt_${item.id}`;

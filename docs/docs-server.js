@@ -47,6 +47,6 @@ app.get("/doc/:filename", (req, res) => {
 
 // 啟動服務器
 app.listen(PORT, () => {
-  console.log(`📚 文檔服務器: http://localhost:${PORT}`);
+  console.log(`📚 文檔服務器: http://34.81.85.198:${PORT}`);
   console.log(`📁 文檔目錄: ${DOCS_DIR}`);
 });
