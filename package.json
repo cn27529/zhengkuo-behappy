@@ -20,7 +20,7 @@
     "start:logs": "cd log-server && node mongoDBLogger.js",
     "start:portal": "node --watch apps-server.js",
     "start:docs": "cd docs && npm run start",
-    "start:backend": "cd backend && npm run start",
+    "start:backend": "npm run build:backend && cd backend && npm run start",
     "build:client": "cd client && npm run build",
     "build:client:analyze": "cd client && npm run build:analyze",
     "build:server": "cd server && npm run build",
@@ -33,7 +33,11 @@
     "sqlite:viewer": "node scripts/sqlite-viewer.js",
     "all": "node scripts/start-all.js",
     "mock": "node scripts/dataUrlToJson.js && cp -rv mock_data/*.* client/src/data/",
-    "pm2": "pm2 start scripts/start-all.js --name \"zk-client\" "
+    "pm2": "pm2 start scripts/start-all.js --name \"zk-client\" ",
+    "pm2:server": "cd server && pm2 start npm --name \"directus\" -- start ",
+    "pm2:rust": "cd rust-axum && pm2 start cargo --name \"rust\" -- run ",
+    "pm2:backend": "cd backend && npm run build:backend && pm2 start npm --name \"backend\" -- start ",
+    "pm2:client": "cd client && pm2 start npm --name \"backend\" -- start "
   },
   "keywords": [],
   "author": "cn27529",
