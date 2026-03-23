@@ -1,5 +1,191 @@
 [
   {
+    "id": 79,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-21 16:15:04",
+    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_updated": "2026-03-21 16:15:41",
+    "registrationId": 114,
+    "activityId": 54,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "張學油",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "羅美維",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 4,
+            "personName": "張瑤華",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 5,
+            "personName": "張瑤萱",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "香港中環皇后大道中99號 中環中心 28樓 2803室",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "張學油",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "羅美維",
+            "notes": "",
+            "zodiac": "牛"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "張瑤華",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 5,
+            "isHouseholdHead": false,
+            "name": "張瑤萱",
+            "notes": "",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 2400,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "香港中環皇后大道中99號 中環中心 28樓 2803室",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "張學油",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "羅美維",
+            "notes": "",
+            "zodiac": "牛"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "張瑤華",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 5,
+            "isHouseholdHead": false,
+            "name": "張瑤萱",
+            "notes": "",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 1200,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "香港中環皇后大道中99號 中環中心 28樓 2803室",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "張學油",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "羅美維",
+            "notes": "",
+            "zodiac": "牛"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "張瑤華",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 5,
+            "isHouseholdHead": false,
+            "name": "張瑤萱",
+            "notes": "",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 400,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0932456789",
+      "name": "張學油",
+      "otherRelationship": "",
+      "phone": "",
+      "relationship": "朋友"
+    },
+    "totalAmount": 4000,
+    "discountAmount": 0,
+    "finalAmount": 4000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "張家4人",
+    "createdAt": "2026-03-21T16:15:02.203Z",
+    "updatedAt": "2026-03-21T16:15:38.979Z"
+  },
+  {
     "id": 78,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-03-21 00:38:32",
