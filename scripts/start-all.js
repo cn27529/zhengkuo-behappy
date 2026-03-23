@@ -76,10 +76,10 @@ function startServices(projectRoot) {
         '"npm run start:client"',
         '"npm run start:rust"',
         '"npm run start:logs"',
-        '"npm run start:docs"',
+        '"npm run build:docs && npm run start:docs"',
         '"npm run start:apps"',
         '"npm run sqlite:viewer"',
-        '"npm run start:backend"',
+        '"npm run build:backend && npm run start:backend"',
       ],
       {
         stdio: "inherit",
