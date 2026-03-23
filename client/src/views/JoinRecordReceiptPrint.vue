@@ -886,6 +886,7 @@ onMounted(() => {
   font-size: 14pt;
   opacity: 0.5;
   padding: 5px;
+  background-image: url("/zk-in-bg.png");
 }
 
 /* 修改標題群組佈局 */
