@@ -6,7 +6,7 @@
   "scripts": {
     "build": "cd ../client && rm -rf dist && vite build",
     "start": "node server.js",
-    "copy": "rm -rf dist && cp -rv ../client/dist/. dist"
+    "copy": "rm -rf dist && cp -r ../client/dist/. dist"
   },
   "author": "",
   "license": "ISC",

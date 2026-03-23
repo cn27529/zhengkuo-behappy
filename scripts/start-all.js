@@ -53,7 +53,7 @@ function startServices(projectRoot) {
   log("  • 🦀Rust-Axum (port 3000)", "blue");
   log("  • 🌱Log Server (port 3002)", "blue");
   log("  • 📚文檔服務 (port 3001)", "blue");
-  log("  • 📦服務入口總覽 (port 8080)", "blue");
+  log("  • 📦Portal入口 (port 8080)", "blue");
   log("  • 📊數據庫文件 (port 9000)", "blue");
   log("  • 🌍前台應用 (port 5174)", "blue");
   log("");
@@ -68,7 +68,7 @@ function startServices(projectRoot) {
         "concurrently",
         "--kill-others",
         "--names",
-        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS,📊SQLITE,🌍BACKEND",
+        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦PORTAL,📊SQLITE,🌍BACKEND",
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
         "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold,bgRed.bold,bgYellow.bold",
@@ -76,10 +76,10 @@ function startServices(projectRoot) {
         '"npm run start:client"',
         '"npm run start:rust"',
         '"npm run start:logs"',
-        '"npm run build:docs && npm run start:docs"',
-        '"npm run start:apps"',
+        '"npm run start:docs"',
+        '"npm run start:portal"',
         '"npm run sqlite:viewer"',
-        '"npm run build:backend && npm run start:backend"',
+        '"npm run start:backend"',
       ],
       {
         stdio: "inherit",

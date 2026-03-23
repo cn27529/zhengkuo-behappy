@@ -131,7 +131,7 @@ rl.question("\n選擇: ", (answer) => {
   // console.log("\n啟動服務...");
   // spawn(
   //   "npx",
-  //   ["concurrently", "npm:start:server", "npm:start:client", "npm:start:rust", "npm:start:logs", "npm:start:docs", "npm:start:apps"],
+  //   ["concurrently", "npm:start:server", "npm:start:client", "npm:start:rust", "npm:start:logs", "npm:start:docs", "npm:start:portal"],
   //   {
   //     stdio: "inherit",
   //     shell: true,
@@ -174,7 +174,7 @@ function startServices(projectRoot) {
         '"npm run start:rust"',
         '"npm run start:logs"',
         '"npm run start:docs"',
-        '"npm run start:apps"',
+        '"npm run start:portal"',
       ],
       {
         stdio: "inherit",
