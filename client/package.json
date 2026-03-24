@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "rm -rf dist && vite build && node server.js",
+    "start": "rm -rf dist && vite build && npm run backend",
     "dev": "vite",
     "build": "rm -rf dist && vite build",
     "build:analyze": "rm -rf dist && vite build --mode analyze",
