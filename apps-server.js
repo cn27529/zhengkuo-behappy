@@ -19,7 +19,10 @@ app.use(express.static(path.join(__dirname)));
 
 // 主頁路由 - 動態注入環境變數
 app.get("/", (req, res) => {
-  const indexPath = path.join(__dirname, "index.html");
+  const indexPath = path.join(
+    __dirname,
+    isProd ? "index.html" : "index.html?prod=true",
+  );
 
   fs.readFile(indexPath, "utf8", (err, data) => {
     if (err) {
