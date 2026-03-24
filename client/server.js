@@ -1,8 +1,13 @@
-const express = require("express");
-const path = require("path");
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// 获取 __dirname 的替代方法
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 80;
+const PORT = 5174;
 
 // 1. 設定靜態資料夾
 app.use(express.static(path.join(__dirname, "dist")));
@@ -14,5 +19,5 @@ app.get(/.*/, (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running zk-client app on http://localhost:${PORT}`);
+  console.log(`Server running zk-client on http://localhost:${PORT}`);
 });

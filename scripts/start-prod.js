@@ -49,13 +49,12 @@ function startServices(projectRoot) {
 
   log("📦 所有服務列表:", "cyan");
   log("  • 🐇Directus (port 8055)", "blue");
-  log("  • 🌍Vue Client Dev (port 5173)", "blue");
+  log("  • 🌍Backend (port 5174)", "blue");
   log("  • 🦀Rust-Axum (port 3000)", "blue");
   log("  • 🌱Log Server (port 3002)", "blue");
   log("  • 📚文檔服務 (port 3001)", "blue");
   log("  • 📦Portal入口 (port 8080)", "blue");
   log("  • 📊數據庫文件 (port 9000)", "blue");
-  log("  • 🌍前台應用 (port 5174,80)", "blue");
   log("");
 
   log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
@@ -72,9 +71,9 @@ function startServices(projectRoot) {
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
         "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold,bgRed.bold",
-        '"npm run start:server"',
-        '"npm run start:client"',
-        '"npm run start:rust"',
+        '"npm run start:server:prod"',
+        '"npm run start:client:prod"',
+        '"npm run start:rust:prod"',
         '"npm run start:logs"',
         '"npm run start:docs"',
         '"npm run start:portal"',

@@ -4,12 +4,15 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "start": "rm -rf dist && vite build && npm run backend",
     "dev": "vite",
     "build": "rm -rf dist && vite build",
     "build:analyze": "rm -rf dist && vite build --mode analyze",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "backend": "node server.js"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "@element-plus/icons-vue": "^2.3.2",
     "@supabase/supabase-js": "^2.76.1",
     "chart.js": "^4.5.1",
