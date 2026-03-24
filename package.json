@@ -34,10 +34,8 @@
     "all": "node scripts/start-all.js",
     "prod": "node scripts/start-prod.js",
     "mock": "node scripts/dataUrlToJson.js && cp -rv mock_data/*.* client/src/data/",
-    "pm2:server": "cd server && pm2 start npm --name \"directus\" -- start ",
-    "pm2:rust": "cd rust-axum && pm2 start cargo --name \"rust\" -- run ",
-    "pm2:client": "cd client && pm2 start npm --name \"client\" -- start ",
-    "pm2:backend": "cd client && pm2 start server.js --name \"backend\" "
+    "pm2:dev": "pm2 start scripts/start-all.js --name \"dev\" ",
+    "pm2:prod": "pm2 start scripts/start-prod.js --name \"prod\" "
   },
   "keywords": [],
   "author": "cn27529",
