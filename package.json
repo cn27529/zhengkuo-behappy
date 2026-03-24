@@ -33,7 +33,7 @@
     "prod": "node scripts/start-all.js --prod",
     "mock": "node scripts/dataUrlToJson.js && cp -rv mock_data/*.* client/src/data/",
     "pm2:dev": "pm2 start --name \"dev\" scripts/start-all.js",
-    "pm2:prod": "pm2 start --name \"prod\" scripts/start-all.js --prod"
+    "pm2:prod": "pm2 start --name \"prod\" scripts/start-all.js -- --prod"
   },
   "keywords": [],
   "author": "cn27529",
