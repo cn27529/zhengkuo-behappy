@@ -32,8 +32,8 @@
     "all": "node scripts/start-all.js",
     "prod": "node scripts/start-all.js --prod",
     "mock": "node scripts/dataUrlToJson.js && cp -rv mock_data/*.* client/src/data/",
-    "pm2:dev": "pm2 start scripts/start-all.js --dev --name \"dev\" ",
-    "pm2:prod": "pm2 start scripts/start-all.js --prod --name \"prod\" "
+    "pm2:dev": "pm2 start --name \"dev\" scripts/start-all.js",
+    "pm2:prod": "pm2 start --name \"prod\" scripts/start-all.js --prod"
   },
   "keywords": [],
   "author": "cn27529",
