@@ -18,7 +18,7 @@
     "start:client:prod": "cd client && npm run start",
     "start:rust": "cd rust-axum && cargo run",
     "start:logs": "cd log-server && npm run dev",
-    "start:portal": "node --watch apps-server.js",
+    "start:portal": "node --watch apps-server.js --dev",
     "start:portal:prod": "node --watch apps-server.js --prod",
     "start:docs": "cd docs && npm run dev",
     "build:client": "cd client && npm run build",
