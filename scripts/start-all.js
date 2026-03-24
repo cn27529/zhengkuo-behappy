@@ -43,6 +43,17 @@ log(`📁 專案根目錄: ${projectRoot}`, "cyan");
 startServices(projectRoot);
 
 function startServices(projectRoot) {
+  // 读取脚本参数
+  const args = process.argv.slice(2);
+  let isProd = false;
+  if (args.includes("--prod")) {
+    console.log("生产模式");
+    //process.env.NODE_ENV = "production";
+    isProd = true;
+  }
+
+  console.log("isProd:", isProd);
+
   log(`\n${"=".repeat(50)}`, "cyan");
   log(`${colors.bold}${colors.green}🚀 啟動所有服務...${colors.reset}`);
   log(`${"=".repeat(50)}\n`, "cyan");
@@ -72,12 +83,12 @@ function startServices(projectRoot) {
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
         "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold,bgRed.bold",
-        '"npm run start:server"',
-        '"npm run start:client"',
-        '"npm run start:rust"',
+        isProd ? '"npm run start:server:prod"' : '"npm run start:server"',
+        isProd ? '"npm run start:client:prod"' : '"npm run start:client"',
+        isProd ? '"npm run start:rust:prod"' : '"npm run start:rust"',
         '"npm run start:logs"',
         '"npm run start:docs"',
-        '"npm run start:portal"',
+        isProd ? '"npm run start:portal:prod"' : '"npm run start:portal"',
         '"npm run sqlite:viewer"',
       ],
       {
