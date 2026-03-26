@@ -241,7 +241,7 @@ const pageStateStore = usePageStateStore();
 const dropZoneRef = ref(null);
 //const cardContainerRef = ref(null);
 const cardBgRef = ref(null);
-const cardBgImageSrc = ref("/src/data/card-template-zk01b.png"); // 預設卡片模版
+const cardBgImageSrc = ref("/card-template-zk01b.png"); // 預設卡片模版
 
 // 響應式狀態
 const hoveredItemId = ref(null);
@@ -252,7 +252,7 @@ const selectedCardBgImage = ref("zk01b"); // 預設選擇第一個模版
 
 // 可以動態更換圖片
 const handleCardBgImage = (cardName) => {
-  cardBgImageSrc.value = `/src/data/card-template-${cardName}.png`;
+  cardBgImageSrc.value = `/card-template-${cardName}.png`;
   selectedCardBgImage.value = cardName;
 };
 

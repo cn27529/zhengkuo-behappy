@@ -192,11 +192,7 @@
               </el-tooltip>
 
               <el-tooltip content="卡片設計" placement="right">
-                <el-button
-                  circle
-                  @click="handleCardDesign(row)"
-                  size="small"
-                  v-if="false"
+                <el-button circle @click="handleCardDesign(row)" size="small"
                   >💳</el-button
                 >
               </el-tooltip>
