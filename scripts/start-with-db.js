@@ -483,7 +483,7 @@ function startServices(projectRoot) {
         '"npm run start:rust"',
         '"npm run start:logs"',
         '"npm run start:docs"',
-        '"npm run start:apps"',
+        '"npm run start:portal"',
       ],
       {
         stdio: "inherit",
