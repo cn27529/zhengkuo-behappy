@@ -39,6 +39,27 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     qifu: { label: "消災祈福", price: 300, source: "blessing.persons" }, //消災人員
     xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" }, //消災人員
     pudu: { label: "中元普度", price: 1200, source: "blessing.persons" }, //消災人員
+    support_triple_gem: {
+      label: "護持三寶",
+      price: 200,
+      source: "blessing.persons",
+    }, //護持三寶
+    food_offering: { label: "供齋", price: 200, source: "blessing.persons" }, //供齋
+    support_temple: {
+      label: "護持道場",
+      price: 200,
+      source: "blessing.persons",
+    }, //護持道場
+    sutra_printing: {
+      label: "助印經書",
+      price: 200,
+      source: "blessing.persons",
+    }, //助印經書
+    life_release: {
+      label: "放生",
+      price: 200,
+      source: "blessing.persons",
+    }, //放生
   });
 
   /*
@@ -48,10 +69,15 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const selections = ref({
     chaodu: [], //祖先
     survivors: [], //陽上人
-    diandeng: [], //消災人員
-    qifu: [], //消災人員
-    xiaozai: [], //消災人員
-    pudu: [], //消災人員
+    diandeng: [], //點燈
+    qifu: [], //消災祈福
+    xiaozai: [], //固定消災
+    pudu: [], //中元普度
+    support_triple_gem: [], //護持三寶
+    food_offering: [], //供齋
+    support_temple: [], //護持道場
+    sutra_printing: [], //助印經書
+    life_release: [], //放生
   });
 
   // 每個人員的燈種選擇 { personId: lampType }
@@ -124,7 +150,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
     return {
       type,
-      label, // 超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度
+      label, // 超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
       price, // 金額
       quantity: sourceData.length, // 數量
       subtotal: price * sourceData.length, // 小計

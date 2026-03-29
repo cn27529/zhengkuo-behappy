@@ -36,6 +36,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     { value: "cancelled", label: "已取消" },
   ]);
 
+  // 項目類型選項：超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
   const itemTypeOptions = computed(() => [
     { value: "", label: "全部項目" },
     { value: "chaodu", label: "超度/超薦" },
@@ -44,6 +45,11 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     { value: "xiaozai", label: "固定消災" },
     { value: "survivors", label: "陽上人" },
     { value: "pudu", label: "中元普度" },
+    { value: "support_triple_gem", label: "護持三寶" },
+    { value: "food_offering", label: "供齋" },
+    { value: "support_temple", label: "護持道場" },
+    { value: "sutra_printing", label: "助印經書" },
+    { value: "life_release", label: "放生" },
   ]);
 
   const queryJoinRecordData = async (queryData) => {

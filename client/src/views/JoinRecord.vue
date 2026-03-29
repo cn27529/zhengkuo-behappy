@@ -93,7 +93,12 @@
           <hr />
         </div>
 
-        <div class="form-section" v-if="selectedRegistration">
+        <!-- 活動選擇區塊 -->
+        <div
+          class="form-section"
+          v-if="selectedRegistration"
+          style="display: none"
+        >
           <!-- 活動選擇區塊 -->
           <div class="activity-selection-section">
             <!-- <h6>選擇活動</h6> -->
@@ -572,6 +577,70 @@
               </div>
             </div>
 
+            <!-- 護持三寶 -->
+            <div class="activity-section">
+              <div
+                class="activity-header clickable"
+                @click="toggleActivity('support_triple_gem')"
+                :title="
+                  isAllSelected('support_triple_gem')
+                    ? '點擊取消全選'
+                    : '點擊全選'
+                "
+              >
+                <span class="stat-badge">{{
+                  activityConfigs.support_triple_gem.label
+                }}</span>
+
+                <span
+                  class="selected-count"
+                  v-if="selections.support_triple_gem.length > 0"
+                >
+                  (已選 {{ selections.support_triple_gem.length }} )
+                </span>
+
+                <span class="price-tag"
+                  >每位
+                  <el-input
+                    v-model.number="activityConfigs.support_triple_gem.price"
+                    size="small"
+                    style="width: 80px; margin-left: 5px"
+                    :disabled="false"
+                  ></el-input>
+
+                  {{
+                    appConfig.formatCurrency(
+                      activityConfigs.support_triple_gem.price,
+                    )
+                  }}</span
+                >
+              </div>
+
+              <div class="person-list">
+                <div
+                  v-for="person in getSourceData('support_triple_gem')"
+                  :key="'fixed-' + person.id"
+                  class="person-item"
+                >
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      :value="person"
+                      v-model="selections.support_triple_gem"
+                    />
+                    <span>{{ person.name }}</span>
+                    <span class="zodiac">({{ person.zodiac }})</span>
+                    <span v-if="person.notes" class="notes">{{
+                      person.notes
+                    }}</span>
+                    <span v-if="person.isHouseholdHead" class="household-head"
+                      >戶長</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <!-- 其他 -->
           </div>
         </div>
@@ -1002,10 +1071,10 @@ const handleSubmitForm = async () => {
     return;
   }
 
-  if (!selectedActivityId.value) {
-    ElMessage.warning("請選擇活動");
-    return;
-  }
+  // if (!selectedActivityId.value) {
+  //   ElMessage.warning("請選擇活動");
+  //   return;
+  // }
 
   if (totalAmount.value === 0) {
     ElMessage.warning("請至少選擇一個活動項目");

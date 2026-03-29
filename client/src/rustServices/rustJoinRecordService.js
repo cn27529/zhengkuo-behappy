@@ -342,6 +342,7 @@ export class RustJoinRecordService {
 
   // ========== 輔助方法 ==========
 
+  // 根據活動類型獲取對應的配置（標籤、價格、來源）：超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
   getActivityConfig(activityType) {
     const configs = {
       chaodu: {
@@ -354,6 +355,27 @@ export class RustJoinRecordService {
       qifu: { label: "消災祈福", price: 300, source: "blessing.persons" },
       xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" },
       pudu: { label: "中元普度", price: 1200, source: "blessing.persons" },
+      support_triple_gem: {
+        label: "護持三寶",
+        price: 200,
+        source: "blessing.persons",
+      },
+      food_offering: { label: "供齋", price: 500, source: "offering.food" },
+      support_temple: {
+        label: "護持道場",
+        price: 1000,
+        source: "offering.temple",
+      },
+      sutra_printing: {
+        label: "助印經書",
+        price: 800,
+        source: "offering.sutra_printing",
+      },
+      life_release: {
+        label: "放生",
+        price: 1500,
+        source: "offering.life_release",
+      },
     };
     return configs[activityType];
   }

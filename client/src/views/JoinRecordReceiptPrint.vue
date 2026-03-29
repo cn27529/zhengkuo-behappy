@@ -71,7 +71,7 @@
               茲收到 <span class="highlight">{{ contactName }}</span> 大德
             </div>
             <div class="items-detail">
-              護持三寶、供齋、護持道場、助印經書、放生、其它：
+              <!-- 護持三寶、供齋、護持道場、助印經書、放生、其它： -->
               <p>
                 <span
                   v-for="(item, idx) in record.items"
