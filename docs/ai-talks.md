@@ -465,7 +465,9 @@ const dataJsonObj = [
 ```
 
 ## 生成金額設定頁面：PriceConfig.vue
+
 生成金額設定頁面：PriceConfig.vue 基本的CRUD, 內容有 超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生，這些資料來源起初是代碼，現在要實現到資料庫，需要調適。現有硬代碼 client\src\services\joinRecordService.js, client\src\rustServices\rustJoinRecordService.js, client\src\stores\joinRecordStore.js。生成的代碼要比照 client\src\views\ActivityList.vue 現有代碼規則以及頁面佈局。金額設定頁面：PriceConfig.vue 的列表是歷史記錄，實際只有一筆是有效的，每次更新金額設定，就是產生一筆新的資料，當前有效的這筆就會變成歷史記錄，有效的這筆數據 state="now"，歷史記錄的 state="history"，state="now"的這筆會响應在 client\src\services\joinRecordService.js, client\src\rustServices\rustJoinRecordService.js, client\src\stores\joinRecordStore.js。是否可以理解用意。我們先關注 PriceConfig.vue 的生成 後續再來串接後端API
 
 ## mock_priceConfigs.json
-依據 client\src\stores\activityStore.js 創建 client\src\stores\priceConfigStore.js，也比照 client\src\stores\activityStore.js 中的  mock_activities.json 來創建 client\src\stores\priceConfigStore.js 需要的 client\src\data\mock_priceConfigs.json 
+
+依據 client\src\stores\activityStore.js 現有代碼規則生成 client\src\stores\priceConfigStore.js，接下來比 activityStore.js 中的 mock 應用也套用到 client\src\stores\priceConfigStore.js 中，我們需要生成 client\src\data\mock_priceConfigs.json 數據，最後將 PriceConfig.vue 引入 priceConfigStore。

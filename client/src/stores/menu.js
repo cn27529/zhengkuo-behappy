@@ -140,6 +140,30 @@ export const useMenuStore = defineStore("menu", () => {
       enabled: true,
       publish: false,
     },
+    {
+      id: 13,
+      name: "祈福登記編輯",
+      path: "/registration-edit", //路徑
+      icon: "🔍",
+      component: "RegistrationEdit",
+      requiredAuth: false,
+      order: 13,
+      enabled: false,
+      publish: false,
+    },
+
+    // 金額設定
+    {
+      id: 14,
+      name: "金額設定",
+      path: "/price-config",
+      icon: "💰",
+      component: "PriceConfig",
+      requiredAuth: true,
+      order: 14,
+      enabled: true,
+      publish: true,
+    },
 
     {
       id: 69,
@@ -149,18 +173,6 @@ export const useMenuStore = defineStore("menu", () => {
       component: "TianganDizhiClock",
       requiredAuth: false,
       order: 69,
-      enabled: false,
-      publish: false,
-    },
-
-    {
-      id: 13,
-      name: "祈福登記編輯",
-      path: "/registration-edit", //路徑
-      icon: "🔍",
-      component: "RegistrationEdit",
-      requiredAuth: false,
-      order: 13,
       enabled: false,
       publish: false,
     },

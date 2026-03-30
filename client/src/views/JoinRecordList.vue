@@ -260,7 +260,7 @@
         <el-table-column
           prop="totalAmount"
           label="總金額"
-          min-width="50"
+          width="70"
           align="center"
         >
           <template #default="{ row }">
@@ -301,7 +301,7 @@
         <el-table-column
           prop="user_created"
           label="資料人員"
-          min-width="50"
+          min-width="80"
           align="center"
         >
           <template #default="{ row }">

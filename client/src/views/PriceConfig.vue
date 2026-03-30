@@ -10,37 +10,59 @@
     <div v-if="isDev" class="debug-panel">
       <h4>🔧 調試信息</h4>
       <hr />
-      <div>總記錄數: {{ priceConfigs.length }}</div>
-      <div>當前有效記錄: {{ currentConfig ? currentConfig.id : '無' }}</div>
+      <div>總記錄數: {{ allPriceConfigs.length }}</div>
+      <div>當前有效記錄: {{ currentConfig ? currentConfig.id : "無" }}</div>
       <div>歷史記錄數: {{ historyConfigs.length }}</div>
       <div>當前模式: {{ currentMode }}</div>
+      <div>加載狀態: {{ loading ? "加載中" : "就緒" }}</div>
     </div>
 
     <!-- 當前有效設定卡片 -->
     <div class="current-config-card" v-if="currentConfig">
       <div class="card-header">
-        <h3>📌 當前有效金額設定</h3>
-        <el-tag type="success" size="large">生效中</el-tag>
+        <h3>📌 當前版本 {{ currentConfig.version || "v1.0" }}</h3>
       </div>
-      <div class="card-body">
+      <div class="card-body" style="display: none">
         <div class="config-info">
           <div class="info-item">
             <span class="label">版本號：</span>
-            <span class="value">{{ currentConfig.version || 'v1.0' }}</span>
+            <span class="value">{{ currentConfig.version || "v1.0" }}</span>
           </div>
           <div class="info-item">
             <span class="label">生效時間：</span>
-            <span class="value">{{ formatDateTime(currentConfig.effectiveDate) || formatDateTime(currentConfig.createdAt) }}</span>
+            <span class="value">{{
+              formatRelativeOrDateTime(currentConfig.effectiveDate) ||
+              formatRelativeOrDateTime(currentConfig.createdAt)
+            }}</span>
           </div>
           <div class="info-item">
-            <span class="label">建立者：</span>
-            <span class="value">{{ currentConfig.createdBy || currentConfig.user_created || '系統' }}</span>
+            <span class="label">資料人員：</span>
+            <span class="value">{{
+              currentConfig.createdBy || currentConfig.user_created || "系統"
+            }}</span>
           </div>
         </div>
         <el-button type="primary" @click="showAddModal = true" :icon="Plus">
-          新增金額設定
+          新增設定
         </el-button>
       </div>
+    </div>
+
+    <!-- 無當前設定時顯示提示 -->
+    <div v-else class="no-current-config" v-if="!loading && hasData">
+      <el-alert
+        title="尚未設定有效金額"
+        type="warning"
+        description="請點擊下方按鈕新增設定"
+        show-icon
+        :closable="false"
+      >
+        <template #default>
+          <el-button type="primary" @click="showAddModal = true" size="small">
+            立即設定
+          </el-button>
+        </template>
+      </el-alert>
     </div>
 
     <!-- 查詢區 -->
@@ -50,7 +72,7 @@
           <div class="search-input-group">
             <el-input
               v-model="searchQuery"
-              placeholder="搜尋版本號、建立者..."
+              placeholder="搜尋版本號、資料人員、備註..."
               @keyup.enter="handleSearch"
               :disabled="loading"
               clearable
@@ -110,22 +132,24 @@
       </div>
 
       <div v-else-if="filteredConfigs.length === 0" class="no-results">
-        <el-empty description="沒有金額設定記錄">
-          <el-button type="primary" @click="showAddModal = true"
-            >新增金額設定</el-button
-          >
+        <el-empty
+          :description="
+            hasData ? '沒有符合條件的金額設定記錄' : '尚無金額設定記錄'
+          "
+        >
+          <el-button type="primary" @click="showAddModal = true" v-if="hasData">
+            新增設定
+          </el-button>
+          <el-button type="primary" @click="showAddModal = true" v-else>
+            建立第一個金額設定
+          </el-button>
         </el-empty>
       </div>
 
       <div v-else>
         <div class="results-header">
           <h3>金額設定列表 (共 {{ filteredConfigs.length }} 筆)</h3>
-          <el-button
-            type="primary"
-            @click="showAddModal = true"
-            :icon="Plus"
-            v-if="!showAddButtonInHeader"
-          >
+          <el-button type="primary" @click="showAddModal = true" :icon="Plus">
             新增設定
           </el-button>
         </div>
@@ -140,55 +164,96 @@
           :header-cell-style="{ background: '#f8f9fa', color: '#333' }"
           v-loading="loading"
         >
-          <el-table-column label="版本" min-width="100" prop="version">
+          <el-table-column
+            label="資料時間"
+            prop="createdAt"
+            width="110"
+            sortable
+            align="center"
+          >
+            <template #default="{ row }">
+              {{ formatRelativeOrDateTime(row.createdAt) }}
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            label="版本"
+            prop="version"
+            width="100"
+            align="center"
+          >
             <template #default="{ row }">
               <div class="version-cell">
                 <span>{{ row.version || `v${row.id}` }}</span>
-                <el-tag v-if="row.state === 'now'" type="success" size="small" effect="dark">
+                <el-tag
+                  v-if="row.state === 'now'"
+                  type="success"
+                  size="small"
+                  effect="dark"
+                >
                   生效中
                 </el-tag>
               </div>
             </template>
           </el-table-column>
 
-          <el-table-column label="金額設定內容" min-width="400">
+          <el-table-column label="金額設定內容" width="380">
             <template #default="{ row }">
               <div class="price-config-grid">
-                <div class="config-row" v-for="item in getConfigItemsList(row)" :key="item.key">
+                <div
+                  class="config-row"
+                  v-for="item in getConfigItemsList(row)"
+                  :key="item.key"
+                >
                   <span class="config-label">{{ item.label }}：</span>
-                  <span class="config-price">NT$ {{ formatPrice(item.price) }}</span>
+                  <span class="item-amount">{{
+                    appConfig.formatCurrency(item.price)
+                  }}</span>
                 </div>
               </div>
             </template>
           </el-table-column>
 
-          <el-table-column label="生效日期" min-width="120">
+          <el-table-column label="生效日期" width="110" align="center">
             <template #default="{ row }">
-              {{ formatDateTime(row.effectiveDate) || formatDateTime(row.createdAt) }}
+              {{
+                formatRelativeOrDateTime(row.effectiveDate) ||
+                formatRelativeOrDateTime(row.createdAt)
+              }}
             </template>
           </el-table-column>
 
-          <el-table-column label="建立者" min-width="100" prop="createdBy">
+          <el-table-column
+            prop="user_created"
+            label="資料人員"
+            min-width="80"
+            align="center"
+          >
             <template #default="{ row }">
-              {{ row.createdBy || row.user_created || '系統' }}
+              {{ recordUserName(row.user_created) }}
             </template>
           </el-table-column>
 
-          <el-table-column label="建立時間" min-width="140">
-            <template #default="{ row }">
-              {{ formatDateTime(row.createdAt) }}
-            </template>
-          </el-table-column>
-
-          <el-table-column label="狀態" min-width="80" align="center">
+          <el-table-column
+            label="狀態"
+            min-width="80"
+            align="center"
+            width="100"
+            v-if="false"
+          >
             <template #default="{ row }">
               <el-tag :type="row.state === 'now' ? 'success' : 'info'">
-                {{ row.state === 'now' ? '生效中' : '歷史記錄' }}
+                {{ row.state === "now" ? "生效中" : "歷史記錄" }}
               </el-tag>
             </template>
           </el-table-column>
 
-          <el-table-column label="操作" width="120" fixed="right" align="center">
+          <el-table-column
+            label="操作"
+            width="150"
+            fixed="right"
+            align="center"
+          >
             <template #default="{ row }">
               <div class="action-buttons-group">
                 <el-tooltip content="查看詳情" placement="top">
@@ -202,7 +267,11 @@
                   </el-button>
                 </el-tooltip>
 
-                <el-tooltip content="編輯" placement="top" v-if="row.state === 'history'">
+                <el-tooltip
+                  content="編輯"
+                  placement="top"
+                  v-if="row.state === 'history'"
+                >
                   <el-button
                     circle
                     @click="handleEdit(row)"
@@ -237,7 +306,7 @@
     <el-dialog
       align-center
       v-model="showAddModal"
-      :title="isEditing ? '編輯金額設定' : '新增金額設定'"
+      :title="isEditing ? '編輯金額設定' : '新增設定'"
       width="700px"
       :before-close="closeModal"
     >
@@ -247,17 +316,19 @@
         :rules="formRules"
         label-width="120px"
       >
-        <el-form-item label="版本號" prop="version">
+        <el-form-item label="版本號" prop="version" style="display: none">
           <el-input
             v-model="formData.version"
             placeholder="請輸入版本號（如：v2.0）"
           />
-          <div class="form-hint">💡 版本號用於標識不同的設定版本</div>
+          <div class="form-hint">
+            💡 版本號用於標識不同的設定版本，如不填寫將自動生成
+          </div>
         </el-form-item>
 
         <el-divider content-position="left">金額設定項目</el-divider>
 
-        <div class="price-items-grid">
+        <div class="detail-price-grid">
           <el-form-item
             v-for="item in priceItems"
             :key="item.key"
@@ -276,6 +347,8 @@
           </el-form-item>
         </div>
 
+        <div class="price-items-grid"></div>
+
         <el-form-item label="備註" prop="notes">
           <el-input
             v-model="formData.notes"
@@ -289,15 +362,11 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
-          <el-button
-            type="primary"
-            @click="handleSubmit"
-            :loading="submitting"
-          >
-            {{ isEditing ? '更新設定' : '新增設定' }}
+          <el-button type="primary" @click="handleSubmit" :loading="submitting">
+            {{ isEditing ? "更新設定" : "新增設定" }}
           </el-button>
           <el-button
-            v-if="!isEditing"
+            v-if="!isEditing && currentConfig"
             type="warning"
             @click="handleLoadCurrentConfig"
             :disabled="submitting"
@@ -319,31 +388,44 @@
         <div class="detail-info">
           <div class="detail-row">
             <span class="detail-label">版本號：</span>
-            <span class="detail-value">{{ selectedConfig.version || `v${selectedConfig.id}` }}</span>
+            <span class="detail-value">{{
+              selectedConfig.version || `v${selectedConfig.id}`
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">狀態：</span>
             <span class="detail-value">
-              <el-tag :type="selectedConfig.state === 'now' ? 'success' : 'info'">
-                {{ selectedConfig.state === 'now' ? '生效中' : '歷史記錄' }}
+              <el-tag
+                :type="selectedConfig.state === 'now' ? 'success' : 'info'"
+              >
+                {{ selectedConfig.state === "now" ? "生效中" : "歷史記錄" }}
               </el-tag>
             </span>
           </div>
           <div class="detail-row">
             <span class="detail-label">生效日期：</span>
-            <span class="detail-value">{{ formatDateTime(selectedConfig.effectiveDate) || formatDateTime(selectedConfig.createdAt) }}</span>
+            <span class="detail-value">{{
+              formatRelativeOrDateTime(selectedConfig.effectiveDate) ||
+              formatRelativeOrDateTime(selectedConfig.createdAt)
+            }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">建立者：</span>
-            <span class="detail-value">{{ selectedConfig.createdBy || selectedConfig.user_created || '系統' }}</span>
+            <span class="detail-label">資料人員：</span>
+            <span class="detail-value">{{
+              selectedConfig.createdBy || selectedConfig.user_created || "系統"
+            }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">建立時間：</span>
-            <span class="detail-value">{{ formatDateTime(selectedConfig.createdAt) }}</span>
+            <span class="detail-label">資料時間：</span>
+            <span class="detail-value">{{
+              formatRelativeOrDateTime(selectedConfig.createdAt)
+            }}</span>
           </div>
           <div class="detail-row" v-if="selectedConfig.updatedAt">
             <span class="detail-label">更新時間：</span>
-            <span class="detail-value">{{ formatDateTime(selectedConfig.updatedAt) }}</span>
+            <span class="detail-value">{{
+              formatRelativeOrDateTime(selectedConfig.updatedAt)
+            }}</span>
           </div>
           <div class="detail-row" v-if="selectedConfig.notes">
             <span class="detail-label">備註：</span>
@@ -354,9 +436,15 @@
         <el-divider>金額設定明細</el-divider>
 
         <div class="detail-price-grid">
-          <div class="detail-price-row" v-for="item in getConfigItemsList(selectedConfig)" :key="item.key">
+          <div
+            class="detail-price-row"
+            v-for="item in getConfigItemsList(selectedConfig)"
+            :key="item.key"
+          >
             <span class="price-label">{{ item.label }}</span>
-            <span class="price-value">NT$ {{ formatPrice(item.price) }}</span>
+            <span class="price-value">{{
+              appConfig.formatCurrency(item.price)
+            }}</span>
           </div>
         </div>
       </div>
@@ -382,158 +470,115 @@ import { ref, computed, onMounted, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Plus, Search } from "@element-plus/icons-vue";
 import { authService } from "../services/authService.js";
-import { DateUtils } from "../utils/dateUtils.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js";
+import {
+  usePriceConfigStore,
+  PRICE_ITEMS,
+} from "../stores/priceConfigStore.js";
+import { DateUtils } from "../utils/dateUtils.js";
+import { appConfig } from "../config/appConfig.js";
+import { BoolUtils } from "../utils/boolUtils.js";
 
-// ==================== 定義金額項目 ====================
-const PRICE_ITEMS = [
-  { key: "chaodu", label: "超度/超薦", defaultPrice: 1000 },
-  { key: "survivors", label: "陽上人", defaultPrice: 0 },
-  { key: "diandeng", label: "點燈", defaultPrice: 600 },
-  { key: "qifu", label: "消災祈福", defaultPrice: 300 },
-  { key: "xiaozai", label: "固定消災", defaultPrice: 100 },
-  { key: "pudu", label: "中元普度", defaultPrice: 1200 },
-  { key: "support_triple_gem", label: "護持三寶", defaultPrice: 200 },
-  { key: "food_offering", label: "供齋", defaultPrice: 200 },
-  { key: "support_temple", label: "護持道場", defaultPrice: 200 },
-  { key: "sutra_printing", label: "助印經書", defaultPrice: 200 },
-  { key: "life_release", label: "放生", defaultPrice: 200 }
-];
+// ==================== 使用 Store ====================
+const priceConfigStore = usePriceConfigStore();
 
 // ==================== 狀態定義 ====================
-const loading = ref(false);
-const error = ref(null);
 const submitting = ref(false);
 const showAddModal = ref(false);
 const showDetailModal = ref(false);
 const isEditing = ref(false);
-const showAddButtonInHeader = ref(false);
-
-// 查詢條件
-const searchQuery = ref("");
-const selectedState = ref("");
-
-// 分頁
-const currentPage = ref(1);
-const pageSize = ref(10);
-
-// 數據
-const priceConfigs = ref([]);
 const selectedConfig = ref(null);
 const editingConfigId = ref(null);
+const priceFormRef = ref(null);
+
+// 從 Store 獲取狀態
+const loading = computed(() => priceConfigStore.loading);
+const error = computed(() => priceConfigStore.error);
+const allPriceConfigs = computed(() => priceConfigStore.allPriceConfigs);
+const currentConfig = computed(() => priceConfigStore.currentConfig);
+const historyConfigs = computed(() => priceConfigStore.historyConfigs);
+const filteredConfigs = computed(() => priceConfigStore.filteredConfigs);
+const paginatedConfigs = computed(() => priceConfigStore.paginatedConfigs);
+const hasData = computed(() => priceConfigStore.hasData);
+
+// 搜尋與分頁（雙向綁定）
+const searchQuery = computed({
+  get: () => priceConfigStore.searchQuery,
+  set: (val) => priceConfigStore.setSearchQuery(val),
+});
+const selectedState = computed({
+  get: () => priceConfigStore.selectedState,
+  set: (val) => priceConfigStore.setSelectedState(val),
+});
+const currentPage = computed({
+  get: () => priceConfigStore.currentPage,
+  set: (val) => priceConfigStore.setCurrentPage(val),
+});
+const pageSize = computed({
+  get: () => priceConfigStore.pageSize,
+  set: (val) => priceConfigStore.setPageSize(val),
+});
 
 // 開發模式
 const isDev = computed(() => authService.getCurrentDev());
-const currentMode = computed(() => serviceAdapter.getCurrentMode?.() || "directus");
-
-// 表單數據
-const priceFormRef = ref(null);
-const formData = reactive({
-  version: "",
-  prices: {},
-  notes: "",
-  effectiveDate: null
-});
+const currentMode = computed(
+  () => serviceAdapter.getCurrentMode?.() || "directus",
+);
 
 // 金額項目列表（用於模板）
 const priceItems = ref(PRICE_ITEMS);
 
+// 表單數據
+const formData = reactive({
+  version: "",
+  prices: {},
+  notes: "",
+  effectiveDate: null,
+});
+
 // 表單驗證規則
 const formRules = {
-  version: [
-    { required: false, message: "請輸入版本號", trigger: "blur" }
-  ]
+  version: [{ required: false, message: "請輸入版本號", trigger: "blur" }],
 };
 
-// ==================== 計算屬性 ====================
-
-// 當前有效的設定
-const currentConfig = computed(() => {
-  return priceConfigs.value.find(config => config.state === "now");
-});
-
-// 歷史設定列表
-const historyConfigs = computed(() => {
-  return priceConfigs.value.filter(config => config.state === "history");
-});
-
-// 過濾後的設定列表
-const filteredConfigs = computed(() => {
-  let filtered = [...priceConfigs.value];
-
-  // 狀態篩選
-  if (selectedState.value) {
-    filtered = filtered.filter(config => config.state === selectedState.value);
-  }
-
-  // 關鍵字搜尋
-  if (searchQuery.value) {
-    const keyword = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(config =>
-      (config.version && config.version.toLowerCase().includes(keyword)) ||
-      (config.createdBy && config.createdBy.toLowerCase().includes(keyword)) ||
-      (config.user_created && config.user_created.toLowerCase().includes(keyword))
-    );
-  }
-
-  // 按建立時間倒序排列
-  return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-});
-
-// 分頁後的數據
-const paginatedConfigs = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filteredConfigs.value.slice(start, end);
-});
-
 // ==================== 輔助方法 ====================
+
+const currentAllUsers = computed(() => authService.getCurrentUsers());
+
+// 取得資料列名稱顯示用
+const recordUserName = (recordUserId) => {
+  const user = currentAllUsers.value.find((item) => item.id === recordUserId);
+  return `${user?.firstName}${user?.lastName}` || "??";
+};
 
 /**
  * 獲取設定項目的列表（用於表格顯示）
  */
 const getConfigItemsList = (config) => {
   if (!config || !config.prices) return [];
-  return PRICE_ITEMS.map(item => ({
+  return PRICE_ITEMS.map((item) => ({
     key: item.key,
     label: item.label,
-    price: config.prices[item.key] !== undefined ? config.prices[item.key] : item.defaultPrice
+    price:
+      config.prices[item.key] !== undefined
+        ? config.prices[item.key]
+        : item.defaultPrice,
   }));
-};
-
-/**
- * 格式化金額
- */
-const formatPrice = (price) => {
-  if (price === undefined || price === null) return "0";
-  return price.toLocaleString();
 };
 
 /**
  * 格式化日期時間
  */
-const formatDateTime = (dateString) => {
-  if (!dateString) return "";
-  return DateUtils.formatDateTime(dateString);
-};
-
-/**
- * 獲取默認金額設定
- */
-const getDefaultPrices = () => {
-  const prices = {};
-  PRICE_ITEMS.forEach(item => {
-    prices[item.key] = item.defaultPrice;
-  });
-  return prices;
-};
+const formatRelativeOrDateTime = (value) =>
+  DateUtils.formatRelativeOrDateTime(value);
 
 /**
  * 重置表單
  */
 const resetForm = () => {
+  const defaultPrices = priceConfigStore.getDefaultPrices();
   formData.version = "";
-  formData.prices = getDefaultPrices();
+  formData.prices = { ...defaultPrices };
   formData.notes = "";
   formData.effectiveDate = null;
   isEditing.value = false;
@@ -555,278 +600,21 @@ const handleLoadCurrentConfig = () => {
   }
 };
 
-// ==================== CRUD 操作方法 ====================
+// ==================== UI 事件處理 ====================
 
 /**
- * 初始化數據（從服務器獲取）
+ * 初始化數據
  */
 const initialize = async () => {
-  loading.value = true;
-  error.value = null;
-
-  try {
-    await loadPriceConfigs();
-    ElMessage.success("金額設定數據加載成功");
-  } catch (err) {
-    error.value = err.message || "加載數據失敗";
-    ElMessage.error("加載金額設定數據失敗");
-    console.error("初始化失敗:", err);
-  } finally {
-    loading.value = false;
-  }
+  await priceConfigStore.initialize();
+  ElMessage.success("金額設定數據加載成功");
 };
-
-/**
- * 加載金額設定列表
- */
-const loadPriceConfigs = async () => {
-  try {
-    // 使用 serviceAdapter 獲取數據
-    // 注意：這裡需要根據實際的 API endpoint 調整
-    let result;
-    
-    if (serviceAdapter.getIsMock()) {
-      // Mock 模式：返回模擬數據
-      console.warn("⚠️ 當前模式為 Mock，返回模擬金額設定數據");
-      priceConfigs.value = getMockPriceConfigs();
-      return priceConfigs.value;
-    }
-
-    // 實際 API 調用
-    // TODO: 需要確認後端 API endpoint
-    const baseService = serviceAdapter.base;
-    const endpoint = `${baseService.apiBaseUrl}/items/price_configs`;
-    const myHeaders = await baseService.getAuthJsonHeaders();
-    const response = await fetch(endpoint, {
-      method: "GET",
-      headers: myHeaders
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      priceConfigs.value = data.data || [];
-    } else {
-      throw new Error(`獲取數據失敗: ${response.status}`);
-    }
-    
-    return priceConfigs.value;
-  } catch (err) {
-    console.error("加載金額設定失敗:", err);
-    // 發生錯誤時返回空數組
-    priceConfigs.value = [];
-    throw err;
-  }
-};
-
-/**
- * 創建新的金額設定（會自動將當前有效設定改為歷史）
- */
-const createPriceConfig = async (data) => {
-  const createISOTime = DateUtils.getCurrentISOTime();
-  const currentUser = authService.getCurrentUser() || "system";
-  const userName = authService.getUserName() || currentUser;
-
-  // 準備要創建的數據
-  const newConfig = {
-    ...data,
-    state: "now",
-    createdAt: createISOTime,
-    createdBy: userName,
-    user_created: currentUser,
-    effectiveDate: data.effectiveDate || createISOTime
-  };
-
-  // 如果當前有生效中的設定，需要將其改為歷史
-  if (currentConfig.value) {
-    await updateConfigState(currentConfig.value.id, "history");
-  }
-
-  // 創建新設定
-  if (serviceAdapter.getIsMock()) {
-    console.warn("⚠️ Mock 模式：模擬創建金額設定");
-    const mockId = Date.now();
-    const mockConfig = { id: mockId, ...newConfig };
-    priceConfigs.value.unshift(mockConfig);
-    return { success: true, data: mockConfig };
-  }
-
-  try {
-    const baseService = serviceAdapter.base;
-    const endpoint = `${baseService.apiBaseUrl}/items/price_configs`;
-    const myHeaders = await baseService.getAuthJsonHeaders();
-    
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(newConfig)
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      priceConfigs.value.unshift(result.data);
-      return { success: true, data: result.data };
-    } else {
-      throw new Error(`創建失敗: ${response.status}`);
-    }
-  } catch (err) {
-    console.error("創建金額設定失敗:", err);
-    throw err;
-  }
-};
-
-/**
- * 更新金額設定的狀態
- */
-const updateConfigState = async (configId, newState) => {
-  const updateData = {
-    state: newState,
-    updatedAt: DateUtils.getCurrentISOTime()
-  };
-
-  if (serviceAdapter.getIsMock()) {
-    const index = priceConfigs.value.findIndex(c => c.id === configId);
-    if (index !== -1) {
-      priceConfigs.value[index] = { ...priceConfigs.value[index], ...updateData };
-    }
-    return { success: true };
-  }
-
-  try {
-    const baseService = serviceAdapter.base;
-    const endpoint = `${baseService.apiBaseUrl}/items/price_configs/${configId}`;
-    const myHeaders = await baseService.getAuthJsonHeaders();
-    
-    const response = await fetch(endpoint, {
-      method: "PATCH",
-      headers: myHeaders,
-      body: JSON.stringify(updateData)
-    });
-    
-    if (response.ok) {
-      const index = priceConfigs.value.findIndex(c => c.id === configId);
-      if (index !== -1) {
-        priceConfigs.value[index] = { ...priceConfigs.value[index], ...updateData };
-      }
-      return { success: true };
-    } else {
-      throw new Error(`更新狀態失敗: ${response.status}`);
-    }
-  } catch (err) {
-    console.error("更新狀態失敗:", err);
-    throw err;
-  }
-};
-
-/**
- * 編輯歷史設定（僅更新，不會影響當前生效設定）
- */
-const updatePriceConfig = async (configId, data) => {
-  const updateData = {
-    ...data,
-    updatedAt: DateUtils.getCurrentISOTime(),
-    updatedBy: authService.getUserName() || authService.getCurrentUser()
-  };
-
-  if (serviceAdapter.getIsMock()) {
-    const index = priceConfigs.value.findIndex(c => c.id === configId);
-    if (index !== -1) {
-      priceConfigs.value[index] = { ...priceConfigs.value[index], ...updateData };
-    }
-    return { success: true, data: priceConfigs.value[index] };
-  }
-
-  try {
-    const baseService = serviceAdapter.base;
-    const endpoint = `${baseService.apiBaseUrl}/items/price_configs/${configId}`;
-    const myHeaders = await baseService.getAuthJsonHeaders();
-    
-    const response = await fetch(endpoint, {
-      method: "PATCH",
-      headers: myHeaders,
-      body: JSON.stringify(updateData)
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      const index = priceConfigs.value.findIndex(c => c.id === configId);
-      if (index !== -1) {
-        priceConfigs.value[index] = { ...priceConfigs.value[index], ...result.data };
-      }
-      return { success: true, data: result.data };
-    } else {
-      throw new Error(`更新失敗: ${response.status}`);
-    }
-  } catch (err) {
-    console.error("更新金額設定失敗:", err);
-    throw err;
-  }
-};
-
-// ==================== Mock 數據 ====================
-
-/**
- * 生成 Mock 金額設定數據
- */
-const getMockPriceConfigs = () => {
-  const now = DateUtils.getCurrentISOTime();
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 30);
-  
-  return [
-    {
-      id: 1,
-      version: "v1.0",
-      state: "history",
-      prices: {
-        chaodu: 800,
-        survivors: 0,
-        diandeng: 500,
-        qifu: 200,
-        xiaozai: 80,
-        pudu: 1000,
-        support_triple_gem: 150,
-        food_offering: 150,
-        support_temple: 150,
-        sutra_printing: 150,
-        life_release: 150
-      },
-      notes: "初始版本",
-      createdAt: yesterday.toISOString(),
-      createdBy: "admin",
-      effectiveDate: yesterday.toISOString()
-    },
-    {
-      id: 2,
-      version: "v2.0",
-      state: "now",
-      prices: {
-        chaodu: 1000,
-        survivors: 0,
-        diandeng: 600,
-        qifu: 300,
-        xiaozai: 100,
-        pudu: 1200,
-        support_triple_gem: 200,
-        food_offering: 200,
-        support_temple: 200,
-        sutra_printing: 200,
-        life_release: 200
-      },
-      notes: "2024年調整版本",
-      createdAt: now,
-      createdBy: "admin",
-      effectiveDate: now
-    }
-  ];
-};
-
-// ==================== UI 事件處理 ====================
 
 /**
  * 搜尋
  */
 const handleSearch = () => {
-  currentPage.value = 1;
+  priceConfigStore.resetPagination();
   ElMessage.info(`找到 ${filteredConfigs.value.length} 筆記錄`);
 };
 
@@ -834,9 +622,7 @@ const handleSearch = () => {
  * 清空搜尋條件
  */
 const handleClear = () => {
-  searchQuery.value = "";
-  selectedState.value = "";
-  currentPage.value = 1;
+  priceConfigStore.clearSearch();
   ElMessage.success("搜尋條件已清空");
 };
 
@@ -844,15 +630,15 @@ const handleClear = () => {
  * 分頁大小改變
  */
 const handleSizeChange = (newSize) => {
-  pageSize.value = newSize;
-  currentPage.value = 1;
+  priceConfigStore.setPageSize(newSize);
+  priceConfigStore.resetPagination();
 };
 
 /**
  * 當前頁改變
  */
 const handleCurrentChange = (newPage) => {
-  currentPage.value = newPage;
+  priceConfigStore.setCurrentPage(newPage);
 };
 
 /**
@@ -868,10 +654,12 @@ const handleViewDetail = (config) => {
  */
 const handleEdit = (config) => {
   if (config.state === "now") {
-    ElMessage.warning("當前生效的設定無法編輯，請使用「新增設定」功能建立新版本");
+    ElMessage.warning(
+      "當前生效的設定無法編輯，請使用「新增設定」功能建立新版本",
+    );
     return;
   }
-  
+
   isEditing.value = true;
   editingConfigId.value = config.id;
   formData.version = config.version || "";
@@ -910,23 +698,26 @@ const handleSubmit = async () => {
 
     // 準備提交數據
     const submitData = {
-      version: formData.version || `v${Date.now()}`,
+      version: formData.version || undefined,
       prices: { ...formData.prices },
       notes: formData.notes,
-      effectiveDate: formData.effectiveDate || DateUtils.getCurrentISOTime()
+      effectiveDate: formData.effectiveDate || DateUtils.getCurrentISOTime(),
     };
 
     let result;
-    
+
     if (isEditing.value) {
       // 編輯歷史記錄
-      result = await updatePriceConfig(editingConfigId.value, submitData);
+      result = await priceConfigStore.updatePriceConfig(
+        editingConfigId.value,
+        submitData,
+      );
       if (result.success) {
         ElMessage.success("✅ 金額設定更新成功");
       }
     } else {
       // 新增設定
-      result = await createPriceConfig(submitData);
+      result = await priceConfigStore.createPriceConfig(submitData);
       if (result.success) {
         ElMessage.success("✅ 金額設定新增成功，已生效");
       }
@@ -934,7 +725,6 @@ const handleSubmit = async () => {
 
     if (result.success) {
       closeModal();
-      await loadPriceConfigs(); // 重新加載數據
     } else {
       throw new Error(result.message || "操作失敗");
     }
@@ -955,6 +745,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 樣式保持與之前相同，此處省略重複代碼 */
 .main-content {
   padding: 1rem;
 }
@@ -1043,6 +834,10 @@ onMounted(() => {
   font-weight: 500;
 }
 
+.no-current-config {
+  margin-bottom: 1.5rem;
+}
+
 /* 搜尋區域 */
 .search-section {
   margin-bottom: 1.5rem;
@@ -1097,14 +892,14 @@ onMounted(() => {
 .price-config-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.25rem 1rem;
+  gap: 0.5rem 1rem;
 }
 
 .config-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8125rem;
-  line-height: 1.4;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .config-label {
@@ -1114,6 +909,13 @@ onMounted(() => {
 .config-price {
   font-weight: 500;
   color: #333;
+}
+
+.item-amount {
+  color: var(--el-color-primary);
+  font-weight: 600;
+  margin-left: auto;
+  text-align: right;
 }
 
 /* 操作按鈕組 */

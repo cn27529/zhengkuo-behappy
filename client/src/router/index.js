@@ -20,9 +20,18 @@ const routes = [
     path: "/td-clock",
     component: () => import("../views/TianganDizhiClock12.vue"),
   },
+  //金額設定管理
+  {
+    path: "/price-config",
+    title: "金額設定",
+    name: "PriceConfig",
+    component: () => import("../views/PriceConfig.vue"),
+    meta: { requiresAuth: true },
+  },
   {
     path: "/join-record",
     title: "活動參加",
+    name: "JoinRecord",
     component: () => import("../views/JoinRecord.vue"),
     meta: { requiresAuth: true },
   },
