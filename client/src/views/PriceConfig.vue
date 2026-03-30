@@ -184,20 +184,12 @@
           >
             <template #default="{ row }">
               <div class="version-cell">
-                <span>{{ row.version || `v${row.id}` }}</span>
-                <el-tag
-                  v-if="row.state === 'now'"
-                  type="success"
-                  size="small"
-                  effect="dark"
-                >
-                  生效中
-                </el-tag>
+                <span>{{ row.version || `v${row.id}` }}</span>                
               </div>
             </template>
           </el-table-column>
 
-          <el-table-column label="金額設定內容" width="380">
+          <el-table-column label="金額設定內容" min-width="380">
             <template #default="{ row }">
               <div class="price-config-grid">
                 <div
@@ -214,6 +206,20 @@
             </template>
           </el-table-column>
 
+          <el-table-column
+            label="狀態"
+            width="100"
+            align="center"            
+          >
+            <template #default="{ row }">
+              <el-tag :type="row.state === 'now' ? 'success' : 'info'"
+                  size="layge"
+                  effect="dark">
+                {{ row.state === "now" ? "生效中" : "歷史記錄" }}
+              </el-tag>
+            </template>
+          </el-table-column>
+
           <el-table-column label="生效日期" width="110" align="center">
             <template #default="{ row }">
               {{
@@ -226,7 +232,7 @@
           <el-table-column
             prop="user_created"
             label="資料人員"
-            min-width="80"
+            width="100"
             align="center"
           >
             <template #default="{ row }">
@@ -234,25 +240,14 @@
             </template>
           </el-table-column>
 
-          <el-table-column
-            label="狀態"
-            min-width="80"
-            align="center"
-            width="100"
-            v-if="false"
-          >
-            <template #default="{ row }">
-              <el-tag :type="row.state === 'now' ? 'success' : 'info'">
-                {{ row.state === "now" ? "生效中" : "歷史記錄" }}
-              </el-tag>
-            </template>
-          </el-table-column>
+          
 
           <el-table-column
             label="操作"
-            width="150"
+            width="100"
             fixed="right"
             align="center"
+            v-if="false"
           >
             <template #default="{ row }">
               <div class="action-buttons-group">
@@ -302,11 +297,11 @@
       </div>
     </div>
 
-    <!-- 新增/編輯金額設定 Dialog -->
+        <!-- 新增/編輯金額設定 Dialog -->
     <el-dialog
       align-center
       v-model="showAddModal"
-      :title="isEditing ? '編輯金額設定' : '新增設定'"
+      :title="isEditing ? '編輯金額設定' : '新增金額設定'"
       width="700px"
       :before-close="closeModal"
     >
@@ -316,38 +311,30 @@
         :rules="formRules"
         label-width="120px"
       >
-        <el-form-item label="版本號" prop="version" style="display: none">
-          <el-input
-            v-model="formData.version"
-            placeholder="請輸入版本號（如：v2.0）"
-          />
-          <div class="form-hint">
-            💡 版本號用於標識不同的設定版本，如不填寫將自動生成
-          </div>
-        </el-form-item>
+        
 
         <el-divider content-position="left">金額設定項目</el-divider>
 
-        <div class="detail-price-grid">
-          <el-form-item
-            v-for="item in priceItems"
-            :key="item.key"
-            :label="item.label"
-            :prop="`prices.${item.key}`"
+        <!-- 使用網格佈局，比照詳情頁面的明細樣式 -->
+        <div class="price-items-grid-form">
+          <div 
+            v-for="item in priceItems" 
+            :key="item.key" 
+            class="price-item-row"
           >
+            <span class="price-item-label">{{ item.label }}</span>
             <el-input-number
               v-model="formData.prices[item.key]"
               :min="0"
               :max="100000"
               :step="100"
               placeholder="請輸入金額"
-              style="width: 200px"
+              controls-position="right"
+              class="price-item-input"
             />
-            <span class="unit-suffix">元</span>
-          </el-form-item>
+            <span class="unit-suffix"></span>
+          </div>
         </div>
-
-        <div class="price-items-grid"></div>
 
         <el-form-item label="備註" prop="notes">
           <el-input
@@ -357,13 +344,26 @@
             placeholder="請輸入備註說明（選填）"
           />
         </el-form-item>
+
+        <el-form-item label="版本號" prop="version">
+          <el-input
+            v-model="formData.version"
+            placeholder="請輸入版本號（如：v2.0）"
+          />
+          <div class="form-hint">💡 版本號用於標識不同的設定版本，如不填寫將自動生成</div>
+        </el-form-item>
+
       </el-form>
 
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitting">
-            {{ isEditing ? "更新設定" : "新增設定" }}
+          <el-button
+            type="primary"
+            @click="handleSubmit"
+            :loading="submitting"
+          >
+            {{ isEditing ? '保存設定' : '保存設定' }}
           </el-button>
           <el-button
             v-if="!isEditing && currentConfig"
@@ -745,44 +745,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 樣式保持與之前相同，此處省略重複代碼 */
-.main-content {
-  padding: 1rem;
-}
 
-.page-header {
-  margin-bottom: 1.5rem;
-}
-
-.page-header h2 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
-}
-
-.page-header p {
-  margin: 0;
-  color: #666;
-  font-size: 0.875rem;
-}
-
-/* 調試面板 */
-.debug-panel {
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  font-size: 0.75rem;
-  font-family: monospace;
-}
-
-.debug-panel h4 {
-  margin: 0 0 0.5rem 0;
-}
-
-.debug-panel hr {
-  margin: 0.5rem 0;
-}
 
 /* 當前設定卡片 */
 .current-config-card {
@@ -882,7 +845,7 @@ onMounted(() => {
 
 /* 版本單元格 */
 .version-cell {
-  display: flex;
+  display: grid;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
@@ -1018,8 +981,96 @@ onMounted(() => {
   text-align: center;
 }
 
+/* 新增/編輯表單中的金額項目網格佈局 */
+.price-items-grid-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+}
+
+.price-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.price-item-row:hover {
+  /* background: #f0f2f5; */
+  background: var(--secondary-color);  
+}
+
+.price-item-label {
+  font-size: 0.875rem;
+  color: #333;
+  font-weight: 500;
+  min-width: 85px;
+  flex-shrink: 0;
+}
+
+.price-item-input {
+  flex: 1;
+  min-width: 120px;
+}
+
+.unit-suffix {
+  margin-left: 0.25rem;
+  color: #666;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+/* 對話框樣式優化 */
+:deep(.el-dialog) {
+  border-radius: 8px;
+}
+
+:deep(.el-dialog__header) {
+  /* padding: 1.5rem 1.5rem 1rem;*/
+  border-bottom: 1px solid #eee;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 1.25rem;
+  color: #eee;
+}
+
+:deep(.el-dialog__body) {
+  padding: 0.75rem;
+}
+
+:deep(.el-dialog__footer) {
+  /* padding: 1rem 1.5rem 1.5rem;*/
+  border-top: 1px solid #eee;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  /* width: 100%; */
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
+
+  /* 響應式設計 - 小螢幕改為單列 */
+  .price-items-grid-form {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .price-item-row {
+    padding: 0.5rem;
+  }
+
+
   .search-input-group .el-input,
   .search-input-group .el-select,
   .search-input-group .el-button {
@@ -1061,6 +1112,9 @@ onMounted(() => {
   :deep(.el-table__cell) {
     padding: 8px 4px;
   }
+
+  
+  
 }
 
 @media (max-width: 480px) {
