@@ -3,7 +3,7 @@
   <div class="main-content">
     <div class="page-header">
       <h2>金額設定管理</h2>
-      <p>管理各類活動項目的金額設定，每次更新會產生新的版本記錄</p>
+      <p>管理各類項目的金額設定，每次更新會產生新的版本記錄</p>
     </div>
 
     <!-- 調試信息 -->
@@ -31,7 +31,7 @@
           <div class="info-item">
             <span class="label">生效時間：</span>
             <span class="value">{{
-              formatRelativeOrDateTime(currentConfig.effectiveDate) ||
+              formatRelativeOrDateTime(currentConfig.enableDate) ||
               formatRelativeOrDateTime(currentConfig.createdAt)
             }}</span>
           </div>
@@ -66,7 +66,7 @@
     </div>
 
     <!-- 查詢區 -->
-    <div class="search-section">
+    <div class="search-section" style="display: none">
       <div class="search-form">
         <div class="form-group">
           <div class="search-input-group">
@@ -184,7 +184,7 @@
           >
             <template #default="{ row }">
               <div class="version-cell">
-                <span>{{ row.version || `v${row.id}` }}</span>                
+                <span>{{ row.version || `v${row.id}` }}</span>
               </div>
             </template>
           </el-table-column>
@@ -206,15 +206,13 @@
             </template>
           </el-table-column>
 
-          <el-table-column
-            label="狀態"
-            width="100"
-            align="center"            
-          >
+          <el-table-column label="狀態" width="100" align="center">
             <template #default="{ row }">
-              <el-tag :type="row.state === 'now' ? 'success' : 'info'"
-                  size="layge"
-                  effect="dark">
+              <el-tag
+                :type="row.state === 'now' ? 'success' : 'info'"
+                size="layge"
+                effect="dark"
+              >
                 {{ row.state === "now" ? "生效中" : "歷史記錄" }}
               </el-tag>
             </template>
@@ -223,7 +221,7 @@
           <el-table-column label="生效日期" width="110" align="center">
             <template #default="{ row }">
               {{
-                formatRelativeOrDateTime(row.effectiveDate) ||
+                formatRelativeOrDateTime(row.enableDate) ||
                 formatRelativeOrDateTime(row.createdAt)
               }}
             </template>
@@ -239,8 +237,6 @@
               {{ recordUserName(row.user_created) }}
             </template>
           </el-table-column>
-
-          
 
           <el-table-column
             label="操作"
@@ -297,7 +293,7 @@
       </div>
     </div>
 
-        <!-- 新增/編輯金額設定 Dialog -->
+    <!-- 新增/編輯金額設定 Dialog -->
     <el-dialog
       align-center
       v-model="showAddModal"
@@ -311,15 +307,13 @@
         :rules="formRules"
         label-width="120px"
       >
-        
-
         <el-divider content-position="left">金額設定項目</el-divider>
 
         <!-- 使用網格佈局，比照詳情頁面的明細樣式 -->
         <div class="price-items-grid-form">
-          <div 
-            v-for="item in priceItems" 
-            :key="item.key" 
+          <div
+            v-for="item in priceItems"
+            :key="item.key"
             class="price-item-row"
           >
             <span class="price-item-label">{{ item.label }}</span>
@@ -350,20 +344,17 @@
             v-model="formData.version"
             placeholder="請輸入版本號（如：v2.0）"
           />
-          <div class="form-hint">💡 版本號用於標識不同的設定版本，如不填寫將自動生成</div>
+          <div class="form-hint">
+            💡 版本號用於標識不同的設定版本，如不填寫將自動生成
+          </div>
         </el-form-item>
-
       </el-form>
 
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="closeModal" :disabled="submitting">取消</el-button>
-          <el-button
-            type="primary"
-            @click="handleSubmit"
-            :loading="submitting"
-          >
-            {{ isEditing ? '保存設定' : '保存設定' }}
+          <el-button type="primary" @click="handleSubmit" :loading="submitting">
+            {{ isEditing ? "保存設定" : "保存設定" }}
           </el-button>
           <el-button
             v-if="!isEditing && currentConfig"
@@ -405,7 +396,7 @@
           <div class="detail-row">
             <span class="detail-label">生效日期：</span>
             <span class="detail-value">{{
-              formatRelativeOrDateTime(selectedConfig.effectiveDate) ||
+              formatRelativeOrDateTime(selectedConfig.enableDate) ||
               formatRelativeOrDateTime(selectedConfig.createdAt)
             }}</span>
           </div>
@@ -533,7 +524,7 @@ const formData = reactive({
   version: "",
   prices: {},
   notes: "",
-  effectiveDate: null,
+  enableDate: null,
 });
 
 // 表單驗證規則
@@ -580,7 +571,7 @@ const resetForm = () => {
   formData.version = "";
   formData.prices = { ...defaultPrices };
   formData.notes = "";
-  formData.effectiveDate = null;
+  formData.enableDate = null;
   isEditing.value = false;
   editingConfigId.value = null;
 };
@@ -593,7 +584,7 @@ const handleLoadCurrentConfig = () => {
     formData.version = currentConfig.value.version || `v${Date.now()}`;
     formData.prices = { ...currentConfig.value.prices };
     formData.notes = currentConfig.value.notes || "";
-    formData.effectiveDate = null;
+    formData.enableDate = null;
     ElMessage.info("已載入當前金額設定，修改後將建立新版本");
   } else {
     ElMessage.warning("尚無當前有效設定");
@@ -665,7 +656,7 @@ const handleEdit = (config) => {
   formData.version = config.version || "";
   formData.prices = { ...config.prices };
   formData.notes = config.notes || "";
-  formData.effectiveDate = config.effectiveDate || null;
+  formData.enableDate = config.enableDate || null;
   showAddModal.value = true;
 };
 
@@ -701,7 +692,7 @@ const handleSubmit = async () => {
       version: formData.version || undefined,
       prices: { ...formData.prices },
       notes: formData.notes,
-      effectiveDate: formData.effectiveDate || DateUtils.getCurrentISOTime(),
+      enableDate: formData.enableDate || DateUtils.getCurrentISOTime(),
     };
 
     let result;
@@ -745,8 +736,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
-
 /* 當前設定卡片 */
 .current-config-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1003,7 +992,7 @@ onMounted(() => {
 
 .price-item-row:hover {
   /* background: #f0f2f5; */
-  background: var(--secondary-color);  
+  background: var(--secondary-color);
 }
 
 .price-item-label {
@@ -1059,17 +1048,15 @@ onMounted(() => {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-
   /* 響應式設計 - 小螢幕改為單列 */
   .price-items-grid-form {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
-  
+
   .price-item-row {
     padding: 0.5rem;
   }
-
 
   .search-input-group .el-input,
   .search-input-group .el-select,
@@ -1112,9 +1099,6 @@ onMounted(() => {
   :deep(.el-table__cell) {
     padding: 8px 4px;
   }
-
-  
-  
 }
 
 @media (max-width: 480px) {

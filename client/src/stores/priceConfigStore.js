@@ -313,12 +313,9 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         state: "now",
         prices: { ...configData.prices },
         notes: configData.notes || "",
-        effectiveDate: configData.effectiveDate || createISOTime,
+        enableDate: configData.enableDate || createISOTime,
         createdAt: createISOTime,
-        createdBy: currentUserName,
-        user_created: getCurrentUser(),
         updatedAt: null,
-        updatedBy: null,
       };
 
       console.log("📦 創建新金額設定:", newConfig);
@@ -334,7 +331,6 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
             ...allPriceConfigs.value[currentNowIndex],
             state: "history",
             updatedAt: createISOTime,
-            updatedBy: currentUserName,
           };
         }
 
@@ -369,7 +365,6 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
           body: JSON.stringify({
             state: "history",
             updatedAt: createISOTime,
-            updatedBy: currentUserName,
           }),
         });
 
@@ -444,10 +439,8 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         version: configData.version,
         prices: configData.prices,
         notes: configData.notes,
-        effectiveDate: configData.effectiveDate,
+        enableDate: configData.enableDate,
         updatedAt: updateISOTime,
-        updatedBy: currentUserName,
-        user_updated: getCurrentUser(),
       };
 
       console.log("📝 更新金額設定:", configId, updateData);
