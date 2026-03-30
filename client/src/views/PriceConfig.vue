@@ -18,11 +18,11 @@
     </div>
 
     <!-- 當前有效設定卡片 -->
-    <div class="current-config-card" v-if="currentConfig">
+    <div class="current-config-card" v-if="currentConfig" style="display: none">
       <div class="card-header">
         <h3>📌 當前版本 {{ currentConfig.version || "v1.0" }}</h3>
       </div>
-      <div class="card-body" style="display: none">
+      <div class="card-body">
         <div class="config-info">
           <div class="info-item">
             <span class="label">版本號：</span>
@@ -168,7 +168,6 @@
             label="資料時間"
             prop="createdAt"
             width="110"
-            sortable
             align="center"
           >
             <template #default="{ row }">
@@ -179,17 +178,17 @@
           <el-table-column
             label="版本"
             prop="version"
-            width="100"
+            width="60"
             align="center"
           >
             <template #default="{ row }">
               <div class="version-cell">
-                <span>{{ row.version || `v${row.id}` }}</span>
+                <span>{{ `v${row.id}` }}</span>
               </div>
             </template>
           </el-table-column>
 
-          <el-table-column label="金額設定內容" min-width="380">
+          <el-table-column label="金額設定內容" min-width="400" align="center">
             <template #default="{ row }">
               <div class="price-config-grid">
                 <div
@@ -197,12 +196,24 @@
                   v-for="item in getConfigItemsList(row)"
                   :key="item.key"
                 >
-                  <span class="config-label">{{ item.label }}：</span>
-                  <span class="item-amount">{{
-                    appConfig.formatCurrency(item.price)
-                  }}</span>
+                  <span class="config-label">{{ item.label }}</span>
+                  <span class="item-amount" v-if="row.state === 'now'">
+                    {{ item.price }}
+                  </span>
+                  <span class="config-price" v-else>
+                    {{ item.price }}
+                  </span>
                 </div>
               </div>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="備註" min-width="100" align="center">
+            <template #default="{ row }">
+              <span v-if="row.notes" :title="row.notes">
+                {{ row.notes }}
+              </span>
+              <span v-else class="no-notes">無</span>
             </template>
           </el-table-column>
 
@@ -339,7 +350,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="版本號" prop="version">
+        <el-form-item label="版本號" prop="version" style="display: none">
           <el-input
             v-model="formData.version"
             placeholder="請輸入版本號（如：v2.0）"
@@ -845,6 +856,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem 1rem;
+  padding: 0.8rem;
 }
 
 .config-row {
@@ -852,6 +864,7 @@ onMounted(() => {
   justify-content: space-between;
   font-size: 0.875rem;
   line-height: 1.5;
+  margin: 0 2.2rem;
 }
 
 .config-label {

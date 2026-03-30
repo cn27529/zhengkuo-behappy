@@ -32,6 +32,7 @@ export class BaseService {
       itemsParticipationRecord: "/items/participationRecordDB", // 新增 participationRecordDB 端點
       itemsMonthlyDonate: "/items/monthlyDonateDB", // 新增 monthlyDonateDB 端點
       itemsReceiptNumber: "/items/receiptNumbersDB", // 新增 receiptNumbersDB 端點
+      itemsPriceConfig: "/items/priceConfigDB", // 新增 priceConfigDB 端點
     };
 
     // 模擬 API 延遲（毫秒）

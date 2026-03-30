@@ -471,3 +471,9 @@ const dataJsonObj = [
 ## mock_priceConfigs.json
 
 依據 client\src\stores\activityStore.js 現有代碼規則生成 client\src\stores\priceConfigStore.js，接下來比 activityStore.js 中的 mock 應用也套用到 client\src\stores\priceConfigStore.js 中，我們需要生成 client\src\data\mock_priceConfigs.json 數據，最後將 PriceConfig.vue 引入 priceConfigStore。
+
+## 金額設定管理
+
+依據 client/src/services/activityService.js 現有代碼規則及編程方式生成 client/src/services/priceCinfigService.js，數據庫我已經建構好了，已經可以由URL "http://localhost:8055/items/priceConfigDB?fields=\*" 獲取資料。接下來交給你
+
+接下來要以現有的 client\src\stores\priceConfigStore.js 代碼，調適成調用 client/src/services/priceCinfigService.js 的應用，要串接後端了。

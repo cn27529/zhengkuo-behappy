@@ -5,7 +5,7 @@
         "date_created": "2026-03-30T11:54:12.107Z",
         "user_updated": null,
         "date_updated": null,
-        "version": "v1",
+        "version": "v1.0",
         "state": "history",
         "prices": {
             "chaodu": 800,
@@ -27,11 +27,11 @@
     },
     {
         "id": 2,
-        "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+        "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
         "date_created": "2026-03-30T11:54:48.561Z",
         "user_updated": null,
         "date_updated": null,
-        "version": "v2",
+        "version": "v2.0",
         "state": "history",
         "prices": {
             "chaodu": 900,
@@ -53,11 +53,11 @@
     },
     {
         "id": 3,
-        "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+        "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
         "date_created": "2026-03-30T11:55:33.161Z",
         "user_updated": null,
         "date_updated": null,
-        "version": "v3",
+        "version": "v3.0",
         "state": "now",
         "prices": {
             "chaodu": 1000,

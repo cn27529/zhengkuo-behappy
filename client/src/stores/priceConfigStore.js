@@ -1,7 +1,8 @@
 // src/stores/priceConfigStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { serviceAdapter } from "../adapters/serviceAdapter.js";
+import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
+import { priceConfigService } from "../services/priceConfigService.js"; // CUD用
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import mockPriceConfigs from "../data/mock_priceConfigs.json";
@@ -133,10 +134,8 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
       filtered = filtered.filter(
         (config) =>
           (config.version && config.version.toLowerCase().includes(keyword)) ||
-          (config.createdBy &&
-            config.createdBy.toLowerCase().includes(keyword)) ||
-          (config.user_created &&
-            config.user_created?.toLowerCase().includes(keyword)) ||
+          (config.createdUser &&
+            config.createdUser.toLowerCase().includes(keyword)) ||
           (config.notes && config.notes.toLowerCase().includes(keyword)),
       );
     }
@@ -216,6 +215,25 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
   };
 
   /**
+   * 獲取 Mock 數據
+   */
+  const loadMockData = async () => {
+    try {
+      if (!mockPriceConfigs || mockPriceConfigs.length === 0) {
+        console.error("Mock 價格配置數據為空或未找到");
+        return [];
+      }
+      const processedConfigs = mockPriceConfigs.map((config) =>
+        normalizePriceConfig(config),
+      );
+      return processedConfigs;
+    } catch (error) {
+      console.error("載入 Mock 價格配置數據失敗:", error);
+      return [];
+    }
+  };
+
+  /**
    * 從服務器或 Mock 數據獲取金額設定列表
    */
   const getAllPriceConfigs = async (params = {}) => {
@@ -225,9 +243,7 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
     try {
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 金額設定數據");
-        const processedConfigs = mockPriceConfigs.map((config) =>
-          normalizePriceConfig(config),
-        );
+        const processedConfigs = await loadMockData();
         allPriceConfigs.value = processedConfigs;
         return {
           success: true,
@@ -237,48 +253,32 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
       }
 
       console.log("📄 從服務器獲取金額設定數據...");
+      const result = await priceConfigService.getAllPriceConfigs(params);
 
-      // 獲取 API endpoint - 需要根據實際後端調整
-      const baseService = serviceAdapter.base;
-      const endpoint = `${baseService.apiBaseUrl}/items/price_configs`;
-      const myHeaders = await baseService.getAuthJsonHeaders();
-
-      const response = await fetch(endpoint, {
-        method: "GET",
-        headers: myHeaders,
-      });
-
-      if (!response.ok) {
-        throw new Error(`獲取數據失敗: ${response.status}`);
+      if (result.success) {
+        // 確保 result.data 是數組
+        const dataArray = Array.isArray(result.data)
+          ? result.data
+          : [result.data];
+        const processedConfigs = dataArray.map((config) =>
+          normalizePriceConfig(config),
+        );
+        allPriceConfigs.value = processedConfigs;
+        console.log(`✅ 成功獲取 ${allPriceConfigs.value.length} 筆金額設定`);
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 獲取金額設定數據失敗:", result.message);
+        const processedConfigs = await loadMockData();
+        allPriceConfigs.value = processedConfigs;
+        return result;
       }
-
-      const result = await response.json();
-      const processedData = (result.data || []).map((config) =>
-        normalizePriceConfig(config),
-      );
-      allPriceConfigs.value = processedData;
-
-      console.log(`✅ 成功獲取 ${allPriceConfigs.value.length} 筆金額設定`);
-      return {
-        success: true,
-        data: processedData,
-        message: "成功獲取金額設定數據",
-      };
     } catch (err) {
       error.value = err.message;
-      console.error("❌ 獲取金額設定數據失敗:", err);
-
-      // 發生錯誤時返回 Mock 數據作為後備
-      const processedConfigs = mockPriceConfigs.map((config) =>
-        normalizePriceConfig(config),
-      );
+      console.error("❌ 獲取金額設定數據異常:", err);
+      const processedConfigs = await loadMockData();
       allPriceConfigs.value = processedConfigs;
-
-      return {
-        success: false,
-        data: processedConfigs,
-        message: err.message || "獲取金額設定失敗，使用 Mock 數據",
-      };
+      throw err;
     } finally {
       loading.value = false;
     }
@@ -305,7 +305,6 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
 
     try {
       const createISOTime = DateUtils.getCurrentISOTime();
-      const currentUserName = getUserName() || getCurrentUser() || "system";
 
       // 準備新設定數據
       const newConfig = {
@@ -315,12 +314,11 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         notes: configData.notes || "",
         enableDate: configData.enableDate || createISOTime,
         createdAt: createISOTime,
-        updatedAt: null,
+        createdUser: getCurrentUser(),
       };
 
       console.log("📦 創建新金額設定:", newConfig);
 
-      // Mock 模式處理
       if (serviceAdapter.getIsMock()) {
         // 將當前有效設定改為歷史
         const currentNowIndex = allPriceConfigs.value.findIndex(
@@ -351,65 +349,24 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         };
       }
 
-      // 實際 API 調用
-      const baseService = serviceAdapter.base;
-      const endpoint = `${baseService.apiBaseUrl}/items/price_configs`;
-      const myHeaders = await baseService.getAuthJsonHeaders();
+      // 調用 priceConfigService 的 activateNewPriceConfig 方法
+      // 這個方法會自動處理將當前生效的配置改為歷史
+      const result = await priceConfigService.activateNewPriceConfig(newConfig);
 
-      // 先將當前有效設定改為歷史
-      const currentNow = allPriceConfigs.value.find((c) => c.state === "now");
-      if (currentNow) {
-        const updateResponse = await fetch(`${endpoint}/${currentNow.id}`, {
-          method: "PATCH",
-          headers: myHeaders,
-          body: JSON.stringify({
-            state: "history",
-            updatedAt: createISOTime,
-          }),
-        });
-
-        if (updateResponse.ok) {
-          const updateResult = await updateResponse.json();
-          const index = allPriceConfigs.value.findIndex(
-            (c) => c.id === currentNow.id,
-          );
-          if (index !== -1) {
-            allPriceConfigs.value[index] = {
-              ...allPriceConfigs.value[index],
-              ...updateResult.data,
-            };
-          }
-        }
+      if (result.success) {
+        // 重新加載所有配置以更新 store 狀態
+        await getAllPriceConfigs();
+        console.log("✅ 成功創建金額設定:", result.data.version);
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 創建金額設定失敗:", result.message);
+        return result;
       }
-
-      // 創建新設定
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: myHeaders,
-        body: JSON.stringify(newConfig),
-      });
-
-      if (!response.ok) {
-        throw new Error(`創建失敗: ${response.status}`);
-      }
-
-      const result = await response.json();
-      const processedConfig = normalizePriceConfig(result.data);
-      allPriceConfigs.value.push(processedConfig);
-
-      console.log("✅ 成功創建金額設定:", processedConfig.version);
-      return {
-        success: true,
-        data: processedConfig,
-        message: "金額設定創建成功",
-      };
     } catch (err) {
       error.value = err.message;
-      console.error("❌ 創建金額設定失敗:", err);
-      return {
-        success: false,
-        message: err.message || "創建金額設定失敗",
-      };
+      console.error("❌ 創建金額設定異常:", err);
+      throw err;
     } finally {
       loading.value = false;
     }
@@ -432,26 +389,22 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         throw new Error("當前生效的設定無法編輯，請使用新增功能建立新版本");
       }
 
-      const updateISOTime = DateUtils.getCurrentISOTime();
-      const currentUserName = getUserName() || getCurrentUser() || "system";
-
       const updateData = {
         version: configData.version,
         prices: configData.prices,
         notes: configData.notes,
         enableDate: configData.enableDate,
-        updatedAt: updateISOTime,
       };
 
       console.log("📝 更新金額設定:", configId, updateData);
 
-      // Mock 模式處理
       if (serviceAdapter.getIsMock()) {
         const index = allPriceConfigs.value.findIndex((c) => c.id === configId);
         if (index !== -1) {
           allPriceConfigs.value[index] = {
             ...allPriceConfigs.value[index],
             ...updateData,
+            updatedAt: DateUtils.getCurrentISOTime(),
           };
         }
         console.warn("⚠️ 當前模式不為 Directus，金額設定已更新(Mock 模式)");
@@ -462,42 +415,30 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         };
       }
 
-      // 實際 API 調用
-      const baseService = serviceAdapter.base;
-      const endpoint = `${baseService.apiBaseUrl}/items/price_configs/${configId}`;
-      const myHeaders = await baseService.getAuthJsonHeaders();
+      // 調用 priceConfigService 更新配置
+      const result = await priceConfigService.updatePriceConfig(
+        configId,
+        updateData,
+      );
 
-      const response = await fetch(endpoint, {
-        method: "PATCH",
-        headers: myHeaders,
-        body: JSON.stringify(updateData),
-      });
+      if (result.success) {
+        // 更新本地 store 中的數據
+        const index = allPriceConfigs.value.findIndex((c) => c.id === configId);
+        if (index !== -1) {
+          allPriceConfigs.value[index] = normalizePriceConfig(result.data);
+        }
 
-      if (!response.ok) {
-        throw new Error(`更新失敗: ${response.status}`);
+        console.log("✅ 成功更新金額設定");
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 更新金額設定失敗:", result.message);
+        return result;
       }
-
-      const result = await response.json();
-      const processedConfig = normalizePriceConfig(result.data);
-
-      const index = allPriceConfigs.value.findIndex((c) => c.id === configId);
-      if (index !== -1) {
-        allPriceConfigs.value[index] = processedConfig;
-      }
-
-      console.log("✅ 成功更新金額設定");
-      return {
-        success: true,
-        data: processedConfig,
-        message: "金額設定更新成功",
-      };
     } catch (err) {
       error.value = err.message;
-      console.error("❌ 更新金額設定失敗:", err);
-      return {
-        success: false,
-        message: err.message || "更新金額設定失敗",
-      };
+      console.error("❌ 更新金額設定異常:", err);
+      throw err;
     } finally {
       loading.value = false;
     }
@@ -522,7 +463,6 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
 
       console.log("🗑️ 刪除金額設定:", configId);
 
-      // Mock 模式處理
       if (serviceAdapter.getIsMock()) {
         const index = allPriceConfigs.value.findIndex((c) => c.id === configId);
         if (index !== -1) {
@@ -535,37 +475,236 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         };
       }
 
-      // 實際 API 調用
-      const baseService = serviceAdapter.base;
-      const endpoint = `${baseService.apiBaseUrl}/items/price_configs/${configId}`;
-      const myHeaders = await baseService.getAuthJsonHeaders();
+      // 調用 priceConfigService 刪除配置
+      const result = await priceConfigService.deletePriceConfig(configId);
 
-      const response = await fetch(endpoint, {
-        method: "DELETE",
-        headers: myHeaders,
-      });
+      if (result.success) {
+        // 從本地 store 中移除
+        const index = allPriceConfigs.value.findIndex((c) => c.id === configId);
+        if (index !== -1) {
+          allPriceConfigs.value.splice(index, 1);
+        }
 
-      if (!response.ok) {
-        throw new Error(`刪除失敗: ${response.status}`);
+        console.log("✅ 成功刪除金額設定");
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 刪除金額設定失敗:", result.message);
+        return result;
       }
-
-      const index = allPriceConfigs.value.findIndex((c) => c.id === configId);
-      if (index !== -1) {
-        allPriceConfigs.value.splice(index, 1);
-      }
-
-      console.log("✅ 成功刪除金額設定");
-      return {
-        success: true,
-        message: "金額設定刪除成功",
-      };
     } catch (err) {
       error.value = err.message;
-      console.error("❌ 刪除金額設定失敗:", err);
-      return {
-        success: false,
-        message: err.message || "刪除金額設定失敗",
-      };
+      console.error("❌ 刪除金額設定異常:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * 獲取當前生效的價格配置（直接從服務器獲取最新數據）
+   */
+  const fetchCurrentPriceConfig = async () => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      if (serviceAdapter.getIsMock()) {
+        const current = allPriceConfigs.value.find((c) => c.state === "now");
+        console.warn("⚠️ 當前模式不為 Directus，使用本地當前配置");
+        return {
+          success: true,
+          data: current || null,
+          message: current
+            ? "成功獲取當前價格配置(Mock 模式)"
+            : "找不到當前生效的價格配置",
+        };
+      }
+
+      const result = await priceConfigService.getCurrentPriceConfig();
+
+      if (result.success && result.data) {
+        const processedConfig = normalizePriceConfig(result.data);
+
+        // 更新或添加當前配置到 store
+        const existingIndex = allPriceConfigs.value.findIndex(
+          (c) => c.id === processedConfig.id,
+        );
+
+        if (existingIndex !== -1) {
+          allPriceConfigs.value[existingIndex] = processedConfig;
+        } else {
+          allPriceConfigs.value.push(processedConfig);
+        }
+
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 獲取當前價格配置失敗:", result.message);
+        return result;
+      }
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 獲取當前價格配置異常:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * 獲取指定日期的價格配置
+   */
+  const fetchPriceConfigByDate = async (date) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      if (serviceAdapter.getIsMock()) {
+        // Mock 模式下，根據日期查找合適的配置
+        const sortedConfigs = [...allPriceConfigs.value].sort(
+          (a, b) => new Date(b.enableDate) - new Date(a.enableDate),
+        );
+        const config = sortedConfigs.find(
+          (c) => new Date(c.enableDate) <= new Date(date),
+        );
+        console.warn("⚠️ 當前模式不為 Directus，使用本地查找配置");
+        return {
+          success: true,
+          data: config || null,
+          message: config
+            ? "成功獲取指定日期價格配置(Mock 模式)"
+            : "找不到指定日期的價格配置",
+        };
+      }
+
+      const result = await priceConfigService.getPriceConfigByDate(date);
+
+      if (result.success && result.data) {
+        const processedConfig = normalizePriceConfig(result.data);
+        return {
+          success: true,
+          data: processedConfig,
+          message: result.message,
+        };
+      } else {
+        error.value = result.message;
+        console.error("❌ 獲取指定日期價格配置失敗:", result.message);
+        return result;
+      }
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 獲取指定日期價格配置異常:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * 獲取特定價格項目的歷史
+   */
+  const fetchPriceHistory = async (priceKey) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      if (serviceAdapter.getIsMock()) {
+        // Mock 模式下，從所有配置中提取歷史
+        const history = allPriceConfigs.value
+          .filter((c) => c.state !== "disabled")
+          .map((config) => ({
+            version: config.version,
+            price: config.prices?.[priceKey] || null,
+            enableDate: config.enableDate,
+            notes: config.notes,
+          }))
+          .filter((item) => item.price !== null)
+          .sort((a, b) => new Date(a.enableDate) - new Date(b.enableDate));
+
+        console.warn("⚠️ 當前模式不為 Directus，使用本地歷史數據");
+        return {
+          success: true,
+          data: history,
+          message: "成功獲取價格歷史(Mock 模式)",
+        };
+      }
+
+      const result = await priceConfigService.getPriceHistory(priceKey);
+      return result;
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 獲取價格歷史失敗:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * 比較兩個版本的價格差異
+   */
+  const compareVersions = async (versionId1, versionId2) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      if (serviceAdapter.getIsMock()) {
+        // Mock 模式下，從本地數據中查找
+        const config1 = allPriceConfigs.value.find((c) => c.id === versionId1);
+        const config2 = allPriceConfigs.value.find((c) => c.id === versionId2);
+
+        if (!config1 || !config2) {
+          throw new Error("無法獲取指定版本的價格配置");
+        }
+
+        const prices1 = config1.prices || {};
+        const prices2 = config2.prices || {};
+
+        const differences = {};
+        const allKeys = new Set([
+          ...Object.keys(prices1),
+          ...Object.keys(prices2),
+        ]);
+
+        allKeys.forEach((key) => {
+          const price1 = prices1[key];
+          const price2 = prices2[key];
+
+          if (price1 !== price2) {
+            differences[key] = {
+              old: price1 || null,
+              new: price2 || null,
+              change: price1 && price2 ? price2 - price1 : null,
+              changePercent:
+                price1 && price2
+                  ? (((price2 - price1) / price1) * 100).toFixed(2)
+                  : null,
+            };
+          }
+        });
+
+        console.warn("⚠️ 當前模式不為 Directus，使用本地比較");
+        return {
+          success: true,
+          data: {
+            version1: config1,
+            version2: config2,
+            differences: differences,
+          },
+          message: "成功比較版本差異(Mock 模式)",
+        };
+      }
+
+      const result = await priceConfigService.comparePriceVersions(
+        versionId1,
+        versionId2,
+      );
+      return result;
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 比較版本差異失敗:", err);
+      throw err;
     } finally {
       loading.value = false;
     }
@@ -600,6 +739,17 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
     pageSize.value = 10;
   };
 
+  /**
+   * 模式管理
+   */
+  const getCurrentMode = () => {
+    return serviceAdapter.getCurrentMode();
+  };
+
+  const setMode = (mode) => {
+    serviceAdapter.setMode(mode);
+  };
+
   // ========== 返回 Store 接口 ==========
   return {
     // 狀態
@@ -630,9 +780,16 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
     createPriceConfig,
     updatePriceConfig,
     deletePriceConfig,
+    fetchCurrentPriceConfig,
+    fetchPriceConfigByDate,
+    fetchPriceHistory,
+    compareVersions,
     initialize,
     clearError,
     reset,
+    getCurrentMode,
+    setMode,
+    loadMockData,
 
     // 搜尋與分頁方法
     setSearchQuery,
