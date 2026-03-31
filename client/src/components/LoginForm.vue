@@ -146,8 +146,15 @@ const handleLogin = async () => {
     }, 1500);
   } catch (error) {
     //alert(error.message);
-    ElMessage.error("登入失敗: " + error.message);
+    
     console.error("登入失敗:", error);
+    if(error.suggestions && Array.isArray(error.suggestions)) {
+      ElMessage.error("登入失敗: " + error.suggestions.join(", "));
+    }else {
+      ElMessage.error("登入失敗: " + error.message);
+    }
+
+
   } finally {
     loading.value = false;
   }
