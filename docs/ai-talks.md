@@ -479,4 +479,13 @@ const dataJsonObj = [
 接下來要以現有的 client\src\stores\priceConfigStore.js 代碼，調適成調用 client/src/services/priceCinfigService.js 的應用，要串接後端了。
 
 ## 數據取代硬編碼
+
 store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在要實現 client\src\stores\joinRecordStore.js 將 activityConfigs 的金額硬編碼 取代為 priceConfigService.js 的資料, 注意! activityConfigs 己經在前端頁面中使用, 我們只適配 activityConfigs 的金額
+
+## 生成price_config.rs
+
+依據 rust-axum/src/models/my_data.rs 現有代碼規則及編程方式生成 rust-axum/src/models/price_config.rs，price_config.rs 的內容來自 db/sqlite_priceConfigDB_table.sql 結構。也一併將 my_data.rs 的內容結構 db/sqlite_myData_table.sql 給你參考，注意！生成時請留意json字段的處理。
+
+依據 rust-axum/src/handlers/my_data.rs 現有代碼規則及編程方式生成 rust-axum/src/handlers/price_config.rs，price_config.rs 的 models 為 rust-axum/src/models/price_config.rs。
+
+依據 rust-axum/src/routes/my_data.rs 現有代碼規則及編程方式生成 rust-axum/src/routes/price_config.rs，price_config.rs 需要的 handlers 為 rust-axum/src/handlers/price_config.rs。
