@@ -123,18 +123,6 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="contact.mobile" label="手機" min-width="120">
-          <template #default="{ row }">
-            {{ row.contact?.mobile || "-" }}
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="contact.phone" label="電話" min-width="120">
-          <template #default="{ row }">
-            {{ row.contact?.phone || "-" }}
-          </template>
-        </el-table-column>
-
         <el-table-column
           prop="contact.relationship"
           label="關係"
@@ -150,6 +138,18 @@
                 ({{ row.contact.otherRelationship }})
               </span>
             </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="contact.mobile" label="手機" min-width="120">
+          <template #default="{ row }">
+            {{ row.contact?.mobile || "-" }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="contact.phone" label="電話" min-width="120">
+          <template #default="{ row }">
+            {{ row.contact?.phone || "-" }}
           </template>
         </el-table-column>
 

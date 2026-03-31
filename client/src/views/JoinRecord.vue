@@ -810,7 +810,9 @@
               <div class="record-header">
                 <!-- 單筆打印 -->
                 <span class="record-name"
-                  >{{ record.contact.name }}
+                  >{{ record.contact.name }} （{{
+                    record.contact.relationship
+                  }}）
                   <el-button
                     v-if="BoolUtils.normalizeBool(record.needReceipt)"
                     type="success"

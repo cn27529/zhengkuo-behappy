@@ -152,7 +152,7 @@
         </el-col>
       </el-row>
 
-      <el-row :gutter="24" class="summary-row">
+      <el-row :gutter="24" class="summary-row" v-if="false">
         <el-col :xs="24" :lg="12">
           <el-card shadow="hover" class="list-card">
             <div class="list-title">即將到來活動</div>

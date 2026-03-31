@@ -49,8 +49,8 @@ export const useMenuStore = defineStore("menu", () => {
       component: "ActivityList",
       requiredAuth: true,
       order: 4,
-      enabled: true,
-      publish: true,
+      enabled: false,
+      publish: false,
     },
     {
       id: 5,

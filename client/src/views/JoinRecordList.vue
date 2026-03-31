@@ -181,7 +181,7 @@
           <template #default="{ row }">
             <div class="contact-info">
               <div class="contact-name">
-                <strong>{{ row.contact?.name || "-" }}</strong>
+                <strong>{{ row.contact?.name }}</strong>
               </div>
               <div
                 class="contact-phone"
@@ -202,7 +202,25 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="參加項目" min-width="120" align="center">
+        <el-table-column
+          prop="contact.relationship"
+          label="關係"
+          min-width="100"
+        >
+          <template #default="{ row }">
+            <div>
+              {{ row.contact?.relationship || "-" }}
+              <span
+                v-if="row.contact?.otherRelationship"
+                class="other-relationship"
+              >
+                ({{ row.contact.otherRelationship }})
+              </span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="參加項目" min-width="100" align="center">
           <template #default="{ row }">
             <div class="items-summary">
               <span v-for="(item, index) in row.items" :key="index">
@@ -274,24 +292,20 @@
         <el-table-column label="佛字第 | 經手人" min-width="80" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
-              <el-tag
-                v-if="row.receiptNumber"
-                type="danger"
-                size="small"
-                style="margin-top: 4px"
-              >
-                {{ row.receiptNumber || "" }}
-              </el-tag>
               <!-- 收據開立者經手人 -->
               <span class="receipt-by" v-if="row.receiptIssuedBy">
                 <el-tooltip
                   :content="`經手人：${row.receiptIssuedBy}`"
                   placement="top"
                 >
-                  📝
-                  <el-button type="danger" size="small" circle>
-                    {{ row.receiptIssuedBy.substring(1, 2) }}
-                  </el-button>
+                  <el-tag
+                    v-if="row.receiptNumber"
+                    type="danger"
+                    size="small"
+                    style="margin-top: 4px"
+                  >
+                    {{ row.receiptNumber || "" }}
+                  </el-tag>
                 </el-tooltip>
               </span>
             </div>
