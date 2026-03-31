@@ -188,7 +188,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="金額設定內容" min-width="400" align="center">
+          <el-table-column label="金額設定內容" width="400" align="center">
             <template #default="{ row }">
               <div class="price-config-grid">
                 <div
@@ -208,7 +208,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="備註" min-width="100" align="center">
+          <el-table-column label="備註" align="center">
             <template #default="{ row }">
               <span v-if="row.notes" :title="row.notes">
                 {{ row.notes }}
@@ -855,16 +855,15 @@ onMounted(() => {
 .price-config-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem 1rem;
-  padding: 0.8rem;
+  gap: 0.1rem 0.1rem;
+  padding: 1.1rem;
 }
 
 .config-row {
   display: flex;
   justify-content: space-between;
   font-size: 0.875rem;
-  line-height: 1.5;
-  margin: 0 2.2rem;
+  margin: 0 2rem;
 }
 
 .config-label {

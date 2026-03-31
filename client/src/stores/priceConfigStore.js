@@ -1,6 +1,7 @@
 // src/stores/priceConfigStore.js
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 import { priceConfigService } from "../services/priceConfigService.js"; // CUD用
 import { authService } from "../services/authService.js";
@@ -303,12 +304,15 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
     loading.value = true;
     error.value = null;
 
+    const createISOTime = DateUtils.getCurrentISOTime();
+    const newVersionId = await generateGitHashBrowser(createISOTime);
+
     try {
       const createISOTime = DateUtils.getCurrentISOTime();
 
       // 準備新設定數據
       const newConfig = {
-        version: configData.version || `v${Date.now()}`,
+        version: newVersionId || configData.version || `v${Date.now()}`,
         state: "now",
         prices: { ...configData.prices },
         notes: configData.notes || "",
