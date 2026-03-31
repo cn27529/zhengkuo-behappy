@@ -477,3 +477,6 @@ const dataJsonObj = [
 依據 client/src/services/activityService.js 現有代碼規則及編程方式生成 client/src/services/priceCinfigService.js，數據庫我已經建構好了，已經可以由URL "http://localhost:8055/items/priceConfigDB?fields=\*" 獲取資料。接下來交給你
 
 接下來要以現有的 client\src\stores\priceConfigStore.js 代碼，調適成調用 client/src/services/priceCinfigService.js 的應用，要串接後端了。
+
+## 數據取代硬編碼
+store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在要實現 client\src\stores\joinRecordStore.js 將 activityConfigs 的金額硬編碼 取代為 priceConfigService.js 的資料, 注意! activityConfigs 己經在前端頁面中使用, 我們只適配 activityConfigs 的金額

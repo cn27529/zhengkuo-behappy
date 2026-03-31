@@ -115,7 +115,7 @@
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p>
+            <p style="display: none;">
               本表單由系統自動生成(收執聯)，打印時間：{{
                 printTime
               }}｜打印編號：{{ printId }}
@@ -253,7 +253,7 @@ const batchRecords = ref([]);
 const currentIndex = ref(0);
 const printedIndexes = ref(new Set()); // 追蹤已打印完成的索引
 
-const sealBoxText = ref(""); //財團法人鎮國基金會印信處
+const sealBoxText = ref("印信處"); //財團法人鎮國基金會印信處
 
 /**
  * 當大德姓名修改時的處理
@@ -881,8 +881,8 @@ onMounted(() => {
 .seal-box {
   width: 35mm;
   height: 55mm;
-  /* border: 0.5pt dashed #f6a7a7;
-  color: #f6a7a7; */
+  /* border: 0.1pt dashed #f6a7a7; */
+  color: #f7cccc;
 
   display: flex;
   align-items: center;
@@ -890,12 +890,12 @@ onMounted(() => {
   text-align: center;
   font-size: 14pt;
 
-  opacity: 0.8;
+  opacity: 0.5;
   padding: 30px;
 
-  background-image: url("/zk-in-bg.png");
+  /* background-image: url("/zk-in-bg.png");
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center; */
 
   /* 核心關鍵 ↓ */
   background-size: contain;

@@ -601,13 +601,6 @@
 
                 <span class="price-tag"
                   >每位
-                  <el-input
-                    v-model.number="activityConfigs.support_triple_gem.price"
-                    size="small"
-                    style="width: 80px; margin-left: 5px"
-                    :disabled="false"
-                  ></el-input>
-
                   {{
                     appConfig.formatCurrency(
                       activityConfigs.support_triple_gem.price,
@@ -627,6 +620,63 @@
                       type="checkbox"
                       :value="person"
                       v-model="selections.support_triple_gem"
+                    />
+                    <span>{{ person.name }}</span>
+                    <span class="zodiac">({{ person.zodiac }})</span>
+                    <span v-if="person.notes" class="notes">{{
+                      person.notes
+                    }}</span>
+                    <span v-if="person.isHouseholdHead" class="household-head"
+                      >戶長</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- food_offering=供齋 -->
+             <div class="activity-section">
+              <div
+                class="activity-header clickable"
+                @click="toggleActivity('food_offering')"
+                :title="
+                  isAllSelected('food_offering')
+                    ? '點擊取消全選'
+                    : '點擊全選'
+                "
+              >
+                <span class="stat-badge">{{
+                  activityConfigs.food_offering.label
+                }}</span>
+
+                <span
+                  class="selected-count"
+                  v-if="selections.food_offering.length > 0"
+                >
+                  (已選 {{ selections.food_offering.length }} )
+                </span>
+
+                <span class="price-tag"
+                  >每位
+                  {{
+                    appConfig.formatCurrency(
+                      activityConfigs.food_offering.price,
+                    )
+                  }}</span
+                >
+              </div>
+
+              <div class="person-list">
+                <div
+                  v-for="person in getSourceData('food_offering')"
+                  :key="'fixed-' + person.id"
+                  class="person-item"
+                >
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      :value="person"
+                      v-model="selections.food_offering"
                     />
                     <span>{{ person.name }}</span>
                     <span class="zodiac">({{ person.zodiac }})</span>
@@ -1248,6 +1298,10 @@ onMounted(async () => {
   console.log("活動參加記錄頁面已載入");
   console.log("Store 狀態:", joinRecordStore);
   isDev.value = authService.getCurrentDev();
+
+  // 先初始化價格配置（從後端獲取最新價格）
+  await joinRecordStore.initializePrices();
+
   await loadRegistrationData(); // 載入真實報名資料
   await loadActivityData(); // 載入活動資料
 
