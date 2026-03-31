@@ -57,13 +57,8 @@ export class RustPriceConfigService {
 
     return await this.base.rustFetch(
       endpoint,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getAllPriceConfigs",
-        ...context,
-      },
+      { method: "GET" },
+      { operation: "getAllPriceConfigs", ...context },
     );
   }
 
@@ -75,14 +70,8 @@ export class RustPriceConfigService {
   async getPriceConfigById(id, context = {}) {
     return await this.base.rustFetch(
       `${this.endpoint}/${id}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getPriceConfigById",
-        id,
-        ...context,
-      },
+      { method: "GET" },
+      { operation: "getPriceConfigById", id, ...context },
     );
   }
 
@@ -109,7 +98,7 @@ export class RustPriceConfigService {
       service: this.serviceName,
       operation: "createPriceConfig",
       method: "POST",
-      startTime: startTime,
+      startTime,
       endpoint: this.endpoint,
       requestBody: processedData,
       ...additionalContext,
@@ -119,26 +108,18 @@ export class RustPriceConfigService {
       console.warn("⚠️ 當前模式不為 Rust，PriceConfig 創建成功");
       return {
         success: true,
-        data: {
-          id: Date.now(),
-          ...processedData,
-        },
+        data: { id: Date.now(), ...processedData },
         message: "Mock 模式：PriceConfig 創建成功",
       };
     }
 
     try {
       console.log("🦀 [Rust] 創建 PriceConfig:", processedData);
-      const result = await this.base.rustFetch(
+      return await this.base.rustFetch(
         this.endpoint,
-        {
-          method: "POST",
-          body: JSON.stringify(processedData),
-        },
+        { method: "POST", body: JSON.stringify(processedData) },
         logContext,
       );
-
-      return result;
     } catch (error) {
       console.error("❌ 創建 PriceConfig 失敗:", error);
       throw error;
@@ -159,16 +140,8 @@ export class RustPriceConfigService {
 
     return await this.base.rustFetch(
       `${this.endpoint}/${id}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify(updateData),
-      },
-      {
-        service: this.serviceName,
-        operation: "updatePriceConfig",
-        id,
-        ...context,
-      },
+      { method: "PATCH", body: JSON.stringify(updateData) },
+      { service: this.serviceName, operation: "updatePriceConfig", id, ...context },
     );
   }
 
@@ -180,15 +153,8 @@ export class RustPriceConfigService {
   async deletePriceConfig(id, context = {}) {
     return await this.base.rustFetch(
       `${this.endpoint}/${id}`,
-      {
-        method: "DELETE",
-      },
-      {
-        service: this.serviceName,
-        operation: "deletePriceConfig",
-        id,
-        ...context,
-      },
+      { method: "DELETE" },
+      { service: this.serviceName, operation: "deletePriceConfig", id, ...context },
     );
   }
 
@@ -201,32 +167,194 @@ export class RustPriceConfigService {
    */
   async getPriceConfigByVersion(version, context = {}) {
     return await this.getAllPriceConfigs(
-      {
-        filter: {
-          version: { _like: version },
-        },
-      },
+      { filter: { version: { _like: version } } },
       context,
     );
   }
 
   /**
-   * 根據狀態獲取 PriceConfig
+   * 根據狀態獲取 PriceConfig（走專用路由 /by-state/:state）
    * @param {string} state - 狀態
    * @param {Object} context - 上下文信息
    */
   async getPriceConfigByState(state, context = {}) {
     return await this.base.rustFetch(
       `${this.endpoint}/by-state/${state}`,
-      {
-        method: "GET",
-      },
-      {
-        operation: "getPriceConfigByState",
-        state,
-        ...context,
-      },
+      { method: "GET" },
+      { operation: "getPriceConfigByState", state, ...context },
     );
+  }
+
+  /**
+   * 根據狀態批量獲取多種狀態的 PriceConfig
+   * 使用並發請求取得各狀態結果，並合併回傳
+   *
+   * 注意：若需要單一 SQL 查詢 (IN operator)，
+   * 需在 Rust handler 的 PriceConfigQuery 加入 states: Option<Vec<String>>
+   * 並在 get_all_price_configs 加 WHERE state IN (...) 條件
+   *
+   * @param {string[]} states - 狀態陣列，例如 ["active", "draft"]
+   * @param {Object} context - 上下文信息
+   */
+  async getPriceConfigsByState(states = [], context = {}) {
+    if (!states || states.length === 0) {
+      return { success: true, data: [], message: "未提供狀態條件" };
+    }
+
+    // 單一狀態直接走 by-state 路由
+    if (states.length === 1) {
+      return await this.getPriceConfigByState(states[0], context);
+    }
+
+    // 多狀態並發請求後合併
+    const promises = states.map((state) =>
+      this.getPriceConfigByState(state, context).catch((error) => ({
+        success: false,
+        state,
+        error: error.message,
+      })),
+    );
+
+    const results = await Promise.all(promises);
+    const successful = results.filter((r) => r.success);
+    const failed = results.filter((r) => !r.success);
+
+    const mergedData = successful.flatMap((r) =>
+      Array.isArray(r.data) ? r.data : [],
+    );
+
+    return {
+      success: failed.length === 0,
+      data: mergedData,
+      failed: failed.length > 0 ? failed : undefined,
+      message: failed.length > 0
+        ? `部分狀態請求失敗: ${failed.map((f) => f.state).join(", ")}`
+        : `共取得 ${mergedData.length} 筆記錄`,
+    };
+  }
+
+  /**
+   * 根據日期範圍獲取 PriceConfig（依 enableDate 過濾）
+   *
+   * 目前實作：拉取全量資料後在前端過濾（適合資料量小的場景）
+   *
+   * ⚠️ 若資料量大，建議在 Rust 端擴充：
+   *   1. PriceConfigQuery struct 加入 enable_date_from / enable_date_to: Option<String>
+   *   2. get_all_price_configs handler 加入：
+   *      if let Some(from) = &params.enable_date_from {
+   *          query.push_str(&format!(" AND enableDate >= '{}'", from));
+   *      }
+   *      if let Some(to) = &params.enable_date_to {
+   *          query.push_str(&format!(" AND enableDate <= '{}'", to));
+   *      }
+   *
+   * @param {string} dateFrom - 起始日期，ISO 8601 格式，例如 "2024-01-01"
+   * @param {string} dateTo   - 結束日期，ISO 8601 格式，例如 "2024-12-31"
+   * @param {Object} options  - 額外選項
+   * @param {string} options.sort  - 排序，預設 "-id"
+   * @param {number} options.limit - 筆數上限
+   * @param {Object} context  - 上下文信息
+   */
+  async getPriceConfigByDate(dateFrom, dateTo, options = {}, context = {}) {
+    if (!dateFrom && !dateTo) {
+      return { success: false, data: [], message: "需提供 dateFrom 或 dateTo" };
+    }
+
+    const from = dateFrom ? new Date(dateFrom) : null;
+    const to = dateTo ? new Date(dateTo) : null;
+
+    if (from && isNaN(from.getTime())) {
+      return { success: false, data: [], message: `dateFrom 格式無效: ${dateFrom}` };
+    }
+    if (to && isNaN(to.getTime())) {
+      return { success: false, data: [], message: `dateTo 格式無效: ${dateTo}` };
+    }
+
+    // 拉取足夠多的資料供前端過濾
+    const result = await this.getAllPriceConfigs(
+      {
+        sort: options.sort || "-id",
+        limit: options.limit || 1000,
+      },
+      { operation: "getPriceConfigByDate", ...context },
+    );
+
+    if (!result.success || !Array.isArray(result.data)) {
+      return result;
+    }
+
+    const filtered = result.data.filter((item) => {
+      // 優先用 enableDate，fallback 到 date_created
+      const raw = item.enableDate || item.enable_date || item.date_created;
+      if (!raw) return false;
+
+      const itemDate = new Date(raw);
+      if (isNaN(itemDate.getTime())) return false;
+
+      if (from && itemDate < from) return false;
+      if (to && itemDate > to) return false;
+      return true;
+    });
+
+    return {
+      success: true,
+      data: filtered,
+      message: `日期範圍 [${dateFrom ?? "*"} ~ ${dateTo ?? "*"}] 共 ${filtered.length} 筆`,
+    };
+  }
+
+  /**
+   * 獲取 PriceConfig 歷史記錄
+   * 依建立時間降序排列，支持依版本或狀態縮小範圍
+   *
+   * 注意：本方法使用現有 API 組合實現，無需修改 Rust 端
+   *
+   * @param {Object} options - 選項
+   * @param {string} options.version  - 限定版本（模糊匹配）
+   * @param {string} options.state    - 限定狀態
+   * @param {number} options.limit    - 返回筆數，預設 50
+   * @param {number} options.offset   - 偏移量，預設 0
+   * @param {Object} context - 上下文信息
+   */
+  async getPriceHistory(options = {}, context = {}) {
+    const { version, state, limit = 50, offset = 0 } = options;
+
+    const filter = {};
+    if (version) filter.version = { _like: version };
+    if (state) filter.state = { _eq: state };
+
+    const result = await this.getAllPriceConfigs(
+      {
+        sort: "-date_created",
+        limit,
+        offset,
+        ...(Object.keys(filter).length > 0 ? { filter } : {}),
+      },
+      { operation: "getPriceHistory", ...context },
+    );
+
+    if (!result.success || !Array.isArray(result.data)) {
+      return result;
+    }
+
+    // 為每筆記錄附加人類可讀的時間標籤，方便前端直接顯示
+    const history = result.data.map((item, index) => ({
+      ...item,
+      _historyIndex: offset + index + 1,
+      _createdLabel: item.date_created
+        ? new Date(item.date_created).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
+        : null,
+      _updatedLabel: item.date_updated
+        ? new Date(item.date_updated).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
+        : null,
+    }));
+
+    return {
+      success: true,
+      data: history,
+      meta: result.meta,
+      message: `共取得 ${history.length} 筆歷史記錄`,
+    };
   }
 
   /**
@@ -235,10 +363,7 @@ export class RustPriceConfigService {
    */
   async getLatestPriceConfig(context = {}) {
     return await this.getAllPriceConfigs(
-      {
-        sort: "-id",
-        limit: 1,
-      },
+      { sort: "-id", limit: 1 },
       context,
     );
   }
@@ -250,9 +375,7 @@ export class RustPriceConfigService {
   async getActivePriceConfig(context = {}) {
     return await this.getAllPriceConfigs(
       {
-        filter: {
-          state: "active",
-        },
+        filter: { state: "active" },
         sort: "-date_created",
         limit: 1,
       },
@@ -266,14 +389,8 @@ export class RustPriceConfigService {
    * @param {Object} context - 上下文信息
    */
   async searchPriceConfig(keyword, context = {}) {
-    // 由於後端目前只支持單一字段過濾，這裡使用 version 進行模糊搜索
-    // 如需同時搜索多個字段，可以在後端添加對應的搜索接口
     return await this.getAllPriceConfigs(
-      {
-        filter: {
-          version: { _like: keyword },
-        },
-      },
+      { filter: { version: { _like: keyword } } },
       context,
     );
   }
@@ -287,15 +404,9 @@ export class RustPriceConfigService {
    */
   async getPriceConfigsByIds(ids, context = {}) {
     if (!ids || ids.length === 0) {
-      return {
-        success: true,
-        data: [],
-        message: "沒有提供 ID",
-      };
+      return { success: true, data: [], message: "沒有提供 ID" };
     }
 
-    // 由於後端目前不支持批量查詢，這裡使用並發請求
-    // 注意：如果 ID 數量較多，建議後端添加批量查詢接口
     const promises = ids.map((id) =>
       this.getPriceConfigById(id, context).catch((error) => ({
         success: false,
@@ -312,8 +423,7 @@ export class RustPriceConfigService {
       success: failed.length === 0,
       data: successful,
       failed: failed.length > 0 ? failed : undefined,
-      message:
-        failed.length > 0 ? `部分請求失敗: ${failed.length} 個` : undefined,
+      message: failed.length > 0 ? `部分請求失敗: ${failed.length} 個` : undefined,
     };
   }
 
@@ -325,10 +435,7 @@ export class RustPriceConfigService {
    */
   async getAllVersions(context = {}) {
     const result = await this.getAllPriceConfigs(
-      {
-        sort: "-id",
-        limit: 1000, // 獲取足夠多的數據
-      },
+      { sort: "-id", limit: 1000 },
       context,
     );
 
@@ -358,17 +465,10 @@ export class RustPriceConfigService {
 
   // ========== 模式管理 ==========
 
-  /**
-   * 獲取當前模式
-   */
   getCurrentMode() {
     return this.base.mode;
   }
 
-  /**
-   * 設置模式（在 Rust 服務中無效，但保持接口兼容）
-   * @param {string} mode - 模式名稱
-   */
   setMode(mode) {
     console.warn(`⚠️🦀 [Rust] 服務不支持切換模式，當前固定為 rust 模式`);
     return "rust";

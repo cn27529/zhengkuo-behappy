@@ -24,6 +24,7 @@ async function loadRustServices() {
       { rustJoinRecordService },
       { rustMyDataService },
       { rustDirectusUsersService },
+      { rustPriceConfigService },            // ← 新增
     ] = await Promise.all([
       import("../rustServices/rustActivityService.js"),
       import("../rustServices/rustAuthService.js"),
@@ -32,6 +33,7 @@ async function loadRustServices() {
       import("../rustServices/rustJoinRecordService.js"),
       import("../rustServices/rustMyDataService.js"),
       import("../rustServices/rustDirectusUsersService.js"),
+      import("../rustServices/rustPriceConfigService.js"),  // ← 新增
     ]);
 
     rustServices = {
@@ -42,6 +44,7 @@ async function loadRustServices() {
       joinRecord: rustJoinRecordService,
       mydata: rustMyDataService,
       user: rustDirectusUsersService,
+      priceConfig: rustPriceConfigService,  // ← 新增
     };
 
     console.log("✅ Rust 服務加載完成");
@@ -362,8 +365,16 @@ class ServiceAdapter {
 
     // PriceConfig 方法
     const priceConfigMethods = [
+      "createPriceConfig",
+      "updatePriceConfig",
+      "deletePriceConfig",
       "getAllPriceConfigs",
       "getPriceConfigById",
+      "getPriceConfigByVersion",
+      "handlePriceConfigError",      
+      "getPriceHistory",
+      "getPriceConfigByDate",
+      "getCurrentPriceConfig",
       // 可以根據需要添加更多方法
     ];
 
@@ -603,8 +614,10 @@ class ServiceAdapter {
       "getAllPriceConfigs",
       "getPriceConfigById",
       "getPriceConfigByVersion",
-      "handlePriceConfigError",
-      "updatePriceConfig",
+      "handlePriceConfigError",      
+      "getPriceHistory",
+      "getPriceConfigByDate",
+      "getCurrentPriceConfig",
       // 可以根據需要添加更多方法
     ];
 

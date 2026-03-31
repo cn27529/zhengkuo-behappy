@@ -254,7 +254,11 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
       }
 
       console.log("📄 從服務器獲取金額設定數據...");
-      const result = await priceConfigService.getAllPriceConfigs(params);
+      //const result = await serviceAdapter.getAllPriceConfigs(params);
+      const result = await serviceAdapter.getAllPriceConfigs({
+        sort: "-id",
+        ...params,
+      });
 
       if (result.success) {
         // 確保 result.data 是數組
@@ -525,7 +529,7 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         };
       }
 
-      const result = await priceConfigService.getCurrentPriceConfig();
+      const result = await serviceAdapter.getCurrentPriceConfig();
 
       if (result.success && result.data) {
         const processedConfig = normalizePriceConfig(result.data);
@@ -582,7 +586,7 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         };
       }
 
-      const result = await priceConfigService.getPriceConfigByDate(date);
+      const result = await serviceAdapter.getPriceConfigByDate(date);
 
       if (result.success && result.data) {
         const processedConfig = normalizePriceConfig(result.data);
@@ -634,7 +638,7 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
         };
       }
 
-      const result = await priceConfigService.getPriceHistory(priceKey);
+      const result = await serviceAdapter.getPriceHistory(priceKey);
       return result;
     } catch (err) {
       error.value = err.message;
