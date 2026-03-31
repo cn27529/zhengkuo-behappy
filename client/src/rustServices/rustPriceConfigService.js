@@ -1,4 +1,5 @@
 // src/rustServices/rustPriceConfigService.js
+import { DateUtils } from "../utils/dateUtils.js";
 import { baseRustService } from "./baseRustService.js";
 
 export class RustPriceConfigService {
@@ -23,10 +24,14 @@ export class RustPriceConfigService {
    * @param {Object} context - 上下文信息
    */
   async getAllPriceConfigs(params = {}, context = {}) {
+    console.log("🦀 [Rust] 服務器獲取金額數據...");
+
     const queryParams = new URLSearchParams();
 
     if (params.sort) {
       queryParams.append("sort", params.sort);
+    } else {
+      queryParams.append("sort", "-createdAt"); // 預設 createdAt 大到小
     }
 
     if (params.limit) {
@@ -40,26 +45,55 @@ export class RustPriceConfigService {
     if (params.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         if (typeof value === "object") {
-          if (value._eq) {
-            queryParams.append(key, value._eq);
-          } else if (value._like) {
-            queryParams.append(key, value._like);
-          }
+          if (value._eq) queryParams.append(key, value._eq);
+          else if (value._like) queryParams.append(key, value._like);
         } else {
           queryParams.append(key, value);
         }
       });
     }
 
-    const endpoint = queryParams.toString()
-      ? `${this.endpoint}?${queryParams.toString()}`
-      : this.endpoint;
+    const apiUrl = `${this.endpoint}?${queryParams.toString()}`;
 
-    return await this.base.rustFetch(
-      endpoint,
-      { method: "GET" },
-      { operation: "getAllPriceConfigs", ...context },
-    );
+    try {
+      const result = await this.base.rustFetch(
+        apiUrl,
+        { method: "GET" },
+        { operation: "getAllPriceConfigs", params, ...context },
+      );
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取價格配置失敗:", error);
+      return this.handlePriceConfigError(error);
+    }
+  }
+
+  /**
+   * 生成 Mock 資料
+   */
+  generateMockData() {
+    return {
+      id: -1,
+      version: "v99",
+      state: "now",
+      prices: {
+        chaodu: 99,
+        diandeng: 99,
+        food_offering: 99,
+        life_release: 99,
+        pudu: 99,
+        qifu: 99,
+        support_temple: 99,
+        support_triple_gem: 99,
+        survivors: 0,
+        sutra_printing: 99,
+        xiaozai: 99,
+      },
+      notes: "這是一個模擬的價格配置",
+      enableDate: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
   }
 
   /**
@@ -68,11 +102,30 @@ export class RustPriceConfigService {
    * @param {Object} context - 上下文信息
    */
   async getPriceConfigById(id, context = {}) {
-    return await this.base.rustFetch(
-      `${this.endpoint}/${id}`,
-      { method: "GET" },
-      { operation: "getPriceConfigById", id, ...context },
-    );
+    if (this.base.getIsMock()) {
+      return {
+        success: true,
+        data: this.generateMockData(),
+        message: "Mock 模式：返回價格配置",
+      };
+    }
+
+    try {
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/${id}`,
+        { method: "GET" },
+        {
+          //service: this.serviceName,
+          operation: "getPriceConfigById",
+          id: recordId,
+          ...context,
+        },
+      );
+      return result;
+    } catch (error) {
+      console.error("❌ 獲取價格配置失敗:", error);
+      return this.handlePriceConfigError(error);
+    }
   }
 
   /**
@@ -141,7 +194,12 @@ export class RustPriceConfigService {
     return await this.base.rustFetch(
       `${this.endpoint}/${id}`,
       { method: "PATCH", body: JSON.stringify(updateData) },
-      { service: this.serviceName, operation: "updatePriceConfig", id, ...context },
+      {
+        service: this.serviceName,
+        operation: "updatePriceConfig",
+        id,
+        ...context,
+      },
     );
   }
 
@@ -154,7 +212,12 @@ export class RustPriceConfigService {
     return await this.base.rustFetch(
       `${this.endpoint}/${id}`,
       { method: "DELETE" },
-      { service: this.serviceName, operation: "deletePriceConfig", id, ...context },
+      {
+        service: this.serviceName,
+        operation: "deletePriceConfig",
+        id,
+        ...context,
+      },
     );
   }
 
@@ -227,9 +290,10 @@ export class RustPriceConfigService {
       success: failed.length === 0,
       data: mergedData,
       failed: failed.length > 0 ? failed : undefined,
-      message: failed.length > 0
-        ? `部分狀態請求失敗: ${failed.map((f) => f.state).join(", ")}`
-        : `共取得 ${mergedData.length} 筆記錄`,
+      message:
+        failed.length > 0
+          ? `部分狀態請求失敗: ${failed.map((f) => f.state).join(", ")}`
+          : `共取得 ${mergedData.length} 筆記錄`,
     };
   }
 
@@ -264,10 +328,18 @@ export class RustPriceConfigService {
     const to = dateTo ? new Date(dateTo) : null;
 
     if (from && isNaN(from.getTime())) {
-      return { success: false, data: [], message: `dateFrom 格式無效: ${dateFrom}` };
+      return {
+        success: false,
+        data: [],
+        message: `dateFrom 格式無效: ${dateFrom}`,
+      };
     }
     if (to && isNaN(to.getTime())) {
-      return { success: false, data: [], message: `dateTo 格式無效: ${dateTo}` };
+      return {
+        success: false,
+        data: [],
+        message: `dateTo 格式無效: ${dateTo}`,
+      };
     }
 
     // 拉取足夠多的資料供前端過濾
@@ -342,10 +414,14 @@ export class RustPriceConfigService {
       ...item,
       _historyIndex: offset + index + 1,
       _createdLabel: item.date_created
-        ? new Date(item.date_created).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
+        ? new Date(item.date_created).toLocaleString("zh-TW", {
+            timeZone: "Asia/Taipei",
+          })
         : null,
       _updatedLabel: item.date_updated
-        ? new Date(item.date_updated).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })
+        ? new Date(item.date_updated).toLocaleString("zh-TW", {
+            timeZone: "Asia/Taipei",
+          })
         : null,
     }));
 
@@ -362,10 +438,7 @@ export class RustPriceConfigService {
    * @param {Object} context - 上下文信息
    */
   async getLatestPriceConfig(context = {}) {
-    return await this.getAllPriceConfigs(
-      { sort: "-id", limit: 1 },
-      context,
-    );
+    return await this.getAllPriceConfigs({ sort: "-id", limit: 1 }, context);
   }
 
   /**
@@ -423,7 +496,8 @@ export class RustPriceConfigService {
       success: failed.length === 0,
       data: successful,
       failed: failed.length > 0 ? failed : undefined,
-      message: failed.length > 0 ? `部分請求失敗: ${failed.length} 個` : undefined,
+      message:
+        failed.length > 0 ? `部分請求失敗: ${failed.length} 個` : undefined,
     };
   }
 

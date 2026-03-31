@@ -68,20 +68,20 @@ pub struct ReceiptNumberResponse {
 
 /// 從 ReceiptNumber 到 ReceiptNumberResponse 的轉換
 impl From<ReceiptNumber> for ReceiptNumberResponse {
-    fn from(rn: ReceiptNumber) -> Self {
+    fn from(data: ReceiptNumber) -> Self {
         Self {
-            id: rn.id,
-            user_created: rn.user_created,
-            date_created: rn.date_created,
-            receipt_number: rn.receipt_number,
-            receipt_type: rn.receipt_type,
-            year_month: rn.year_month,
-            serial_number: rn.serial_number,
-            record_id: rn.record_id,
-            state: rn.state,
-            void_reason: rn.void_reason,
-            created_at: rn.created_at,
-            updated_at: rn.updated_at,
+            id: data.id,
+            user_created: data.user_created,
+            date_created: data.date_created,
+            receipt_number: data.receipt_number,
+            receipt_type: data.receipt_type,
+            year_month: data.year_month,
+            serial_number: data.serial_number,
+            record_id: data.record_id,
+            state: data.state,
+            void_reason: data.void_reason,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
         }
     }
 }

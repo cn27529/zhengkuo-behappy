@@ -5,15 +5,17 @@ use serde_json::Value as JsonValue;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct PriceConfig {
+    // Directus 系統字段
     pub id: i64,
     #[sqlx(default)]
-    pub user_created: Option<String>,
+    pub user_created: Option<String>,  // char(36) - Directus 用戶 UUID
     #[sqlx(default)]
-    pub date_created: Option<String>,
+    pub date_created: Option<String>,  // datetime
     #[sqlx(default)]
-    pub user_updated: Option<String>,
+    pub user_updated: Option<String>,  // char(36) - Directus 用戶 UUID
     #[sqlx(default)]
-    pub date_updated: Option<String>,
+    pub date_updated: Option<String>,  // datetime
+
     #[sqlx(default)]
     pub version: Option<String>,
     #[sqlx(default)]
@@ -27,12 +29,15 @@ pub struct PriceConfig {
     pub prices: Option<String>,
     #[sqlx(default)]
     pub notes: Option<String>,
-    #[sqlx(default)]
+    
+     #[sqlx(rename = "enableDate", default)]  // 確認資料庫實際欄位名
     pub enable_date: Option<String>,
-    #[sqlx(default)]
-    pub created_at: Option<String>,
-    #[sqlx(default)]
-    pub updated_at: Option<String>,
+    
+    // 自定義時間戳
+    #[sqlx(rename = "createdAt")]
+    pub created_at: Option<String>,   // varchar(255)
+    #[sqlx(rename = "updatedAt")]
+    pub updated_at: Option<String>,   // varchar(255)
 }
 
 fn serialize_json_string<S>(
@@ -107,15 +112,19 @@ pub struct PriceConfigQuery {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PriceConfigResponse {
+    
+    // Directus 系統字段
     pub id: i64,
-    #[serde(skip_serializing_if = "Option::is_none")]
+     #[serde(rename = "user_created", skip_serializing_if = "Option::is_none")]
     pub user_created: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "date_created", skip_serializing_if = "Option::is_none")]
     pub date_created: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "user_updated", skip_serializing_if = "Option::is_none")]
     pub user_updated: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "date_updated", skip_serializing_if = "Option::is_none")]
     pub date_updated: Option<String>,
+
+    // 自定義字段
     #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -126,6 +135,7 @@ pub struct PriceConfigResponse {
     pub notes: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enable_date: Option<String>,
+    
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_at: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

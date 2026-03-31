@@ -331,40 +331,40 @@ pub struct ParticipationRecordResponse {
 }
 
 impl From<ParticipationRecord> for ParticipationRecordResponse {
-    fn from(record: ParticipationRecord) -> Self {
+    fn from(data: ParticipationRecord) -> Self {
         Self {
-            id: record.id,
-            user_created: record.user_created,
-            date_created: record.date_created,
-            user_updated: record.user_updated,
-            date_updated: record.date_updated,
-            registration_id: record.registration_id,
-            activity_id: record.activity_id,
-            state: record.state,
-            items: record.items
+            id: data.id,
+            user_created: data.user_created,
+            date_created: data.date_created,
+            user_updated: data.user_updated,
+            date_updated: data.date_updated,
+            registration_id: data.registration_id,
+            activity_id: data.activity_id,
+            state: data.state,
+            items: data.items
                 .and_then(|s| serde_json::from_str(&s).ok()),
-            contact: record.contact
+            contact: data.contact
                 .and_then(|s| serde_json::from_str(&s).ok()),
-            total_amount: record.total_amount,
-            discount_amount: record.discount_amount,
-            final_amount: record.final_amount,
-            paid_amount: record.paid_amount,
-            need_receipt: record.need_receipt,
-            receipt_number: record.receipt_number,
-            receipt_issued: record.receipt_issued,
-            receipt_issued_at: record.receipt_issued_at,
-            receipt_issued_by: record.receipt_issued_by,
-            accounting_state: record.accounting_state,
-            accounting_date: record.accounting_date,
-            accounting_by: record.accounting_by,
-            accounting_notes: record.accounting_notes,
-            payment_state: record.payment_state,
-            payment_method: record.payment_method,
-            payment_date: record.payment_date,
-            payment_notes: record.payment_notes,
-            notes: record.notes,
-            created_at: record.created_at,
-            updated_at: record.updated_at,
+            total_amount: data.total_amount,
+            discount_amount: data.discount_amount,
+            final_amount: data.final_amount,
+            paid_amount: data.paid_amount,
+            need_receipt: data.need_receipt,
+            receipt_number: data.receipt_number,
+            receipt_issued: data.receipt_issued,
+            receipt_issued_at: data.receipt_issued_at,
+            receipt_issued_by: data.receipt_issued_by,
+            accounting_state: data.accounting_state,
+            accounting_date: data.accounting_date,
+            accounting_by: data.accounting_by,
+            accounting_notes: data.accounting_notes,
+            payment_state: data.payment_state,
+            payment_method: data.payment_method,
+            payment_date: data.payment_date,
+            payment_notes: data.payment_notes,
+            notes: data.notes,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
         }
     }
 }

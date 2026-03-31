@@ -180,25 +180,25 @@ pub struct RegistrationResponse {
 }
 
 impl From<Registration> for RegistrationResponse {
-    fn from(reg: Registration) -> Self {
+    fn from(data: Registration) -> Self {
         Self {
-            id: reg.id,
-            user_created: reg.user_created,
-            date_created: reg.date_created,
-            user_updated: reg.user_updated,
-            date_updated: reg.date_updated,
-            state: reg.state,
-            form_id: reg.form_id,
-            form_name: reg.form_name,
-            form_source: reg.form_source,
-            salvation: reg.salvation
+            id: data.id,
+            user_created: data.user_created,
+            date_created: data.date_created,
+            user_updated: data.user_updated,
+            date_updated: data.date_updated,
+            state: data.state,
+            form_id: data.form_id,
+            form_name: data.form_name,
+            form_source: data.form_source,
+            salvation: data.salvation
                 .and_then(|s| serde_json::from_str(&s).ok()),
-            contact: reg.contact
+            contact: data.contact
                 .and_then(|s| serde_json::from_str(&s).ok()),
-            blessing: reg.blessing
+            blessing: data.blessing
                 .and_then(|s| serde_json::from_str(&s).ok()),
-            created_at: reg.created_at,
-            updated_at: reg.updated_at,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
         }
     }
 }

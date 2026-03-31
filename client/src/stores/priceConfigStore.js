@@ -254,11 +254,11 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
       }
 
       console.log("📄 從服務器獲取金額設定數據...");
-      //const result = await serviceAdapter.getAllPriceConfigs(params);
-      const result = await serviceAdapter.getAllPriceConfigs({
-        sort: "-id",
-        ...params,
-      });
+      const result = await serviceAdapter.getAllPriceConfigs(params);
+      // const result = await serviceAdapter.getAllPriceConfigs({
+      //   sort: "-id",
+      //   ...params,
+      // });
 
       if (result.success) {
         // 確保 result.data 是數組

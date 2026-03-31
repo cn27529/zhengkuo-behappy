@@ -174,22 +174,22 @@ pub struct MonthlyDonateResponse {
 }
 
 impl From<MonthlyDonate> for MonthlyDonateResponse {
-    fn from(donate: MonthlyDonate) -> Self {
+    fn from(data: MonthlyDonate) -> Self {
         Self {
-            id: donate.id,
-            user_created: donate.user_created,
-            date_created: donate.date_created,
-            user_updated: donate.user_updated,
-            date_updated: donate.date_updated,
-            name: donate.name,
-            registration_id: donate.registration_id,
-            donate_id: donate.donate_id,
-            donate_type: donate.donate_type,
-            donate_items: donate.donate_items
+            id: data.id,
+            user_created: data.user_created,
+            date_created: data.date_created,
+            user_updated: data.user_updated,
+            date_updated: data.date_updated,
+            name: data.name,
+            registration_id: data.registration_id,
+            donate_id: data.donate_id,
+            donate_type: data.donate_type,
+            donate_items: data.donate_items
                 .and_then(|s| serde_json::from_str(&s).ok()),
-            memo: donate.memo,
-            created_at: donate.created_at,
-            updated_at: donate.updated_at,
+            memo: data.memo,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
         }
     }
 }

@@ -78,6 +78,7 @@ export class RustJoinRecordService {
       sort: "-createdAt",
       ...params,
     }).toString();
+
     const apiUrl = `${this.endpoint}?${queryParams}`;
 
     try {
@@ -96,6 +97,23 @@ export class RustJoinRecordService {
       console.error("❌ 獲取參加記錄失敗:", error);
       return this.handleParticipationRecordError(error);
     }
+  }
+
+  /**
+   * 生成 Mock 資料
+   */
+  generateMockData() {
+    return {
+      id: -1,
+      registrationId: -1,
+      activityId: -1,
+      state: "confirmed",
+      items: [],
+      totalAmount: 0,
+      finalAmount: 0,
+      createdAt: DateUtils.getCurrentISOTime(),
+      updatedAt: DateUtils.getCurrentISOTime(),
+    };
   }
 
   /**
@@ -387,23 +405,6 @@ export class RustJoinRecordService {
       yuanchen: "元辰燈",
     };
     return lampTypes[lampType] || "光明燈";
-  }
-
-  /**
-   * 生成 Mock 資料
-   */
-  generateMockData() {
-    return {
-      id: -1,
-      registrationId: -1,
-      activityId: -1,
-      state: "confirmed",
-      items: [],
-      totalAmount: 0,
-      finalAmount: 0,
-      createdAt: DateUtils.getCurrentISOTime(),
-      updatedAt: DateUtils.getCurrentISOTime(),
-    };
   }
 
   // ========== Rust 特有功能 ==========

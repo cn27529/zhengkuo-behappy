@@ -1,10 +1,10 @@
 [
   {
     "id": 4,
-    "userCreated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-    "dateCreated": "2026-03-31 01:57:45",
-    "userUpdated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "dateUpdated": "2026-03-31 06:10:52",
+    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+    "date_created": "2026-03-31 01:57:45",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-03-31 06:10:52",
     "version": "baaea8a",
     "state": "now",
     "prices": {
@@ -20,14 +20,16 @@
       "sutra_printing": 200,
       "xiaozai": 100
     },
-    "notes": "3月更新金額 for 2026年"
+    "notes": "3月更新金額 for 2026年",
+    "enableDate": "2026-03-31T01:57:45.559Z",
+    "createdAt": "2026-03-31T01:57:45.559Z"
   },
   {
     "id": 3,
-    "userCreated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "dateCreated": "2026-03-30 11:55:33",
-    "userUpdated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-    "dateUpdated": "2026-03-31 01:57:45",
+    "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_created": "2026-03-30 11:55:33",
+    "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+    "date_updated": "2026-03-31 01:57:45",
     "version": "v3",
     "state": "history",
     "prices": {
@@ -43,12 +45,15 @@
       "sutra_printing": 200,
       "xiaozai": 100
     },
-    "notes": "2026年最新調整 - 護持項目"
+    "notes": "2026年最新調整 - 護持項目",
+    "enableDate": "2026-03-01T09:15:00.000Z",
+    "createdAt": "2026-03-01T09:15:00.000Z",
+    "updatedAt": "2026-03-31T01:57:45.454Z"
   },
   {
     "id": 2,
-    "userCreated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "dateCreated": "2026-03-30 11:54:48",
+    "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_created": "2026-03-30 11:54:48",
     "version": "v2",
     "state": "history",
     "prices": {
@@ -64,12 +69,14 @@
       "sutra_printing": 180,
       "xiaozai": 90
     },
-    "notes": "2025年中調整 - 反映物價上漲"
+    "notes": "2025年中調整 - 反映物價上漲",
+    "enableDate": "2025-06-01T14:20:00.000Z",
+    "createdAt": "2025-06-01T14:20:00.000Z"
   },
   {
     "id": 1,
-    "userCreated": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "dateCreated": "2026-03-30 11:54:12",
+    "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_created": "2026-03-30 11:54:12",
     "version": "v1",
     "state": "history",
     "prices": {
@@ -85,6 +92,8 @@
       "sutra_printing": 150,
       "xiaozai": 80
     },
-    "notes": "初始版本 - 2025年1月設定"
+    "notes": "初始版本 - 2025年1月設定",
+    "enableDate": "2025-01-15T10:30:00.000Z",
+    "createdAt": "2025-01-15T10:30:00.000Z"
   }
 ]
