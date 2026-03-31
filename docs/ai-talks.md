@@ -489,3 +489,5 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 依據 rust-axum/src/handlers/my_data.rs 現有代碼規則及編程方式生成 rust-axum/src/handlers/price_config.rs，price_config.rs 的 models 為 rust-axum/src/models/price_config.rs。
 
 依據 rust-axum/src/routes/my_data.rs 現有代碼規則及編程方式生成 rust-axum/src/routes/price_config.rs，price_config.rs 需要的 handlers 為 rust-axum/src/handlers/price_config.rs。
+
+依據 client/src/rustServices/rustMyDataService.js 現有代碼規則及編程方式生成 client/src/rustServices/rustPriceConfigService.js
