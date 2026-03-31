@@ -635,14 +635,12 @@
             </div>
 
             <!-- food_offering=供齋 -->
-             <div class="activity-section">
+            <div class="activity-section">
               <div
                 class="activity-header clickable"
                 @click="toggleActivity('food_offering')"
                 :title="
-                  isAllSelected('food_offering')
-                    ? '點擊取消全選'
-                    : '點擊全選'
+                  isAllSelected('food_offering') ? '點擊取消全選' : '點擊全選'
                 "
               >
                 <span class="stat-badge">{{
@@ -1151,16 +1149,17 @@ const handleSubmitForm = async () => {
   try {
     // 確認提交對話框
     const { value: notes } = await ElMessageBox.prompt(
-      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n🖨️ 收據：${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不打印收據"}\n\n請在下方備註欄填寫相關說明：`,
+      //`確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不打印收據"}\n\n`,
+      `聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不打印收據"}\n\n`,
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
         //cancelButtonText: "取消",
-        inputPlaceholder: "請輸入備註說明（必填）",
+        inputPlaceholder: "請輸入備註說明（選填）",
         inputValidator: (value) => {
-          if (!value || value.trim() === "") {
-            return "請填寫備註說明";
-          }
+          // if (!value || value.trim() === "") {
+          //   return "請輸入備註說明（選填）";
+          // }
           return true;
         },
         inputErrorMessage: "備註說明不能為空",

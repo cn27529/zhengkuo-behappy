@@ -118,16 +118,16 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   /**
    * 從價格服務更新活動配置中的價格
    */
-  const updatePricesFromPriceConfig = async () => {
+  const renewPricesByCurrentPriceConfig = async () => {
     try {
       console.log("💰 從價格服務更新活動價格...");
-      
+
       // 獲取當前生效的價格配置
       const result = await priceConfigService.getCurrentPriceConfig();
-      
+
       if (result.success && result.data && result.data.prices) {
         const prices = result.data.prices;
-        
+
         // 更新各個活動類型的價格
         if (prices.chaodu !== undefined) {
           activityConfigs.value.chaodu.price = prices.chaodu;
@@ -137,16 +137,19 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         }
         if (prices.diandeng !== undefined) {
           activityConfigs.value.diandeng.price = prices.diandeng;
-          
+
           // 如果有點燈的燈種價格配置，也一併更新
           if (prices.diandeng_guangming !== undefined) {
-            activityConfigs.value.diandeng.lampTypes.guangming.price = prices.diandeng_guangming;
+            activityConfigs.value.diandeng.lampTypes.guangming.price =
+              prices.diandeng_guangming;
           }
           if (prices.diandeng_taisui !== undefined) {
-            activityConfigs.value.diandeng.lampTypes.taisui.price = prices.diandeng_taisui;
+            activityConfigs.value.diandeng.lampTypes.taisui.price =
+              prices.diandeng_taisui;
           }
           if (prices.diandeng_yuanchen !== undefined) {
-            activityConfigs.value.diandeng.lampTypes.yuanchen.price = prices.diandeng_yuanchen;
+            activityConfigs.value.diandeng.lampTypes.yuanchen.price =
+              prices.diandeng_yuanchen;
           }
         }
         if (prices.qifu !== undefined) {
@@ -159,7 +162,8 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
           activityConfigs.value.pudu.price = prices.pudu;
         }
         if (prices.support_triple_gem !== undefined) {
-          activityConfigs.value.support_triple_gem.price = prices.support_triple_gem;
+          activityConfigs.value.support_triple_gem.price =
+            prices.support_triple_gem;
         }
         if (prices.food_offering !== undefined) {
           activityConfigs.value.food_offering.price = prices.food_offering;
@@ -173,14 +177,14 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         if (prices.life_release !== undefined) {
           activityConfigs.value.life_release.price = prices.life_release;
         }
-        
+
         console.log("✅ 活動價格更新完成:", {
           chaodu: activityConfigs.value.chaodu.price,
           diandeng: activityConfigs.value.diandeng.price,
           qifu: activityConfigs.value.qifu.price,
           support_triple_gem: activityConfigs.value.support_triple_gem.price,
         });
-        
+
         return true;
       } else {
         console.warn("⚠️ 無法獲取價格配置，使用默認價格");
@@ -598,7 +602,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   // 初始化 - 在頁面使用前調用，更新價格配置
   const initializePrices = async () => {
     console.log("💰 初始化活動價格配置...");
-    await updatePricesFromPriceConfig();
+    await renewPricesByCurrentPriceConfig();
     console.log("✅ 活動價格配置初始化完成");
   };
 
@@ -629,13 +633,13 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     loadRegistrationData, // 載入祈福登記資料
     getAllRegistrations, // 獲取所有祈福登記
     getAllJoinRecords, // 獲取所有參加記錄
-    updateActivityPrices: updatePricesFromPriceConfig, // 更新活動價格
+    renewPricesByCurrentPriceConfig, // 更新活動價格
     initializePrices, // 初始化價格配置
-    
+
     // 獲取用戶信息
     getUserName,
     getCurrentUser,
-    
+
     // 其他方法
     getItemsSummary, // 取得項目摘要
     getItemsDetail, // 取得項目詳細清單
