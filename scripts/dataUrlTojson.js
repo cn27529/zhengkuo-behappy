@@ -30,6 +30,10 @@ const dataJsonObj = [
     dataUrl: "http://localhost:3000/api/receipt-numbers?fields=*",
     fileName: "mock_receipt_numbers.json",
   },
+  {
+    dataUrl: "http://localhost:3000/api/price-configs?fields=*",
+    fileName: "mock_priceConfigs.json",
+  },
 ];
 
 // 儲存檔案的目錄 - 設定在上層目錄

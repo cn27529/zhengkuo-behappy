@@ -1,5 +1,122 @@
 [
   {
+    "id": 84,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-31 06:11:43",
+    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_updated": "2026-03-31 06:12:05",
+    "registrationId": 117,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "護持三寶",
+        "price": 500,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "長野県長野市鬼無里日影20番15号",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "山口知江",
+            "notes": "",
+            "zodiac": "狗"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "ちえ やまぐち",
+            "notes": "",
+            "zodiac": "猴"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "Chie Yamaguchi",
+            "notes": "",
+            "zodiac": "狗"
+          },
+          {
+            "id": 5,
+            "isHouseholdHead": false,
+            "name": "山口田一",
+            "notes": "",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 2000,
+        "type": "support_triple_gem"
+      },
+      {
+        "label": "供齋",
+        "price": 200,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "長野県長野市鬼無里日影20番15号",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "山口知江",
+            "notes": "",
+            "zodiac": "狗"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "ちえ やまぐち",
+            "notes": "",
+            "zodiac": "猴"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "Chie Yamaguchi",
+            "notes": "",
+            "zodiac": "狗"
+          },
+          {
+            "id": 5,
+            "isHouseholdHead": false,
+            "name": "山口田一",
+            "notes": "",
+            "zodiac": "龍"
+          }
+        ],
+        "subtotal": 800,
+        "type": "food_offering"
+      }
+    ],
+    "contact": {
+      "mobile": "0978456123",
+      "name": "山口知江",
+      "otherRelationship": "日本遠親",
+      "phone": "",
+      "relationship": "其它"
+    },
+    "totalAmount": 2800,
+    "discountAmount": 0,
+    "finalAmount": 2800,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "26030032",
+    "receiptIssued": "stamp",
+    "receiptIssuedAt": "2026-03-31T06:12:05.760Z",
+    "receiptIssuedBy": "釋測試",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "",
+    "createdAt": "2026-03-31T06:11:43.785Z",
+    "updatedAt": "2026-03-31T06:12:05.761Z"
+  },
+  {
     "id": 83,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-03-31 04:48:38",
