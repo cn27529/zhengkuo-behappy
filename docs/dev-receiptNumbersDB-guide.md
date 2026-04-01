@@ -64,24 +64,24 @@
 -- 收據編號獨立管理表（Directus Collection: receiptNumbersDB）
 CREATE TABLE receiptNumbersDB (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  receipt_number TEXT UNIQUE NOT NULL,      -- '26029999' 或 'A26029999'
-  receipt_type TEXT NOT NULL,               -- 'stamp' 或 'standard'
-  year_month TEXT NOT NULL,                 -- '2602'
-  serial_number INTEGER NOT NULL,           -- 9999
-  record_id INTEGER NOT NULL,               -- 關聯的參加記錄ID
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  created_by TEXT,                          -- 生成人員ID
-  status TEXT DEFAULT 'active',             -- 'active', 'void', 'regenerated'
-  void_reason TEXT,                         -- 作廢原因
+  receiptNumber TEXT UNIQUE NOT NULL,      -- '26029999' 或 'A26029999'
+  receiptType TEXT NOT NULL,               -- 'stamp' 或 'standard'
+  yearMonth TEXT NOT NULL,                 -- '2602'
+  serialNumber INTEGER NOT NULL,           -- 9999
+  recordId INTEGER NOT NULL,               -- 關聯的參加記錄ID
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TEXT,                          -- 生成人員ID
+  state TEXT DEFAULT 'active',             -- 'active', 'void', 'regenerated'
+  voidReason TEXT,                         -- 作廢原因
 
-  FOREIGN KEY (record_id) REFERENCES participationRecordDB(id) ON DELETE CASCADE
+  FOREIGN KEY (recordId) REFERENCES participationRecordDB(id) ON DELETE CASCADE
 );
 
 -- 性能優化索引
-CREATE INDEX idx_receipt_year_month_type ON receiptNumbersDB(year_month, receipt_type);
-CREATE INDEX idx_receipt_record_id ON receiptNumbersDB(record_id);
-CREATE UNIQUE INDEX idx_receipt_number ON receiptNumbersDB(receipt_number);
-CREATE INDEX idx_receipt_status ON receiptNumbersDB(status);
+CREATE INDEX idx_receipt_yearMonth_type ON receiptNumbersDB(yearMonth, receiptType);
+CREATE INDEX idx_receipt_recordId ON receiptNumbersDB(recordId);
+CREATE UNIQUE INDEX idx_receipt_receiptNumber ON receiptNumbersDB(receiptNumber);
+CREATE INDEX idx_receipt_state ON receiptNumbersDB(state);
 ```
 
 **設計優勢**：
@@ -202,17 +202,17 @@ use sqlx::{SqlitePool, Transaction};
 
 #[derive(Deserialize)]
 struct GenerateReceiptNumberRequest {
-    record_id: i32,
-    receipt_type: String, // "stamp" 或 "standard"
+    recordId: i32,
+    receiptType: String, // "stamp" 或 "standard"
     user_id: String,      // 生成人員ID
 }
 
 #[derive(Serialize)]
 struct GenerateReceiptNumberResponse {
-    receipt_number: String,
+    receiptNumber: String,
 }
 
-async fn generate_receipt_number(
+async fn generate_receiptNumber(
     pool: SqlitePool,
     Json(payload): Json<GenerateReceiptNumberRequest>,
 ) -> Result<Json<GenerateReceiptNumberResponse>, StatusCode> {
@@ -221,19 +221,19 @@ async fn generate_receipt_number(
 
     // 1. 獲取當前年月 (YYMM)
     let now = chrono::Local::now();
-    let year_month = now.format("%y%m").to_string(); // "2602"
+    let yearMonth = now.format("%y%m").to_string(); // "2602"
 
     // 2. 查詢當月最大流水號（只掃描編號表，極快！）
     // 🚀 關鍵優化：只查詢當月記錄，不掃描全部參加記錄
     let max_serial: Option<i32> = sqlx::query_scalar(
-        "SELECT serial_number FROM receiptNumbersDB
-         WHERE year_month = ? AND receipt_type = ?
-         ORDER BY serial_number DESC
+        "SELECT serialNumber FROM receiptNumbersDB
+         WHERE yearMonth = ? AND receiptType = ?
+         ORDER BY serialNumber DESC
          LIMIT 1
          FOR UPDATE"
     )
-    .bind(&year_month)
-    .bind(&payload.receipt_type)
+    .bind(&yearMonth)
+    .bind(&payload.receiptType)
     .fetch_optional(&mut tx)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -246,24 +246,24 @@ async fn generate_receipt_number(
     }
 
     // 4. 生成完整編號
-    let prefix = if payload.receipt_type == "standard" {
-        format!("A{}", year_month) // "A2602"
+    let prefix = if payload.receiptType == "standard" {
+        format!("A{}", yearMonth) // "A2602"
     } else {
-        year_month.clone() // "2602"
+        yearMonth.clone() // "2602"
     };
-    let receipt_number = format!("{}{:04}", prefix, next_serial);
+    let receiptNumber = format!("{}{:04}", prefix, next_serial);
 
     // 5. 插入編號記錄（審計追蹤）
     sqlx::query(
         "INSERT INTO receiptNumbersDB
-         (receipt_number, receipt_type, year_month, serial_number, record_id, created_by)
+         (receiptNumber, receiptType, yearMonth, serialNumber, recordId, updatedAt)
          VALUES (?, ?, ?, ?, ?, ?)"
     )
-    .bind(&receipt_number)
-    .bind(&payload.receipt_type)
-    .bind(&year_month)
+    .bind(&receiptNumber)
+    .bind(&payload.receiptType)
+    .bind(&yearMonth)
     .bind(next_serial)
-    .bind(payload.record_id)
+    .bind(payload.recordId)
     .bind(&payload.user_id)
     .execute(&mut tx)
     .await
@@ -278,10 +278,10 @@ async fn generate_receipt_number(
              receiptIssuedBy = ?
          WHERE id = ?"
     )
-    .bind(&receipt_number)
-    .bind(&payload.receipt_type)
+    .bind(&receiptNumber)
+    .bind(&payload.receiptType)
     .bind(&payload.user_id)
-    .bind(payload.record_id)
+    .bind(payload.recordId)
     .execute(&mut tx)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -295,7 +295,7 @@ async fn generate_receipt_number(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(GenerateReceiptNumberResponse {
-        receipt_number,
+        receiptNumber,
     }))
 }
 ```
@@ -324,8 +324,8 @@ export const receiptService = {
           Authorization: `Bearer ${getToken()}`,
         },
         body: JSON.stringify({
-          record_id: recordId,
-          receipt_type: receiptType, // "stamp" 或 "standard"
+          recordId: recordId,
+          receiptType: receiptType, // "stamp" 或 "standard"
         }),
       });
 
@@ -335,7 +335,7 @@ export const receiptService = {
       }
 
       const data = await response.json();
-      return data.receipt_number;
+      return data.receiptNumber;
     } catch (error) {
       console.error("生成收據編號失敗:", error);
       throw error;
@@ -425,12 +425,12 @@ const handlePostPrintCheck = async () => {
 
 ```sql
 -- 添加唯一索引
-CREATE UNIQUE INDEX idx_receipt_number
+CREATE UNIQUE INDEX idx_receiptNumber
 ON participation_records(receiptNumber);
 
 -- 或使用唯一約束
 ALTER TABLE participation_records
-ADD CONSTRAINT uk_receipt_number UNIQUE (receiptNumber);
+ADD CONSTRAINT uk_receiptNumber UNIQUE (receiptNumber);
 ```
 
 #### 前端實現
@@ -886,7 +886,7 @@ const maxNumber = await getMaxSerialNumber(yearMonth, receiptType);
 ```javascript
 {
   receiptNumber: "26029999",
-  status: "void", // 作廢
+  state: "void", // 作廢
   voidReason: "打印失敗"
 }
 ```
@@ -899,15 +899,15 @@ const maxNumber = await getMaxSerialNumber(yearMonth, receiptType);
 // 批量生成編號（在同一事務中）
 async fn batch_generate_receiptNumbersDB(
     pool: SqlitePool,
-    record_ids: Vec<i32>,
-    receipt_type: String,
+    recordIds: Vec<i32>,
+    receiptType: String,
 ) -> Result<Vec<String>, StatusCode> {
     let mut tx = pool.begin().await?;
     let mut numbers = Vec::new();
 
-    for record_id in record_ids {
+    for recordId in recordIds {
         // 在同一事務中逐個生成，保證連續
-        let number = generate_next_number(&mut tx, record_id, &receipt_type).await?;
+        let number = generate_next_number(&mut tx, recordId, &receiptType).await?;
         numbers.push(number);
     }
 
@@ -925,30 +925,30 @@ async fn batch_generate_receiptNumbersDB(
 ```sql
 -- 查詢編號是否存在
 SELECT id FROM receiptNumbersDB
-WHERE receipt_number = '26029999' AND status = 'active';
+WHERE receiptNumber = '26029999' AND state = 'active';
 
 -- 查詢當月已使用數量
 SELECT COUNT(*) FROM receiptNumbersDB
-WHERE year_month = '2602' AND receipt_type = 'stamp' AND status = 'active';
+WHERE yearMonth = '2602' AND receiptType = 'stamp' AND state = 'active';
 ```
 
 ### Q7: 如何處理編號作廢和重新生成？
 
-**A**: 利用獨立表的 `status` 欄位
+**A**: 利用獨立表的 `state` 欄位
 
 ```sql
 -- 作廢編號
 UPDATE receiptNumbersDB
-SET status = 'void', void_reason = '打印失敗'
-WHERE receipt_number = '26029999';
+SET state = 'void', voidReason = '打印失敗'
+WHERE receiptNumber = '26029999';
 
 -- 重新生成（生成新編號，標記為 regenerated）
-INSERT INTO receiptNumbersDB (..., status)
+INSERT INTO receiptNumbersDB (..., state)
 VALUES (..., 'regenerated');
 
 -- 查詢有效編號（排除作廢）
 SELECT * FROM receiptNumbersDB
-WHERE status = 'active';
+WHERE state = 'active';
 ```
 
 ### Q8: 獨立編號表有什麼額外好處？
@@ -960,27 +960,27 @@ WHERE status = 'active';
 ```sql
 -- 查詢編號生成歷史
 SELECT * FROM receiptNumbersDB
-WHERE record_id = 123
-ORDER BY created_at DESC;
+WHERE recordId = 123
+ORDER BY createdAt DESC;
 ```
 
 2. **統計分析**
 
 ```sql
 -- 當月各類型收據數量
-SELECT receipt_type, COUNT(*)
+SELECT receiptType, COUNT(*)
 FROM receiptNumbersDB
-WHERE year_month = '2602'
-GROUP BY receipt_type;
+WHERE yearMonth = '2602'
+GROUP BY receiptType;
 ```
 
 3. **性能監控**
 
 ```sql
 -- 查詢生成速度（每小時生成數量）
-SELECT strftime('%H', created_at) as hour, COUNT(*)
+SELECT strftime('%H', createdAt) as hour, COUNT(*)
 FROM receiptNumbersDB
-WHERE date(created_at) = date('now')
+WHERE date(createdAt) = date('now')
 GROUP BY hour;
 ```
 
@@ -1094,8 +1094,8 @@ async function generateReceiptNumber(recordId) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        record_id: recordId,
-        receipt_type: "stamp",
+        recordId: recordId,
+        receiptType: "stamp",
       }),
     });
 
@@ -1103,11 +1103,11 @@ async function generateReceiptNumber(recordId) {
 
     if (response.ok) {
       // 檢查重複
-      if (generatedNumbers.has(data.receipt_number)) {
+      if (generatedNumbers.has(data.receiptNumber)) {
         duplicateCount++;
-        console.error(`❌ 重複編號: ${data.receipt_number}`);
+        console.error(`❌ 重複編號: ${data.receiptNumber}`);
       } else {
-        generatedNumbers.add(data.receipt_number);
+        generatedNumbers.add(data.receiptNumber);
         successCount++;
       }
     } else {
@@ -1153,7 +1153,7 @@ main();
 - [WAL 壓測文檔](./test-stress-test-wal.md) - WAL 機制驗證
 - [收據打印功能說明](./dev-joinRecord-receipt-print-guide.md)
 - [參加記錄列表](./dev-joinRecord-list-guide.md)
-- [收據打印狀態更新](./dev-receipt-print-status-update.md)
+- [收據打印狀態更新](./dev-receipt-print-state-update.md)
 
 ---
 

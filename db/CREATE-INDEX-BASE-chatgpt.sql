@@ -14,3 +14,4 @@ CREATE INDEX idx_participation_accounting_state ON participationRecordDB (accoun
 CREATE INDEX idx_participation_activity_payment ON participationRecordDB (activityId, paymentState);
 CREATE INDEX idx_participation_activity_accounting ON participationRecordDB (activityId, accountingState);
 CREATE INDEX idx_participation_registration_activity ON participationRecordDB (registrationId, activityId);
+CREATE INDEX idx_participation_receiptNumber ON participationRecordDB(receiptNumber);
