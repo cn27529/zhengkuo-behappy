@@ -2,12 +2,12 @@
 
 ## 概述說明
 
-主表：joinRecordDB 資料庫模型設計
+主表：participationRecordDB 資料庫模型設計
 
-### 1.1 主表：joinRecordDB
+### 1.1 主表：participationRecordDB
 
 ```sql
-CREATE TABLE joinRecordDB (
+CREATE TABLE participationRecordDB (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   registrationId INTEGER NOT NULL,           -- 關聯祈福登記表ID
   activityId INTEGER NOT NULL,           -- 關聯活動ID
@@ -82,7 +82,7 @@ export class JoinRecordService {
   constructor() {
     this.serviceName = "JoinRecordService";
     this.base = baseService;
-    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsJoinRecord}`;
+    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsParticipationRecord}`;
   }
 }
 ```

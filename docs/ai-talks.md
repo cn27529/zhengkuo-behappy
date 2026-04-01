@@ -496,4 +496,4 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 
 一筆參加記錄會生成一份收據, 多筆參加記錄是否也能合併生成一份收據, 這架構完全是不同的, 想知道是否能有可行的方案, 提供你文檔, 我們來分析看看研究一下是否有可行的機會, 是否能用多筆勾選的方式生成一份收據, 多筆參加記錄要計算參加項目的金額統計, 這些都要納入考量, 是否要另開資料表來記錄還是在原有的資料做記錄做區分。
 
-claude ai: docs\dev-mergedReceiptDB-guide.md
+claude ai: docs\dev-mergedReceiptsDB-guide.md
