@@ -374,7 +374,7 @@ const handleReceiptPrint = (record_id) => {
     const printId = `print_receipt_${record.id}`;
     sessionStorage.setItem(printId, printData);
     router.push({
-      path: "/join-record-receipt-print",
+      path: "/receipt-print",
       query: { print_id: printId, print_data: printData, iso_str: isoStr },
     });
   } catch (error) {
