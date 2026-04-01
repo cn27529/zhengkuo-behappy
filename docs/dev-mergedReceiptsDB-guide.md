@@ -42,9 +42,9 @@ CREATE TABLE mergedReceiptsDB (
   date_created datetime NULL,
   user_updated char(36) NULL,
   date_updated datetime NULL,
-  receiptNumber  TEXT    UNIQUE NOT NULL,   -- 佛字第 XXXX 號，由 receiptNumbersDB 原子生成
+  receiptNumber  TEXT    UNIQUE NOT NULL,    -- 佛字第 XXXX 號，由 receiptNumbersDB 原子生成
   receiptType    TEXT    NOT NULL,           -- 'stamp'（收據）或 'standard'（感謝狀）
-  mergeIds       TEXT    NOT NULL,           -- JSON 陣列字串，例如 '[1, 3, 7]'
+  mergeIds       json NULL,                  -- JSON 陣列字串，例如 '[1, 3, 7]'
   totalAmount    INTEGER NOT NULL,           -- Σ 各筆 finalAmount，後端計算寫入
   issuedAt       TIMESTAMP,                  -- 收據開立時間
   issuedBy       TEXT,                       -- 經手人
