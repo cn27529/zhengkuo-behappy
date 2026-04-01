@@ -491,3 +491,7 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 依據 rust-axum/src/routes/my_data.rs 現有代碼規則及編程方式生成 rust-axum/src/routes/price_config.rs，price_config.rs 需要的 handlers 為 rust-axum/src/handlers/price_config.rs。
 
 依據 client/src/rustServices/rustMyDataService.js 現有代碼規則及編程方式生成 client/src/rustServices/rustPriceConfigService.js
+
+## 多筆參加記錄生成一份收據
+
+一筆參加記錄會生成一份收據, 多筆參加記錄是否也能合併生成一份收據, 這架構完全是不同的, 想知道是否能有可行的方案, 提供你文檔, 我們來分析看看研究一下是否有可行的機會, 是否能用多筆勾選的方式生成一份收據, 多筆參加記錄要計算參加項目的金額統計, 這些都要納入考量, 是否要另開資料表來記錄還是在原有的資料做記錄做區分。
