@@ -503,7 +503,7 @@ const handlePrint = async () => {
 ```javascript
 // 在 JoinRecordList.vue 中
 router.push({
-  path: "/join-record-card-print",
+  path: "/card-print",
   query: {
     print_data: JSON.stringify(record),
   },

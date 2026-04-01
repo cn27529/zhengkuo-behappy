@@ -501,7 +501,7 @@ const handleCardPrint = (item) => {
     sessionStorage.setItem(printId, printData);
 
     router.push({
-      path: "/join-record-card-print",
+      path: "/card-print",
       query: { print_id: printId, print_data: printData, iso_str: isoStr },
     });
   } catch (error) {
@@ -562,7 +562,7 @@ const handleBatchCardPrint = () => {
     sessionStorage.setItem(printId, JSON.stringify(printDatas));
 
     router.push({
-      path: "/join-record-card-print",
+      path: "/card-print",
       query: {
         print_id: printId,
         ids: ids,

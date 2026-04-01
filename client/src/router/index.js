@@ -56,7 +56,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/join-record-card-print",
+    path: "/card-print",
     title: "牌位打印",
     component: () => import("../views/JoinRecordCardPrint.vue"),
     meta: { requiresAuth: true },
