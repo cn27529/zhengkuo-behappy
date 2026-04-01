@@ -1,8 +1,8 @@
-# 活動參加記錄打印功能開發指南
+# 參加記錄打印功能開發指南
 
 ## 概述說明
 
-本文檔說明活動參加記錄打印功能的實現，包括 `JoinRecordPrint.vue` 組件的開發和 `JoinRecordList.vue` 中打印功能的整合。
+本文檔說明參加記錄打印功能的實現，包括 `JoinRecordPrint.vue` 組件的開發和 `JoinRecordList.vue` 中打印功能的整合。
 
 ## 功能特點
 
@@ -104,7 +104,7 @@ const handlePrint = (item) => {
 ```javascript
 {
   path: "/join-record-print",
-  title: "活動參加記錄打印",
+  title: "參加記錄打印",
   component: () => import("../views/JoinRecordPrint.vue"),
   meta: { requiresAuth: true },
 }
@@ -142,7 +142,7 @@ const handlePrint = (item) => {
 
 ### 1. 基本打印流程
 
-1. 進入「活動參加記錄查詢」頁面
+1. 進入「參加記錄查詢」頁面
 2. 搜尋或瀏覽記錄列表
 3. 點擊記錄右側的「🖨️」打印按鈕
 4. 系統自動跳轉到打印預覽頁面

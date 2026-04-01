@@ -1296,7 +1296,7 @@ const handleReceiptPrint = (item) => {
 
 // 組件掛載
 onMounted(async () => {
-  console.log("活動參加記錄頁面已載入");
+  console.log("參加記錄頁面已載入");
   console.log("Store 狀態:", joinRecordStore);
   isDev.value = authService.getCurrentDev();
 

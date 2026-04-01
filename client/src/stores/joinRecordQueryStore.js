@@ -9,7 +9,7 @@ import { useAuthStore } from "./authStore.js";
 import { PhoneMatch } from "../utils/phoneMatchUtils.js";
 import { DateUtils } from "../utils/dateUtils.js";
 
-// 活動參加記錄查詢的 Pinia store，管理查詢狀態與操作。
+// 參加記錄查詢的 Pinia store，管理查詢狀態與操作。
 export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
   const configStore = useConfigStore();
   const authStore = useAuthStore();

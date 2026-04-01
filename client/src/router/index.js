@@ -51,7 +51,7 @@ const routes = [
   },
   {
     path: "/join-record-print",
-    title: "活動參加記錄列印",
+    title: "參加記錄列印",
     component: () => import("../views/JoinRecordPrint.vue"),
     meta: { requiresAuth: true },
   },

@@ -1,4 +1,4 @@
-# 活動參加記錄 - 收據打印功能說明
+# 參加記錄 - 收據打印功能說明
 
 > **最後更新**: 2026-02-26  
 > **測試狀態**: ✅ 已通過完整測試
@@ -1371,8 +1371,8 @@ if (currentIndex.value < batchRecords.value.length - 1) {
 ## 相關文件
 
 - [客製收據打印 Web 解決方案](./web-print-guide.md)
-- [活動參加記錄系統](./dev-joinRecord-guide.md)
-- [活動參加記錄列表](./dev-joinRecord-list-guide.md)
+- [參加記錄系統](./dev-joinRecord-guide.md)
+- [參加記錄列表](./dev-joinRecord-list-guide.md)
 - [收據打印狀態更新](./dev-receipt-print-status-update.md)
 
 ## 更新日誌

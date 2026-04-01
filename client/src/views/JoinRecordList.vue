@@ -2,9 +2,9 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>活動參加記錄查詢</h2>
+      <h2>參加記錄查詢</h2>
       <p class="page-subtitle" style="display: none">
-        查詢已提交的活動參加記錄資料
+        查詢已提交的參加記錄資料
       </p>
     </div>
 
