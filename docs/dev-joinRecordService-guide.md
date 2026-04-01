@@ -2,9 +2,11 @@
 
 ## 概述說明
 
-主表：participationRecordDB 資料庫模型設計
+joinRecordService 服務模型設計
 
-### 1.1 主表：participationRecordDB
+## 主表：participationRecordDB
+
+### 1.1
 
 ```sql
 CREATE TABLE participationRecordDB (
