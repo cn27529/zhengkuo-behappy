@@ -1,4 +1,4 @@
-# 參加記錄牌位打印功能開發指南
+# 參加記錄牌位打印 - 功能開發指南
 
 > **最後更新**: 2026-03-07  
 > **文件路徑**: `client/src/views/JoinRecordCardPrint.vue`
@@ -48,43 +48,33 @@ const record = ref({
   contact: {
     name: "聯絡人姓名",
     phone: "家用電話",
-    mobile: "手機號碼"
+    mobile: "手機號碼",
   },
   items: [
     {
-      type: "chaodu",        // 超度祈福
+      type: "chaodu", // 超度祈福
       sourceAddress: "地址",
-      sourceData: [
-        { surname: "姓氏" }
-      ]
+      sourceData: [{ surname: "姓氏" }],
     },
     {
-      type: "survivors",     // 陽上人
-      sourceData: [
-        { name: "姓名", zodiac: "生肖", notes: "備註" }
-      ]
+      type: "survivors", // 陽上人
+      sourceData: [{ name: "姓名", zodiac: "生肖", notes: "備註" }],
     },
     {
-      type: "qifu",          // 消災祈福
+      type: "qifu", // 消災祈福
       sourceAddress: "地址",
-      sourceData: [
-        { name: "姓名", zodiac: "生肖", notes: "備註" }
-      ]
+      sourceData: [{ name: "姓名", zodiac: "生肖", notes: "備註" }],
     },
     {
-      type: "xiaozai",       // 固定消災
+      type: "xiaozai", // 固定消災
       sourceAddress: "地址",
-      sourceData: [
-        { name: "姓名", zodiac: "生肖", notes: "備註" }
-      ]
+      sourceData: [{ name: "姓名", zodiac: "生肖", notes: "備註" }],
     },
     {
-      type: "diandeng",      // 點燈
-      lampDetails: [
-        { personName: "姓名", lampTypeLabel: "燈種" }
-      ]
-    }
-  ]
+      type: "diandeng", // 點燈
+      lampDetails: [{ personName: "姓名", lampTypeLabel: "燈種" }],
+    },
+  ],
 });
 ```
 
@@ -283,12 +273,12 @@ const updateDocumentTitle = () => {
 const handlePrint = async () => {
   printing.value = true;
   const node = document.getElementById("card-capture-area");
-  
+
   try {
-    const dataUrl = await htmlToImage.toPng(node, { 
-      pixelRatio: 6  // 高清生成
+    const dataUrl = await htmlToImage.toPng(node, {
+      pixelRatio: 6, // 高清生成
     });
-    
+
     printJS({
       printable: dataUrl,
       type: "image",
@@ -349,7 +339,7 @@ const handlePrint = async () => {
     <!-- 右側控制欄 -->
     <div class="config-sidebar">
       <h3>🖨️ 打印配置</h3>
-      
+
       <!-- 模版選擇 -->
       <el-radio-group v-model="selectedBg" @change="updateBg">
         <el-radio-button
@@ -515,8 +505,8 @@ const handlePrint = async () => {
 router.push({
   path: "/join-record-card-print",
   query: {
-    print_data: JSON.stringify(record)
-  }
+    print_data: JSON.stringify(record),
+  },
 });
 ```
 

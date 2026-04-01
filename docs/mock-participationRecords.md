@@ -1,4 +1,4 @@
-# 參加記錄資料結構說明
+# 參加記錄 - 資料結構說明
 
 檔案位置：`/src/data/mock_participation_records.json`
 

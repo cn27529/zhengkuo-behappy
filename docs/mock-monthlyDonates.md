@@ -1,4 +1,4 @@
-# mock_monthlyDonates.json 格式說明
+# 每月贊助 - 資料結構說明
 
 檔案位置：`/src/data/mock_monthlyDonates.json`
 

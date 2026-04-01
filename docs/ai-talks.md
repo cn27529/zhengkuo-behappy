@@ -304,9 +304,9 @@ WHERE receiptIssued<>''
 
 ## docs/dev-joinRecord-receiptNumber-guide.md
 
-依據巳經規劃的 docs/dev-joinRecord-receiptNumber-guide.md 收據編號生成機制說明，我己經將 receiptNumberDB 資料表建置好了 db/sqlite_receiptNumbersDB_table.sql，接下來我們要實現 rust-axum/src/models/receipt_number.rs，請依照現有的生成代碼，生成代碼請參照現有的 rust-axum/src/models/activity.rs，接著實現 rust-axum/src/routes/receipt_number.rs, rust-axum/src/handlers/receipt_number.rs，最後更新 rust-axum/src/main.rs，我們還需要 scripts/test_rust_receipt_number_api.sh 進行簡單測試，簡單測試完成後，第一階段就完成。我們要確認內容與資料沒有問題後，我們接著做第二階段，第二階段是同時多筆操作取號與寫入來證明取號的流水號都可正常，第二階段也OK，我們就休息一下。我們還有第三階段，就是要串接前端的 client/src/rustServices/rustReceiptNumberService.js 與 client/src/services/receiptNumberService.js，也是一樣要依據現有的代碼規劃生成代碼，一樣是參照 client/src/services/activityService.js 與 client/src/rustServices/rustActivityService.js 進行生成。第四階段我們會生成 client/src/stores/receiptNumberStore.js 將這個「收據編號生成」套用到現有的 client/src/views/JoinRecordReceiptPrint.vue 功能當中。說了這麼多也是讓你多理解現有的架構，才不會生成不正確的怪怪代碼 XD，好了共四個階段我們先把四個階段生成可執行的 docs/how-to-create-recriptNumber-guide.md 文檔，我先看過。
+依據巳經規劃的 docs/dev-joinRecord-receiptNumber-guide.md 收據編號生成機制說明，我己經將 receiptNumbersDB 資料表建置好了 db/sqlite_receiptNumbersDB_table.sql，接下來我們要實現 rust-axum/src/models/receipt_number.rs，請依照現有的生成代碼，生成代碼請參照現有的 rust-axum/src/models/activity.rs，接著實現 rust-axum/src/routes/receipt_number.rs, rust-axum/src/handlers/receipt_number.rs，最後更新 rust-axum/src/main.rs，我們還需要 scripts/test_rust_receipt_number_api.sh 進行簡單測試，簡單測試完成後，第一階段就完成。我們要確認內容與資料沒有問題後，我們接著做第二階段，第二階段是同時多筆操作取號與寫入來證明取號的流水號都可正常，第二階段也OK，我們就休息一下。我們還有第三階段，就是要串接前端的 client/src/rustServices/rustReceiptNumberService.js 與 client/src/services/receiptNumberService.js，也是一樣要依據現有的代碼規劃生成代碼，一樣是參照 client/src/services/activityService.js 與 client/src/rustServices/rustActivityService.js 進行生成。第四階段我們會生成 client/src/stores/receiptNumberStore.js 將這個「收據編號生成」套用到現有的 client/src/views/JoinRecordReceiptPrint.vue 功能當中。說了這麼多也是讓你多理解現有的架構，才不會生成不正確的怪怪代碼 XD，好了共四個階段我們先把四個階段生成可執行的 docs/how-to-create-recriptNumber-guide.md 文檔，我先看過。
 
-依據巳經規劃的 dev-joinRecord-receiptNumber-guide.md 收據編號生成機制說明，我己經將 receiptNumberDB 資料表建置好了 sqlite_receiptNumbersDB_table.sql，接下來我們要實現 models/receipt_number.rs，請依照現有的生成代碼，生成代碼請參照現有的 models/activity.rs
+依據巳經規劃的 dev-joinRecord-receiptNumber-guide.md 收據編號生成機制說明，我己經將 receiptNumbersDB 資料表建置好了 sqlite_receiptNumbersDB_table.sql，接下來我們要實現 models/receipt_number.rs，請依照現有的生成代碼，生成代碼請參照現有的 models/activity.rs
 
 請務必依照現有的 handlers/activity.rs 代碼。接著實現 handlers/receipt_number.rs
 
@@ -496,4 +496,4 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 
 一筆參加記錄會生成一份收據, 多筆參加記錄是否也能合併生成一份收據, 這架構完全是不同的, 想知道是否能有可行的方案, 提供你文檔, 我們來分析看看研究一下是否有可行的機會, 是否能用多筆勾選的方式生成一份收據, 多筆參加記錄要計算參加項目的金額統計, 這些都要納入考量, 是否要另開資料表來記錄還是在原有的資料做記錄做區分。
 
-claude ai: docs\dev-mergedReceiptsDB-guide.md
+claude ai: docs\dev-mergedReceiptDB-guide.md
