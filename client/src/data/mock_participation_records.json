@@ -1,210 +1,15 @@
 [
   {
     "id": 89,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-03-31 13:08:18",
-    "registrationId": 118,
-    "activityId": -1,
-    "state": "confirmed",
-    "items": [
-      {
-        "label": "超度/超薦",
-        "price": 888,
-        "quantity": 1,
-        "source": "salvation.ancestors",
-        "sourceAddress": "石川县金泽市上山町358-1094",
-        "sourceData": [
-          {
-            "id": 1,
-            "notes": "吉野家",
-            "surname": "吉野",
-            "zodiac": ""
-          }
-        ],
-        "subtotal": 888,
-        "type": "chaodu"
-      },
-      {
-        "label": "陽上人",
-        "price": 0,
-        "quantity": 2,
-        "source": "salvation.survivors",
-        "sourceAddress": "石川县金泽市上山町358-1094",
-        "sourceData": [
-          {
-            "id": 2,
-            "name": "吉野昭光",
-            "notes": "",
-            "zodiac": "牛"
-          },
-          {
-            "id": 3,
-            "name": "吉野重昭",
-            "notes": "",
-            "zodiac": "鼠"
-          }
-        ],
-        "subtotal": 0,
-        "type": "survivors"
-      },
-      {
-        "label": "點燈",
-        "lampDetails": [
-          {
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈",
-            "personId": 2,
-            "personName": "吉野昭光",
-            "price": 600
-          },
-          {
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈",
-            "personId": 3,
-            "personName": "吉野瑞夫",
-            "price": 600
-          },
-          {
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈",
-            "personId": 4,
-            "personName": "吉野重昭",
-            "price": 600
-          }
-        ],
-        "price": 600,
-        "quantity": 3,
-        "source": "blessing.persons",
-        "sourceAddress": "石川县金泽市上山町358-1094",
-        "sourceData": [
-          {
-            "id": 2,
-            "isHouseholdHead": true,
-            "name": "吉野昭光",
-            "notes": "",
-            "zodiac": "牛"
-          },
-          {
-            "id": 3,
-            "isHouseholdHead": false,
-            "name": "吉野瑞夫",
-            "notes": "",
-            "zodiac": "虎"
-          },
-          {
-            "id": 4,
-            "isHouseholdHead": false,
-            "name": "吉野重昭",
-            "notes": "",
-            "zodiac": "鼠"
-          }
-        ],
-        "subtotal": 1800,
-        "type": "diandeng"
-      },
-      {
-        "label": "消災祈福",
-        "price": 300,
-        "quantity": 3,
-        "source": "blessing.persons",
-        "sourceAddress": "石川县金泽市上山町358-1094",
-        "sourceData": [
-          {
-            "id": 2,
-            "isHouseholdHead": true,
-            "name": "吉野昭光",
-            "notes": "",
-            "zodiac": "牛"
-          },
-          {
-            "id": 3,
-            "isHouseholdHead": false,
-            "name": "吉野瑞夫",
-            "notes": "",
-            "zodiac": "虎"
-          },
-          {
-            "id": 4,
-            "isHouseholdHead": false,
-            "name": "吉野重昭",
-            "notes": "",
-            "zodiac": "鼠"
-          }
-        ],
-        "subtotal": 900,
-        "type": "qifu"
-      },
-      {
-        "label": "固定消災",
-        "price": 100,
-        "quantity": 3,
-        "source": "blessing.persons",
-        "sourceAddress": "石川县金泽市上山町358-1094",
-        "sourceData": [
-          {
-            "id": 2,
-            "isHouseholdHead": true,
-            "name": "吉野昭光",
-            "notes": "",
-            "zodiac": "牛"
-          },
-          {
-            "id": 3,
-            "isHouseholdHead": false,
-            "name": "吉野瑞夫",
-            "notes": "",
-            "zodiac": "虎"
-          },
-          {
-            "id": 4,
-            "isHouseholdHead": false,
-            "name": "吉野重昭",
-            "notes": "",
-            "zodiac": "鼠"
-          }
-        ],
-        "subtotal": 300,
-        "type": "xiaozai"
-      }
-    ],
-    "contact": {
-      "mobile": "0912333777",
-      "name": "吉野家一郎",
-      "otherRelationship": "",
-      "phone": "",
-      "relationship": "本家"
-    },
-    "totalAmount": 3888,
-    "discountAmount": 0,
-    "finalAmount": 3888,
-    "paidAmount": 0,
-    "needReceipt": "1",
-    "receiptNumber": "",
-    "receiptIssued": "",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
-    "accountingState": "pending",
-    "accountingDate": "",
-    "accountingBy": "",
-    "accountingNotes": "",
-    "paymentState": "",
-    "paymentMethod": "",
-    "paymentDate": "",
-    "paymentNotes": "",
-    "notes": "吉野家0331",
-    "createdAt": "2026-03-31T13:08:18.807Z"
-  },
-  {
-    "id": 88,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-03-31 13:07:54",
+    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+    "date_created": "2026-04-02 09:18:23",
     "registrationId": 115,
     "activityId": -1,
     "state": "confirmed",
     "items": [
       {
         "label": "超度/超薦",
-        "price": 888,
+        "price": 1000,
         "quantity": 1,
         "source": "salvation.ancestors",
         "sourceAddress": "京都市下京區大久町130-1075",
@@ -216,7 +21,7 @@
             "zodiac": ""
           }
         ],
-        "subtotal": 888,
+        "subtotal": 1000,
         "type": "chaodu"
       },
       {
@@ -227,20 +32,52 @@
         "sourceAddress": "京都市下京區大久町130-1075",
         "sourceData": [
           {
+            "id": 5,
+            "name": "貴大味村",
+            "notes": "",
+            "zodiac": "豬"
+          },
+          {
+            "id": 6,
+            "name": "美智子真島",
+            "notes": "",
+            "zodiac": "狗"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "京都市下京區大久町130-1075",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "吉野家一郎",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
             "id": 3,
-            "name": "貴大 味村",
+            "isHouseholdHead": false,
+            "name": "貴大味村",
             "notes": "",
             "zodiac": "豬"
           },
           {
             "id": 4,
-            "name": "吉野家一郎",
+            "isHouseholdHead": false,
+            "name": "美智子真島",
             "notes": "",
-            "zodiac": "羊"
+            "zodiac": "狗"
           }
         ],
-        "subtotal": 0,
-        "type": "survivors"
+        "subtotal": 900,
+        "type": "qifu"
       },
       {
         "label": "固定消災",
@@ -259,14 +96,14 @@
           {
             "id": 3,
             "isHouseholdHead": false,
-            "name": "貴大 味村",
+            "name": "貴大味村",
             "notes": "",
             "zodiac": "豬"
           },
           {
             "id": 4,
             "isHouseholdHead": false,
-            "name": "美智子 真島",
+            "name": "美智子真島",
             "notes": "",
             "zodiac": "狗"
           }
@@ -291,14 +128,14 @@
           {
             "id": 3,
             "isHouseholdHead": false,
-            "name": "貴大 味村",
+            "name": "貴大味村",
             "notes": "",
             "zodiac": "豬"
           },
           {
             "id": 4,
             "isHouseholdHead": false,
-            "name": "美智子 真島",
+            "name": "美智子真島",
             "notes": "",
             "zodiac": "狗"
           }
@@ -323,14 +160,14 @@
           {
             "id": 3,
             "isHouseholdHead": false,
-            "name": "貴大 味村",
+            "name": "貴大味村",
             "notes": "",
             "zodiac": "豬"
           },
           {
             "id": 4,
             "isHouseholdHead": false,
-            "name": "美智子 真島",
+            "name": "美智子真島",
             "notes": "",
             "zodiac": "狗"
           }
@@ -346,9 +183,9 @@
       "phone": "",
       "relationship": "娘家"
     },
-    "totalAmount": 3288,
+    "totalAmount": 4300,
     "discountAmount": 0,
-    "finalAmount": 3288,
+    "finalAmount": 4300,
     "paidAmount": 0,
     "needReceipt": "1",
     "receiptNumber": "",
@@ -363,8 +200,400 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "吉野家0331",
-    "createdAt": "2026-03-31T13:07:54.302Z"
+    "notes": "吉野家",
+    "createdAt": "2026-04-02T09:18:22.941Z"
+  },
+  {
+    "id": 86,
+    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+    "date_created": "2026-04-02 03:15:46",
+    "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+    "date_updated": "2026-04-02 03:22:00",
+    "registrationId": 118,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "静岡県浜松市天竜区春野町堀之内 5 丁目 33 番 6 号",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "鈴木",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "静岡県浜松市天竜区春野町堀之内 5 丁目 33 番 6 号",
+        "sourceData": [
+          {
+            "id": 4,
+            "name": "鈴木孝成",
+            "notes": "二子",
+            "zodiac": "猴"
+          },
+          {
+            "id": 5,
+            "name": "鈴木千智",
+            "notes": "長子",
+            "zodiac": "狗"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "静岡県浜松市天竜区春野町堀之内 5 丁目 33 番 6 号",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "鈴木眞衣子",
+            "notes": "媽媽",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "鈴木千智",
+            "notes": "長子",
+            "zodiac": "狗"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鈴木英則",
+            "notes": "長女",
+            "zodiac": "猴"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "鈴木孝成",
+            "notes": "二子",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 1200,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "静岡県浜松市天竜区春野町堀之内 5 丁目 33 番 6 号",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "鈴木眞衣子",
+            "notes": "媽媽",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "鈴木千智",
+            "notes": "長子",
+            "zodiac": "狗"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鈴木英則",
+            "notes": "長女",
+            "zodiac": "猴"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "鈴木孝成",
+            "notes": "二子",
+            "zodiac": "猴"
+          }
+        ],
+        "subtotal": 400,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0912333666",
+      "name": "吉野家一郎",
+      "otherRelationship": "",
+      "phone": "",
+      "relationship": "朋友"
+    },
+    "totalAmount": 2600,
+    "discountAmount": 0,
+    "finalAmount": 2600,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "cash",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "吉野合併打印",
+    "createdAt": "2026-04-02T03:15:46.115Z",
+    "updatedAt": "2026-04-02T03:22:00.615Z"
+  },
+  {
+    "id": 85,
+    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+    "date_created": "2026-04-02 03:15:32",
+    "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+    "date_updated": "2026-04-02 03:22:01",
+    "registrationId": 119,
+    "activityId": -1,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "東京都渋谷区渋谷一丁目24番地10号",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "吉野",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "東京都渋谷区渋谷一丁目24番地10号",
+        "sourceData": [
+          {
+            "id": 2,
+            "name": "吉野義直",
+            "notes": "大伯",
+            "zodiac": "猴"
+          },
+          {
+            "id": 3,
+            "name": "吉野成史",
+            "notes": "",
+            "zodiac": "羊"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "東京都渋谷区渋谷一丁目24番地10号",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "吉野義直",
+            "notes": "大伯",
+            "zodiac": "猴"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "吉野成史",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "吉野優",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "吉野佳",
+            "notes": "",
+            "zodiac": "豬"
+          }
+        ],
+        "subtotal": 1200,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "東京都渋谷区渋谷一丁目24番地10号",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "吉野義直",
+            "notes": "大伯",
+            "zodiac": "猴"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "吉野成史",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "吉野優",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "吉野佳",
+            "notes": "",
+            "zodiac": "豬"
+          }
+        ],
+        "subtotal": 400,
+        "type": "xiaozai"
+      },
+      {
+        "label": "護持三寶",
+        "price": 500,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "東京都渋谷区渋谷一丁目24番地10号",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "吉野義直",
+            "notes": "大伯",
+            "zodiac": "猴"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "吉野成史",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "吉野優",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "吉野佳",
+            "notes": "",
+            "zodiac": "豬"
+          }
+        ],
+        "subtotal": 2000,
+        "type": "support_triple_gem"
+      },
+      {
+        "label": "供齋",
+        "price": 200,
+        "quantity": 4,
+        "source": "blessing.persons",
+        "sourceAddress": "東京都渋谷区渋谷一丁目24番地10号",
+        "sourceData": [
+          {
+            "id": 1,
+            "isHouseholdHead": true,
+            "name": "吉野義直",
+            "notes": "大伯",
+            "zodiac": "猴"
+          },
+          {
+            "id": 2,
+            "isHouseholdHead": false,
+            "name": "吉野成史",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "吉野優",
+            "notes": "",
+            "zodiac": "羊"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "吉野佳",
+            "notes": "",
+            "zodiac": "豬"
+          }
+        ],
+        "subtotal": 800,
+        "type": "food_offering"
+      }
+    ],
+    "contact": {
+      "mobile": "0912333666",
+      "name": "吉野家一郎",
+      "otherRelationship": "大伯",
+      "phone": "",
+      "relationship": "其它"
+    },
+    "totalAmount": 5400,
+    "discountAmount": 0,
+    "finalAmount": 5400,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "",
+    "receiptIssued": "",
+    "receiptIssuedAt": "",
+    "receiptIssuedBy": "",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "cash",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "吉野合併打印",
+    "createdAt": "2026-04-02T03:15:31.696Z",
+    "updatedAt": "2026-04-02T03:22:00.615Z"
   },
   {
     "id": 84,
@@ -484,147 +713,30 @@
     "updatedAt": "2026-03-31T06:12:05.761Z"
   },
   {
-    "id": 82,
-    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-    "date_created": "2026-03-31 02:58:17",
-    "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-    "date_updated": "2026-03-31 02:59:02",
-    "registrationId": 114,
-    "activityId": -1,
-    "state": "confirmed",
-    "items": [
-      {
-        "label": "護持三寶",
-        "price": 200,
-        "quantity": 4,
-        "source": "blessing.persons",
-        "sourceAddress": "香港中環皇后大道中99號 中環中心 28樓 2803室",
-        "sourceData": [
-          {
-            "id": 2,
-            "isHouseholdHead": true,
-            "name": "張學油",
-            "notes": "",
-            "zodiac": "兔"
-          },
-          {
-            "id": 3,
-            "isHouseholdHead": false,
-            "name": "羅美維",
-            "notes": "",
-            "zodiac": "牛"
-          },
-          {
-            "id": 4,
-            "isHouseholdHead": false,
-            "name": "張瑤華",
-            "notes": "",
-            "zodiac": "鼠"
-          },
-          {
-            "id": 5,
-            "isHouseholdHead": false,
-            "name": "張瑤萱",
-            "notes": "",
-            "zodiac": "龍"
-          }
-        ],
-        "subtotal": 800,
-        "type": "support_triple_gem"
-      },
-      {
-        "label": "供齋",
-        "price": 200,
-        "quantity": 4,
-        "source": "blessing.persons",
-        "sourceAddress": "香港中環皇后大道中99號 中環中心 28樓 2803室",
-        "sourceData": [
-          {
-            "id": 2,
-            "isHouseholdHead": true,
-            "name": "張學油",
-            "notes": "",
-            "zodiac": "兔"
-          },
-          {
-            "id": 3,
-            "isHouseholdHead": false,
-            "name": "羅美維",
-            "notes": "",
-            "zodiac": "牛"
-          },
-          {
-            "id": 4,
-            "isHouseholdHead": false,
-            "name": "張瑤華",
-            "notes": "",
-            "zodiac": "鼠"
-          },
-          {
-            "id": 5,
-            "isHouseholdHead": false,
-            "name": "張瑤萱",
-            "notes": "",
-            "zodiac": "龍"
-          }
-        ],
-        "subtotal": 800,
-        "type": "food_offering"
-      }
-    ],
-    "contact": {
-      "mobile": "0932456789",
-      "name": "張學油",
-      "otherRelationship": "",
-      "phone": "",
-      "relationship": "朋友"
-    },
-    "totalAmount": 1600,
-    "discountAmount": 0,
-    "finalAmount": 1600,
-    "paidAmount": 0,
-    "needReceipt": "1",
-    "receiptNumber": "",
-    "receiptIssued": "",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
-    "accountingState": "pending",
-    "accountingDate": "",
-    "accountingBy": "",
-    "accountingNotes": "",
-    "paymentState": "",
-    "paymentMethod": "",
-    "paymentDate": "",
-    "paymentNotes": "",
-    "notes": "0331",
-    "createdAt": "2026-03-31T02:58:17.051Z",
-    "updatedAt": "2026-03-31T02:59:02.718Z"
-  },
-  {
-    "id": 81,
-    "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-    "date_created": "2026-03-31 02:46:45",
-    "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-    "date_updated": "2026-03-31 02:47:26",
-    "registrationId": 113,
-    "activityId": -1,
+    "id": 77,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-21 00:38:02",
+    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_updated": "2026-03-21 00:47:56",
+    "registrationId": 112,
+    "activityId": 54,
     "state": "confirmed",
     "items": [
       {
         "label": "超度/超薦",
-        "price": 888,
+        "price": 1000,
         "quantity": 1,
         "source": "salvation.ancestors",
         "sourceAddress": "香港九龍塘火車站前廣場舉行",
         "sourceData": [
           {
             "id": 1,
-            "notes": "",
-            "surname": "郭",
+            "notes": "香港",
+            "surname": "陳",
             "zodiac": ""
           }
         ],
-        "subtotal": 888,
+        "subtotal": 1000,
         "type": "chaodu"
       },
       {
@@ -636,15 +748,15 @@
         "sourceData": [
           {
             "id": 2,
-            "name": "郭付成",
-            "notes": "",
-            "zodiac": "牛"
+            "name": "陳十年",
+            "notes": "歌曲",
+            "zodiac": "猴"
           },
           {
             "id": 3,
-            "name": "鯊魚舞",
-            "notes": "",
-            "zodiac": "虎"
+            "name": "陳淘汰",
+            "notes": "歌曲",
+            "zodiac": "鼠"
           }
         ],
         "subtotal": 0,
@@ -654,28 +766,28 @@
         "label": "點燈",
         "lampDetails": [
           {
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈",
+            "lampType": "taisui",
+            "lampTypeLabel": "太歲燈",
             "personId": 2,
-            "personName": "郭付成",
-            "price": 600
+            "personName": "陳一迅",
+            "price": 800
           },
           {
-            "lampType": "guangming",
-            "lampTypeLabel": "光明燈",
+            "lampType": "yuanchen",
+            "lampTypeLabel": "元辰燈",
             "personId": 3,
-            "personName": "鯊魚舞",
-            "price": 600
+            "personName": "陳十年",
+            "price": 1000
           },
           {
             "lampType": "guangming",
             "lampTypeLabel": "光明燈",
             "personId": 4,
-            "personName": "愛不完",
+            "personName": "陳淘汰",
             "price": 600
           }
         ],
-        "price": 600,
+        "price": 800,
         "quantity": 3,
         "source": "blessing.persons",
         "sourceAddress": "香港九龍塘火車站前廣場舉行",
@@ -683,26 +795,26 @@
           {
             "id": 2,
             "isHouseholdHead": true,
-            "name": "郭付成",
-            "notes": "",
-            "zodiac": "牛"
+            "name": "陳一迅",
+            "notes": "歌手",
+            "zodiac": "馬"
           },
           {
             "id": 3,
             "isHouseholdHead": false,
-            "name": "鯊魚舞",
-            "notes": "",
-            "zodiac": "虎"
+            "name": "陳十年",
+            "notes": "歌曲",
+            "zodiac": "猴"
           },
           {
             "id": 4,
             "isHouseholdHead": false,
-            "name": "愛不完",
-            "notes": "",
-            "zodiac": "豬"
+            "name": "陳淘汰",
+            "notes": "歌曲",
+            "zodiac": "鼠"
           }
         ],
-        "subtotal": 1800,
+        "subtotal": 2400,
         "type": "diandeng"
       },
       {
@@ -715,23 +827,23 @@
           {
             "id": 2,
             "isHouseholdHead": true,
-            "name": "郭付成",
-            "notes": "",
-            "zodiac": "牛"
+            "name": "陳一迅",
+            "notes": "歌手",
+            "zodiac": "馬"
           },
           {
             "id": 3,
             "isHouseholdHead": false,
-            "name": "鯊魚舞",
-            "notes": "",
-            "zodiac": "虎"
+            "name": "陳十年",
+            "notes": "歌曲",
+            "zodiac": "猴"
           },
           {
             "id": 4,
             "isHouseholdHead": false,
-            "name": "愛不完",
-            "notes": "",
-            "zodiac": "豬"
+            "name": "陳淘汰",
+            "notes": "歌曲",
+            "zodiac": "鼠"
           }
         ],
         "subtotal": 900,
@@ -747,77 +859,45 @@
           {
             "id": 2,
             "isHouseholdHead": true,
-            "name": "郭付成",
-            "notes": "",
-            "zodiac": "牛"
+            "name": "陳一迅",
+            "notes": "歌手",
+            "zodiac": "馬"
           },
           {
             "id": 3,
             "isHouseholdHead": false,
-            "name": "鯊魚舞",
-            "notes": "",
-            "zodiac": "虎"
+            "name": "陳十年",
+            "notes": "歌曲",
+            "zodiac": "猴"
           },
           {
             "id": 4,
             "isHouseholdHead": false,
-            "name": "愛不完",
-            "notes": "",
-            "zodiac": "豬"
+            "name": "陳淘汰",
+            "notes": "歌曲",
+            "zodiac": "鼠"
           }
         ],
         "subtotal": 300,
         "type": "xiaozai"
-      },
-      {
-        "label": "護持三寶",
-        "price": 200,
-        "quantity": 3,
-        "source": "blessing.persons",
-        "sourceAddress": "香港九龍塘火車站前廣場舉行",
-        "sourceData": [
-          {
-            "id": 2,
-            "isHouseholdHead": true,
-            "name": "郭付成",
-            "notes": "",
-            "zodiac": "牛"
-          },
-          {
-            "id": 3,
-            "isHouseholdHead": false,
-            "name": "鯊魚舞",
-            "notes": "",
-            "zodiac": "虎"
-          },
-          {
-            "id": 4,
-            "isHouseholdHead": false,
-            "name": "愛不完",
-            "notes": "",
-            "zodiac": "豬"
-          }
-        ],
-        "subtotal": 600,
-        "type": "support_triple_gem"
       }
     ],
     "contact": {
-      "mobile": "0977666555",
-      "name": "郭付成",
+      "mobile": "0911666777",
+      "name": "陳一迅",
       "otherRelationship": "",
       "phone": "",
       "relationship": "本家"
     },
-    "totalAmount": 4488,
+    "totalAmount": 4000,
     "discountAmount": 0,
-    "finalAmount": 4488,
+    "finalAmount": 4000,
     "paidAmount": 0,
     "needReceipt": "1",
-    "receiptNumber": "",
-    "receiptIssued": "",
-    "receiptIssuedAt": "",
-    "receiptIssuedBy": "",
+    "receiptNumber": "26030025",
+    "receiptIssued": "stamp",
+    "receiptIssuedAt": "2026-03-21T00:47:55.888Z",
+    "receiptIssuedBy": "釋測試",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -826,9 +906,207 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "0331",
-    "createdAt": "2026-03-31T02:46:45.504Z",
-    "updatedAt": "2026-03-31T02:47:26.645Z"
+    "notes": "0321",
+    "createdAt": "2026-03-21T00:38:02.212Z",
+    "updatedAt": "2026-03-21T00:47:55.890Z"
+  },
+  {
+    "id": 76,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-03-17 14:13:18",
+    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_updated": "2026-03-17 14:13:52",
+    "registrationId": 111,
+    "activityId": 18,
+    "state": "confirmed",
+    "items": [
+      {
+        "label": "超度/超薦",
+        "price": 1000,
+        "quantity": 1,
+        "source": "salvation.ancestors",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 1,
+            "notes": "",
+            "surname": "木",
+            "zodiac": ""
+          }
+        ],
+        "subtotal": 1000,
+        "type": "chaodu"
+      },
+      {
+        "label": "陽上人",
+        "price": 0,
+        "quantity": 2,
+        "source": "salvation.survivors",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 3,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 0,
+        "type": "survivors"
+      },
+      {
+        "label": "點燈",
+        "lampDetails": [
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 2,
+            "personName": "卡卡西",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 3,
+            "personName": "鳴人",
+            "price": 600
+          },
+          {
+            "lampType": "guangming",
+            "lampTypeLabel": "光明燈",
+            "personId": 4,
+            "personName": "白眼",
+            "price": 600
+          }
+        ],
+        "price": 600,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 1800,
+        "type": "diandeng"
+      },
+      {
+        "label": "消災祈福",
+        "price": 300,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 900,
+        "type": "qifu"
+      },
+      {
+        "label": "固定消災",
+        "price": 100,
+        "quantity": 3,
+        "source": "blessing.persons",
+        "sourceAddress": "新生里7鄰新生路27巷10-1號",
+        "sourceData": [
+          {
+            "id": 2,
+            "isHouseholdHead": true,
+            "name": "卡卡西",
+            "notes": "",
+            "zodiac": "鼠"
+          },
+          {
+            "id": 3,
+            "isHouseholdHead": false,
+            "name": "鳴人",
+            "notes": "",
+            "zodiac": "兔"
+          },
+          {
+            "id": 4,
+            "isHouseholdHead": false,
+            "name": "白眼",
+            "notes": "",
+            "zodiac": "蛇"
+          }
+        ],
+        "subtotal": 300,
+        "type": "xiaozai"
+      }
+    ],
+    "contact": {
+      "mobile": "0928230520",
+      "name": "卡卡西",
+      "otherRelationship": "",
+      "phone": "08-89897766",
+      "relationship": "朋友"
+    },
+    "totalAmount": 4000,
+    "discountAmount": 0,
+    "finalAmount": 4000,
+    "paidAmount": 0,
+    "needReceipt": "1",
+    "receiptNumber": "26030023",
+    "receiptIssued": "stamp",
+    "receiptIssuedAt": "2026-03-17T14:13:52.225Z",
+    "receiptIssuedBy": "釋測試",
+    "accountingState": "pending",
+    "accountingDate": "",
+    "accountingBy": "",
+    "accountingNotes": "",
+    "paymentState": "",
+    "paymentMethod": "",
+    "paymentDate": "",
+    "paymentNotes": "",
+    "notes": "木葉村",
+    "createdAt": "2026-03-17T14:13:18.904Z",
+    "updatedAt": "2026-03-17T14:13:52.226Z"
   },
   {
     "id": 75,
