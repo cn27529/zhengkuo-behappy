@@ -278,7 +278,7 @@
         <el-table-column
           prop="totalAmount"
           label="總金額"
-          width="70"
+          width="80"
           align="center"
         >
           <template #default="{ row }">
