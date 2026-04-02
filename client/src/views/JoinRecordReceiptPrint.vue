@@ -52,7 +52,7 @@
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p>
+            <p style="display: none">
               本表單由系統自動生成(收執聯)，打印時間：{{
                 printTime
               }}｜打印編號：{{ printId }}
@@ -115,7 +115,7 @@
             中華民國 {{ rocYear }} 年 {{ currentMonth }} 月 {{ currentDay }} 日
           </div>
           <div class="print-meta">
-            <p style="display: none;">
+            <p style="display: none">
               本表單由系統自動生成(收執聯)，打印時間：{{
                 printTime
               }}｜打印編號：{{ printId }}

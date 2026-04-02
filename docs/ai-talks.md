@@ -497,3 +497,36 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 一筆參加記錄會生成一份收據, 多筆參加記錄是否也能合併生成一份收據, 這架構完全是不同的, 想知道是否能有可行的方案, 提供你文檔, 我們來分析看看研究一下是否有可行的機會, 是否能用多筆勾選的方式生成一份收據, 多筆參加記錄要計算參加項目的金額統計, 這些都要納入考量, 是否要另開資料表來記錄還是在原有的資料做記錄做區分。
 
 claude ai: docs\dev-mergedReceiptsDB-guide.md
+
+## 合併收據代碼生成
+
+依據現有代碼規則及編程風格 client/src/services/priceConfigService.js 生成 client/src/services/mergedReceiptsService.js。數據庫我已經可以由URL "http://localhost:8055/items/mergedReceiptsDB?fields=\*" 獲取資料，你可以參考資料結構
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+      "date_created": "2026-04-02T03:00:15.298Z",
+      "user_updated": null,
+      "date_updated": null,
+      "receiptNumber": "123",
+      "receiptType": "stamp",
+      "mergeIds": [1, 3, 7],
+      "totalAmount": 999,
+      "issuedAt": "2026-03-31T06:12:05.760Z",
+      "issuedBy": "釋測試",
+      "notes": null,
+      "createdAt": "2026-03-31T06:12:05.760Z",
+      "updatedAt": null
+    }
+  ]
+}
+```
+
+接下來交給你。
+
+## 合併收據代碼生成rust
+
+依據現有代碼規則及編程風格不多添加， client/src/rustServices/rustPriceConfigService.js 生成 client/src/rustServices/rustMergedReceiptsService.js。CRUD命名都要一致，因為之後會用 client/src/adapters/serviceAdapter.js 做適配。

@@ -7,6 +7,7 @@ import { joinRecordService as directusJoinRecord } from "../services/joinRecordS
 import { mydataService as directusMydata } from "../services/mydataService.js";
 import { directusUsersService as directusUsers } from "../services/directusUsersService.js";
 import { priceConfigService as directusPriceConfigService } from "../services/priceConfigService.js"; // 新增價格配置服務適配器 by 20260331
+import { mergedReceiptsService as directusMergedReceiptsService } from "../services/mergedReceiptsService.js"; // 新增合併收據服務適配器 by 20260402
 import { DateUtils } from "../utils/dateUtils.js";
 
 // Rust 服務（延遲加載，避免初始化錯誤）
@@ -24,7 +25,8 @@ async function loadRustServices() {
       { rustJoinRecordService },
       { rustMyDataService },
       { rustDirectusUsersService },
-      { rustPriceConfigService },            // ← 新增
+      { rustPriceConfigService }, // ← 新增
+      { rustMergedReceiptsService }, // ← 新增
     ] = await Promise.all([
       import("../rustServices/rustActivityService.js"),
       import("../rustServices/rustAuthService.js"),
@@ -33,7 +35,8 @@ async function loadRustServices() {
       import("../rustServices/rustJoinRecordService.js"),
       import("../rustServices/rustMyDataService.js"),
       import("../rustServices/rustDirectusUsersService.js"),
-      import("../rustServices/rustPriceConfigService.js"),  // ← 新增
+      import("../rustServices/rustPriceConfigService.js"), // ← 新增
+      import("../rustServices/rustMergedReceiptsService.js"), // ← 新增
     ]);
 
     rustServices = {
@@ -44,7 +47,8 @@ async function loadRustServices() {
       joinRecord: rustJoinRecordService,
       mydata: rustMyDataService,
       user: rustDirectusUsersService,
-      priceConfig: rustPriceConfigService,  // ← 新增
+      priceConfig: rustPriceConfigService, // ← 新增
+      mergedReceipts: rustMergedReceiptsService, // ← 新增
     };
 
     console.log("✅ Rust 服務加載完成");
@@ -82,6 +86,7 @@ class ServiceAdapter {
       mydata: directusMydata,
       user: directusUsers,
       priceConfig: directusPriceConfigService, // 新增價格配置服務適配器 by 20260331
+      mergedReceipts: directusMergedReceiptsService, // 新增合併收據服務適配器 by 20260402
     };
 
     // 錯誤計數器
@@ -371,7 +376,7 @@ class ServiceAdapter {
       "getAllPriceConfigs",
       "getPriceConfigById",
       "getPriceConfigByVersion",
-      "handlePriceConfigError",      
+      "handlePriceConfigError",
       "getPriceHistory",
       "getPriceConfigByDate",
       "getCurrentPriceConfig",
@@ -381,6 +386,55 @@ class ServiceAdapter {
     priceConfigMethods.forEach((method) => {
       this[method] = (...args) =>
         this.callServiceMethod("priceConfig", method, ...args);
+    });
+
+    // MergedReceipts 方法
+    const mergedReceiptsMethods = [
+      // CRUD 操作
+      "createMergedReceipt",
+      "updateMergedReceipt",
+      "deleteMergedReceipt",
+      "getMergedReceiptById",
+      "getAllMergedReceipts",
+
+      // 基礎查詢方法
+      "getByReceiptNumber",
+      "getMergedReceiptsByType",
+      "getMergedReceiptsHistory",
+      "getMergedReceiptsByDateRange",
+      "getMergedReceiptsByIssuer",
+
+      // 統計方法
+      "getTotalAmountByDateRange",
+      "getAmountStatsByType",
+
+      // 狀態查詢方法
+      "getMergedReceiptByState",
+      "getMergedReceiptsByState",
+
+      // 日期範圍查詢
+      "getMergedReceiptByDate",
+
+      // 批量操作
+      "getMergedReceiptsByIds",
+
+      // 其他查詢
+      "getLatestMergedReceipt",
+      "searchMergedReceipt",
+
+      // 合併檢查
+      "isReceiptMerged",
+
+      // 錯誤處理
+      "handleMergedReceiptsError",
+
+      // Mock 數據生成
+      "generateMockData",
+    ];
+
+    mergedReceiptsMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("mergedReceipts", method, ...args);
     });
   }
 
@@ -614,7 +668,7 @@ class ServiceAdapter {
       "getAllPriceConfigs",
       "getPriceConfigById",
       "getPriceConfigByVersion",
-      "handlePriceConfigError",      
+      "handlePriceConfigError",
       "getPriceHistory",
       "getPriceConfigByDate",
       "getCurrentPriceConfig",
@@ -629,9 +683,64 @@ class ServiceAdapter {
     return proxy;
   }
 
-  /**
-   * 手動切換後端
-   */
+  get mergedReceiptsService() {
+    const proxy = {
+      getCurrentMode: () => this.getCurrentMode(),
+      setMode: (mode) => this.setMode(mode),
+      getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
+    };
+
+    const methods = [
+      // CRUD 操作
+      "createMergedReceipt",
+      "updateMergedReceipt",
+      "deleteMergedReceipt",
+      "getMergedReceiptById",
+      "getAllMergedReceipts",
+
+      // 基礎查詢方法
+      "getByReceiptNumber",
+      "getMergedReceiptsByType",
+      "getMergedReceiptsHistory",
+      "getMergedReceiptsByDateRange",
+      "getMergedReceiptsByIssuer",
+
+      // 統計方法
+      "getTotalAmountByDateRange",
+      "getAmountStatsByType",
+
+      // 狀態查詢方法
+      "getMergedReceiptByState",
+      "getMergedReceiptsByState",
+
+      // 日期範圍查詢
+      "getMergedReceiptByDate",
+
+      // 批量操作
+      "getMergedReceiptsByIds",
+
+      // 其他查詢
+      "getLatestMergedReceipt",
+      "searchMergedReceipt",
+
+      // 合併檢查
+      "isReceiptMerged",
+
+      // 錯誤處理
+      "handleMergedReceiptsError",
+
+      // Mock 數據生成
+      "generateMockData",
+    ];
+
+    methods.forEach((method) => {
+      proxy[method] = (...args) =>
+        this.callServiceMethod("mergedReceipts", method, ...args);
+    });
+
+    return proxy;
+  }
   switchBackend(type) {
     if (!["directus", "axum"].includes(type)) {
       console.error("無效的後端類型");
