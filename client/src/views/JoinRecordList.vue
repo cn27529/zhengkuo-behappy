@@ -363,7 +363,8 @@
                   type="warning"
                   circle
                   @click="handleCardPrint(row)"
-                  size="small"                  
+                  size="small"
+                  v-if="false"
                 >
                   💳
                 </el-button>
