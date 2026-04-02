@@ -244,13 +244,13 @@
           <template #default="{ row }">
             <div class="action-buttons-group">
               <el-tooltip content="查看詳情" placement="top">
-                <el-button circle @click="showLogDetail(row)" type="primary">
+                <el-button circle @click="showLogDetail(row)" type="primary" size="small">
                   👁️
                 </el-button>
               </el-tooltip>
 
               <el-tooltip content="複製ID" placement="top">
-                <el-button circle @click="copyLogId(row.id)" type="info">
+                <el-button circle @click="copyLogId(row.id)" type="info" size="small">
                   📋
                 </el-button>
               </el-tooltip>

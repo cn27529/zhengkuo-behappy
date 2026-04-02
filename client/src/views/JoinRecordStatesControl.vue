@@ -371,7 +371,7 @@
         </el-table-column>
 
         <!-- 操作 -->
-        <el-table-column label="操作" width="100" fixed="right" align="center">
+        <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
             <el-button
               type="primary"
