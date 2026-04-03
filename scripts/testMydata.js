@@ -102,10 +102,10 @@ class DirectusTester {
       formName: `CLI測試-${Date.now()}`,
       state: "draft",
       contact: {
-        name: "命令行測試用戶",
+        name: "𡍼𡍼命令行測試用戶",
         phone: "02-87654321",
         mobile: "0987654321",
-        relationship: "同事",
+        relationship: "𡍼𡍼同事",
         otherRelationship: "",
       },
     };

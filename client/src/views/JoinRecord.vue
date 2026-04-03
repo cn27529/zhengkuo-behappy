@@ -417,7 +417,8 @@
                       v-model="selections.diandeng"
                     />
                     <span>{{ person.name }}</span>
-                    <span class="zodiac">({{ person.zodiac }})</span>
+                    <span class="zodiac">({{ person.zodiac }}) </span>
+
                     <span v-if="person.notes" class="notes">{{
                       person.notes
                     }}</span>
@@ -431,8 +432,11 @@
                     class="person-lamp-type"
                     v-if="selections.diandeng.includes(person)"
                   >
-                    <span class="lamp-type-label">燈種：</span>
+                    <span class="lamp-type-label" style="display: none"
+                      >燈種：</span
+                    >
                     <select
+                      disabled
                       :value="joinRecordStore.getPersonLampType(person.id)"
                       @change="
                         joinRecordStore.setPersonLampType(
@@ -885,7 +889,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { authService } from "../services/authService.js";
@@ -895,18 +899,37 @@ import { useActivityStore } from "../stores/activityStore.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
 import { storeToRefs } from "pinia";
 import appConfig from "../config/appConfig.js";
-import { el } from "element-plus/es/locale/index.mjs";
 import { BoolUtils } from "../utils/boolUtils.js";
+import { useTaiSuiStore } from "../stores/taisuiStore.js";
 
 const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
 const pageStateStore = usePageStateStore();
 const router = useRouter();
+const taiSuiStore = useTaiSuiStore(); // 太歲資料存取
 
 // 狀態管理
 const isDev = computed(() => authService.getCurrentDev());
 const selectedActivityId = ref(null);
 const needReceipt = ref("0"); // 是否需要收據（'0'=不需要，'1'=需要）
+
+const currentYear = new Date().getFullYear();
+const currentTableData = taiSuiStore.getDotLampTableData(currentYear);
+// 根據生肖獲取燈種 key (guangming/taisui/yuanchen)
+const getLampByZodiac = (zodiac) => {
+  if (!zodiac) return "guangming";
+  try {
+    const lampInfo = currentTableData.getLampInfoByZodiac(zodiac);
+    const map = {
+      光明燈: "guangming",
+      太歲燈: "taisui",
+      元辰燈: "yuanchen",
+    };
+    return map[lampInfo?.lampName] || "guangming";
+  } catch (error) {
+    return "guangming";
+  }
+};
 
 const {
   activityConfigs,
@@ -1091,8 +1114,30 @@ const toggleActivity = (activityKey) => {
 };
 
 // 選擇祈福登記
-const handleSelectRegistration = (reg) => {
+// const handleSelectRegistration = (reg) => {
+//   joinRecordStore.setRegistration(reg);
+// };
+
+// 修改 handleSelectRegistration 函數
+const handleSelectRegistration = async (reg) => {
   joinRecordStore.setRegistration(reg);
+
+  // 自動設置點燈燈種
+  nextTick(() => {
+    const diandengPersons = joinRecordStore.getSourceData(
+      reg,
+      "blessing.persons",
+    );
+    diandengPersons.forEach((person) => {
+      if (person.zodiac) {
+        const lampKey = getLampByZodiac(person.zodiac);
+        console.log(
+          `為 ${person.name} (${person.zodiac}) 設置預設燈種: ${lampKey}`,
+        );
+        joinRecordStore.setPersonLampType(person.id, lampKey);
+      }
+    });
+  });
 };
 
 // 重置選擇
@@ -1313,6 +1358,22 @@ onMounted(async () => {
     console.log("恢復活動選擇:", selectedActivityId.value);
   }
 });
+
+// 監聽活動變化，重新設置燈種
+// watch(
+//   () => selectedRegistration.value?.formId,
+//   (newFormId) => {
+//     const diandengPersons = joinRecordStore.getSourceData(
+//       selectedRegistration.value,
+//       "blessing.persons",
+//     );
+//     diandengPersons.forEach((person) => {
+//       // 重新計算並設置（覆蓋舊的）
+//       const lampKey = getLampByZodiac(person.zodiac);
+//       joinRecordStore.setPersonLampType(person.id, lampKey);
+//     });
+//   },
+// );
 </script>
 
 <style scoped>
