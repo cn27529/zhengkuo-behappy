@@ -9,24 +9,24 @@
         /* 載入思源宋體 (你上傳的檔案) */
         @font-face {
             font-family: 'SourceHanSerif';
-            src: url('SourceHanSerifTC-Light.woff2') format('woff2');
+            src: url('./SourceHanSerifTC-Light.woff2') format('woff2');
             font-weight: 300;
             font-style: normal;
             font-display: swap;
         }
 
         /* 預留：如果你以後把全字庫 ttf 轉成 woff2，可以開啟這段 */
-        /*
+
         @font-face {
             font-family: 'EBAS_Backup';
-            src: url('ebas927.woff2') format('woff2');
+            src: url('./ebas927.woff2') format('woff2');
             font-weight: normal;
             font-display: swap;
         }
-        */
+
 
         body {
-            font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+            font-family: 'SourceHanSerif', 'EBAS_Backup', 'Microsoft JhengHei', serif;
             line-height: 1.8;
             padding: 40px 20px;
             background-color: #f4f7f9;
