@@ -7,3 +7,4 @@ pub mod my_data;
 pub mod receipt_number; // ✅ 新增：收據編號模型
 pub mod directus_users;
 pub mod price_config; // ✅ 新增：價格配置模型 by 20260331
+pub mod merged_receipts; // ✅ 新增：合併收據模型 by 20260404

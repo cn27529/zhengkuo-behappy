@@ -147,6 +147,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let receipt_number_routes = routes::receipt_number::create_routes(); // ✅ 新增：收據編號路由
     let directus_users_routes = routes::directus_users::create_routes();
     let price_config_routes = routes::price_config::create_routes(); // ✅ 新增：價格配置路由 by 20260331
+    let merged_receipts_routes = routes::merged_receipts::create_routes(); // ✅ 新增：合併收據路由 by 20260404
 
     // ✅ 創建 SqliteProvider(DatabaseProvider 的實現)
     let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
@@ -169,6 +170,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(receipt_number_routes) // ✅ 新增：合併收據編號路由
         .merge(directus_users_routes)
         .merge(price_config_routes) // ✅ 新增：價格配置路由 by 20260331
+        .merge(merged_receipts_routes) // ✅ 新增：合併收據路由 by 20260404
         // Add the SQL viewer at /sql-viewer
         .merge(sql_viewer_router)
         .layer(Extension(state.clone()))
@@ -202,7 +204,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /api/receipt-numbers        - 收據編號歷史記錄");
     tracing::info!("  GET    /api/directus-users         - DIRECTUS使用者");
     tracing::info!("  GET    /api/price-config           - 價格配置列表"); // ✅ 新增：價格配置端點 by 20260331
-    tracing::info!("  POST   /api/price-config         - 創建價格配置"); // ✅ 新增：價格配置端點 by 20260331
+    tracing::info!("  GET    /api/merged-receipts        - 合併收據列表"); // ✅ 新增：合併收據端點 by 20260404
     
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");

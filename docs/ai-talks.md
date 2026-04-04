@@ -527,6 +527,12 @@ claude ai: docs\dev-mergedReceiptsDB-guide.md
 
 接下來交給你。
 
-## 合併收據代碼生成rust
+## 合併收據 client 代碼生成
 
 依據現有代碼規則及編程風格不多添加， client/src/rustServices/rustPriceConfigService.js 生成 client/src/rustServices/rustMergedReceiptsService.js。CRUD命名都要一致，因為之後會用 client/src/adapters/serviceAdapter.js 做適配。
+
+## 合併收據 rust 代碼生成
+
+依據 rust-axum/src/handlers/price_config.rs 現有代碼規則、編程風格、註解，不多添加。生成 CRUD 的 rust-axum/src/handlers/merged_receipts.rs 代碼。
+
+依據 rust-axum/src/routes/price_config.rs 現有代碼規則、編程風格、註解，不多添加。生成 CRUD 的 rust-axum/src/routes/merged_receipts.rs 代碼。
