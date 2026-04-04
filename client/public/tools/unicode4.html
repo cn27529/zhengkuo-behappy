@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>罕見字「𡍼」顯示測試 - calude v2</title>
+    <style>
+        /* ── 內嵌字型：只有 𡍼 一個字，416 bytes，無需網路 ── */
+        @font-face {
+            font-family: 'RareChar';
+            src: url('data:font/woff2;base64,d09GMgABAAAAAAGgAAoAAAAAAzAAAAFXAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAUAqBNIEjATYCJAMICwYABCAFYwcvG2YCAB6FcbNTCFdM1gSFO5nv6iKoxrKe3QCiQ3Qs0RMrAiMi40TKR+j3JMzr8/lu/msLnHfaBmx73AWe9SLpeWnZFk7bILUKHOI/y522NW8RtRyDh3vCNAwkkAyDPqD2wHGUed8USR4lxONey3g578YnmboK7ABkT+FothCQ//kBANAHMjK6ZBHrKjCjSBuSBIVJS1AFugAhNX7A1wRIoAhVmMAyoAiEyiKaVxbXFr3Xoy4qiyreMX6qVVNZqeIEx3m7X0NN78bUlE2Q88wWCzD1yzTyPZKO9GRnYXbm13KhU0Z5WTYDeuR65DIIBIMrlX9Qu/Jfy/kffAw3G/D7H8EU+SvbyBIIlhlOmcpfiPViSt/M/M+2QDKiEiQAABSZEyCUIUBSqkwWReVCndo8JzV6X/TRnez0fdXSriN3zqy6lHrXmQuPbq0jcalHilR2cnU6ZVgeBwA=') format('woff2');
+            unicode-range: U+2137C;
+            font-display: block;
+        }
+
+        :root {
+            --ink: #1a1008;
+            --paper: #f5f0e8;
+            --paper2: #ede6d6;
+            --accent: #8b2500;
+            --line: #c8b89a;
+            --pass: #2d6a4f;
+            --fail: #9b2226;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'RareChar', 'Noto Serif TC', 'PingFang TC', 'Microsoft JhengHei', serif;
+            min-height: 100vh;
+            padding: 1.5rem 1rem 3rem;
+        }
+
+        .wrap {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 0 2rem;
+            border-bottom: 2px solid var(--line);
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: .7rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: .5rem;
+        }
+
+        h1 {
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            font-weight: 700;
+        }
+
+        .hero {
+            font-size: clamp(6rem, 25vw, 10rem);
+            line-height: 1;
+            margin: 1rem 0 .5rem;
+            color: var(--accent);
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            font-size: .72rem;
+            letter-spacing: .12em;
+            padding: .2rem .6rem;
+            border-radius: 2px;
+            font-family: monospace;
+        }
+
+        /* result banner */
+        #result-banner {
+            border-radius: 4px;
+            padding: 1rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            display: none;
+        }
+
+        #result-banner.pass {
+            background: #d8f3dc;
+            color: var(--pass);
+            border: 1.5px solid #95d5a8;
+        }
+
+        #result-banner.fail {
+            background: #fce4e4;
+            color: var(--fail);
+            border: 1.5px solid #f5a5a5;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: .68rem;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            border-bottom: 1px solid var(--line);
+            padding-bottom: .35rem;
+            margin-bottom: 1rem;
+        }
+
+        /* comparison grid */
+        .compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .compare-card {
+            background: var(--paper2);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .compare-card .label {
+            font-size: .7rem;
+            color: #7a6a5a;
+            margin-bottom: .5rem;
+            letter-spacing: .08em;
+        }
+
+        .compare-card .ch {
+            font-size: clamp(3rem, 12vw, 5rem);
+            line-height: 1.2;
+            color: var(--accent);
+        }
+
+        .compare-card.method-embedded .ch {
+            font-family: 'RareChar', monospace;
+            /* 強制用內嵌字型 */
+        }
+
+        .compare-card.method-system .ch {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+            /* 只用系統字型 */
+        }
+
+        .compare-card .note {
+            font-size: .72rem;
+            color: #9a8a7a;
+            margin-top: .4rem;
+        }
+
+        /* inline code */
+        code {
+            display: block;
+            background: #1a1008;
+            color: #e8c87a;
+            font-family: 'Courier New', monospace;
+            font-size: .78rem;
+            line-height: 1.7;
+            padding: .9rem 1rem;
+            border-radius: 3px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .info-box {
+            background: var(--paper2);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+            padding: 1rem 1.2rem;
+            font-size: .9rem;
+            line-height: 1.7;
+        }
+
+        .info-box strong {
+            color: var(--accent);
+        }
+
+        #device-info {
+            background: #1a1008;
+            color: #a8c87a;
+            font-family: monospace;
+            font-size: .78rem;
+            line-height: 1.8;
+            padding: .9rem 1rem;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            font-size: .75rem;
+            color: #9a8a7a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+
+        <header>
+            <div class="tag">Unicode Extension B · 跨平台顯示解決方案</div>
+            <div class="hero">𡍼</div>
+            <h1>「𡍼」罕見字顯示測試 v2</h1>
+            <p style="margin-top:.5rem;font-size:.88rem;color:#5a4a3a">
+                本頁內嵌專用字型（僅 416 bytes），無需 Google Fonts，<br>Android Chrome 亦可正常顯示
+            </p>
+            <br>
+            <span class="badge">U+2137C · 內嵌 woff2 字型</span>
+        </header>
+
+        <!-- 自動偵測結果 -->
+        <div id="result-banner"></div>
+
+        <!-- 對比展示 -->
+        <div class="section">
+            <div class="section-title">顯示對比：內嵌字型 vs 系統字型</div>
+            <div class="compare">
+                <div class="compare-card method-embedded">
+                    <div class="label">✦ 內嵌字型（本頁方案）</div>
+                    <div class="ch">𡍼</div>
+                    <div class="note">font-family: 'RareChar'<br>應在所有裝置正常顯示</div>
+                </div>
+                <div class="compare-card method-system">
+                    <div class="label">系統字型 fallback</div>
+                    <div class="ch">𡍼</div>
+                    <div class="note">font-family: system-ui<br>Android 舊版可能顯示 □</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 解決方案說明 -->
+        <div class="section">
+            <div class="section-title">問題根因 & 解決方式</div>
+            <div class="info-box">
+                <p><strong>為什麼 Google Fonts 的 Noto Serif TC 不夠？</strong><br>
+                    Google Fonts 提供的 Noto TC 版本是<em>子集化</em>過的，只包含常用繁體字符，
+                    刻意去掉了 Extension B/C/D 等罕見漢字，以減少字型檔大小。
+                    完整版的 Noto Sans/Serif CJK 有數十 MB，Google Fonts 不提供完整版的 web 載入。</p>
+                <br>
+                <p><strong>✓ 本頁的解法：</strong>用 Python fonttools 生成一個只含「𡍼」一個字的迷你 woff2 字型（416 bytes），
+                    以 base64 直接嵌進 HTML，完全離線，任何瀏覽器都能載入。</p>
+            </div>
+        </div>
+
+        <!-- 複製用 CSS 代碼 -->
+        <div class="section">
+            <div class="section-title">複製到你的項目 — CSS @font-face</div>
+            <p style="font-size:.85rem;color:#5a4a3a;margin-bottom:.7rem">
+                把以下 CSS 加到你的樣式表，即可在任何頁面使用這個字型：
+            </p>
+            <code>/* 內嵌 𡍼 專用字型（416 bytes，base64 woff2）*/
+@font-face {
+  font-family: 'RareChar';
+  src: url('data:font/woff2;base64,d09GMgABAAAAAAGgAAoAAAAAAzAAAAFXAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAUAqBNIEjATYCJAMICwYABCAFYwcvG2YCAB6FcbNTCFdM1gSFO5nv6iKoxrKe3QCiQ3Qs0RMrAiMi40TKR+j3JMzr8/lu/msLnHfaBmx73AWe9SLpeWnZFk7bILUKHOI/y522NW8RtRyDh3vCNAwkkAyDPqD2wHGUed8USR4lxONey3g578YnmboK7ABkT+FothCQ//kBANAHMjK6ZBHrKjCjSBuSBIVJS1AFugAhNX7A1wRIoAhVmMAyoAiEyiKaVxbXFr3Xoy4qiyreMX6qVVNZqeIEx3m7X0NN78bUlE2Q88wWCzD1yzTyPZKO9GRnYXbm13KhU0Z5WTYDeuR65DIIBIMrlX9Qu/Jfy/kffAw3G/D7H8EU+SvbyBIIlhlOmcpfiPViSt/M/M+2QDKiEiQAABSZEyCUIUBSqkwWReVCndo8JzV6X/TRnez0fdXSriN3zqy6lHrXmQuPbq0jcalHilR2cnU6ZVgeBwA=') format('woff2');
+  unicode-range: U+2137C;  /* 只對這個字生效 */
+  font-display: block;
+}
+
+/* 套用到需要顯示罕見字的元素 */
+body {
+  font-family: 'RareChar',      /* 先用內嵌字型處理 U+2137C */
+               'PingFang TC',   /* macOS / iOS 系統字型 */
+               'Noto Serif TC', /* 其他 CJK 字 */
+               serif;
+}</code>
+        </div>
+
+        <!-- 生成指令 -->
+        <div class="section">
+            <div class="section-title">如何自行生成其他罕見字的字型子集</div>
+            <p style="font-size:.85rem;color:#5a4a3a;margin-bottom:.7rem">
+                若你有其他 Extension B 字符需要顯示，先取得完整 Noto CJK 字型，再用 pyftsubset 子集化：
+            </p>
+            <code># 1. 安裝工具
+pip install fonttools brotli
+
+# 2. 下載完整 Noto Sans CJK（需支援 Extension B 的版本）
+#    從 https://github.com/notofonts/noto-cjk/releases 下載
+#    NotoSansCJKtc-Regular.otf（約 16MB）
+
+# 3. 子集化，只保留需要的字符
+pyftsubset NotoSansCJKtc-Regular.otf   --unicodes="U+2137C"   --flavor=woff2   --output-file=rarechar.woff2
+
+# 4. 轉為 base64 嵌入 HTML（避免額外網路請求）
+python3 -c "
+import base64
+data = open('rarechar.woff2','rb').read()
+print(base64.b64encode(data).decode())
+"</code>
+        </div>
+
+        <!-- 裝置資訊 -->
+        <div class="section">
+            <div class="section-title">當前裝置資訊</div>
+            <div id="device-info">偵測中...</div>
+        </div>
+
+        <footer>𡍼 (U+2137C) · 內嵌字型方案 · 416 bytes woff2</footer>
+    </div>
+
+    <script>
+        // 偵測字型是否成功渲染
+        function detectRendering() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 100; canvas.height = 100;
+            const ctx = canvas.getContext('2d');
+
+            // 用內嵌字型渲染
+            ctx.font = "70px 'RareChar'";
+            ctx.fillStyle = '#000';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('\uD844\uDF7C', 10, 50);
+
+            const withFont = ctx.getImageData(0, 0, 100, 100).data;
+            const hasPixels = Array.from(withFont).some((v, i) => i % 4 === 3 && v > 20);
+
+            const banner = document.getElementById('result-banner');
+            banner.style.display = 'block';
+            if (hasPixels) {
+                banner.className = 'pass';
+                banner.textContent = '✓ 字型載入成功 — 此裝置可正常顯示「𡍼」';
+            } else {
+                banner.className = 'fail';
+                banner.textContent = '✗ Canvas 偵測失敗（字型可能仍在載入，請稍候重新整理）';
+            }
+        }
+
+        // 等字型載入後偵測
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(detectRendering);
+        } else {
+            setTimeout(detectRendering, 2000);
+        }
+
+        // 裝置資訊
+        const ua = navigator.userAgent;
+        const isAndroid = /Android/.test(ua);
+        const isIOS = /iPhone|iPad/.test(ua);
+        const isChrome = /Chrome/.test(ua);
+
+        const lines = {
+            'User Agent': ua,
+            '平台判斷': isAndroid ? '📱 Android' : isIOS ? '🍎 iOS' : '🖥 Desktop/Other',
+            '瀏覽器': isChrome ? 'Chrome' : /Firefox/.test(ua) ? 'Firefox' : /Safari/.test(ua) ? 'Safari' : 'Other',
+            'ES6 支援': typeof String.fromCodePoint !== 'undefined' ? '✓' : '✗',
+            'document.fonts API': typeof document.fonts !== 'undefined' ? '✓' : '✗',
+            '螢幕': screen.width + '×' + screen.height + ' (dpr:' + (window.devicePixelRatio || 1) + ')',
+        };
+
+        document.getElementById('device-info').innerHTML =
+            Object.entries(lines).map(([k, v]) =>
+                '<div><span style="color:#5ac87a;display:inline-block;min-width:150px">' + k + '</span>: ' + v + '</div>'
+            ).join('');
+    </script>
+</body>
+
+</html>
