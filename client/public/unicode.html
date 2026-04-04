@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>罕見字「𡍼」顯示測試 - calude</title>
+
+    <!-- 方案一：Noto Sans CJK (最廣覆蓋的 CJK 字型) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Noto Serif CJK TC 支援延伸漢字 -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #1a1008;
+            --paper: #f5f0e8;
+            --paper2: #ede6d6;
+            --accent: #8b2500;
+            --accent2: #c4501a;
+            --line: #c8b89a;
+            --pass: #2d6a4f;
+            --fail: #9b2226;
+            --unknown: #7d6608;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'Noto Serif TC', 'Noto Sans CJK TC', serif;
+            min-height: 100vh;
+            padding: 2rem 1rem 4rem;
+        }
+
+        /* 噪點質感背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrap {
+            max-width: 760px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            padding: 2rem 0 2.5rem;
+            border-bottom: 2px solid var(--line);
+            margin-bottom: 2.5rem;
+        }
+
+        header .label {
+            font-size: .75rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: .6rem;
+        }
+
+        header h1 {
+            font-size: clamp(1.6rem, 5vw, 2.4rem);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        header .sub {
+            margin-top: .7rem;
+            font-size: .95rem;
+            color: #5a4a3a;
+            line-height: 1.6;
+        }
+
+        .char-hero {
+            font-size: clamp(5rem, 20vw, 9rem);
+            line-height: 1.1;
+            margin: 1.2rem 0 .5rem;
+            color: var(--accent);
+            text-shadow: 3px 3px 0 #c4501a33;
+        }
+
+        .unicode-badge {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            font-size: .75rem;
+            letter-spacing: .12em;
+            padding: .25rem .7rem;
+            border-radius: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ── Section titles ── */
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: .7rem;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            border-bottom: 1px solid var(--line);
+            padding-bottom: .4rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* ── Info cards ── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: var(--paper2);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 1rem 1.1rem;
+        }
+
+        .info-card .key {
+            font-size: .7rem;
+            letter-spacing: .1em;
+            color: #7a6a5a;
+            margin-bottom: .3rem;
+        }
+
+        .info-card .val {
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ── Test rows ── */
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .93rem;
+        }
+
+        .test-table th {
+            text-align: left;
+            font-size: .7rem;
+            letter-spacing: .15em;
+            color: var(--accent);
+            border-bottom: 2px solid var(--line);
+            padding: .5rem .7rem;
+        }
+
+        .test-table td {
+            padding: .75rem .7rem;
+            border-bottom: 1px solid #ddd4c0;
+            vertical-align: middle;
+        }
+
+        .test-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .test-table .char-cell {
+            font-size: 2rem;
+            width: 60px;
+            text-align: center;
+        }
+
+        .test-table .method {
+            font-size: .8rem;
+            color: #7a6a5a;
+            margin-top: .2rem;
+            font-family: monospace;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: .68rem;
+            letter-spacing: .08em;
+            padding: .2rem .55rem;
+            border-radius: 2px;
+            font-weight: 700;
+        }
+
+        .badge-check {
+            background: #d8f3dc;
+            color: var(--pass);
+        }
+
+        .badge-warn {
+            background: #fff3cd;
+            color: var(--unknown);
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* ── Font stack tests ── */
+        .font-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .font-card {
+            background: var(--paper2);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 1rem 1.2rem;
+            position: relative;
+        }
+
+        .font-card .font-name {
+            font-size: .72rem;
+            letter-spacing: .1em;
+            color: #7a6a5a;
+            margin-bottom: .5rem;
+            font-family: monospace;
+        }
+
+        .font-card .preview {
+            font-size: 2.4rem;
+            line-height: 1.3;
+        }
+
+        .font-card .context {
+            font-size: .9rem;
+            color: #5a4a3a;
+            margin-top: .4rem;
+        }
+
+        /* Each card uses its own font-family */
+        .f-noto-serif {
+            font-family: 'Noto Serif TC', serif;
+        }
+
+        .f-noto-sans {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .f-system-cjk {
+            font-family: 'Source Han Serif TC', 'Noto Serif CJK TC', serif;
+        }
+
+        .f-sys {
+            font-family: system-ui, sans-serif;
+        }
+
+        .f-heiti {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', 'Heiti TC', sans-serif;
+        }
+
+        .f-stack {
+            font-family: 'Noto Serif TC', 'Noto Sans TC', 'Source Han Serif TC', 'Source Han Sans TC', 'PingFang TC', 'Microsoft JhengHei', 'WenQuanYi Zen Hei', serif;
+        }
+
+        /* ── Solutions ── */
+        .solution-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .solution-item {
+            background: var(--paper2);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--accent2);
+            border-radius: 0 4px 4px 0;
+            padding: 1rem 1.2rem;
+        }
+
+        .solution-item h3 {
+            font-size: .95rem;
+            font-weight: 700;
+            margin-bottom: .4rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .solution-item p {
+            font-size: .88rem;
+            color: #5a4a3a;
+            line-height: 1.65;
+        }
+
+        .solution-item code {
+            display: block;
+            background: #1a1008;
+            color: #e8d8b8;
+            font-family: 'Courier New', monospace;
+            font-size: .8rem;
+            padding: .8rem 1rem;
+            border-radius: 3px;
+            margin-top: .6rem;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.6;
+        }
+
+        .rank {
+            background: var(--accent);
+            color: var(--paper);
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ── SVG demo ── */
+        .svg-demo {
+            background: var(--paper2);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .svg-demo p {
+            font-size: .85rem;
+            color: #7a6a5a;
+            margin-top: .8rem;
+        }
+
+        /* ── Device info ── */
+        #device-info {
+            background: #1a1008;
+            color: #e8d8b8;
+            border-radius: 4px;
+            padding: 1rem 1.2rem;
+            font-family: monospace;
+            font-size: .82rem;
+            line-height: 1.8;
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: .78rem;
+            color: #9a8a7a;
+            letter-spacing: .05em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+
+        <!-- Header -->
+        <header>
+            <div class="label">Unicode 罕見漢字 · 跨平台顯示測試</div>
+            <div class="char-hero">𡍼</div>
+            <h1>「𡍼」顯示相容性測試</h1>
+            <p class="sub">此字位於 Unicode 第二平面 (SMP)，需要特殊字型支援<br>Android Chrome 常見無法顯示，本頁提供多種解決方案</p>
+            <br>
+            <span class="unicode-badge">U+2137C · CJK Unified Ideographs Extension B</span>
+        </header>
+
+        <!-- 字符資訊 -->
+        <div class="section">
+            <div class="section-title">字符基本資訊</div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="key">Unicode 碼位</div>
+                    <div class="val">U+2137C</div>
+                </div>
+                <div class="info-card">
+                    <div class="key">Unicode 區塊</div>
+                    <div class="val">Extension B</div>
+                </div>
+                <div class="info-card">
+                    <div class="key">UTF-8 編碼</div>
+                    <div class="val">F0 A1 8D BC</div>
+                </div>
+                <div class="info-card">
+                    <div class="key">HTML 實體</div>
+                    <div class="val">&amp;#x2137C;</div>
+                </div>
+                <div class="info-card">
+                    <div class="key">JS 字串</div>
+                    <div class="val">\uD844\uDF7C</div>
+                </div>
+                <div class="info-card">
+                    <div class="key">字符平面</div>
+                    <div class="val">第二平面 (SMP)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 多種嵌入方式測試 -->
+        <div class="section">
+            <div class="section-title">嵌入方式測試（每格應顯示相同字）</div>
+            <table class="test-table">
+                <thead>
+                    <tr>
+                        <th>字符</th>
+                        <th>方法</th>
+                        <th>說明</th>
+                        <th>相容性</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="char-cell f-stack">𡍼</td>
+                        <td>直接 UTF-8<br>
+                            <div class="method">𡍼</div>
+                        </td>
+                        <td>HTML 檔案直接包含字符（需 UTF-8 儲存）</td>
+                        <td><span class="badge badge-check">✓ 標準</span></td>
+                    </tr>
+                    <tr>
+                        <td class="char-cell f-stack">&#x2137C;</td>
+                        <td>Hex 實體<br>
+                            <div class="method">&amp;#x2137C;</div>
+                        </td>
+                        <td>16 進位 HTML 實體，推薦用於 HTML 屬性</td>
+                        <td><span class="badge badge-check">✓ 推薦</span></td>
+                    </tr>
+                    <tr>
+                        <td class="char-cell f-stack">&#136060;</td>
+                        <td>Dec 實體<br>
+                            <div class="method">&amp;#136060;</div>
+                        </td>
+                        <td>10 進位 HTML 實體</td>
+                        <td><span class="badge badge-check">✓ 標準</span></td>
+                    </tr>
+                    <tr>
+                        <td class="char-cell f-stack" id="js-char"></td>
+                        <td>JS 代理對<br>
+                            <div class="method">'\uD844\uDF7C'</div>
+                        </td>
+                        <td>JavaScript 用代理對動態插入</td>
+                        <td><span class="badge badge-check">✓ 動態</span></td>
+                    </tr>
+                    <tr>
+                        <td class="char-cell f-stack" id="js-codepoint"></td>
+                        <td>JS codePointAt<br>
+                            <div class="method">String.fromCodePoint(0x2137C)</div>
+                        </td>
+                        <td>ES6+ 最簡潔的方式</td>
+                        <td><span class="badge badge-warn">ES6+</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 字型測試 -->
+        <div class="section">
+            <div class="section-title">字型 (font-family) 測試</div>
+            <div class="font-grid">
+                <div class="font-card f-noto-serif">
+                    <div class="font-name">Noto Serif TC（Google Fonts）</div>
+                    <div class="preview">𡍼</div>
+                    <div class="context">罕見字顯示測試 Extension B</div>
+                </div>
+                <div class="font-card f-noto-sans">
+                    <div class="font-name">Noto Sans TC（Google Fonts）</div>
+                    <div class="preview">𡍼</div>
+                    <div class="context">罕見字顯示測試 Extension B</div>
+                </div>
+                <div class="font-card f-heiti">
+                    <div class="font-name">PingFang TC / Microsoft JhengHei</div>
+                    <div class="preview">𡍼</div>
+                    <div class="context">系統內建字型（macOS/Windows）</div>
+                </div>
+                <div class="font-card f-sys">
+                    <div class="font-name">system-ui（系統預設）</div>
+                    <div class="preview">𡍼</div>
+                    <div class="context">無指定字型時的 fallback</div>
+                </div>
+                <div class="font-card f-stack">
+                    <div class="font-name">完整 Fallback Stack（推薦）</div>
+                    <div class="preview">𡍼</div>
+                    <div class="context">Noto Serif → Noto Sans → PingFang → JhengHei → WenQuanYi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SVG 方案（終極保底）-->
+        <div class="section">
+            <div class="section-title">方案：SVG 內嵌文字（保底方案）</div>
+            <div class="svg-demo">
+                <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="160" height="160" fill="#ede6d6" rx="8" />
+                    <text x="80" y="115" text-anchor="middle" font-size="90" fill="#8b2500"
+                        font-family="'Noto Serif TC','Noto Sans TC','Source Han Serif TC',serif">𡍼</text>
+                </svg>
+                <p>SVG &lt;text&gt; 元素同樣依賴字型；若字型已載入則可正常顯示<br>可將 SVG 匯出為 PNG/WebP 作為最終保底</p>
+            </div>
+        </div>
+
+        <!-- Canvas 方案 -->
+        <div class="section">
+            <div class="section-title">方案：Canvas 繪製 → 轉為圖片（終極保底）</div>
+            <div class="svg-demo">
+                <canvas id="charCanvas" width="160" height="160" style="border-radius:4px;background:#ede6d6;"></canvas>
+                <p id="canvas-status">Canvas 正在繪製...</p>
+            </div>
+        </div>
+
+        <!-- 解決方案建議 -->
+        <div class="section">
+            <div class="section-title">解決方案（按推薦程度排序）</div>
+            <div class="solution-list">
+
+                <div class="solution-item">
+                    <h3><span class="rank">1</span> 載入 Google Fonts Noto CJK（最推薦）</h3>
+                    <p>Noto 字型家族專為解決 tofu（豆腐塊）問題而設計，覆蓋幾乎所有 Unicode 字符，包括 Extension B/C/D/E/F。透過 Google Fonts
+                        在線載入，Android Chrome 亦可正常渲染。</p>
+                    <code>&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&amp;display=swap" rel="stylesheet"&gt;
+
+&lt;!-- CSS --&gt;
+body {
+  font-family: 'Noto Serif TC', 'Noto Sans TC', serif;
+}</code>
+                </div>
+
+                <div class="solution-item">
+                    <h3><span class="rank">2</span> 完整 font-family Fallback Stack</h3>
+                    <p>即使不用 Google Fonts，提供完整的字型 fallback 鏈，讓瀏覽器依序嘗試可用字型。各平台有不同的 CJK 字型，堆疊越完整，成功機率越高。</p>
+                    <code>font-family:
+  'Noto Serif TC',       /* Google Fonts，最廣覆蓋 */
+  'Noto Sans TC',        /* Google Fonts 備用 */
+  'Source Han Serif TC', /* Adobe 思源宋體 */
+  'Source Han Sans TC',  /* Adobe 思源黑體 */
+  'PingFang TC',         /* macOS / iOS */
+  'Microsoft JhengHei',  /* Windows */
+  'WenQuanYi Zen Hei',   /* Linux */
+  'Noto Sans CJK TC',    /* Android / Linux 原生 */
+  serif;</code>
+                </div>
+
+                <div class="solution-item">
+                    <h3><span class="rank">3</span> 自行托管 Noto CJK 字型（離線/內網方案）</h3>
+                    <p>若不能使用 Google Fonts，可下載 Noto Sans/Serif CJK 字型檔，透過 @font-face 自行托管。注意字型檔很大（數十
+                        MB），建議使用子集化工具（pyftsubset）只保留需要的字符。</p>
+                    <code>/* 子集化後自托管 */
+@font-face {
+  font-family: 'NotoSubset';
+  src: url('/fonts/NotoSerifCJKtc-subset.woff2') format('woff2');
+  unicode-range: U+2137C; /* 只載入這個字 */
+}
+
+/* pyftsubset 指令（需安裝 fonttools） */
+# pyftsubset NotoSerifCJKtc-Regular.otf \
+#   --unicodes="U+2137C" \
+#   --flavor=woff2 \
+#   --output-file=subset.woff2</code>
+                </div>
+
+                <div class="solution-item">
+                    <h3><span class="rank">4</span> Canvas 轉圖片（終極保底，100% 相容）</h3>
+                    <p>若字型方案仍無法解決，可用 Canvas 在已載入字型的環境中繪製字符，再轉為 PNG 圖片顯示。此方案完全相容所有瀏覽器，但失去文字可選取、可複製的特性。</p>
+                    <code>// 等字型載入後再繪製
+document.fonts.load("48px 'Noto Serif TC'").then(() => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 80; canvas.height = 80;
+  const ctx = canvas.getContext('2d');
+  ctx.font = "64px 'Noto Serif TC', serif";
+  ctx.fillStyle = '#8b2500';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('\uD844\uDF7C', 8, 42); // 代理對
+  
+  const img = document.createElement('img');
+  img.src = canvas.toDataURL();
+  img.alt = '𡍼';
+  document.body.appendChild(img);
+});</code>
+                </div>
+
+                <div class="solution-item">
+                    <h3><span class="rank">5</span> 確保 HTML 正確設定（基礎必要條件）</h3>
+                    <p>無論用哪種方案，以下基礎設定必須正確，否則在某些瀏覽器會強制使用系統預設字型覆蓋 CSS 設定。</p>
+                    <code>&lt;!-- 1. DOCTYPE 必須是 HTML5 --&gt;
+&lt;!DOCTYPE html&gt;
+
+&lt;!-- 2. 字符集必須是 UTF-8，且要放在 &lt;head&gt; 最前面 --&gt;
+&lt;meta charset="UTF-8"&gt;
+
+&lt;!-- 3. 語言標記 --&gt;
+&lt;html lang="zh-Hant"&gt;
+
+&lt;!-- 4. 儲存檔案時確保用 UTF-8 編碼（無 BOM） --&gt;</code>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 當前瀏覽器環境 -->
+        <div class="section">
+            <div class="section-title">當前瀏覽器環境</div>
+            <div id="device-info">載入中...</div>
+        </div>
+
+        <footer>
+            Unicode Extension B · 𡍼 (U+2137C) · 跨平台顯示測試頁 · 以 Noto CJK 字型為優先方案
+        </footer>
+
+    </div><!-- /wrap -->
+
+    <script>
+        // JS 插入字符
+        document.getElementById('js-char').textContent = '\uD844\uDF7C';
+        if (String.fromCodePoint) {
+            document.getElementById('js-codepoint').textContent = String.fromCodePoint(0x2137C);
+        } else {
+            document.getElementById('js-codepoint').textContent = '（此瀏覽器不支援 ES6）';
+        }
+
+        // Canvas 繪製
+        function drawCanvas() {
+            const canvas = document.getElementById('charCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 160, 160);
+
+            const fontStr = "110px 'Noto Serif TC','Noto Sans TC','Source Han Serif TC',serif";
+            ctx.font = fontStr;
+            ctx.fillStyle = '#8b2500';
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillText('\uD844\uDF7C', 80, 90);
+
+            // 檢測是否真的渲染出來（非 tofu）
+            const imageData = ctx.getImageData(0, 0, 160, 160).data;
+            const hasPixels = imageData.some((v, i) => i % 4 === 3 && v > 10);
+            const statusEl = document.getElementById('canvas-status');
+            if (hasPixels) {
+                statusEl.textContent = '✓ Canvas 繪製成功（字型已載入）';
+                statusEl.style.color = '#2d6a4f';
+            } else {
+                statusEl.textContent = '✗ Canvas 渲染失敗（字型未載入或不支援）';
+                statusEl.style.color = '#9b2226';
+            }
+        }
+
+        // 等字型載入後繪製
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(drawCanvas);
+        } else {
+            setTimeout(drawCanvas, 1500);
+        }
+
+        // 顯示裝置資訊
+        const info = {
+            'User Agent': navigator.userAgent,
+            '平台': navigator.platform || '未知',
+            'ES6 fromCodePoint': typeof String.fromCodePoint !== 'undefined' ? '✓ 支援' : '✗ 不支援',
+            'document.fonts API': typeof document.fonts !== 'undefined' ? '✓ 支援' : '✗ 不支援',
+            'Canvas 支援': !!document.createElement('canvas').getContext ? '✓ 支援' : '✗ 不支援',
+            '語言': navigator.language || navigator.userLanguage || '未知',
+            '螢幕解析度': screen.width + ' × ' + screen.height + ' (devicePixelRatio: ' + (window.devicePixelRatio || 1) + ')',
+        };
+
+        document.getElementById('device-info').innerHTML =
+            Object.entries(info).map(([k, v]) =>
+                `<div><span style="color:#c4501a;min-width:160px;display:inline-block">${k}</span>: ${v}</div>`
+            ).join('');
+    </script>
+</body>
+
+</html>
