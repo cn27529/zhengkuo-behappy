@@ -107,3 +107,13 @@ mv msys64/ /c/tools/
 
 # 或複製到其他位置
 cp -rv msys64/ /d/programs/
+
+
+
+
+http://localhost:3000/api/merged-receipts?fields=*
+
+# 每月贊助
+curl -s "http://localhost:3000/api/monthly-donates?fields=*" | jq '.'
+
+curl -s "http://localhost:3000/api/merged-receipts?fields=*" | jq '.'
