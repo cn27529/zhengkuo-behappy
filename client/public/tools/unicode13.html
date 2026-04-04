@@ -201,7 +201,7 @@
                 🔤 罕见字「𡍼」字体加载测试
                 <small>思源宋体 (Source Han Serif) woff2</small>
             </h1>
-            <p>使用您提供的 <code>SourceHanSerifTC-VF.woff2</code> 字体文件，完整支持 CJK 扩展B区字符。</p>
+            <p>使用您提供的 <code>NotoSansTC-Regular.woff2</code> 字体文件，完整支持 CJK 扩展B区字符。</p>
 
             <div class="big-char" id="mainChar">𡍼</div>
 
@@ -234,7 +234,7 @@
             <p id="sentence2" style="font-size: 1.1rem; line-height: 1.6;">混合标点：【𡍼】 — 字符编码 U+2437C，属于 CJK 统一表意文字扩展 B 区。
             </p>
             <div class="info-box">
-                💡 <strong>字体信息</strong>：SourceHanSerifTC-VF.woff2 是思源宋体繁体中文版，完整覆盖 CJK 扩展 A/B/C/D 区，包含「𡍼」字符。
+                💡 <strong>字体信息</strong>：NotoSansTC-Regular.woff2 是思源宋体繁体中文版，完整覆盖 CJK 扩展 A/B/C/D 区，包含「𡍼」字符。
             </div>
         </div>
 
@@ -245,7 +245,7 @@
                 <button id="resetBtn" class="secondary">🗑️ 移除Web字体(仅测试系统默认)</button>
             </div>
             <div id="manualHint" class="info-box" style="background: #fffbeb;">
-                📌 <strong>使用说明</strong>：将 <code>SourceHanSerifTC-VF.woff2</code> 文件上传到 Netlify 的
+                📌 <strong>使用说明</strong>：将 <code>NotoSansTC-Regular.woff2</code> 文件上传到 Netlify 的
                 <strong>同一目录</strong> 下，本页面会自动加载。如果字体文件在其他路径，请修改下方代码中的字体URL。
             </div>
         </div>
@@ -260,7 +260,7 @@
         const RARE_CHAR = '𡍼';
 
         // 字体文件路径 - 请修改为您的实际路径
-        // 如果 SourceHanSerifTC-VF.woff2 和这个HTML在同一目录，使用相对路径即可
+        // 如果 NotoSansTC-Regular.woff2 和这个HTML在同一目录，使用相对路径即可
         const FONT_URL = './NotoSansTC-Regular.woff2';
 
         // 备用CDN（如果本地文件加载失败，尝试从CDN加载）
@@ -418,7 +418,7 @@
             } else {
                 updateStatus(`⚠️ 字体加载可能失败，或字体文件不包含此字符。尝试使用备用方案...`, true, false);
                 if (manualHint) {
-                    manualHint.innerHTML = '❌ <strong>字体加载失败</strong>，可能原因：<br>1. 字体文件路径不正确（请确认 SourceHanSerifTC-VF.woff2 和HTML在同一目录）<br>2. 字体文件损坏或不包含「𡍼」字符<br>3. 网络问题导致下载失败<br><br>👉 <strong>解决方案</strong>：点击下方按钮尝试使用在线CDN字体，或将woff2上传到正确的目录。';
+                    manualHint.innerHTML = '❌ <strong>字体加载失败</strong>，可能原因：<br>1. 字体文件路径不正确（请确认 NotoSansTC-Regular.woff2 和HTML在同一目录）<br>2. 字体文件损坏或不包含「𡍼」字符<br>3. 网络问题导致下载失败<br><br>👉 <strong>解决方案</strong>：点击下方按钮尝试使用在线CDN字体，或将woff2上传到正确的目录。';
                     manualHint.style.background = '#fee2e2';
                 }
             }
