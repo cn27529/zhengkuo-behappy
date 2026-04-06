@@ -117,6 +117,53 @@ export class RustJoinRecordService {
   }
 
   /**
+   * 根據 ID 列表獲取參加記錄
+   */
+  async getParticipationRecordByIds(recordIds, context = {}) {
+    if (this.base.getIsMock()) {
+      const idsArray = Array.isArray(recordIds) ? recordIds : [recordIds];
+      const mockData = this.generateMockData();
+      const mockResult = [];
+      idsArray.forEach((id) => {
+        console.warn(`⚠️ 當前模式不為 Rust，獲取參加記錄成功 (ID: ${id})`);
+        mockResult.push(mockData.filter((record) => record.id === id)[0]); // 根據 ID 返回對應的 Mock 資料
+      });
+      return {
+        success: true,
+        data: mockResult,
+        message: "Mock 模式：返回參加記錄列表",
+      };
+    }
+
+    try {
+      // recordIds 可能是單個 ID 或 ID 列表陣列，確保它是陣列格式
+      const idsArray = Array.isArray(recordIds) ? recordIds : [recordIds];
+      const queryParams = new URLSearchParams({
+        filter: `id_in(${idsArray.join(",")})`,
+      }).toString();
+
+      const result = {
+        success: true,
+        data: [],
+        message: `成功獲取參加記錄列表 (IDs: ${idsArray.join(",")})`,
+      };
+      idsArray.forEach((id) => {
+        const record = this.getParticipationRecordById(id, {
+          operation: "getParticipationRecordByIds - individual fetch",
+          id,
+          ...context,
+        });
+        result.data.push(record.data);
+      });
+
+      return result;
+    } catch (error) {
+      console.error("❌ 根據 IDs 獲取參加記錄失敗:", error);
+      return this.handleParticipationRecordError(error);
+    }
+  }
+
+  /**
    * 根據 ID 獲取參加記錄
    */
   async getParticipationRecordById(recordId, context = {}) {

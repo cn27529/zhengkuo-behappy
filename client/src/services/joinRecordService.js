@@ -112,6 +112,42 @@ export class JoinRecordService {
   }
 
   /**
+   * 根據 IDs 列表獲取參加記錄
+   * @param {*} recordIds
+   */
+  async getParticipationRecordByIds(recordIds) {
+    if (this.base.getIsMock()) {
+      return {
+        success: true,
+        data: [],
+        message: "Mock 模式：返回空參加記錄列表",
+      };
+    }
+    try {
+      // recordIds 可能是單個 ID 或 ID 列表陣列，確保它是陣列格式
+      const idsArray = Array.isArray(recordIds) ? recordIds : [recordIds];
+      const result = {
+        success: true,
+        data: [],
+        message: `成功獲取參加記錄列表 (IDs: ${idsArray.join(",")})`,
+      };
+      idsArray.forEach((id) => {
+        const record = this.getParticipationRecordById(id, {
+          operation: "getParticipationRecordByIds - individual fetch",
+          id,
+          ...context,
+        });
+        result.data.push(record.data);
+      });
+
+      return result;
+    } catch (error) {
+      console.error("❌ 根據 IDs 列表獲取參加記錄失敗:", error);
+      return this.handleParticipationRecordError(error);
+    }
+  }
+
+  /**
    * 根據 ID 獲取參加記錄
    */
   async getParticipationRecordById(recordId) {
