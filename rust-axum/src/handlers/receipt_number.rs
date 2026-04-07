@@ -200,6 +200,15 @@ pub async fn generate_merged_receipt_number(
     Json(payload): Json<GenerateReceiptRequest>,
 ) -> Result<Json<ApiResponse<ReceiptNumberResponse>>, (StatusCode, Json<ApiResponse<ReceiptNumberResponse>>)> {
     
+    // 驗證 record_ids
+    let record_ids = payload.record_ids.ok_or_else(|| {
+        (StatusCode::BAD_REQUEST, Json(ApiResponse::error("record_ids 不能為空".to_string())))
+    })?;
+
+    if record_ids.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, Json(ApiResponse::error("record_ids 不能為空".to_string()))));
+    }
+
     // 1. 開始資料庫事務
     let mut tx = pool.begin().await.map_err(|e| {
         (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("啟動事務失敗: {}", e))))
@@ -265,20 +274,25 @@ pub async fn generate_merged_receipt_number(
 
 
     // 5.1 插入 mergedReceiptNumbersDB (如果需要合併)
-    let insert_merged_result = sqlx::query(
-        r#"
+    // 5.1 插入 mergedReceiptNumbersDB
+    // Vec<i64> → JSON string 存入 mergeIds 欄位
+    let merge_ids_json = serde_json::to_string(&record_ids)
+        .map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("序列化失敗: {}", e))))
+        })?;
+
+    let insert_merged_result = sqlx::query(r#"
         INSERT INTO mergedReceiptNumbersDB (
-            receiptNumber, receiptType, totalAmount, createdAt, date_created, user_created
+            receiptNumber, receiptType, totalAmount, createdAt, date_created, user_created, mergeIds
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
-        "#,
-    )
+    "#)
     .bind(&receipt_number)
     .bind(&payload.receipt_type)
-    .bind(&payload.total_amount)
+    .bind(payload.total_amount)
     .bind(&now_iso)
     .bind(&now_iso)
     .bind(&payload.user_id)
-    .bind(&payload.record_ids) // 這裡假設 record_ids 是一個字符串，格式為 "1,2,3"
+    .bind(&merge_ids_json)      // "[1,3,5]"
     .execute(&mut *tx)
     .await
     .map_err(|e| {
@@ -292,18 +306,28 @@ pub async fn generate_merged_receipt_number(
     // "receiptIssued": "stamp",
     // "receiptIssuedAt": "2026-04-04T05:41:53.816Z",
     // "receiptIssuedBy": "釋測試",
-    sqlx::query(
-        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, mergedRef = ? WHERE id in (?)"
-    )
-    .bind(&receipt_number)
-    .bind(&payload.receipt_type)
-    .bind(&merged_id)
-    .bind(&payload.record_ids)
-    .execute(&mut *tx)
-    .await
-    .map_err(|e| {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("同步更新參加記錄失敗: {}", e))))
-    })?;
+    // 構建動態 SQL
+    // 6. UPDATE participationRecordDB，動態展開 IN (?, ?, ?)
+    let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
+    let sql = format!(
+        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, mergedRef = ? WHERE id IN ({})",
+        placeholders
+    );
+
+    let mut q = sqlx::query(&sql)
+        .bind(&receipt_number)
+        .bind(&payload.receipt_type)
+        .bind(merged_id);
+
+    for id in &record_ids {
+        q = q.bind(id);
+    }
+
+    q.execute(&mut *tx)
+        .await
+        .map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("同步更新參加記錄失敗: {}", e))))
+        })?;
 
     // 7. 提交事務
     tx.commit().await.map_err(|e| {

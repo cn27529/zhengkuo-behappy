@@ -213,6 +213,10 @@ pub struct CreateParticipationRecordRequest {
     
     #[serde(default)]
     pub notes: Option<String>,
+
+        // 合併參考
+    #[serde(default)]
+    pub merged_ref: Option<i64>,
 }
 
 /// 更新參與記錄請求

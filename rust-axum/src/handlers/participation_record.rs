@@ -291,6 +291,7 @@ pub async fn create_participation_record(
     .bind(&payload.notes)
     .bind(&now)
     .bind(&now)
+    .bind(&payload.merged_ref)
     .execute(&pool)
     .await
     .map_err(|e| {

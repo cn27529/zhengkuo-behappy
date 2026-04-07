@@ -90,11 +90,11 @@ impl From<ReceiptNumber> for ReceiptNumberResponse {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GenerateReceiptRequest {
-    pub record_id: i32,
+    pub record_id: Option<i64>,      // 單筆用戶參加記錄 ID
     pub receipt_type: String, // "stamp" 或 "standard"
-    pub user_id: Option<String>,
-    pub total_amount: Option<f64>,
-    pub record_ids: String, // 用於合併生成的參加記錄 ID 列表，格式為 "1,2,3"
+    pub user_id: Option<String>, // 用於記錄創建者，格式為 Directus 用戶 UUID
+    pub total_amount: Option<f64>, // 用於合併生成的總金額（如果需要合併）
+    pub record_ids: Option<Vec<i64>>, // 用於合併生成的參加記錄 ID 列表，格式為JSON陣列 "[1,2,3]"
 }
 
 /// 更新編號狀態請求 (例如作廢)

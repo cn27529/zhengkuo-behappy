@@ -2,6 +2,7 @@
 import { DateUtils } from "../utils/dateUtils.js";
 import { baseRustService } from "./baseRustService.js";
 
+// 合併收據表（mergedReceiptsDB）相關服務
 export class RustMergedReceiptsService {
   constructor() {
     this.serviceName = "RustMergedReceiptsService";
