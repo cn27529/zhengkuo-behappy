@@ -24,7 +24,7 @@ pub fn create_routes() -> Router {
             "/api/receipt-numbers/{id}/status", 
             patch(receipt_number::void_receipt_number)
         )
-        //generate_merged_receipt_number
+        // 合併收據編號
         .route(
             "/api/receipt-numbers/merge",
             post(receipt_number::generate_merged_receipt_number)

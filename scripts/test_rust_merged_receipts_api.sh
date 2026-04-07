@@ -1,7 +1,12 @@
 #!/bin/bash
 # test_rust_merged_receipts_api.sh - Merged Receipts API 測試腳本
 
-BASE_URL="http://localhost:3000"
+API_URL="http://localhost:3000/api"
+TEST_ADMIN="a4954ebc-8591-4288-8ebe-a4af19e718f7"
+
+# 測試用的參加記錄 ID 列表（請根據實際資料庫調整）
+RECORD_IDS='[40, 41, 42]'  # 要合併的參加記錄 ID 陣列
+MERGE_RECORD_IDS='[43, 44]'  # 另一組測試用的合併 ID
 
 echo "🧪 開始測試 Merged Receipts API"
 echo "================================"
