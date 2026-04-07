@@ -3,7 +3,7 @@ import { baseService } from "./baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { authService } from "./authService.js";
 
-// 合併收據表（MergedReceiptsDB）相關服務
+// 合併收據表（mergedReceiptsDB）相關服務
 export class MergedReceiptsService {
   // ========== 建構函式 ==========
   constructor() {
