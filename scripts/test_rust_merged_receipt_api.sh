@@ -3,7 +3,7 @@
 # 合併收據 API 測試腳本, scripts/test_rust_merged_receipt_api.sh
 
 # 設定 API 基礎路徑
-API_URL="http://localhost:3000/api"
+API_URL="http://localhost:3000/api"np
 TEST_ADMIN="a4954ebc-8591-4288-8ebe-a4af19e718f7"
 TEST_STAFF="ab11998d-27b1-4936-a437-324952ba3c1f"
 

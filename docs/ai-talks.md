@@ -538,5 +538,5 @@ claude ai: docs\dev-mergedReceiptsDB-guide.md
 依據 rust-axum/src/routes/price_config.rs 現有代碼規則、編程風格、註解，不多添加。生成 CRUD 的 rust-axum/src/routes/merged_receipts.rs 代碼。
 
 ## 測試 generate_merged_receipt_number 腳本
-生成 scripts\test_rust_merged_receipt_api.sh 腳本,測試rust-axum\src\routes\receipt_number.rs 的 generate_merged_receipt_number方法, 如同 scripts\test_rust_receipt_number_api.sh 腳本
+生成 scripts\test_rust_merged_receipt_api.sh 腳本,測試rust-axum\src\routes\receipt_number.rs 的 generate_merged_receipt_number方法, 如同 scripts\test_rust_receipt_number_api.sh 腳本, 參數定義參考 GenerateReceiptRequest物件, 資料值參照 client\src\data\mock_receipt_numbers.json, client\src\data\mock_mergedReceipts.json, client\src\data\mock_participation_records copy.json
 
