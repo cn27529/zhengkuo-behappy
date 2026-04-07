@@ -1,16 +1,15 @@
 #!/bin/bash
 
-# 合併收據 API 測試腳本, scripts/test_rust_merged_receipt_api.sh
-
 # 設定 API 基礎路徑
-API_URL="http://localhost:3000/api"np
+API_URL="http://localhost:3000/api"
 TEST_ADMIN="a4954ebc-8591-4288-8ebe-a4af19e718f7"
 TEST_STAFF="ab11998d-27b1-4936-a437-324952ba3c1f"
 
 # 測試用的參加記錄 ID（從 mock_participation_records copy.json 和 mock_receipt_numbers.json 選取）
 # 這些是尚未有收據編號或適合合併的記錄
-RECORD_IDS="[32,33,34]"  # 使用 id 32,33,34 的記錄進行合併測試
+RECORD_IDS="[85,86]"  # 使用 id 85,86 的記錄進行合併測試
 TOTAL_AMOUNT=2500        # 合併總金額
+
 
 echo "-----------------------------------------------"
 echo "🚀 開始測試 Rust 合併收據編號生成 API"
@@ -21,7 +20,7 @@ echo ""
 echo "1. 測試生成合併收據 (stamp 類型，合併 IDs: $RECORD_IDS)..."
 MERGED_STAMP_RES=$(curl -s -X POST "$API_URL/receipt-numbers/merge" \
   -H "Content-Type: application/json" \
-  -d "{
+  -d "{    
     \"recordIds\": $RECORD_IDS,
     \"receiptType\": \"stamp\",
     \"totalAmount\": $TOTAL_AMOUNT,

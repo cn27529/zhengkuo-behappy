@@ -260,7 +260,7 @@ pub async fn generate_merged_receipt_number(
     .bind(&payload.receipt_type)
     .bind(&year_month)
     .bind(next_serial)
-    .bind(payload.record_id)
+    .bind(None::<i64>)  // 🔥 合併收據：recordId 為 NULL
     .bind(&now_iso)
     .bind(&now_iso)
     .bind(&payload.user_id)
