@@ -260,7 +260,7 @@ pub async fn generate_merged_receipt_number(
     .bind(&payload.receipt_type)
     .bind(&year_month)
     .bind(next_serial)
-    .bind(None::<i64>)  // 🔥 合併收據：recordId 為 NULL
+    .bind(-1)  // 🔥 合併收據：使用 -1 表示合併收據
     .bind(&now_iso)
     .bind(&now_iso)
     .bind(&payload.user_id)
@@ -274,7 +274,6 @@ pub async fn generate_merged_receipt_number(
 
 
     // 5.1 插入 mergedReceiptNumbersDB (如果需要合併)
-    // 5.1 插入 mergedReceiptNumbersDB
     // Vec<i64> → JSON string 存入 mergeIds 欄位
     let merge_ids_json = serde_json::to_string(&record_ids)
         .map_err(|e| {
@@ -282,7 +281,7 @@ pub async fn generate_merged_receipt_number(
         })?;
 
     let insert_merged_result = sqlx::query(r#"
-        INSERT INTO mergedReceiptNumbersDB (
+        INSERT INTO mergedReceiptsDB (
             receiptNumber, receiptType, totalAmount, createdAt, date_created, user_created, mergeIds
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
     "#)
@@ -304,8 +303,7 @@ pub async fn generate_merged_receipt_number(
     // 6. 更新參加記錄表 (同步反饋)
     //"receiptNumber": "26040001",
     // "receiptIssued": "stamp",
-    // "receiptIssuedAt": "2026-04-04T05:41:53.816Z",
-    // "receiptIssuedBy": "釋測試",
+    // ""mergedRef": 1,  // 關聯 mergedReceiptNumbersDB 的 id
     // 構建動態 SQL
     // 6. UPDATE participationRecordDB，動態展開 IN (?, ?, ?)
     let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
@@ -328,6 +326,20 @@ pub async fn generate_merged_receipt_number(
         .map_err(|e| {
             (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("同步更新參加記錄失敗: {}", e))))
         })?;
+
+    
+    //6.1 將 merged_id 回寫到 receiptNumbersDB 的 recordId 欄位, WHERE 條件是 new_id, receipt_number (剛插入的 receiptNumbersDB 記錄) 的 id 
+    sqlx::query(
+        "UPDATE receiptNumbersDB SET recordId = ? WHERE id = ? and receiptNumber = ?"
+    )
+    .bind(merged_id)
+    .bind(new_id)
+    .bind(&receipt_number)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("回寫 merged_id 失敗: {}", e))))
+    })?;
 
     // 7. 提交事務
     tx.commit().await.map_err(|e| {
