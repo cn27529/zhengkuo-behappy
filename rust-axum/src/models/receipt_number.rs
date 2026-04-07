@@ -93,6 +93,8 @@ pub struct GenerateReceiptRequest {
     pub record_id: i32,
     pub receipt_type: String, // "stamp" 或 "standard"
     pub user_id: Option<String>,
+    pub total_amount: Option<f64>,
+    pub record_ids: String, // 用於合併生成的參加記錄 ID 列表，格式為 "1,2,3"
 }
 
 /// 更新編號狀態請求 (例如作廢)

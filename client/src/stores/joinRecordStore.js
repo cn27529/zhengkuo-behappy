@@ -549,7 +549,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         needReceipt: needReceipt, // 是否需要收據
         createdUser: getCurrentUser(),
         createdAt: createISOTime,
-        user_created: getCurrentUser(),
+        user_created: getCurrentUser(),        
       };
       console.log("submitRecord:", payload);
       if (serviceAdapter.getIsMock()) {
