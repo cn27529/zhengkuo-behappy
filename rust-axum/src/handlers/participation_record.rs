@@ -53,7 +53,8 @@ SELECT
     paymentNotes,
     notes,
     createdAt,
-    updatedAt
+    updatedAt,
+    mergedRef
 FROM participationRecordDB
 "#;
 
@@ -260,9 +261,9 @@ pub async fn create_participation_record(
             finalAmount, paidAmount, needReceipt, receiptNumber, receiptIssued,
             receiptIssuedAt, receiptIssuedBy, accountingState, accountingDate,
             accountingBy, accountingNotes, paymentState, paymentMethod,
-            paymentDate, paymentNotes, notes, createdAt, updatedAt
+            paymentDate, paymentNotes, notes, createdAt, updatedAt, mergedRef
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&payload.registration_id)
@@ -453,7 +454,7 @@ pub async fn update_participation_record(
     if let Some(user_updated) = &payload.user_updated {
         updates.push("user_updated = ?");
         bindings.push(user_updated.clone());
-    }
+    }    
 
     if updates.is_empty() {
         return Err((
@@ -466,6 +467,12 @@ pub async fn update_participation_record(
     let now = chrono::Utc::now().to_rfc3339();
     updates.push("updatedAt = ?");
     bindings.push(now);
+
+    // 添加 mergedRef
+    if let Some(merged_ref) = &payload.merged_ref {
+        updates.push("mergedRef = ?");
+        bindings.push(merged_ref.to_string());
+    }
 
     let query = format!(
         "UPDATE participationRecordDB SET {} WHERE id = ?",

@@ -370,6 +370,27 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          prop="mergedRef"
+          label="合併參考"
+          width="60"
+          align="center"
+          v-if="false"
+        >
+          <template #default="{ row }">
+            <div class="merged-ref">
+              <el-tag
+                v-if="row.mergedRef"
+                type="info"
+                size="mini"
+                style="margin-top: 4px"
+              >
+                {{ row.mergedRef }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
+
         <!-- 操作 -->
         <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">

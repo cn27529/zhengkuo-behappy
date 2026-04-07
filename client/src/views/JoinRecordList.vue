@@ -325,6 +325,20 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          prop="mergedRef"
+          label="合併"
+          width="60"
+          align="center"
+          v-if="false"
+        >
+          <template #default="{ row }">
+            <span class="item-amount">{{
+              row.mergedRef
+            }}</span>
+          </template>
+        </el-table-column>
+
         <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
             <div class="action-buttons-group">

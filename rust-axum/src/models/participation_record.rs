@@ -103,6 +103,10 @@ pub struct ParticipationRecord {
     pub created_at: Option<String>,
     #[sqlx(rename = "updatedAt", default)]
     pub updated_at: Option<String>,
+
+    // 合併參考
+    #[sqlx(rename = "mergedRef", default)]
+    pub merged_ref: Option<i64>,
 }
 
 // 自定義序列化函數：將 JSON 字符串轉為 JSON 對象
@@ -241,6 +245,10 @@ pub struct UpdateParticipationRecordRequest {
     
     #[serde(default)]
     pub user_updated: Option<String>,
+
+    // 合併參考
+    #[serde(default)]
+    pub merged_ref: Option<i64>,
 }
 
 /// 查詢參數
@@ -328,6 +336,10 @@ pub struct ParticipationRecordResponse {
     pub created_at: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub updated_at: Option<String>,
+
+    // 合併參考
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub merged_ref: Option<i64>,
 }
 
 impl From<ParticipationRecord> for ParticipationRecordResponse {
@@ -365,6 +377,8 @@ impl From<ParticipationRecord> for ParticipationRecordResponse {
             notes: data.notes,
             created_at: data.created_at,
             updated_at: data.updated_at,
+            // 合併參考
+            merged_ref: data.merged_ref,
         }
     }
 }

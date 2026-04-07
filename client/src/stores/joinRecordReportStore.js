@@ -29,7 +29,8 @@ export const useJoinRecordReportStore = defineStore("joinRecordReport", () => {
     { key: 'paymentMethod', label: '付款方式', default: false },
     { key: 'receiptIssued', label: '收據狀態', default: false },
     { key: 'accountingState', label: '會計狀態', default: false },
-    { key: 'createdAt', label: '建立時間', default: false }
+    { key: 'createdAt', label: '建立時間', default: false },
+    { key: 'mergedRef', label: '合併參考', default: false }
   ]);
 
   // 已選擇的欄位
