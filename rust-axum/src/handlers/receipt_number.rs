@@ -133,15 +133,17 @@ pub async fn generate_receipt_number(
         format!("{}{}", year_month, formatted_serial) // 一般收據
     };
 
-    let now_iso = now_dt.to_rfc3339();
+    let now_iso = chrono::Utc::now().to_rfc3339();
+    let now_timestamp = chrono::Utc::now().timestamp_millis();
+    let state = "active";
 
     // 5. 插入 receiptNumbersDB
     let insert_result = sqlx::query(
         r#"
         INSERT INTO receiptNumbersDB (
             receiptNumber, receiptType, yearMonth, serialNumber, 
-            recordId, createdAt, date_created, state, user_created
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?)
+            recordId, createdAt, state, user_created, date_created
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&receipt_number)
@@ -150,8 +152,9 @@ pub async fn generate_receipt_number(
     .bind(next_serial)
     .bind(payload.record_id)
     .bind(&now_iso)
-    .bind(&now_iso)
+    .bind(&state)
     .bind(&payload.user_id)
+    .bind(&now_timestamp)
     .execute(&mut *tx)
     .await
     .map_err(|e| {
@@ -177,6 +180,22 @@ pub async fn generate_receipt_number(
     tx.commit().await.map_err(|e| {
         (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("提交事務失敗: {}", e))))
     })?;
+
+    // 🔥 7-1. 強制 checkpoint，清空 WAL
+    // 🔥 關鍵修復：強制 checkpoint 並清空 WAL
+    // 使用 TRUNCATE 選項會立即清空 WAL 檔案
+    match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+        .execute(&pool)
+        .await 
+    {
+        Ok(result) => {
+            eprintln!("Checkpoint 完成: {:?}", result);
+        }
+        Err(e) => {
+            // 只記錄警告，不影響 API 響應
+            eprintln!("警告: WAL checkpoint 失敗: {}", e);
+        }
+    }
 
     // 8. 返回新生成的完整記錄
     let final_record = sqlx::query_as::<_, ReceiptNumber>(&format!("{} WHERE id = ?", RECEIPT_FULL_QUERY))
@@ -245,15 +264,19 @@ pub async fn generate_merged_receipt_number(
         format!("{}{}", year_month, formatted_serial) // 一般收據
     };
 
-    let now_iso = now_dt.to_rfc3339();
+    let now_iso = chrono::Utc::now().to_rfc3339();
+    let now_timestamp = chrono::Utc::now().timestamp_millis();
+
+    let state = "merged";
+    let void_reason = payload.void_reason.clone().unwrap_or_else(|| "合併收據".to_string());
 
     // 5. 插入 receiptNumbersDB
     let insert_result = sqlx::query(
         r#"
         INSERT INTO receiptNumbersDB (
             receiptNumber, receiptType, yearMonth, serialNumber, 
-            recordId, createdAt, date_created, state, user_created
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?)
+            recordId, createdAt, user_created, state, date_created, voidReason
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&receipt_number)
@@ -261,9 +284,11 @@ pub async fn generate_merged_receipt_number(
     .bind(&year_month)
     .bind(next_serial)
     .bind(-1)  // 🔥 合併收據：使用 -1 表示合併收據
-    .bind(&now_iso)
-    .bind(&now_iso)
+    .bind(&now_iso)    
     .bind(&payload.user_id)
+    .bind(&state)
+    .bind(&now_timestamp)
+    .bind(&void_reason)
     .execute(&mut *tx)
     .await
     .map_err(|e| {
@@ -271,7 +296,6 @@ pub async fn generate_merged_receipt_number(
     })?;
 
     let new_id = insert_result.last_insert_rowid();
-
 
     // 5.1 插入 mergedReceiptNumbersDB (如果需要合併)
     // Vec<i64> → JSON string 存入 mergeIds 欄位
@@ -282,16 +306,16 @@ pub async fn generate_merged_receipt_number(
 
     let insert_merged_result = sqlx::query(r#"
         INSERT INTO mergedReceiptsDB (
-            receiptNumber, receiptType, totalAmount, createdAt, date_created, user_created, mergeIds
+            receiptNumber, receiptType, totalAmount, createdAt, user_created, mergeIds, date_created
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
     "#)
     .bind(&receipt_number)
     .bind(&payload.receipt_type)
     .bind(payload.total_amount)
-    .bind(&now_iso)
-    .bind(&now_iso)
+    .bind(&now_iso)    
     .bind(&payload.user_id)
     .bind(&merge_ids_json)      // "[1,3,5]"
+    .bind(&now_timestamp)
     .execute(&mut *tx)
     .await
     .map_err(|e| {
@@ -346,6 +370,22 @@ pub async fn generate_merged_receipt_number(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("提交事務失敗: {}", e))))
     })?;
 
+    // 🔥 7-1. 強制 checkpoint，清空 WAL
+    // 🔥 關鍵修復：強制 checkpoint 並清空 WAL
+    // 使用 TRUNCATE 選項會立即清空 WAL 檔案
+    match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+        .execute(&pool)
+        .await 
+    {
+        Ok(result) => {
+            eprintln!("Checkpoint 完成: {:?}", result);
+        }
+        Err(e) => {
+            // 只記錄警告，不影響 API 響應
+            eprintln!("警告: WAL checkpoint 失敗: {}", e);
+        }
+    }
+
     // 8. 返回新生成的完整記錄
     let final_record = sqlx::query_as::<_, ReceiptNumber>(&format!("{} WHERE id = ?", RECEIPT_FULL_QUERY))
         .bind(new_id)
@@ -361,9 +401,6 @@ pub async fn generate_merged_receipt_number(
     )))
 }
 
-
-// src/handlers/receipt_number.rs
-
 /// 🔥 解除合併收據（反操作）
 /// 1. receiptNumbersDB: 更新 state 為 'void'，voidReason 註記「解除合併列印」
 /// 2. mergedReceiptsDB: 不異動，保留歷史記錄
@@ -378,11 +415,11 @@ pub async fn remove_merged_receipt_number(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("啟動事務失敗: {}", e))))
     })?;
 
-    let now_iso = Local::now().to_rfc3339();
+    let now_iso = chrono::Utc::now().to_rfc3339();
+    let now_timestamp = chrono::Utc::now().timestamp_millis();
     let void_reason = payload.void_reason
         .clone()
-        .unwrap_or_else(|| "解除合併列印".to_string());
-
+        .unwrap_or_else(|| "解除合併".to_string());
 
     // 2. 查詢合併收據記錄，獲取關聯的 participationRecordDB IDs
     let merged_record: Option<(i64, String)> = sqlx::query_as::<_, (i64, String)>(
@@ -412,22 +449,25 @@ pub async fn remove_merged_receipt_number(
         return Err((StatusCode::BAD_REQUEST, Json(ApiResponse::error("合併記錄中沒有關聯的參加記錄 ID".to_string()))));
     }
 
+    let state = "remove merged";
+
     // 3. 更新 receiptNumbersDB：將該合併收據標記為作廢
     let update_result = sqlx::query(
         r#"
         UPDATE receiptNumbersDB 
-        SET state = 'void', 
+        SET state = ?, 
             voidReason = ?, 
             updatedAt = ?, 
             date_updated = ?, 
-            user_updated = ? 
+            user_updated = ?            
         WHERE receiptNumber = ? AND recordId = ?
         "#
     )
+    .bind(&state)
     .bind(&void_reason)
     .bind(&now_iso)
-    .bind(&now_iso)
-    .bind(&payload.user_id)    
+    .bind(&now_timestamp)
+    .bind(&payload.user_id)
     .bind(&payload.receipt_number)
     .bind(merged_id)
     .execute(&mut *tx)
@@ -443,21 +483,14 @@ pub async fn remove_merged_receipt_number(
     // 4. 更新 participationRecordDB：清空收據相關欄位
     // 構建動態 SQL 清空多筆記錄
     let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
-    let sql = format!(
-        r#"
-        UPDATE participationRecordDB 
-        SET receiptNumber = NULL, 
-            receiptIssued = NULL, 
-            receiptIssuedAt = NULL, 
-            receiptIssuedBy = NULL,
-            mergedRef = NULL,
-            updatedAt = ?
-        WHERE id IN ({})
-        "#,
+    let sql = format!("UPDATE participationRecordDB SET receiptNumber = NULL, receiptIssued = NULL, receiptIssuedAt = NULL, receiptIssuedBy = NULL, mergedRef = NULL, updatedAt = ?, date_updated = ?, user_updated = ? WHERE id IN ({})",
         placeholders
     );
 
-    let mut q = sqlx::query(&sql).bind(&now_iso);
+    let mut q = sqlx::query(&sql)
+    .bind(&now_iso)
+    .bind(&now_timestamp)
+    .bind(&payload.user_id);
 
     for id in &record_ids {
         q = q.bind(id);
@@ -483,6 +516,22 @@ pub async fn remove_merged_receipt_number(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("提交事務失敗: {}", e))))
     })?;
 
+    // 🔥 7. 強制 checkpoint，清空 WAL
+    // 🔥 關鍵修復：強制 checkpoint 並清空 WAL
+    // 使用 TRUNCATE 選項會立即清空 WAL 檔案
+    match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+        .execute(&pool)
+        .await 
+    {
+        Ok(result) => {
+            eprintln!("Checkpoint 完成: {:?}", result);
+        }
+        Err(e) => {
+            // 只記錄警告，不影響 API 響應
+            eprintln!("警告: WAL checkpoint 失敗: {}", e);
+        }
+    }
+
     Ok(Json(ApiResponse::success_with_message(
         (),
         format!(
@@ -500,7 +549,7 @@ pub async fn void_receipt_number(
     Json(payload): Json<UpdateReceiptStatusRequest>,
 ) -> Result<Json<ApiResponse<ReceiptNumberResponse>>, (StatusCode, Json<ApiResponse<ReceiptNumberResponse>>)> {
     
-    let now_iso = Local::now().to_rfc3339();
+    let now_iso = chrono::Utc::now().to_rfc3339();
     
     sqlx::query(
         "UPDATE receiptNumbersDB SET state = ?, voidReason = ?, updatedAt = ?, date_updated = ?, user_updated = ? WHERE id = ?"

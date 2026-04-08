@@ -116,6 +116,10 @@ pub struct GenerateReceiptRequest {
     
     #[serde(default)]
     pub record_ids: Option<Vec<i64>>, // 用於合併生成的參加記錄 ID 列表，格式為JSON陣列 "[1,2,3]"
+
+    #[serde(default)]
+    pub void_reason: Option<String>, // 作廢原因（如果是作廢操作）
+
 }
 
 /// 更新編號狀態請求 (例如作廢)

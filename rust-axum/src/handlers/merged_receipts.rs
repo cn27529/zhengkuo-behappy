@@ -65,7 +65,7 @@ pub async fn get_all_merged_receipts(
             query.push_str(&format!(" ORDER BY {} ASC", sort));
         }
     } else {
-        query.push_str(" ORDER BY date_created DESC");
+        query.push_str(" ORDER BY createdAt DESC");
     }
 
     let limit = params.limit.unwrap_or(100);
