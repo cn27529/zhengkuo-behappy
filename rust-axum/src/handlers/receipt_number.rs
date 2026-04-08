@@ -184,7 +184,11 @@ pub async fn generate_receipt_number(
     // 🔥 7-1. 強制 checkpoint，清空 WAL
     // 🔥 關鍵修復：強制 checkpoint 並清空 WAL
     // 使用 TRUNCATE 選項會立即清空 WAL 檔案
-    match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+//     PASSIVE	尝试执行，遇到冲突就立即停止并返回。	不会阻塞任何读写操作。
+// FULL (默认)	主动等待所有当前读写操作完成，然后执行检查点。在此期间新的写入会被阻塞。	会短暂阻塞写入。
+// RESTART	类似 FULL，完成后还会尽可能截断 WAL 文件（如果还有读连接引用旧的 WAL 页，可能会稍微等待）。	会阻塞写入，并可能短暂等待读连接。
+// TRUNCATE	执行检查点，然后将 WAL 文件截断为 0 字节。	会阻塞写入。
+    match sqlx::query("PRAGMA wal_checkpoint(PASSIVE)")
         .execute(&pool)
         .await 
     {
@@ -373,7 +377,11 @@ pub async fn generate_merged_receipt_number(
     // 🔥 7-1. 強制 checkpoint，清空 WAL
     // 🔥 關鍵修復：強制 checkpoint 並清空 WAL
     // 使用 TRUNCATE 選項會立即清空 WAL 檔案
-    match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+//     PASSIVE	尝试执行，遇到冲突就立即停止并返回。	不会阻塞任何读写操作。
+// FULL (默认)	主动等待所有当前读写操作完成，然后执行检查点。在此期间新的写入会被阻塞。	会短暂阻塞写入。
+// RESTART	类似 FULL，完成后还会尽可能截断 WAL 文件（如果还有读连接引用旧的 WAL 页，可能会稍微等待）。	会阻塞写入，并可能短暂等待读连接。
+// TRUNCATE	执行检查点，然后将 WAL 文件截断为 0 字节。	会阻塞写入。
+    match sqlx::query("PRAGMA wal_checkpoint(PASSIVE)")
         .execute(&pool)
         .await 
     {
@@ -519,7 +527,11 @@ pub async fn remove_merged_receipt_number(
     // 🔥 7. 強制 checkpoint，清空 WAL
     // 🔥 關鍵修復：強制 checkpoint 並清空 WAL
     // 使用 TRUNCATE 選項會立即清空 WAL 檔案
-    match sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+//     PASSIVE	尝试执行，遇到冲突就立即停止并返回。	不会阻塞任何读写操作。
+// FULL (默认)	主动等待所有当前读写操作完成，然后执行检查点。在此期间新的写入会被阻塞。	会短暂阻塞写入。
+// RESTART	类似 FULL，完成后还会尽可能截断 WAL 文件（如果还有读连接引用旧的 WAL 页，可能会稍微等待）。	会阻塞写入，并可能短暂等待读连接。
+// TRUNCATE	执行检查点，然后将 WAL 文件截断为 0 字节。	会阻塞写入。
+    match sqlx::query("PRAGMA wal_checkpoint(PASSIVE)")
         .execute(&pool)
         .await 
     {
