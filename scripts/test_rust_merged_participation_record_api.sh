@@ -10,6 +10,7 @@ TEST_STAFF="ab11998d-27b1-4936-a437-324952ba3c1f"
 RECORD_IDS="[85,86,89]"  # 使用 id 85,86 的記錄進行合併測試
 TOTAL_AMOUNT=2500        # 合併總金額
 RECORD_ID=-1  # 用於 stamp 類型測試的 recordId（可選，根據實際需求設定）
+MERGED_REF=10 # 用於參加記錄的合併參考 ID
 
 echo "-----------------------------------------------"
 echo "🚀 開始測試 Rust 合併收據編號生成 API"

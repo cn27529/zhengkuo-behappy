@@ -10,7 +10,7 @@ use chrono::Local;
 use crate::models::api_response::{ApiResponse, Meta};
 use crate::models::receipt_number::{
     ReceiptNumber, ReceiptNumberResponse, GenerateReceiptRequest, 
-    ReceiptNumberQuery, UpdateReceiptStatusRequest,
+    ReceiptNumberQuery, UpdateReceiptStatusRequest, RemoveMergedReceiptRequest
 };
 
 const RECEIPT_FULL_QUERY: &str = r#"
@@ -362,6 +362,136 @@ pub async fn generate_merged_receipt_number(
 }
 
 
+// src/handlers/receipt_number.rs
+
+/// 🔥 解除合併收據（反操作）
+/// 1. receiptNumbersDB: 更新 state 為 'void'，voidReason 註記「解除合併列印」
+/// 2. mergedReceiptsDB: 不異動，保留歷史記錄
+/// 3. participationRecordDB: 清空 receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy
+pub async fn remove_merged_receipt_number(
+    Extension(pool): Extension<SqlitePool>,
+    Json(payload): Json<RemoveMergedReceiptRequest>,
+) -> Result<Json<ApiResponse<()>>, (StatusCode, Json<ApiResponse<()>>)> {
+    
+    // 1. 開始資料庫事務
+    let mut tx = pool.begin().await.map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("啟動事務失敗: {}", e))))
+    })?;
+
+    let now_iso = Local::now().to_rfc3339();
+    let void_reason = payload.void_reason
+        .clone()
+        .unwrap_or_else(|| "解除合併列印".to_string());
+
+
+    // 2. 查詢合併收據記錄，獲取關聯的 participationRecordDB IDs
+    let merged_record: Option<(i64, String)> = sqlx::query_as::<_, (i64, String)>(
+        "SELECT id, mergeIds FROM mergedReceiptsDB WHERE receiptNumber = ?"
+    )
+    .bind(&payload.receipt_number)
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("查詢合併記錄失敗: {}", e))))
+    })?;
+
+    let (merged_id, merge_ids_json) = match merged_record {
+        Some(record) => record,
+        None => {
+            return Err((StatusCode::NOT_FOUND, Json(ApiResponse::error(format!("找不到合併收據記錄: {}", payload.receipt_number)))));
+        }
+    };
+
+    // 解析 mergeIds JSON 字串為 Vec<i64>
+    let record_ids: Vec<i64> = serde_json::from_str(&merge_ids_json)
+        .map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("解析 mergeIds 失敗: {}", e))))
+        })?;
+
+    if record_ids.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, Json(ApiResponse::error("合併記錄中沒有關聯的參加記錄 ID".to_string()))));
+    }
+
+    // 3. 更新 receiptNumbersDB：將該合併收據標記為作廢
+    let update_result = sqlx::query(
+        r#"
+        UPDATE receiptNumbersDB 
+        SET state = 'void', 
+            voidReason = ?, 
+            updatedAt = ?, 
+            date_updated = ?, 
+            user_updated = ? 
+        WHERE receiptNumber = ? AND recordId = ?
+        "#
+    )
+    .bind(&void_reason)
+    .bind(&now_iso)
+    .bind(&now_iso)
+    .bind(&payload.user_id)    
+    .bind(&payload.receipt_number)
+    .bind(merged_id)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("更新收據記錄失敗: {}", e))))
+    })?;
+
+    if update_result.rows_affected() == 0 {
+        return Err((StatusCode::NOT_FOUND, Json(ApiResponse::error(format!("找不到對應的收據記錄: {}", payload.receipt_number)))));
+    }
+
+    // 4. 更新 participationRecordDB：清空收據相關欄位
+    // 構建動態 SQL 清空多筆記錄
+    let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
+    let sql = format!(
+        r#"
+        UPDATE participationRecordDB 
+        SET receiptNumber = NULL, 
+            receiptIssued = NULL, 
+            receiptIssuedAt = NULL, 
+            receiptIssuedBy = NULL,
+            mergedRef = NULL,
+            updatedAt = ?
+        WHERE id IN ({})
+        "#,
+        placeholders
+    );
+
+    let mut q = sqlx::query(&sql).bind(&now_iso);
+
+    for id in &record_ids {
+        q = q.bind(id);
+    }
+
+    let update_participants_result = q.execute(&mut *tx)
+        .await
+        .map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("清空參加記錄收據欄位失敗: {}", e))))
+        })?;
+
+    // 5. 可選：檢查更新的記錄數量是否匹配
+    if update_participants_result.rows_affected() as usize != record_ids.len() {
+        eprintln!(
+            "警告：預期更新 {} 筆參加記錄，實際更新 {} 筆",
+            record_ids.len(),
+            update_participants_result.rows_affected()
+        );
+    }
+
+    // 6. 提交事務
+    tx.commit().await.map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("提交事務失敗: {}", e))))
+    })?;
+
+    Ok(Json(ApiResponse::success_with_message(
+        (),
+        format!(
+            "成功解除合併收據 {}，共處理 {} 筆參加記錄",
+            payload.receipt_number,
+            record_ids.len()
+        ),
+    )))
+}
 
 /// 作廢編號
 pub async fn void_receipt_number(

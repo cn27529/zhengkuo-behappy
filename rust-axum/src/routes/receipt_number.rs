@@ -29,5 +29,8 @@ pub fn create_routes() -> Router {
             "/api/receipt-numbers/merge",
             post(receipt_number::generate_merged_receipt_number)
         )
+        // 🔥 解除合併收據（反操作）
+        .route("/api/receipt-numbers/merge/remove", 
+        post(receipt_number::remove_merged_receipt_number))
         
 }
