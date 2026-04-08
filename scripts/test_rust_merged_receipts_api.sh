@@ -25,17 +25,17 @@ echo -e "\n"
 echo "3️⃣ 創建新 Merged Receipt 記錄"
 CREATE_RESPONSE=$(curl -s -X POST "$BASE_URL/api/merged-receipts" \
   -H "Content-Type: application/json" \
-  -d '{
-    "receiptNumber": "MR-2026001",
-    "receiptType": "stamp",
-    "mergeIds": [1, 2, 3],
-    "totalAmount": 1500,
-    "issuedAt": "2026-04-04T03:00:00.000Z",
-    "issuedBy": "釋測試",
-    "notes": "測試合併收據",
-    "createdAt": "2026-04-04T03:00:00.000Z",
-    "updatedAt": "2026-04-04T03:00:00.000Z"
-  }')
+  -d "{
+    \"receiptNumber\": \"MR-2026001\",
+    \"receiptType\": "stamp",
+    \"mergeIds\": $RECORD_IDS,
+    \"totalAmount\": 1500,
+    \"issuedAt\": \"2026-04-04T03:00:00.000Z\",
+    \"issuedBy\": \"釋測試\",
+    \"notes\": \"測試合併收據\",
+    \"createdAt\": \"2026-04-04T03:00:00.000Z\",
+    \"updatedAt\": \"2026-04-04T03:00:00.000Z\"
+  }")
 echo "$CREATE_RESPONSE" | jq .
 
 # 提取 ID
@@ -62,15 +62,15 @@ echo -e "\n"
 echo "7️⃣ 更新 Merged Receipt (ID: $MERGED_RECEIPT_ID)"
 curl -s -X PATCH "$BASE_URL/api/merged-receipts/$MERGED_RECEIPT_ID" \
   -H "Content-Type: application/json" \
-  -d '{
-    "receiptNumber": "MR-2026001-UPDATED",
-    "receiptType": "refund",
-    "mergeIds": [1, 2, 3, 4, 5],
-    "totalAmount": 2500,
-    "issuedAt": "2026-04-04T06:00:00.000Z",
-    "issuedBy": "釋測試-更新",
-    "notes": "已更新合併收據資訊"
-  }' | jq .
+  -d "{
+    \"receiptNumber\": \"MR-2026001-UPDATED\",
+    \"receiptType\": \"refund\",
+    \"mergeIds\": $RECORD_IDS,
+    \"totalAmount\": 2500,
+    \"issuedAt\": \"2026-04-04T06:00:00.000Z\",
+    \"issuedBy\": \"釋測試-更新\",
+    \"notes\": \"已更新合併收據資訊\"
+  }" | jq .
 echo -e "\n"
 
 # 8. 查詢特定類型的 Merged Receipts
@@ -97,15 +97,15 @@ echo -e "\n"
 echo "1️⃣2️⃣ 創建第二筆 Merged Receipt 記錄"
 CREATE_RESPONSE2=$(curl -s -X POST "$BASE_URL/api/merged-receipts" \
   -H "Content-Type: application/json" \
-  -d '{
-    "receiptNumber": "MR-2026002",
-    "receiptType": "invoice",
-    "mergeIds": [10, 11, 12],
-    "totalAmount": 3000,
-    "issuedAt": "2026-04-04T04:00:00.000Z",
-    "issuedBy": "測試人員",
-    "notes": "測試用收據"
-  }')
+  -d "{
+    \"receiptNumber\": \"MR-2026002\",
+    \"receiptType\": \"invoice\",
+    \"mergeIds\": $MERGE_RECORD_IDS,
+    \"totalAmount\": 3000,
+    \"issuedAt\": \"2026-04-04T04:00:00.000Z\",
+    \"issuedBy\": \"測試人員\",
+    \"notes\": \"測試用收據\"
+  }")
 echo "$CREATE_RESPONSE2" | jq .
 MERGED_RECEIPT_ID2=$(echo "$CREATE_RESPONSE2" | jq -r '.data.id')
 echo "✅ 創建的第二筆 Merged Receipt ID: $MERGED_RECEIPT_ID2"
