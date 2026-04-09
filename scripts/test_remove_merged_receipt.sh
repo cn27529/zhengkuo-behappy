@@ -6,7 +6,7 @@ TEST_ADMIN="a4954ebc-8591-4288-8ebe-a4af19e718f7"
 TEST_STAFF="ab11998d-27b1-4936-a437-324952ba3c1f"
 
 # 需要先有一個合併收據編號（從之前的測試取得）
-MERGED_RECEIPT_NUMBER="26040004"  # 替換為實際的合併收據編號
+MERGED_RECEIPT_NUMBER="26040006"  # 替換為實際的合併收據編號
 RECORD_IDS="[85,86,89]"  # 使用 id 85,86 的記錄進行合併測試
 MERGED_REF=16 # 用於參加記錄的合併參考 ID
 VOID_REASON="解除合併收據123" # 作廢原因
