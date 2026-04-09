@@ -11,21 +11,22 @@ RECORD_IDS="[85,86,89]"  # 使用 id 85,86 的記錄進行合併測試
 TOTAL_AMOUNT=858689        # 合併總金額
 RECORD_ID=-1  # 用於 stamp 類型測試的 recordId（可選，根據實際需求設定）
 MERGED_REF=10 # 用於參加記錄的合併參考 ID
-VOID_REASON="合併收據123" # 作廢原因
+VOID_REASON="合併打印123" # 作廢原因
+RECEIPT_TYPE="stamp" # 收據類型
 
 echo "-----------------------------------------------"
-echo "🚀 開始測試 Rust 合併收據編號生成 API"
+echo "🚀 開始測試 Rust 合併打印編號生成 API"
 echo "-----------------------------------------------"
 echo ""
 
-# 1. 測試生成合併收據 (stamp 類型)
-echo "1. 測試生成合併收據 (stamp 類型，合併 IDs: $RECORD_IDS)..."
+# 1. 測試生成合併打印 (stamp 類型)
+echo "1. 測試生成合併打印 (stamp 類型，合併 IDs: $RECORD_IDS)..."
 MERGED_STAMP_RES=$(curl -s -X POST "$API_URL/receipt-numbers/merge" \
   -H "Content-Type: application/json" \
   -d "{    
   \"recordId\": $RECORD_ID,
     \"recordIds\": $RECORD_IDS,
-    \"receiptType\": \"stamp\",
+    \"receiptType\": \"$RECEIPT_TYPE\",
     \"totalAmount\": $TOTAL_AMOUNT,
     \"userId\": \"$TEST_ADMIN\",
     \"voidReason\": \"$VOID_REASON\"
@@ -34,7 +35,7 @@ MERGED_STAMP_RES=$(curl -s -X POST "$API_URL/receipt-numbers/merge" \
 echo "響應: $MERGED_STAMP_RES"
 MERGED_STAMP_NUM=$(echo $MERGED_STAMP_RES | grep -oE '[0-9]{8}' | head -1)
 if [ -n "$MERGED_STAMP_NUM" ]; then
-    echo "✅ 生成合併收據編號: $MERGED_STAMP_NUM"
+    echo "✅ 生成合併打印編號: $MERGED_STAMP_NUM"
 else
     echo "⚠️ 未能提取編號，檢查響應格式"
 fi
@@ -76,7 +77,7 @@ echo ""
 # echo "響應: $MERGED_5_RES"
 # MERGED_5_NUM=$(echo $MERGED_5_RES | grep -oE '[0-9]{8}' | head -1)
 # if [ -n "$MERGED_5_NUM" ]; then
-#     echo "✅ 生成 5 筆合併收據編號: $MERGED_5_NUM"
+#     echo "✅ 生成 5 筆合併打印編號: $MERGED_5_NUM"
 # else
 #     echo "⚠️ 未能提取編號"
 # fi
@@ -131,9 +132,9 @@ echo ""
 # echo "9. 驗證編號格式..."
 # CURRENT_YM=$(date +'%y%m')
 # if [[ $MERGED_STAMP_NUM == "$CURRENT_YM"* ]] 2>/dev/null; then
-#     echo "✅ 合併收據格式正確 (符合年月 $CURRENT_YM)"
+#     echo "✅ 合併打印格式正確 (符合年月 $CURRENT_YM)"
 # else
-#     echo "⚠️ 合併收據格式驗證跳過（可能尚未生成）"
+#     echo "⚠️ 合併打印格式驗證跳過（可能尚未生成）"
 # fi
 
 # if [[ $MERGED_STD_NUM == "A$CURRENT_YM"* ]] 2>/dev/null; then
@@ -144,11 +145,11 @@ echo ""
 
 echo ""
 echo "-----------------------------------------------"
-echo "🎉 合併收據 API 測試完成！"
+echo "🎉 合併打印 API 測試完成！"
 echo "-----------------------------------------------"
 echo ""
 echo "📋 驗證檢查項目："
-echo "  1. receiptNumbersDB 是否新增合併收據記錄"
+echo "  1. receiptNumbersDB 是否新增合併打印記錄"
 echo "  2. mergedReceiptNumbersDB 是否新增合併記錄"
 echo "  3. participationRecordDB 中對應記錄的 receiptNumber 是否更新"
 echo "  4. participationRecordDB 中對應記錄的 mergedRef 是否指向 mergedReceiptNumbersDB 的 id"

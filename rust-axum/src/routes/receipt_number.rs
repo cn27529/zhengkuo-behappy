@@ -24,12 +24,12 @@ pub fn create_routes() -> Router {
             "/api/receipt-numbers/{id}/status", 
             patch(receipt_number::void_receipt_number)
         )
-        // 合併收據編號
+        // 合併打印編號
         .route(
             "/api/receipt-numbers/merge",
             post(receipt_number::generate_merged_receipt_number)
         )
-        // 🔥 解除合併收據（反操作）
+        // 🔥 作廢合併打印（反操作）
         .route("/api/receipt-numbers/merge/remove", 
         post(receipt_number::remove_merged_receipt_number))
         

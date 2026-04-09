@@ -148,6 +148,15 @@
           >
             批量保存
           </el-button>
+
+          <el-button
+            type="success"
+            size="small"
+            @click="handleMergedReceiptPrint"
+            :disabled="selectedRecords.length < 2"
+          >
+            合併打印 ({{ selectedRecords.length }})
+          </el-button>
         </div>
       </div>
     </div>
@@ -446,12 +455,18 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
 import { useJoinRecordQueryStore } from "../stores/joinRecordQueryStore.js";
+import { DateUtils } from "../utils/dateUtils.js";
+import { BoolUtils } from "../utils/boolUtils.js";
+import { usePageStateStore } from "../stores/pageStateStore.js";
 
 const queryStore = useJoinRecordQueryStore();
+const pageStateStore = usePageStateStore();
+const router = useRouter();
 const tableRef = ref(null);
 
 // 使用 storeToRefs 保持響應性
@@ -681,6 +696,56 @@ const editNotes = async (row) => {
     markAsModified(row.id, "notes");
   } catch {
     // 用戶取消
+  }
+};
+
+// 合併打印：與 JoinRecord.vue 的 handleMergedReceiptPrint 邏輯相同
+const handleMergedReceiptPrint = () => {
+  if (selectedRecords.value.length < 2) {
+    ElMessage.warning("請至少勾選兩筆記錄進行合併打印");
+    return;
+  }
+
+  // 只過濾需要打印收據的記錄
+  const printableRecords = selectedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt),
+  );
+
+  if (printableRecords.length === 0) {
+    ElMessage.warning("已勾選的記錄中，沒有任何一筆標記為「需要打印收據」");
+    return;
+  }
+
+  if (printableRecords.length < 2) {
+    ElMessage.warning("需要打印收據的記錄不足兩筆，無法進行合併打印");
+    return;
+  }
+
+  // 標記導航來源
+  pageStateStore.setPageState("receiptPrint", {
+    from: "joinRecordStatesControl",
+  });
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printId = `print_receipt_ids_${ids}`;
+
+    sessionStorage.setItem(printId, JSON.stringify(printableRecords));
+
+    router.push({
+      path: "/merged-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "false",
+        is_merged: "true",
+      },
+    });
+  } catch (error) {
+    console.error("導航到合併打印頁面失敗:", error);
+    ElMessage.error("導航到合併打印頁面失敗");
   }
 };
 </script>

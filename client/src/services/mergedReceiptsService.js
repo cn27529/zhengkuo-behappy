@@ -3,7 +3,7 @@ import { baseService } from "./baseService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { authService } from "./authService.js";
 
-// 合併收據表（mergedReceiptsDB）相關服務
+// 合併打印表（mergedReceiptsDB）相關服務
 export class MergedReceiptsService {
   // ========== 建構函式 ==========
   constructor() {
@@ -16,18 +16,18 @@ export class MergedReceiptsService {
   // ========== CRUD 操作 ==========
 
   /**
-   * 創建新的合併收據記錄
-   * @param {Object} receiptData - 合併收據資料
+   * 創建新的合併打印記錄
+   * @param {Object} receiptData - 合併打印資料
    * @returns {Promise<Object>} 創建結果
    */
   async createMergedReceipt(receiptData) {
     const createISOTime = DateUtils.getCurrentISOTime();
 
     if (this.base.getIsMock()) {
-      console.warn("合併收據創建成功！⚠️ 當前模式不是 directus，無法創建數據");
+      console.warn("合併打印創建成功！⚠️ 當前模式不是 directus，無法創建數據");
       return {
         success: true,
-        message: "合併收據創建成功！⚠️ 當前模式不是 directus，無法創建數據",
+        message: "合併打印創建成功！⚠️ 當前模式不是 directus，無法創建數據",
         data: {
           id: crypto.randomUUID(),
           ...receiptData,
@@ -88,21 +88,21 @@ export class MergedReceiptsService {
       const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功創建合併收據",
+        "成功創建合併打印",
         { ...logContext, duration },
       );
 
       return result;
     } catch (error) {
-      console.error("創建合併收據失敗:", error);
+      console.error("創建合併打印失敗:", error);
       return this.handleMergedReceiptsError(error);
     }
   }
 
   /**
-   * 更新合併收據記錄
+   * 更新合併打印記錄
    * @param {number|string} recordId - 記錄 ID
-   * @param {Object} receiptData - 合併收據資料
+   * @param {Object} receiptData - 合併打印資料
    * @returns {Promise<Object>} 更新結果
    */
   async updateMergedReceipt(recordId, receiptData) {
@@ -142,19 +142,19 @@ export class MergedReceiptsService {
       const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功更新合併收據",
+        "成功更新合併打印",
         { ...logContext, duration },
       );
 
       return result;
     } catch (error) {
-      console.error(`❌ 更新合併收據失敗 (ID: ${recordId})`, error);
+      console.error(`❌ 更新合併打印失敗 (ID: ${recordId})`, error);
       return this.handleMergedReceiptsError(error);
     }
   }
 
   /**
-   * 刪除合併收據記錄（軟刪除）
+   * 刪除合併打印記錄（軟刪除）
    * @param {number|string} recordId - 記錄 ID
    * @returns {Promise<Object>} 刪除結果
    */
@@ -172,12 +172,12 @@ export class MergedReceiptsService {
       if (!currentRecord) {
         return {
           success: false,
-          message: `找不到 ID 為 ${recordId} 的合併收據記錄`,
+          message: `找不到 ID 為 ${recordId} 的合併打印記錄`,
           data: null,
         };
       }
 
-      console.log("服務器返回的合併收據數據:", currentRecord);
+      console.log("服務器返回的合併打印數據:", currentRecord);
 
       let processedData = null;
       if (currentRecord.success && currentRecord.data) {
@@ -209,21 +209,21 @@ export class MergedReceiptsService {
       const duration = Date.now() - startTime;
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功刪除合併收據",
+        "成功刪除合併打印",
         { ...logContext, duration },
       );
 
       return result;
     } catch (error) {
-      console.error(`❌ 刪除合併收據失敗 (ID: ${recordId})`, error);
+      console.error(`❌ 刪除合併打印失敗 (ID: ${recordId})`, error);
       return this.handleMergedReceiptsError(error);
     }
   }
 
   /**
-   * 根據 ID 獲取合併收據記錄
+   * 根據 ID 獲取合併打印記錄
    * @param {number|string} recordId - 記錄 ID
-   * @returns {Promise<Object>} 合併收據資料
+   * @returns {Promise<Object>} 合併打印資料
    */
   async getMergedReceiptById(recordId) {
     if (this.base.getIsMock()) {
@@ -245,20 +245,20 @@ export class MergedReceiptsService {
 
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功獲取合併收據",
+        "成功獲取合併打印",
       );
 
       return result;
     } catch (error) {
-      console.error(`獲取合併收據 (ID: ${recordId}) 失敗:`, error);
+      console.error(`獲取合併打印 (ID: ${recordId}) 失敗:`, error);
       return this.handleMergedReceiptsError(error);
     }
   }
 
   /**
-   * 獲取所有合併收據記錄
+   * 獲取所有合併打印記錄
    * @param {Object} params - 查詢參數（過濾、排序等）
-   * @returns {Promise<Object>} 合併收據列表
+   * @returns {Promise<Object>} 合併打印列表
    */
   async getAllMergedReceipts(params = {}) {
     if (this.base.getIsMock()) {
@@ -317,11 +317,11 @@ export class MergedReceiptsService {
 
       const result = await this.base.handleDirectusResponse(
         response,
-        "成功獲取所有合併收據",
+        "成功獲取所有合併打印",
       );
       return result;
     } catch (error) {
-      console.error("❌ 獲取合併收據列表失敗:", error);
+      console.error("❌ 獲取合併打印列表失敗:", error);
       return this.handleMergedReceiptsError(error);
     }
   }
@@ -329,9 +329,9 @@ export class MergedReceiptsService {
   // ========== 查詢方法 ==========
 
   /**
-   * 根據收據類型獲取合併收據
+   * 根據收據類型獲取合併打印
    * @param {string} receiptType - 收據類型（stamp/...）
-   * @returns {Promise<Object>} 合併收據列表
+   * @returns {Promise<Object>} 合併打印列表
    */
   async getMergedReceiptsByType(receiptType) {
     return this.getAllMergedReceipts({
@@ -382,9 +382,9 @@ export class MergedReceiptsService {
   }
 
   /**
-   * 根據開立人獲取合併收據
+   * 根據開立人獲取合併打印
    * @param {string} issuedBy - 開立人
-   * @returns {Promise<Object>} 合併收據列表
+   * @returns {Promise<Object>} 合併打印列表
    */
   async getMergedReceiptsByIssuer(issuedBy) {
     return this.getAllMergedReceipts({
@@ -396,10 +396,10 @@ export class MergedReceiptsService {
   }
 
   /**
-   * 根據日期範圍獲取合併收據
+   * 根據日期範圍獲取合併打印
    * @param {string} startDate - 開始日期（ISO 格式）
    * @param {string} endDate - 結束日期（ISO 格式）
-   * @returns {Promise<Object>} 合併收據列表
+   * @returns {Promise<Object>} 合併打印列表
    */
   async getMergedReceiptsByDateRange(startDate, endDate) {
     return this.getAllMergedReceipts({
@@ -559,7 +559,7 @@ export class MergedReceiptsService {
       return {
         success: false,
         data: [],
-        message: result.message || "獲取合併收據失敗",
+        message: result.message || "獲取合併打印失敗",
       };
     }
 
@@ -580,7 +580,7 @@ export class MergedReceiptsService {
     return {
       success: true,
       data: filteredData,
-      message: "成功獲取指定日期範圍的合併收據",
+      message: "成功獲取指定日期範圍的合併打印",
     };
   }
 
@@ -648,7 +648,7 @@ export class MergedReceiptsService {
       state: "draft",
       registration_ids: [],
       total_amount: 0,
-      notes: "這是一個模擬的合併收據",
+      notes: "這是一個模擬的合併打印",
       issued_date: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

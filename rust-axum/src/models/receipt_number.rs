@@ -86,11 +86,11 @@ impl From<ReceiptNumber> for ReceiptNumberResponse {
     }
 }
 
-/// 解除合併收據請求
+/// 作廢合併打印請求
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveMergedReceiptRequest {
-    /// 合併收據編號（receiptNumber）
+    /// 合併打印編號（receiptNumber）
     pub receipt_number: String,
     /// 操作者 ID
     pub user_id: String,

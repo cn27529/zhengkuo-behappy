@@ -32,7 +32,7 @@ CREATE_RESPONSE=$(curl -s -X POST "$BASE_URL/api/merged-receipts" \
     \"totalAmount\": 1500,
     \"issuedAt\": \"2026-04-04T03:00:00.000Z\",
     \"issuedBy\": \"釋測試\",
-    \"notes\": \"測試合併收據\",
+    \"notes\": \"測試合併打印\",
     \"createdAt\": \"2026-04-04T03:00:00.000Z\",
     \"updatedAt\": \"2026-04-04T03:00:00.000Z\"
   }")
@@ -69,7 +69,7 @@ curl -s -X PATCH "$BASE_URL/api/merged-receipts/$MERGED_RECEIPT_ID" \
     \"totalAmount\": 2500,
     \"issuedAt\": \"2026-04-04T06:00:00.000Z\",
     \"issuedBy\": \"釋測試-更新\",
-    \"notes\": \"已更新合併收據資訊\"
+    \"notes\": \"已更新合併打印資訊\"
   }" | jq .
 echo -e "\n"
 

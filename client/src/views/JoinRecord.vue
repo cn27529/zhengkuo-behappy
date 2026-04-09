@@ -794,6 +794,18 @@
         <div class="results-section" v-if="savedRecords.length > 0">
           <div class="results-header">
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
+            <!-- 合併打印 -->
+            <p class="search-hint">
+              <el-button
+                v-if="savedRecords.length > 1"
+                type="success"
+                size="large"
+                @click="handleMergedReceiptPrint"
+              >
+                合併打印
+              </el-button>
+            </p>
+            <!-- 批量打印 -->
             <p class="search-hint" v-if="false">
               <el-button
                 v-if="savedRecords.length > 1"
@@ -1266,6 +1278,51 @@ const formatDate = (dateString) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+// 合併打印（目前僅顯示提示，實際功能待開發）
+const handleMergedReceiptPrint = () => {
+  if (savedRecords.value.length === 0) {
+    ElMessage.warning("請先選擇要打印的記錄");
+    return;
+  }
+
+  // 只過濾需要打印收據的記錄
+  const printableRecords = savedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt),
+  );
+
+  if (printableRecords.length === 0) {
+    ElMessage.warning("目前沒有需要打印收據的記錄");
+    return;
+  }
+
+  // 在導向打印頁面前進行標記。🔥 精準標記來源為 'joinRecord'
+  pageStateStore.setPageState("receiptPrint", { from: "joinRecord" });
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printDatas = printableRecords;
+    const printId = `print_receipt_ids_${ids}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+
+    router.push({
+      path: "/merged-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "false",
+        is_merged: "true",
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
 };
 
 // 批量打印

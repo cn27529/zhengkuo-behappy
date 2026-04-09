@@ -1,4 +1,4 @@
-# 合併收據功能 - 架構設計文件
+# 合併打印功能 - 架構設計文件
 
 > **文件路徑**：`./docs/dev-mergedReceiptsDB-guide.md`
 > **最後更新**：2026-04-01 22:05
@@ -8,11 +8,11 @@
 
 ## 概述說明
 
-合併收據（Merged Receipt）是指將多筆不同的參加記錄（participationRecordDB）合併，共同開立**一張收據**，使用**同一個收據編號**。
+合併打印（Merged Receipt）是指將多筆不同的參加記錄（participationRecordDB）合併，共同開立**一張收據**，使用**同一個收據編號**。
 
 ## 與現有「批量打印」的差異
 
-|          | 批量打印（現有）                     | 合併收據（新功能）               |
+|          | 批量打印（現有）                     | 合併打印（新功能）               |
 | -------- | ------------------------------------ | -------------------------------- |
 | 收據數量 | N 筆 → N 張收據                      | N 筆 → 1 張收據                  |
 | 收據編號 | 每張各自獨立編號                     | 共用同一個編號                   |
@@ -26,14 +26,14 @@
 ### 設計決策
 
 - `mergedReceiptsDB.mergeIds`：以 **JSON 陣列字串**儲存各筆 `participationRecordDB.id`，例如 `'[1, 3, 7]'`
-- `participationRecordDB.mergedReceiptId`：新增 FK 欄位，`NULL` 表示單筆收據，有值表示屬於某張合併收據
+- `participationRecordDB.mergedReceiptId`：新增 FK 欄位，`NULL` 表示單筆收據，有值表示屬於某張合併打印
 - 雙欄位互補，支援雙向查詢（詳見下方）
 
 ---
 
 ### mergedReceiptsDB（新增）
 
-儲存合併收據的主要資訊，一筆記錄 = 一張合併收據。
+儲存合併打印的主要資訊，一筆記錄 = 一張合併打印。
 
 ```sql
 CREATE TABLE mergedReceiptsDB (
@@ -81,7 +81,7 @@ ALTER TABLE participationRecordDB
 
 | 欄位              | 說明                                                       |
 | ----------------- | ---------------------------------------------------------- |
-| `mergedReceiptId` | **新增**。`NULL` = 單筆收據；有值 = 屬於某張合併收據       |
+| `mergedReceiptId` | **新增**。`NULL` = 單筆收據；有值 = 屬於某張合併打印       |
 | `receiptNumber`   | **現有保留**。合併打印後同步寫入，各筆填入相同的收據編號   |
 | `receiptIssued`   | **現有保留**。合併打印後同步寫入 `"stamp"` 或 `"standard"` |
 | `receiptIssuedAt` | **現有保留**。合併打印後同步寫入時間                       |
@@ -93,7 +93,7 @@ ALTER TABLE participationRecordDB
 
 ### receiptNumbersDB（現有，不動）
 
-合併收據的編號生成完全沿用現有 receiptNumbersDB 的原子生成流程（Rust Axum 事務 + `FOR UPDATE`），無需修改。調用時傳入的 `record_id` 改為 `mergedReceiptsDB.id` 即可。
+合併打印的編號生成完全沿用現有 receiptNumbersDB 的原子生成流程（Rust Axum 事務 + `FOR UPDATE`），無需修改。調用時傳入的 `record_id` 改為 `mergedReceiptsDB.id` 即可。
 
 ---
 
@@ -101,15 +101,15 @@ ALTER TABLE participationRecordDB
 
 | 查詢方向                       | 使用欄位                                      | 說明                                |
 | ------------------------------ | --------------------------------------------- | ----------------------------------- |
-| 合併收據 → 含哪幾筆 record     | `mergedReceiptsDB.mergeIds`                   | JSON 解析後取得 ID 陣列，再批次查詢 |
-| 某筆 record → 屬於哪張合併收據 | `participationRecordDB.mergedReceiptId`（FK） | 直接 JOIN 或 subquery               |
+| 合併打印 → 含哪幾筆 record     | `mergedReceiptsDB.mergeIds`                   | JSON 解析後取得 ID 陣列，再批次查詢 |
+| 某筆 record → 屬於哪張合併打印 | `participationRecordDB.mergedReceiptId`（FK） | 直接 JOIN 或 subquery               |
 
 ```sql
--- 查詢某張合併收據含哪幾筆（前端 JSON.parse 後再 IN 查詢）
+-- 查詢某張合併打印含哪幾筆（前端 JSON.parse 後再 IN 查詢）
 SELECT mergeIds FROM mergedReceiptsDB WHERE id = 88;
 -- 結果：'[1, 3, 7]'
 
--- 查詢某筆 record 屬於哪張合併收據
+-- 查詢某筆 record 屬於哪張合併打印
 SELECT m.*
 FROM mergedReceiptsDB m
 JOIN participationRecordDB r ON r.mergedReceiptId = m.id
@@ -122,13 +122,13 @@ WHERE r.id = 1;
 
 ## 金額統計規則
 
-各筆 `participationRecord` 已各自計算完成 `finalAmount`（含各自折扣），合併收據的金額計算如下：
+各筆 `participationRecord` 已各自計算完成 `finalAmount`（含各自折扣），合併打印的金額計算如下：
 
 ```
 mergedReceiptsDB.totalAmount = Σ ( 各筆 participationRecord.finalAmount )
 ```
 
-後端在建立合併收據的 API 中計算並寫入，前端不做計算。
+後端在建立合併打印的 API 中計算並寫入，前端不做計算。
 
 ### 範例
 
@@ -147,12 +147,12 @@ mergedReceiptsDB.totalAmount = Σ ( 各筆 participationRecord.finalAmount )
 
 紙張尺寸維持現有規格：128mm × 182mm（JIS B6），中文直書排版。
 
-合併收據顯示**各筆登記人姓名 + 各筆 finalAmount**，不展開 items 明細。
+合併打印顯示**各筆登記人姓名 + 各筆 finalAmount**，不展開 items 明細。
 
 ```
 ┌─────────────────────────────┐
 │   佛字第 A26030031 號        │
-│   合併收據  共 3 筆           │
+│   合併打印  共 3 筆           │
 │ -------------------------   │
 │ 林志明              1,200   │
 │ 王大明              1,000   │
@@ -168,7 +168,7 @@ mergedReceiptsDB.totalAmount = Σ ( 各筆 participationRecord.finalAmount )
 - 信眾姓名從各筆對應的 `registrationDB.contact.name` 取得
 - 各筆金額顯示 `finalAmount`（已含折扣）
 - 末行顯示 `mergedReceiptsDB.totalAmount`
-- 收據標題加「合併收據 共 N 筆」字樣，便於對帳
+- 收據標題加「合併打印 共 N 筆」字樣，便於對帳
 
 ---
 
@@ -176,7 +176,7 @@ mergedReceiptsDB.totalAmount = Σ ( 各筆 participationRecord.finalAmount )
 
 ### POST /api/merged-receipt
 
-建立合併收據，原子生成收據編號，並同步寫回各筆 participationRecord。
+建立合併打印，原子生成收據編號，並同步寫回各筆 participationRecord。
 
 **Request Body**
 
@@ -224,8 +224,8 @@ mergedReceiptsDB.totalAmount = Σ ( 各筆 participationRecord.finalAmount )
 ### JoinRecordList.vue（現有，小幅修改）
 
 - 現有「批量打印」按鈕**保留，行為不變**
-- 新增「合併收據」按鈕，勾選 **2 筆以上**記錄後才啟用
-- 點擊「合併收據」→ 呼叫 `POST /api/merged-receipt`
+- 新增「合併打印」按鈕，勾選 **2 筆以上**記錄後才啟用
+- 點擊「合併打印」→ 呼叫 `POST /api/merged-receipt`
 - API 成功 → 帶資料跳轉至 `MergedReceiptPrint.vue`
 - API 失敗（未付款、已開立）→ `ElMessage` 顯示錯誤原因，不跳轉
 
@@ -251,12 +251,12 @@ const handleMergedReceiptPrint = async () => {
       query: { print_id: printId },
     });
   } catch (err) {
-    ElMessage.error(err.message || "建立合併收據失敗");
+    ElMessage.error(err.message || "建立合併打印失敗");
   }
 };
 ```
 
-> **UI 注意**：「合併收據」與「批量打印」為兩個獨立按鈕，需明確區隔，建議加 tooltip 說明：「將多筆記錄合併為一張收據，共用同一收據編號」。
+> **UI 注意**：「合併打印」與「批量打印」為兩個獨立按鈕，需明確區隔，建議加 tooltip 說明：「將多筆記錄合併為一張收據，共用同一收據編號」。
 
 ---
 
@@ -275,9 +275,9 @@ const handleMergedReceiptPrint = async () => {
 | 情況                                              | 行為                                                                   | 提示訊息                                     |
 | ------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------- |
 | 勾選記錄中有 `paymentState ≠ 'paid'`              | 阻止，不呼叫 API                                                       | 「含有未付款記錄，請先完成付款」             |
-| 勾選記錄中有 `mergedReceiptId` 已有值             | 警告，由使用者確認是否繼續                                             | 「部分記錄已開立合併收據，確定要重新合併？」 |
+| 勾選記錄中有 `mergedReceiptId` 已有值             | 警告，由使用者確認是否繼續                                             | 「部分記錄已開立合併打印，確定要重新合併？」 |
 | 勾選記錄中有 `receiptNumber` 已有值（單筆已開立） | 警告，由使用者確認是否繼續                                             | 「部分記錄已單獨開立收據，確定要合併？」     |
-| 只勾選 1 筆                                       | 「合併收據」按鈕不啟用（disable）                                      | —                                            |
+| 只勾選 1 筆                                       | 「合併打印」按鈕不啟用（disable）                                      | —                                            |
 | 合併後其中一筆 record 被刪除                      | `mergedReceiptId ON DELETE SET NULL`，不影響 `mergedReceiptsDB` 主記錄 | —                                            |
 
 ---
@@ -288,7 +288,7 @@ const handleMergedReceiptPrint = async () => {
 | -------- | ---------- | ------------------------------------------------------------------------------------------------------- |
 | 一       | 1 天       | 資料庫：`CREATE TABLE mergedReceiptsDB`、`ALTER TABLE participationRecordDB ADD COLUMN mergedReceiptId` |
 | 二       | 2–3 天     | 後端：實作 `POST /api/merged-receipt`（Rust Axum + 事務 + receiptNumbersDB 整合）                       |
-| 三       | 2–3 天     | 前端：`JoinRecordList.vue` 加「合併收據」按鈕、新增 `MergedReceiptPrint.vue`                            |
+| 三       | 2–3 天     | 前端：`JoinRecordList.vue` 加「合併打印」按鈕、新增 `MergedReceiptPrint.vue`                            |
 | 四       | 1 天       | 測試：金額計算、邊界情況、雙模版打印                                                                    |
 | **合計** | **6–8 天** |                                                                                                         |
 

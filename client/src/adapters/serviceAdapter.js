@@ -7,7 +7,7 @@ import { joinRecordService as directusJoinRecord } from "../services/joinRecordS
 import { mydataService as directusMydata } from "../services/mydataService.js";
 import { directusUsersService as directusUsers } from "../services/directusUsersService.js";
 import { priceConfigService as directusPriceConfigService } from "../services/priceConfigService.js"; // 新增價格配置服務適配器 by 20260331
-import { mergedReceiptsService as directusMergedReceiptsService } from "../services/mergedReceiptsService.js"; // 新增合併收據服務適配器 by 20260402
+import { mergedReceiptsService as directusMergedReceiptsService } from "../services/mergedReceiptsService.js"; // 新增合併打印服務適配器 by 20260402
 import { DateUtils } from "../utils/dateUtils.js";
 
 // Rust 服務（延遲加載，避免初始化錯誤）
@@ -86,7 +86,7 @@ class ServiceAdapter {
       mydata: directusMydata,
       user: directusUsers,
       priceConfig: directusPriceConfigService, // 新增價格配置服務適配器 by 20260331
-      mergedReceipts: directusMergedReceiptsService, // 新增合併收據服務適配器 by 20260402
+      mergedReceipts: directusMergedReceiptsService, // 新增合併打印服務適配器 by 20260402
     };
 
     // 錯誤計數器

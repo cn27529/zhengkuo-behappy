@@ -217,7 +217,7 @@ pub async fn generate_receipt_number(
 }
 
 
-/// 🔥 核心功能：原子性生成合併收據編號
+/// 🔥 核心功能：原子性生成合併打印編號
 pub async fn generate_merged_receipt_number(
     Extension(pool): Extension<SqlitePool>,
     Json(payload): Json<GenerateReceiptRequest>,
@@ -272,7 +272,7 @@ pub async fn generate_merged_receipt_number(
     let now_timestamp = chrono::Utc::now().timestamp_millis();
 
     let state = "merged";
-    let void_reason = payload.void_reason.clone().unwrap_or_else(|| "合併收據".to_string());
+    let void_reason = payload.void_reason.clone().unwrap_or_else(|| "合併打印".to_string());
 
     // 5. 插入 receiptNumbersDB
     let insert_result = sqlx::query(
@@ -287,7 +287,7 @@ pub async fn generate_merged_receipt_number(
     .bind(&payload.receipt_type)
     .bind(&year_month)
     .bind(next_serial)
-    .bind(-1)  // 🔥 合併收據：使用 -1 表示合併收據
+    .bind(-1)  // 🔥 合併打印：使用 -1 表示合併打印
     .bind(&now_iso)    
     .bind(&payload.user_id)
     .bind(&state)
@@ -409,8 +409,8 @@ pub async fn generate_merged_receipt_number(
     )))
 }
 
-/// 🔥 解除合併收據（反操作）
-/// 1. receiptNumbersDB: 更新 state 為 'void'，voidReason 註記「解除合併列印」
+/// 🔥 作廢合併打印（反操作）
+/// 1. receiptNumbersDB: 更新 state 為 'void'，voidReason 註記「作廢合併列印」
 /// 2. mergedReceiptsDB: 不異動，保留歷史記錄
 /// 3. participationRecordDB: 清空 receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy
 pub async fn remove_merged_receipt_number(
@@ -427,9 +427,9 @@ pub async fn remove_merged_receipt_number(
     let now_timestamp = chrono::Utc::now().timestamp_millis();
     let void_reason = payload.void_reason
         .clone()
-        .unwrap_or_else(|| "解除合併".to_string());
+        .unwrap_or_else(|| "作廢合併".to_string());
 
-    // 2. 查詢合併收據記錄，獲取關聯的 participationRecordDB IDs
+    // 2. 查詢合併打印記錄，獲取關聯的 participationRecordDB IDs
     let merged_record: Option<(i64, String)> = sqlx::query_as::<_, (i64, String)>(
         "SELECT id, mergeIds FROM mergedReceiptsDB WHERE receiptNumber = ?"
     )
@@ -443,7 +443,7 @@ pub async fn remove_merged_receipt_number(
     let (merged_id, merge_ids_json) = match merged_record {
         Some(record) => record,
         None => {
-            return Err((StatusCode::NOT_FOUND, Json(ApiResponse::error(format!("找不到合併收據記錄: {}", payload.receipt_number)))));
+            return Err((StatusCode::NOT_FOUND, Json(ApiResponse::error(format!("找不到合併打印記錄: {}", payload.receipt_number)))));
         }
     };
 
@@ -459,7 +459,7 @@ pub async fn remove_merged_receipt_number(
 
     let state = "remove merged";
 
-    // 3. 更新 receiptNumbersDB：將該合併收據標記為作廢
+    // 3. 更新 receiptNumbersDB：將該合併打印標記為作廢
     let update_result = sqlx::query(
         r#"
         UPDATE receiptNumbersDB 
@@ -547,7 +547,7 @@ pub async fn remove_merged_receipt_number(
     Ok(Json(ApiResponse::success_with_message(
         (),
         format!(
-            "成功解除合併收據 {}，共處理 {} 筆參加記錄",
+            "成功作廢合併打印 {}，共處理 {} 筆參加記錄",
             payload.receipt_number,
             record_ids.len()
         ),

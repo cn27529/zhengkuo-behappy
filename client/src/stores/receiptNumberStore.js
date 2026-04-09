@@ -70,6 +70,101 @@ export const useReceiptNumberStore = defineStore("receiptNumber", () => {
 
   // ========== Actions - 方法 ==========
 
+  /*
+   * 作廢合併打印
+   */
+  const removeMergedReceiptNumber = async (receiptNumber, voidReason) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      // 從 authService 獲取當前登入使用者的 UUID
+      const currentUserId = authService.getCurrentUser();
+
+      console.log(
+        `🚀 開始作廢合併編號: receiptNumber=${receiptNumber}, voidReason=${voidReason}, userId=${currentUserId}`,
+      );
+
+      const result = await rustReceiptNumberService.removeMergedReceiptNumber(
+        receiptNumber,
+        voidReason,
+        {
+          userId: currentUserId,
+        },
+      );
+
+      if (result.success) {
+        // 從本地列表中移除作廢的合併編號
+        allReceiptNumbers.value = allReceiptNumbers.value.filter(
+          (r) => r.receiptNumber !== receiptNumber,
+        );
+        console.log("✅ 合併編號作廢成功:", receiptNumber);
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 合併編號作廢失敗:", result.message);
+        return result;
+      }
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 合併編號作廢異常:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  // ========== Actions - 方法 ==========
+
+  /*
+   * 生成合併打印編號
+   */
+  const generateMergedReceiptNumber = async (
+    recordIds,
+    receiptType,
+    totalAmount,
+    voidReason,
+  ) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      // 從 authService 獲取當前登入使用者的 UUID
+      const currentUserId = authService.getCurrentUser();
+
+      console.log(
+        `🚀 開始生成合併打印編號: recordIds=${recordIds}, receiptType=${receiptType}, totalAmount=${totalAmount}, voidReason=${voidReason}, userId=${currentUserId}`,
+      );
+
+      // 將 userId 作为 additionalContext 傳遞給 Service
+      const result = await rustReceiptNumberService.generateMergedReceiptNumber(
+        recordIds,
+        receiptType,
+        totalAmount,
+        voidReason,
+        {
+          userId: currentUserId,
+        },
+      );
+
+      if (result.success) {
+        // 更新本地列表快照
+        allReceiptNumbers.value.unshift(result.data);
+        console.log("✅ 合併打印編號生成成功:", result.data.receiptNumber);
+        return result;
+      } else {
+        error.value = result.message;
+        console.error("❌ 合併打印編號生成失敗:", result.message);
+        return result;
+      }
+    } catch (err) {
+      error.value = err.message;
+      console.error("❌ 合併打印編號異常:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   /**
    * ✅ 🔥 核心功能：原子性生成收據編號 (供 JoinRecordReceiptPrint.vue 使用)
    * 內部會自動代理至 Rust 高性能軌道
@@ -247,5 +342,7 @@ export const useReceiptNumberStore = defineStore("receiptNumber", () => {
     voidReceiptNumber,
     initialize,
     stateReceiptNumber,
+    generateMergedReceiptNumber,
+    removeMergedReceiptNumber,
   };
 });

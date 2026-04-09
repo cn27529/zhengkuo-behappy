@@ -68,6 +68,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/merged-print",
+    title: "合併打印",
+    component: () => import("../views/JoinRecordMergedPrint.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/states-control",
     title: "參加記錄狀態控制台",
     name: "JoinRecordStatesControl",

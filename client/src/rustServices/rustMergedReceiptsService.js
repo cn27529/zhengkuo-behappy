@@ -2,7 +2,7 @@
 import { DateUtils } from "../utils/dateUtils.js";
 import { baseRustService } from "./baseRustService.js";
 
-// 合併收據表（mergedReceiptsDB）相關服務
+// 合併打印表（mergedReceiptsDB）相關服務
 export class RustMergedReceiptsService {
   constructor() {
     this.serviceName = "RustMergedReceiptsService";
@@ -27,7 +27,7 @@ export class RustMergedReceiptsService {
    * @param {Object} context - 上下文信息
    */
   async getAllMergedReceipts(params = {}, context = {}) {
-    console.log("🦀 [Rust] 服務器獲取合併收據資料...");
+    console.log("🦀 [Rust] 服務器獲取合併打印資料...");
 
     const queryParams = new URLSearchParams();
 
@@ -66,7 +66,7 @@ export class RustMergedReceiptsService {
       );
       return result;
     } catch (error) {
-      console.error("❌ 獲取合併收據失敗:", error);
+      console.error("❌ 獲取合併打印失敗:", error);
       return this.handleMergedReceiptsError(error);
     }
   }
@@ -81,7 +81,7 @@ export class RustMergedReceiptsService {
       state: "draft",
       registration_ids: [],
       total_amount: 0,
-      notes: "這是一個模擬的合併收據",
+      notes: "這是一個模擬的合併打印",
       issued_date: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -98,7 +98,7 @@ export class RustMergedReceiptsService {
       return {
         success: true,
         data: this.generateMockData(),
-        message: "Mock 模式：返回合併收據",
+        message: "Mock 模式：返回合併打印",
       };
     }
 
@@ -114,7 +114,7 @@ export class RustMergedReceiptsService {
       );
       return result;
     } catch (error) {
-      console.error("❌ 獲取合併收據失敗:", error);
+      console.error("❌ 獲取合併打印失敗:", error);
       return this.handleMergedReceiptsError(error);
     }
   }
@@ -476,10 +476,10 @@ export class RustMergedReceiptsService {
   }
 
   /**
-   * 根據收據類型獲取合併收據
+   * 根據收據類型獲取合併打印
    * @param {string} receiptType - 收據類型（stamp/...）
    * @param {Object} context - 上下文信息
-   * @returns {Promise<Object>} 合併收據列表
+   * @returns {Promise<Object>} 合併打印列表
    */
   async getMergedReceiptsByType(receiptType, context = {}) {
     return await this.getAllMergedReceipts(

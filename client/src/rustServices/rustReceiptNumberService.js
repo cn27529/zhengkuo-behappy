@@ -13,6 +13,101 @@ export class RustReceiptNumberService {
     );
   }
 
+  // 作廢合併打印的接口
+  async removeMergedReceiptNumber(
+    receiptNumber,
+    voidReason,
+    additionalContext = {},
+  ) {
+    const startTime = Date.now();
+    const requestBody = {
+      receiptNumber: receiptNumber, // 需要作廢的合併編號
+      voidReason: voidReason || "作廢合併打印", // 作廢原因
+      userId: additionalContext.userId || null,
+    };
+
+    const logContext = {
+      service: this.serviceName,
+      operation: "removeMergedReceiptNumber",
+      method: "POST",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/merge/remove`,
+      requestBody: requestBody,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(
+        `🦀 [Rust] 請求作廢合併打印: receiptNumber=${receiptNumber}, voidReason=${requestBody.voidReason}, userId=${additionalContext.userId}`,
+        requestBody,
+      );
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/merge/remove`,
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        },
+        logContext,
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ Rust 作廢合併打印失敗:", error);
+      return this.handleError(error);
+    }
+  }
+
+  // 合併打印的接口
+  async generateMergedReceiptNumber(
+    recordIds,
+    receiptType,
+    totalAmount,
+    voidReason,
+    additionalContext = {},
+  ) {
+    const startTime = Date.now();
+    const requestBody = {
+      recordId: parseInt(-1), // 合併打印不對應單一 recordId，暫時使用 -1 或者可以改為 null
+      recordIds: recordIds, // 參與合併的多個 recordId
+      receiptType: receiptType, // "stamp" 或 "standard"
+      totalAmount: totalAmount || 0, // 合併後的總金額
+      voidReason: voidReason || "合併打印", // 作廢原因
+      userId: additionalContext.userId || null,
+    };
+
+    const logContext = {
+      service: this.serviceName,
+      operation: "generateMergedReceiptNumber",
+      method: "POST",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/merge`,
+      requestBody: requestBody,
+      ...additionalContext,
+    };
+
+    try {
+      console.log(
+        `🦀 [Rust] 請求原子性生成合併打印編號: recordIds=${recordIds}, receiptType=${receiptType}, totalAmount=${totalAmount}, voidReason=${requestBody.voidReason}, userId=${additionalContext.userId}`,
+        requestBody,
+      );
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/generate`,
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        },
+        logContext,
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ Rust 合併打印編號失敗:", error);
+      return this.handleError(error);
+    }
+  }
+
   /**
    * ✅ 🔥 核心功能：原子性生成收據編號 (對應 Rust 方案 1)
    */
@@ -36,7 +131,7 @@ export class RustReceiptNumberService {
 
     try {
       console.log(
-        `🦀 [Rust] 請求原子性生成編號 (${receiptType}):`,
+        `🦀 [Rust] 請求原子性生成編號: recordId=${recordId}, receiptType=${receiptType}, userId=${additionalContext.userId}`,
         requestBody,
       );
 
