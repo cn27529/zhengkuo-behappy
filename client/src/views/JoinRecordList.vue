@@ -177,27 +177,16 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="聯絡人" min-width="100" align="center">
+        <el-table-column prop="contact.name"
+          label="聯絡人"
+          width="150"
+          align="center"
+        >
           <template #default="{ row }">
             <div class="contact-info">
               <div class="contact-name">
                 <strong>{{ row.contact?.name }}</strong>
-              </div>
-              <div
-                class="contact-phone"
-                v-if="row.contact?.mobile || row.contact?.phone"
-              >
-                {{ row.contact?.mobile || row.contact?.phone }}
-              </div>
-              <div v-if="false" class="contact-relationship">
-                {{ row.contact?.relationship }}
-                <span
-                  v-if="row.contact?.otherRelationship"
-                  class="other-relationship"
-                >
-                  ({{ row.contact.otherRelationship }})
-                </span>
-              </div>
+              </div>              
             </div>
           </template>
         </el-table-column>
@@ -205,7 +194,7 @@
         <el-table-column
           prop="contact.relationship"
           label="關係"
-          min-width="100"
+          width="120"
         >
           <template #default="{ row }">
             <div>
@@ -217,6 +206,17 @@
                 ({{ row.contact.otherRelationship }})
               </span>
             </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="contact.mobile" label="手機/聯絡電話" width="120" align="center">
+          <template #default="{ row }">
+            <div class="contact-phone">
+                {{ row.contact?.mobile || "-" }}
+              </div>
+              <div class="contact-phone">
+                {{ row.contact?.phone || "-" }}
+              </div>
           </template>
         </el-table-column>
 
@@ -315,7 +315,7 @@
         <el-table-column
           prop="user_created"
           label="資料人員"
-          min-width="80"
+          width="100"
           align="center"
         >
           <template #default="{ row }">

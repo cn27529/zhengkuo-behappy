@@ -240,9 +240,9 @@
 
           <el-table-column
             prop="user_created"
-            label="資料人員"
-            width="100"
-            align="center"
+          label="資料人員"
+          width="100"
+          align="center"
           >
             <template #default="{ row }">
               {{ recordUserName(row.user_created) }}
