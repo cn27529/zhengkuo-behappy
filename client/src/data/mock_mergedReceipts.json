@@ -1,29 +1,38 @@
 [
   {
-    "id": 8,
+    "id": 22,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "1970-01-01 00:00:02",
-    "receiptNumber": "26040003",
-    "receiptType": "stamp",
-    "totalAmount": 2500,
-    "createdAt": "2026-04-07T19:11:38.584421+08:00"
-  },
-  {
-    "id": 9,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "1970-01-01 00:00:02",
-    "receiptNumber": "26040004",
-    "receiptType": "stamp",
-    "totalAmount": 2500,
-    "createdAt": "2026-04-07T19:16:48.803491+08:00"
-  },
-  {
-    "id": 10,
-    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "1970-01-01 00:00:02",
+    "date_created": "2026-04-08 16:58:41",
     "receiptNumber": "26040005",
     "receiptType": "stamp",
-    "totalAmount": 2500,
-    "createdAt": "2026-04-07T20:00:51.339123+08:00"
+    "totalAmount": 858689,
+    "createdAt": "2026-04-08T16:58:41.944768+00:00"
+  },
+  {
+    "id": 21,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-04-08 16:57:58",
+    "receiptNumber": "26040004",
+    "receiptType": "stamp",
+    "totalAmount": 858689,
+    "createdAt": "2026-04-08T16:57:58.913258+00:00"
+  },
+  {
+    "id": 20,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-04-08 16:42:52",
+    "receiptNumber": "26040003",
+    "receiptType": "stamp",
+    "totalAmount": 858689,
+    "createdAt": "2026-04-08T16:42:52.816645+00:00"
+  },
+  {
+    "id": 19,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-04-08 16:37:50",
+    "receiptNumber": "26040002",
+    "receiptType": "stamp",
+    "totalAmount": 858689,
+    "createdAt": "2026-04-08T16:37:50.745873+00:00"
   }
 ]
