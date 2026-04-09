@@ -85,7 +85,7 @@
           />
         </div>
 
-        <p class="search-hint">💡 提示: 搜尋關鍵字,系統會自動匹配相關欄位</p>
+        <p class="search-hint">💡 提示:搜尋關鍵字系統會自動匹配相關欄位</p>
       </div>
     </div>
   </div>

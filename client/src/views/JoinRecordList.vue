@@ -72,10 +72,7 @@
               清空
             </el-button>
           </div>
-          <p class="search-hint">
-            💡 提示:
-            可依項目類型或關鍵字（聯絡人、參加者、地址、備註）搜尋相關記錄
-          </p>
+          <p class="search-hint">💡 提示:搜尋關鍵字系統會自動匹配相關欄位</p>
         </div>
       </div>
     </div>
