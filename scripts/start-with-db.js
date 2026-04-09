@@ -3,7 +3,10 @@ const { execSync, spawn } = require("child_process");
 const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
-const { createSymlink, provideWindowsAdvice } = require("./windows-symlink-helper");
+const {
+  createSymlink,
+  provideWindowsAdvice,
+} = require("./windows-symlink-helper");
 
 // 顏色輸出
 const colors = {
@@ -14,7 +17,7 @@ const colors = {
   cyan: "\x1b[36m",
   blue: "\x1b[34m",
   magenta: "\x1b[35m",
-  bold: "\x1b[1m"
+  bold: "\x1b[1m",
 };
 
 function log(message, color = "reset") {
@@ -337,29 +340,29 @@ function showDatabaseMenu(config, projectRoot, activeDb) {
 
         // 使用輔助工具建立符號連結
         const result = createSymlink(targetFile, currentLink);
-        
+
         if (result.success) {
           if (result.warning) {
             warning(`⚠️  ${result.warning}`);
           }
-          
+
           // 顯示使用的方法
           const methodNames = {
-            'symlink': '符號連結',
-            'nodejs-symlink': 'Node.js 符號連結',
-            'mklink': 'Windows mklink',
-            'copy': '文件複製'
+            symlink: "符號連結",
+            "nodejs-symlink": "Node.js 符號連結",
+            mklink: "Windows mklink",
+            copy: "文件複製",
           };
           info(`使用方法: ${methodNames[result.method] || result.method}`);
         } else {
           error(`❌ 建立連結失敗: ${result.error}`);
-          
+
           // 提供 Windows 特定建議
-          if (process.platform === 'win32') {
+          if (process.platform === "win32") {
             console.log();
             provideWindowsAdvice();
           }
-          
+
           rl2.close();
           return;
         }
@@ -404,7 +407,6 @@ function showDatabaseMenu(config, projectRoot, activeDb) {
     console.log("-".repeat(50));
 
     // 🔧 新增：啟動服務前先清理殘留文件
-
     cleanupWalFiles();
 
     // 啟動服務
@@ -449,98 +451,4 @@ function cleanupWalFiles() {
       log(`   無法讀取目錄: ${e.message}`, "yellow");
     }
   });
-}
-
-function startServices(projectRoot) {
-  log(`\n${"=".repeat(50)}`, "cyan");
-  log(`${colors.bold}${colors.green}🚀 啟動所有服務...${colors.reset}`);
-  log(`${"=".repeat(50)}\n`, "cyan");
-
-  log("📦 服務列表:", "cyan");
-  log("  • Directus (port 8055)", "blue");
-  log("  • Vue Client (port 5173)", "blue");
-  log("  • Rust-Axum (port 3000)", "blue");
-  log("  • Log Server (port 3002)", "blue");
-  log("  • 服務入口總覽 (port 8080)", "blue");
-  log("");
-
-  log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
-
-  try {
-    // 使用 concurrently 啟動所有服務
-    const processes = spawn(
-      "npx",
-      [
-        "concurrently",
-        "--kill-others",
-        "--names",
-        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS",
-        //"🐇,🌍,🦀,🌱",
-        "--prefix-colors",
-        "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold",
-        '"npm run start:server"',
-        '"npm run start:client"',
-        '"npm run start:rust"',
-        '"npm run start:logs"',
-        '"npm run start:docs"',
-        '"npm run start:portal"',
-      ],
-      {
-        stdio: "inherit",
-        shell: true,
-      },
-    );
-
-    // 處理進程退出
-    processes.on("close", (code) => {
-      if (code === 0) {
-        log(`\n✅ 所有服務正常結束`, "green");
-      } else {
-        log(`\n⚠️  服務結束，退出碼: ${code}`, "yellow");
-      }
-    });
-
-    // 處理錯誤
-    processes.on("error", (error) => {
-      log(`\n❌ 啟動服務時發生錯誤: ${error.message}`, "red");
-      process.exit(1);
-    });
-
-    // 處理 Ctrl+C
-    process.on("SIGINT", () => {
-      log(`\n\n👋 收到中斷信號，正在停止所有服務...`, "yellow");
-      processes.kill("SIGINT");
-    });
-
-    process.on("SIGTERM", () => {
-      log(`\n\n👋 收到終止信號，正在停止所有服務...`, "yellow");
-      processes.kill("SIGTERM");
-    });
-  } catch (error) {
-    log(`\n❌ 啟動失敗: ${error.message}`, "red");
-    log(`\n💡 請確認:`, "yellow");
-    log(`   1. 已安裝所有依賴: npm install`, "yellow");
-    log(`   2. concurrently 已安裝`, "yellow");
-    log(`   3. server、client、rust-axum 目錄都存在`, "yellow");
-    process.exit(1);
-  }
-
-  // // 執行 npm run dev
-  // const processes = spawn("npm", ["run", "dev"], {
-  //   stdio: "inherit",
-  //   shell: true,
-  // });
-
-  // processes.on("close", (code) => {
-  //   console.log("\n" + "=".repeat(50));
-  //   if (code === 0) {
-  //     log("✅ 所有服務已正常結束", "green");
-  //   } else {
-  //     log(`⚠️ 服務結束，退出碼: ${code}`, "yellow");
-  //   }
-  //   console.log("=".repeat(50));
-
-  //   // 恢復原始工作目錄
-  //   process.chdir(originalCwd);
-  // });
 }

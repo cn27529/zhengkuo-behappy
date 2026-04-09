@@ -130,23 +130,4 @@ function startServices(projectRoot) {
     log(`   3. server、client、rust-axum 目錄都存在`, "yellow");
     process.exit(1);
   }
-
-  // // 執行 npm run dev
-  // const processes = spawn("npm", ["run", "dev"], {
-  //   stdio: "inherit",
-  //   shell: true,
-  // });
-
-  // processes.on("close", (code) => {
-  //   console.log("\n" + "=".repeat(50));
-  //   if (code === 0) {
-  //     log("✅ 所有服務已正常結束", "green");
-  //   } else {
-  //     log(`⚠️ 服務結束，退出碼: ${code}`, "yellow");
-  //   }
-  //   console.log("=".repeat(50));
-
-  //   // 恢復原始工作目錄
-  //   process.chdir(originalCwd);
-  // });
 }
