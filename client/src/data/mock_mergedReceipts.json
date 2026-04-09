@@ -1,5 +1,14 @@
 [
   {
+    "id": 23,
+    "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_created": "2026-04-09 03:08:50",
+    "receiptNumber": "26040006",
+    "receiptType": "stamp",
+    "totalAmount": 858689,
+    "createdAt": "2026-04-09T03:08:50.278701800+00:00"
+  },
+  {
     "id": 22,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-04-08 16:58:41",
