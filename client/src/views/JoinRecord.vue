@@ -1304,7 +1304,7 @@ const handleMergedReceiptPrint = () => {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
     const printDatas = printableRecords;
-    const printId = `print_receipt_ids_${ids}`;
+    const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
     sessionStorage.setItem(printId, JSON.stringify(printDatas));
@@ -1349,7 +1349,7 @@ const handleBatchReceiptPrint = () => {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
     const printDatas = printableRecords;
-    const printId = `print_receipt_ids_${ids}`;
+    const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
     sessionStorage.setItem(printId, JSON.stringify(printDatas));

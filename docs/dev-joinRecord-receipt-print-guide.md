@@ -170,7 +170,7 @@ const handleBatchReceiptPrint = () => {
   const isoStr = DateUtils.getCurrentISOTime();
   const ids = selectedRecords.value.map((r) => r.id).join(",");
   const printDatas = selectedRecords.value.map((r) => r);
-  const printId = `print_receipt_ids_${isoStr}`;
+  const printId = `print_receipt_${isoStr}`;
 
   // 存儲多筆資料到 sessionStorage
   sessionStorage.setItem(printId, JSON.stringify(printDatas));

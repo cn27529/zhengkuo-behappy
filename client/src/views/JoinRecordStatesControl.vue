@@ -729,7 +729,7 @@ const handleMergedReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
-    const printId = `print_receipt_ids_${ids}`;
+    const printId = `print_receipt_${ids}`;
 
     sessionStorage.setItem(printId, JSON.stringify(printableRecords));
 
