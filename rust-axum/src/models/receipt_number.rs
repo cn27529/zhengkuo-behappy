@@ -26,7 +26,7 @@ pub struct ReceiptNumber {
     #[sqlx(rename = "serialNumber")]
     pub serial_number: Option<i32>,      // integer
     #[sqlx(rename = "recordId")]
-    pub record_id: Option<i32>,          // integer - 關聯的參加記錄 ID
+    pub record_id: Option<i32>,          // integer - 單筆的給參加記錄id，多筆的不給id
     
     // 狀態與原因
     pub state: Option<String>,           // varchar(255) - 'active', 'void', 'regenerated'
@@ -55,7 +55,7 @@ pub struct ReceiptNumberResponse {
     pub receipt_type: Option<String>,
     pub year_month: Option<String>,
     pub serial_number: Option<i32>,
-    pub record_id: Option<i32>,
+    pub record_id: Option<i32>, // 單筆的給參加記錄id，多筆的不給id
     pub state: Option<String>,
     
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -77,7 +77,7 @@ impl From<ReceiptNumber> for ReceiptNumberResponse {
             receipt_type: data.receipt_type,
             year_month: data.year_month,
             serial_number: data.serial_number,
-            record_id: data.record_id,
+            record_id: data.record_id, // 單筆的給參加記錄id，多筆的不給id
             state: data.state,
             void_reason: data.void_reason,
             created_at: data.created_at,
@@ -89,14 +89,23 @@ impl From<ReceiptNumber> for ReceiptNumberResponse {
 /// 作廢合併打印請求
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct RemoveMergedReceiptRequest {
-    /// 合併打印編號（receiptNumber）
-    pub receipt_number: String,
-    /// 操作者 ID
-    pub user_id: String,
-    /// 解除原因（可選）
+pub struct MergedReceiptRequest {
+    
+    pub receipt_number: String, // 合併打印編號（receiptNumber）
+
+    pub receipt_type: String, // "stamp" 或 "standard"
+    
     #[serde(default)]
-    pub void_reason: Option<String>,
+    pub user_id: Option<String>, // 用於記錄創建者，格式為 Directus 用戶 UUID
+    
+    #[serde(default)]
+    pub record_ids: Option<Vec<i64>>, // 用於合併生成的參加記錄 ID 列表，格式為JSON陣列 "[1,2,3]"
+
+    #[serde(default)]
+    pub void_reason: Option<String>, // 作廢原因（如果是作廢操作）
+
+    #[serde(default)]
+    pub state: Option<String>, // 合併打印狀態（例如 "merged" 或 "active"），默認為 "merged"
 }
 
 /// 請求生成收據編號的 Payload
@@ -112,13 +121,13 @@ pub struct GenerateReceiptRequest {
     pub user_id: Option<String>, // 用於記錄創建者，格式為 Directus 用戶 UUID
     
     #[serde(default)]
-    pub total_amount: Option<f64>, // 用於合併生成的總金額（如果需要合併）
-    
-    #[serde(default)]
     pub record_ids: Option<Vec<i64>>, // 用於合併生成的參加記錄 ID 列表，格式為JSON陣列 "[1,2,3]"
 
     #[serde(default)]
     pub void_reason: Option<String>, // 作廢原因（如果是作廢操作）
+
+    #[serde(default)]
+    pub state: Option<String>, // 合併打印狀態（例如 "merged" 或 "active"），默認為 "merged"
 
 }
 
@@ -137,6 +146,6 @@ pub struct UpdateReceiptStatusRequest {
 pub struct ReceiptNumberQuery {
     pub year_month: Option<String>,
     pub receipt_type: Option<String>,
-    pub record_id: Option<i32>,
+    pub record_id: Option<i32>, // 單筆的給參加記錄id，多筆的不給id
     pub state: Option<String>,
 }

@@ -8,11 +8,6 @@
     "yearMonth": "2604",
     "serialNumber": 6,
     "recordId": -1,
-    "recordIds": [
-      85,
-      86,
-      89
-    ],
     "state": "merged",
     "voidReason": "合併收據123",
     "createdAt": "2026-04-09T03:08:50.278701800+00:00"
@@ -26,11 +21,6 @@
     "yearMonth": "2604",
     "serialNumber": 5,
     "recordId": -1,
-    "recordIds": [
-      85,
-      86,
-      89
-    ],
     "state": "remove merged",
     "voidReason": "解除合併收據123",
     "createdAt": "2026-04-08T16:58:41.944768+00:00",

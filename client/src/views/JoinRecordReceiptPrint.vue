@@ -245,7 +245,7 @@ const router = useRouter();
 const record = ref({});
 const printTime = ref("");
 const printId = ref("");
-const receiptNumberId = ref(null); // 儲存領取的正式編號 ID，以便後續更新狀態
+const receiptId = ref(null); // 儲存領取的正式編號 ID，以便後續更新狀態
 
 // 批量打印相關
 const isBatch = ref(false);
@@ -430,13 +430,13 @@ const handlePrintWithHtmlToImage = async () => {
           // 更新本地響應式數據，觸發 receiptSerialNum 計算屬性
           record.value.receiptNumber = result.data.receiptNumber; //
           record.value.receiptIssued = activeTemplate.value;
-          receiptNumberId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
+          receiptId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
 
           console.log(
             "正式編號領取成功:",
             record.value.receiptNumber,
             "編號 ID:",
-            receiptNumberId.value,
+            receiptId.value,
           );
 
           handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
@@ -538,10 +538,10 @@ const handlePostPrintCheck = async () => {
         });
 
         // 同步更新編號狀態為已打印
-        if (receiptNumberId.value) {
+        if (receiptId.value) {
           // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
           const stateResult = await receiptStore.stateReceiptNumber(
-            receiptNumberId.value,
+            receiptId.value,
             "打印完成",
             "printed",
           ); // 同步更新編號狀態為已打印
@@ -588,10 +588,10 @@ const handlePostPrintCheck = async () => {
         });
 
         // 同步更新編號狀態為已打印
-        if (receiptNumberId.value) {
+        if (receiptId.value) {
           // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
           const stateResult = await receiptStore.stateReceiptNumber(
-            receiptNumberId.value,
+            receiptId.value,
             "打印完成",
             "printed",
           ); // 同步更新編號狀態為已打印
@@ -643,10 +643,10 @@ const handlePostPrintCheck = async () => {
         });
       }
 
-      if (receiptNumberId.value) {
+      if (receiptId.value) {
         // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
         const stateResult = await receiptStore.stateReceiptNumber(
-          receiptNumberId.value,
+          receiptId.value,
           "取消打印",
           "unprinted",
         ); // 同步更新編號狀態為未打印

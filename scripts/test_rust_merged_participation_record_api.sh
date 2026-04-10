@@ -8,11 +8,10 @@ TEST_STAFF="ab11998d-27b1-4936-a437-324952ba3c1f"
 # 測試用的參加記錄 ID（從 mock_participation_records copy.json 和 mock_receipt_numbers.json 選取）
 # 這些是尚未有收據編號或適合合併的記錄
 RECORD_IDS="[85,86,89]"  # 使用 id 85,86 的記錄進行合併測試
-TOTAL_AMOUNT=858689        # 合併總金額
-RECORD_ID=-1  # 用於 stamp 類型測試的 recordId（可選，根據實際需求設定）
-MERGED_REF=10 # 用於參加記錄的合併參考 ID
-VOID_REASON="合併打印123" # 作廢原因
+VOID_REASON="合併打印TEST" # 作廢原因
 RECEIPT_TYPE="stamp" # 收據類型
+STATE="merged" # 合併打印狀態（默認為 active）
+RECEIPT_NUMBER=""  # 替換為實際的合併打印編號
 
 echo "-----------------------------------------------"
 echo "🚀 開始測試 Rust 合併打印編號生成 API"
@@ -24,12 +23,13 @@ echo "1. 測試生成合併打印 (stamp 類型，合併 IDs: $RECORD_IDS)..."
 MERGED_STAMP_RES=$(curl -s -X POST "$API_URL/receipt-numbers/merge" \
   -H "Content-Type: application/json" \
   -d "{    
-  \"recordId\": $RECORD_ID,
-    \"recordIds\": $RECORD_IDS,
-    \"receiptType\": \"$RECEIPT_TYPE\",
-    \"totalAmount\": $TOTAL_AMOUNT,
+    \"receiptNumber\": \"$RECEIPT_NUMBER\",
     \"userId\": \"$TEST_ADMIN\",
-    \"voidReason\": \"$VOID_REASON\"
+    \"voidReason\": \"$VOID_REASON\",
+    \"state\": \"$STATE\",
+    \"receiptType\": \"$RECEIPT_TYPE\",
+    \"recordIds\": $RECORD_IDS
+
   }")
 
 echo "響應: $MERGED_STAMP_RES"

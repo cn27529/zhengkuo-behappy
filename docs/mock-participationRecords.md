@@ -40,7 +40,8 @@
   "createdAt": "2025-01-16T09:00:00.000Z",   // 建立時間
   "createdBy": "admin",                      // 建立者
   "updatedAt": "2025-01-16T15:00:00.000Z",   // 更新時間
-  "updatedUser": "accounting"                // 更新者
+  "updatedUser": "accounting",                // 更新者
+  "receiptId": "118" // 生成編號的ID
 }
 ```
 

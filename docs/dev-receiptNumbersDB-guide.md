@@ -68,7 +68,7 @@ CREATE TABLE receiptNumbersDB (
   receiptType TEXT NOT NULL,               -- 'stamp' 或 'standard'
   yearMonth TEXT NOT NULL,                 -- '2602'
   serialNumber INTEGER NOT NULL,           -- 9999
-  recordId INTEGER NOT NULL,               -- 關聯的參加記錄ID
+  recordId INTEGER NOT NULL,               -- 單筆的給參加記錄id，多筆的不給id
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updatedAt TEXT,                          -- 生成人員ID
   state TEXT DEFAULT 'active',             -- 'active', 'void', 'regenerated'
