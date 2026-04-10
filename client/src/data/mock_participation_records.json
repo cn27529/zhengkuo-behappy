@@ -100,7 +100,7 @@
     "notes": "測試𡍼𡍼𡍼",
     "createdAt": "2026-04-04T05:41:21.442Z",
     "updatedAt": "2026-04-04T05:41:53.816Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 89,
@@ -303,10 +303,10 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "吉野合併打印",
+    "notes": "吉野合併收據",
     "createdAt": "2026-04-02T09:18:22.941Z",
     "updatedAt": "2026-04-09T03:07:09.924222400+00:00",
-    "mergedRef": 23
+    "receiptId": 23
   },
   {
     "id": 86,
@@ -459,10 +459,10 @@
     "paymentMethod": "cash",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "吉野合併打印",
+    "notes": "吉野合併收據",
     "createdAt": "2026-04-02T03:15:46.115Z",
     "updatedAt": "2026-04-09T03:07:09.924222400+00:00",
-    "mergedRef": 23
+    "receiptId": 23
   },
   {
     "id": 85,
@@ -693,10 +693,10 @@
     "paymentMethod": "cash",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "吉野合併打印",
+    "notes": "吉野合併收據",
     "createdAt": "2026-04-02T03:15:31.696Z",
     "updatedAt": "2026-04-09T03:07:09.924222400+00:00",
-    "mergedRef": 23
+    "receiptId": 23
   },
   {
     "id": 84,
@@ -814,7 +814,7 @@
     "notes": "",
     "createdAt": "2026-03-31T06:11:43.785Z",
     "updatedAt": "2026-03-31T06:12:05.761Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 77,
@@ -1013,7 +1013,7 @@
     "notes": "0321",
     "createdAt": "2026-03-21T00:38:02.212Z",
     "updatedAt": "2026-03-21T00:47:55.890Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 76,
@@ -1212,7 +1212,7 @@
     "notes": "木葉村",
     "createdAt": "2026-03-17T14:13:18.904Z",
     "updatedAt": "2026-03-17T14:13:52.226Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 75,
@@ -1342,7 +1342,7 @@
     "notes": "oiuoiuiuouou",
     "createdAt": "2026-03-17T14:08:40.007Z",
     "updatedAt": "2026-03-21T00:26:56.547Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 74,
@@ -1449,7 +1449,7 @@
     "paymentNotes": "",
     "notes": "9980809",
     "createdAt": "2026-03-17T14:08:20.128Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 73,
@@ -1522,7 +1522,7 @@
     "paymentNotes": "",
     "notes": "123123",
     "createdAt": "2026-03-17T14:01:32.254Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 72,
@@ -1717,7 +1717,7 @@
     "paymentNotes": "",
     "notes": "2312313",
     "createdAt": "2026-03-17T14:01:09.451Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 71,
@@ -1856,7 +1856,7 @@
     "paymentNotes": "",
     "notes": "3241234",
     "createdAt": "2026-03-17T14:00:43.395Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 70,
@@ -2023,7 +2023,7 @@
     "paymentNotes": "",
     "notes": "1231231",
     "createdAt": "2026-03-17T14:00:19.154Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 69,
@@ -2218,7 +2218,7 @@
     "paymentNotes": "",
     "notes": "不打印",
     "createdAt": "2026-03-17T13:59:57.503Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 68,
@@ -2413,7 +2413,7 @@
     "paymentNotes": "",
     "notes": "870787089",
     "createdAt": "2026-03-06T10:17:03.061Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 67,
@@ -2555,7 +2555,7 @@
     "notes": "2000",
     "createdAt": "2026-03-02T11:39:47.952Z",
     "updatedAt": "2026-03-03T06:01:30.083Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 66,
@@ -2652,7 +2652,7 @@
     "notes": "需要打印",
     "createdAt": "2026-03-02T10:43:37.888Z",
     "updatedAt": "2026-03-02T11:35:05.665Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 65,
@@ -2758,7 +2758,7 @@
     "notes": "需要打印",
     "createdAt": "2026-03-02T10:43:08.483Z",
     "updatedAt": "2026-03-02T11:05:49.592Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 64,
@@ -2868,7 +2868,7 @@
     "paymentNotes": "",
     "notes": "不打印",
     "createdAt": "2026-03-02T05:31:33.945Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 63,
@@ -3006,7 +3006,7 @@
     "paymentNotes": "",
     "notes": "不打印",
     "createdAt": "2026-03-02T05:31:03.733Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 62,
@@ -3176,7 +3176,7 @@
     "notes": "需要打印",
     "createdAt": "2026-03-02T05:30:39.344Z",
     "updatedAt": "2026-03-03T06:04:14.632Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 61,
@@ -3346,7 +3346,7 @@
     "notes": "欠500",
     "createdAt": "2026-03-01T12:01:34.406Z",
     "updatedAt": "2026-03-01T12:19:28.240Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 60,
@@ -3516,7 +3516,7 @@
     "notes": "需要打印",
     "createdAt": "2026-03-01T11:55:50.689Z",
     "updatedAt": "2026-03-03T06:06:02.458Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 59,
@@ -3686,7 +3686,7 @@
     "notes": "需要打印",
     "createdAt": "2026-03-01T11:50:24.734Z",
     "updatedAt": "2026-03-05T05:41:30.732Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 58,
@@ -3884,7 +3884,7 @@
     "notes": "忘了帶錢包",
     "createdAt": "2026-02-25T12:34:19.778Z",
     "updatedAt": "2026-02-28T16:06:53.879Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 51,
@@ -3962,7 +3962,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-30T06:28:16.241Z",
     "updatedAt": "2026-03-01T07:31:45.616Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 50,
@@ -4089,7 +4089,7 @@
     "notes": "下次補繳2100",
     "createdAt": "2026-01-28T06:19:19.832Z",
     "updatedAt": "2026-03-01T08:13:31.437Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 48,
@@ -4184,7 +4184,7 @@
     "notes": "英文名字",
     "createdAt": "2026-01-27T12:35:07.311Z",
     "updatedAt": "2026-03-01T08:31:23.283Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 47,
@@ -4274,7 +4274,7 @@
     "notes": "修復點燈功能 lampTypeSelection 錯誤",
     "createdAt": "2026-01-27T05:40:41.355Z",
     "updatedAt": "2026-03-01T10:55:29.281Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 46,
@@ -4377,7 +4377,7 @@
     "notes": "添加提交確認對話框和必填備註",
     "createdAt": "2026-01-27T05:40:27.363Z",
     "updatedAt": "2026-03-01T08:45:00.530Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 45,
@@ -4497,7 +4497,7 @@
     "notes": "",
     "createdAt": "2026-01-27T05:22:59.445Z",
     "updatedAt": "2026-03-01T10:06:56.072Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 44,
@@ -4587,7 +4587,7 @@
     "notes": "",
     "createdAt": "2026-01-27T05:22:46.334Z",
     "updatedAt": "2026-03-01T09:15:51.520Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 43,
@@ -4693,7 +4693,7 @@
     "notes": "",
     "createdAt": "2026-01-27T05:19:21.715Z",
     "updatedAt": "2026-03-01T10:11:47.356Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 41,
@@ -4764,7 +4764,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:18:01.725Z",
     "updatedAt": "2026-02-25T12:31:15.671Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 40,
@@ -4886,7 +4886,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:16:03.046Z",
     "updatedAt": "2026-02-25T12:32:02.548Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 39,
@@ -4992,7 +4992,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:15:39.663Z",
     "updatedAt": "2026-02-25T12:32:03.291Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 38,
@@ -5072,7 +5072,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:15:11.751Z",
     "updatedAt": "2026-02-25T12:32:04.261Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 37,
@@ -5152,7 +5152,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:14:03.613Z",
     "updatedAt": "2026-02-25T12:32:05.168Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 36,
@@ -5258,7 +5258,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:13:48.559Z",
     "updatedAt": "2026-02-25T12:32:06.027Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 34,
@@ -5348,7 +5348,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:12:55.759Z",
     "updatedAt": "2026-02-25T12:32:07.094Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 33,
@@ -5415,7 +5415,7 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:03:08.748Z",
     "updatedAt": "2026-02-25T12:32:08.066Z",
-    "mergedRef": -1
+    "receiptId": -1
   },
   {
     "id": 32,
@@ -5489,6 +5489,6 @@
     "paymentNotes": "",
     "createdAt": "2026-01-27T05:02:49.629Z",
     "updatedAt": "2026-02-25T12:32:08.992Z",
-    "mergedRef": -1
+    "receiptId": -1
   }
 ]

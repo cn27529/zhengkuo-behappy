@@ -174,7 +174,8 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="contact.name"
+        <el-table-column
+          prop="contact.name"
           label="聯絡人"
           width="150"
           align="center"
@@ -183,16 +184,12 @@
             <div class="contact-info">
               <div class="contact-name">
                 <strong>{{ row.contact?.name }}</strong>
-              </div>              
+              </div>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column
-          prop="contact.relationship"
-          label="關係"
-          width="120"
-        >
+        <el-table-column prop="contact.relationship" label="關係" width="120">
           <template #default="{ row }">
             <div>
               {{ row.contact?.relationship || "-" }}
@@ -206,14 +203,19 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="contact.mobile" label="手機/聯絡電話" width="120" align="center">
+        <el-table-column
+          prop="contact.mobile"
+          label="手機/聯絡電話"
+          width="120"
+          align="center"
+        >
           <template #default="{ row }">
             <div class="contact-phone">
-                {{ row.contact?.mobile || "-" }}
-              </div>
-              <div class="contact-phone">
-                {{ row.contact?.phone || "-" }}
-              </div>
+              {{ row.contact?.mobile || "-" }}
+            </div>
+            <div class="contact-phone">
+              {{ row.contact?.phone || "-" }}
+            </div>
           </template>
         </el-table-column>
 
@@ -323,16 +325,14 @@
         </el-table-column>
 
         <el-table-column
-          prop="mergedRef"
-          label="合併"
+          prop="receiptId"
+          label="打印ID"
           width="60"
           align="center"
           v-if="false"
         >
           <template #default="{ row }">
-            <span class="item-amount">{{
-              row.mergedRef
-            }}</span>
+            <span class="item-amount">{{ row.receiptId }}</span>
           </template>
         </el-table-column>
 

@@ -9,7 +9,7 @@
     "serialNumber": 6,
     "recordId": 23,
     "state": "merged",
-    "voidReason": "合併打印123",
+    "voidReason": "合併收據123",
     "createdAt": "2026-04-09T03:08:50.278701800+00:00"
   },
   {
@@ -22,7 +22,7 @@
     "serialNumber": 5,
     "recordId": 22,
     "state": "remove merged",
-    "voidReason": "作廢合併打印123",
+    "voidReason": "解除合併收據123",
     "createdAt": "2026-04-08T16:58:41.944768+00:00",
     "updatedAt": "2026-04-09T03:07:09.924222400+00:00"
   },
@@ -36,7 +36,7 @@
     "serialNumber": 4,
     "recordId": 21,
     "state": "remove merged",
-    "voidReason": "作廢合併打印123",
+    "voidReason": "解除合併收據123",
     "createdAt": "2026-04-08T16:57:58.913258+00:00",
     "updatedAt": "2026-04-08T16:58:28.735446+00:00"
   },
@@ -50,7 +50,7 @@
     "serialNumber": 3,
     "recordId": 20,
     "state": "merged",
-    "voidReason": "合併打印123",
+    "voidReason": "合併收據123",
     "createdAt": "2026-04-08T16:42:52.816645+00:00"
   },
   {
@@ -63,7 +63,7 @@
     "serialNumber": 2,
     "recordId": 19,
     "state": "remove merged",
-    "voidReason": "作廢合併打印123",
+    "voidReason": "解除合併收據123",
     "createdAt": "2026-04-08T16:37:50.745873+00:00",
     "updatedAt": "2026-04-08T16:38:52.606832+00:00"
   },

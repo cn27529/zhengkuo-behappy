@@ -331,12 +331,12 @@ pub async fn generate_merged_receipt_number(
     // 6. 更新參加記錄表 (同步反饋)
     //"receiptNumber": "26040001",
     // "receiptIssued": "stamp",
-    // ""mergedRef": 1,  // 關聯 mergedReceiptNumbersDB 的 id
+    // ""receiptId": 1,  // 關聯 mergedReceiptNumbersDB 的 id
     // 構建動態 SQL
     // 6. UPDATE participationRecordDB，動態展開 IN (?, ?, ?)
     let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
     let sql = format!(
-        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, mergedRef = ? WHERE id IN ({})",
+        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptId = ? WHERE id IN ({})",
         placeholders
     );
 
@@ -491,7 +491,7 @@ pub async fn remove_merged_receipt_number(
     // 4. 更新 participationRecordDB：清空收據相關欄位
     // 構建動態 SQL 清空多筆記錄
     let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
-    let sql = format!("UPDATE participationRecordDB SET receiptNumber = NULL, receiptIssued = NULL, receiptIssuedAt = NULL, receiptIssuedBy = NULL, mergedRef = NULL, updatedAt = ?, date_updated = ?, user_updated = ? WHERE id IN ({})",
+    let sql = format!("UPDATE participationRecordDB SET receiptNumber = NULL, receiptIssued = NULL, receiptIssuedAt = NULL, receiptIssuedBy = NULL, receiptId = NULL, updatedAt = ?, date_updated = ?, user_updated = ? WHERE id IN ({})",
         placeholders
     );
 

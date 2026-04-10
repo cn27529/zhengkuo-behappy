@@ -54,7 +54,7 @@ SELECT
     notes,
     createdAt,
     updatedAt,
-    mergedRef
+    receiptId
 FROM participationRecordDB
 "#;
 
@@ -261,7 +261,7 @@ pub async fn create_participation_record(
             finalAmount, paidAmount, needReceipt, receiptNumber, receiptIssued,
             receiptIssuedAt, receiptIssuedBy, accountingState, accountingDate,
             accountingBy, accountingNotes, paymentState, paymentMethod,
-            paymentDate, paymentNotes, notes, createdAt, updatedAt, mergedRef
+            paymentDate, paymentNotes, notes, createdAt, updatedAt, receiptId
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
@@ -291,7 +291,7 @@ pub async fn create_participation_record(
     .bind(&payload.notes)
     .bind(&now)
     .bind(&now)
-    .bind(&payload.merged_ref)
+    .bind(&payload.receipt_id)
     .execute(&pool)
     .await
     .map_err(|e| {
@@ -469,10 +469,10 @@ pub async fn update_participation_record(
     updates.push("updatedAt = ?");
     bindings.push(now);
 
-    // 添加 mergedRef
-    if let Some(merged_ref) = &payload.merged_ref {
-        updates.push("mergedRef = ?");
-        bindings.push(merged_ref.to_string());
+    // 添加 receiptId
+    if let Some(receipt_id) = &payload.receipt_id {
+        updates.push("receiptId = ?");
+        bindings.push(receipt_id.to_string());
     }
 
     let query = format!(

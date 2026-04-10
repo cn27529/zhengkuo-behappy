@@ -377,8 +377,8 @@
         </el-table-column>
 
         <el-table-column
-          prop="mergedRef"
-          label="合併參考"
+          prop="receiptId"
+          label="打印ID"
           width="60"
           align="center"
           v-if="false"
@@ -386,12 +386,12 @@
           <template #default="{ row }">
             <div class="merged-ref">
               <el-tag
-                v-if="row.mergedRef"
+                v-if="row.receiptId"
                 type="info"
                 size="mini"
                 style="margin-top: 4px"
               >
-                {{ row.mergedRef }}
+                {{ row.receiptId }}
               </el-tag>
             </div>
           </template>

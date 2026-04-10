@@ -39,7 +39,7 @@ echo "-- 檢查 mergedReceiptsDB（應保留不變）"
 echo "SELECT id, receiptNumber, mergeIds FROM mergedReceiptsDB WHERE receiptNumber = '$MERGED_RECEIPT_NUMBER';"
 echo ""
 echo "-- 檢查 participationRecordDB（收據欄位應為 NULL）"
-echo "SELECT id, receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy, mergedRef FROM participationRecordDB WHERE mergedRef = (SELECT id FROM mergedReceiptsDB WHERE receiptNumber = '$MERGED_RECEIPT_NUMBER');"
+echo "SELECT id, receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy, receiptId FROM participationRecordDB WHERE receiptId = (SELECT id FROM mergedReceiptsDB WHERE receiptNumber = '$MERGED_RECEIPT_NUMBER');"
 echo "-----------------------------------------------"
 
 echo ""
