@@ -162,14 +162,18 @@ pub async fn generate_receipt_number(
     })?;
 
     let new_id = insert_result.last_insert_rowid();
+    // 未知的經手人
+    let receipt_issued_by = payload.receipt_issued_by.clone().unwrap_or_else(|| "未知的經手人".to_string()); 
 
     // 6. 更新參加記錄表 (同步反饋)
     sqlx::query(
-        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptId = ? WHERE id = ?"
+        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptIssuedAt = ?, receiptIssuedBy = ?, receiptId = ? WHERE id = ?"
     )
     .bind(&receipt_number)
     .bind(&payload.receipt_type)
     .bind(new_id)  // 打印ID 回寫到 receiptId 欄位
+    .bind(&now_iso)
+    .bind(&receipt_issued_by)
     .bind(payload.record_id)
     .execute(&mut *tx)
     .await
@@ -288,11 +292,11 @@ pub async fn generate_merged_receipt_number(
     .bind(&year_month)
     .bind(next_serial)
     .bind(-1)  // 單筆的給參加記錄id，多筆的不給id
-    .bind(&now_iso)    
+    .bind(&now_iso)
     .bind(&payload.user_id)
     .bind(&state)
     .bind(&now_timestamp)
-    .bind(&void_reason)
+    .bind(&void_reason)    
     .execute(&mut *tx)
     .await
     .map_err(|e| {
@@ -300,18 +304,23 @@ pub async fn generate_merged_receipt_number(
     })?;
 
     let new_id = insert_result.last_insert_rowid();
+    // 未知的經手人
+    let receipt_issued_by = payload.receipt_issued_by.clone().unwrap_or_else(|| "未知的經手人".to_string()); 
 
     // 6. 更新參加記錄表 (同步反饋)，構建動態展開 IN (?, ?, ?)
     let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
     let sql = format!(
-        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptId = ? WHERE id IN ({})",
+        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptIssuedAt = ?, receiptIssuedBy = ?, receiptId = ? WHERE id IN ({})",
         placeholders
     );
 
     let mut q = sqlx::query(&sql)
         .bind(&receipt_number)
         .bind(&payload.receipt_type)
+        .bind(&now_iso)
+        .bind(&receipt_issued_by)
         .bind(new_id);  // 打印ID 回寫到 receiptId 欄位
+
 
     for id in &record_ids {
         q = q.bind(id);

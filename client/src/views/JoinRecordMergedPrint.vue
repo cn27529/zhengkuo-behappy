@@ -214,7 +214,7 @@
           size="large"
           class="full-width"
         >
-          合併打印
+          開始合併打印
         </el-button>
         <el-button @click="handleClose" size="large" class="full-width"
           >關閉頁面</el-button
@@ -434,10 +434,27 @@ const handleMergedPrintWithHtmlToImage = async () => {
         await nextTick();
         await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
       } else {
-        // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
-        const result = await receiptStore.generateReceiptNumber(
-          recordContext.value.id,
+        /*
+        recordIds,
+    receiptType,
+    state,
+    voidReason,
+        */
+
+        console.log(
+          "generateMergedReceiptNumber:",
+          recordContext.value.ids,
           activeTemplate.value,
+          recordContext.value.state,
+          recordContext.value.voidReason,
+        );
+
+        // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
+        const result = await receiptStore.generateMergedReceiptNumber(
+          recordContext.value.ids,
+          activeTemplate.value,
+          recordContext.value.state,
+          recordContext.value.voidReason,
         );
 
         if (result.success) {
@@ -666,61 +683,7 @@ const handlePostPrintCheck = async () => {
 
     if (isMerged.value) {
       //還沒弄好XD
-      // // 合併打印的來源是參加頁面，執行savedRecords同步
-      // recordContext.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
-      // recordContext.value.receiptIssuedBy = receiptStore.getUserName(); // 更新領取人
-      // // 把合併打印的每一筆進行更新 receiptIssuedAt 和 receiptIssuedBy，然後呼叫 API 更新狀態
-      // async function updateMergedRecords() {
-      //   const updatePromises = printDataRecords.value.map(async (record) => {
-      //     record.receiptIssuedAt = recordContext.value.receiptIssuedAt;
-      //     record.receiptIssuedBy = recordContext.value.receiptIssuedBy;
-      //     return await printStore.updateReceiptPrintStatus(record);
-      //   });
-      //   return Promise.all(updatePromises);
-      // }
-      // // 等待所有更新完成，並收集結果
-      // const updateResults = await updateMergedRecords();
-      // console.log(`合併打印${updateResults.length}筆:`, updateResults);
-      // // 逐筆檢查更新結果，並在控制台輸出成功或失敗的訊息
-      // updateResults.forEach((result, index) => {
-      //   if (result?.success) {
-      //     console.log(`第 ${index + 1} 筆狀態更新成功`);
-      //     ElMessage({
-      //       type: "success",
-      //       message: `第 ${index + 1} 筆狀態更新成功 👍`,
-      //       duration: 2000,
-      //     });
-      //     // 來源是參加頁面執行savedRecords同步
-      //     updateSavedRecords(result);
-      //   } else {
-      //     console.warn(
-      //       `第 ${index + 1} 筆狀態更新失敗:`,
-      //       result?.message || "未知錯誤",
-      //     );
-      //     ElMessage({
-      //       type: "warning",
-      //       message: `第 ${index + 1} 筆狀態更新失敗: ${
-      //         result?.message || "未知錯誤"
-      //       }`,
-      //       duration: 3000,
-      //     });
-      //   }
-      // });
-      // // 合併打印要更新取號的 state, voidReason，還沒弄好XD
-      // printDataRecords.value.forEach((record, index) => {
-      //   if (record.receiptNumber) {
-      //     // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
-      //     receiptStore.stateReceiptNumber(
-      //       record.receiptNumberId,
-      //       "打印完成",
-      //       "printed",
-      //     ); // 同步更新編號狀態為已打印
-      //   } else {
-      //     console.warn(
-      //       `第 ${index + 1} 筆缺少 receiptNumberId，無法更新編號狀態`,
-      //     );
-      //   }
-      // });
+      //已由/merge的服務處理完畢UI不用再handle
     } else if (isBatchNavigation.value) {
       // 如果是批量打印，更新當前這筆的打印狀態，然後自動跳到下一筆
       recordContext.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
@@ -828,57 +791,62 @@ const handlePostPrintCheck = async () => {
     if (error === "cancel") {
       console.log("使用者取消打印");
 
-      //🔥 重要：在使用者取消打印後，仍然需要將該筆記錄的 receiptIssuedBy, receiptIssuedAt, receiptIssued 和 receiptNumber 重置為 null，保持在未打印狀態
-      //  這樣做的原因是：即使用戶取消了打印，但他之前已經領取了正式編號，為了保持數據的一致性和準確性，我們需要將該筆記錄的狀態重置回未打印，讓它可以再次被打印並領取新的編號。
-      //  注意：這裡的重置動作不會直接影響到後端的數據，除非 printStore.updateReceiptPrintStatus 這個方法內部有實現對 receiptIssued 和 receiptNumber 的更新邏輯。確保該方法能夠正確處理這些字段的重置。
-      //  這裡的重置動作是為了確保前端的狀態能夠反映出「取消打印」的結果，讓使用者在下一次嘗試打印時能夠重新領取編號並進行打印。
-      //  如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
-      //  已經領取了正式編號會保留在編號系統做為證據。
+      if (isMerged.value) {
+        //還沒弄好XD
+        //調用取消的服務/merge/remove
+      } else {
+        //🔥 重要：在使用者取消打印後，仍然需要將該筆記錄的 receiptIssuedBy, receiptIssuedAt, receiptIssued 和 receiptNumber 重置為 null，保持在未打印狀態
+        //  這樣做的原因是：即使用戶取消了打印，但他之前已經領取了正式編號，為了保持數據的一致性和準確性，我們需要將該筆記錄的狀態重置回未打印，讓它可以再次被打印並領取新的編號。
+        //  注意：這裡的重置動作不會直接影響到後端的數據，除非 printStore.updateReceiptPrintStatus 這個方法內部有實現對 receiptIssued 和 receiptNumber 的更新邏輯。確保該方法能夠正確處理這些字段的重置。
+        //  這裡的重置動作是為了確保前端的狀態能夠反映出「取消打印」的結果，讓使用者在下一次嘗試打印時能夠重新領取編號並進行打印。
+        //  如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
+        //  已經領取了正式編號會保留在編號系統做為證據。
 
-      recordContext.value.receiptIssued = ""; // 重置模版狀態，保持在未打印狀態
-      recordContext.value.receiptNumber = ""; // 重置編號，保持在未打印狀態
-      recordContext.value.receiptIssuedAt = ""; // 重置領取時間
-      recordContext.value.receiptIssuedBy = ""; // 重置領取人
-      recordContext.value.needReceipt = "1";
-      const result = await printStore.updateReceiptPrintStatus(
-        recordContext.value,
-      );
-      if (result?.success) {
+        recordContext.value.receiptIssued = ""; // 重置模版狀態，保持在未打印狀態
+        recordContext.value.receiptNumber = ""; // 重置編號，保持在未打印狀態
+        recordContext.value.receiptIssuedAt = ""; // 重置領取時間
+        recordContext.value.receiptIssuedBy = ""; // 重置領取人
+        recordContext.value.needReceipt = "1";
+        const result = await printStore.updateReceiptPrintStatus(
+          recordContext.value,
+        );
+        if (result?.success) {
+          ElMessage({
+            type: "info",
+            message: result?.message || "已取消打印狀態更新，記錄維持原樣。",
+          });
+        } else {
+          ElMessage({
+            type: "warning",
+            message: result?.message || "狀態更新失敗，但已取消打印。",
+          });
+        }
+
+        if (receiptNumberId.value) {
+          // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
+          const stateResult = await receiptStore.stateReceiptNumber(
+            receiptNumberId.value,
+            "取消打印",
+            "unprinted",
+          ); // 同步更新編號狀態為未打印
+          if (stateResult?.success) {
+            console.log("編號狀態「取消打印」更新成功");
+          } else {
+            console.warn("編號狀態「取消打印」更新失敗:", stateResult?.message);
+          }
+        } else {
+          console.warn("缺少 receiptNumberId，無法更新編號狀態");
+        }
+
         ElMessage({
           type: "info",
-          message: result?.message || "已取消打印狀態更新，記錄維持原樣。",
+          message: "已取消狀態更新，記錄維持原樣。",
         });
-      } else {
-        ElMessage({
-          type: "warning",
-          message: result?.message || "狀態更新失敗，但已取消打印。",
-        });
+
+        // 可以在這裡加入額外邏輯，例如：
+        // 1. 如果是批量打印，是否需要停留在當前頁面不跳轉？（目前邏輯本來就不會跳轉）
+        // 2. 是否需要記錄該編號雖然領取但未實際打印？
       }
-
-      if (receiptNumberId.value) {
-        // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
-        const stateResult = await receiptStore.stateReceiptNumber(
-          receiptNumberId.value,
-          "取消打印",
-          "unprinted",
-        ); // 同步更新編號狀態為未打印
-        if (stateResult?.success) {
-          console.log("編號狀態「取消打印」更新成功");
-        } else {
-          console.warn("編號狀態「取消打印」更新失敗:", stateResult?.message);
-        }
-      } else {
-        console.warn("缺少 receiptNumberId，無法更新編號狀態");
-      }
-
-      ElMessage({
-        type: "info",
-        message: "已取消狀態更新，記錄維持原樣。",
-      });
-
-      // 可以在這裡加入額外邏輯，例如：
-      // 1. 如果是批量打印，是否需要停留在當前頁面不跳轉？（目前邏輯本來就不會跳轉）
-      // 2. 是否需要記錄該編號雖然領取但未實際打印？
     }
   }
 };
@@ -966,10 +934,17 @@ const buildMergedRecordContext = (records) => {
     0,
   );
 
+  //取得 records 的 id 陣列
+  const mergedIds = [];
+  records.forEach((item, idx) => {
+    mergedIds.push(item.id);
+  });
+
   return {
     ...baseRecord,
     items: mergedItems,
     finalAmount: mergedFinalAmount,
+    ids: mergedIds,
   };
 };
 

@@ -12,6 +12,7 @@ VOID_REASON="合併打印TEST" # 作廢原因
 RECEIPT_TYPE="stamp" # 收據類型
 STATE="merged" # 合併打印狀態（默認為 active）
 RECEIPT_NUMBER=""  # 替換為實際的合併打印編號
+RECEIPT_ISSUED_BY="sh測試"
 
 echo "-----------------------------------------------"
 echo "🚀 開始測試 Rust 合併打印編號生成 API"
@@ -24,11 +25,12 @@ MERGED_STAMP_RES=$(curl -s -X POST "$API_URL/receipt-numbers/merge" \
   -H "Content-Type: application/json" \
   -d "{    
     \"receiptNumber\": \"$RECEIPT_NUMBER\",
-    \"userId\": \"$TEST_ADMIN\",
-    \"voidReason\": \"$VOID_REASON\",
+    \"recordIds\": $RECORD_IDS,
     \"state\": \"$STATE\",
     \"receiptType\": \"$RECEIPT_TYPE\",
-    \"recordIds\": $RECORD_IDS
+    \"voidReason\": \"$VOID_REASON\",
+    \"receiptIssuedBy\": \"$RECEIPT_ISSUED_BY\",
+    \"userId\": \"$TEST_ADMIN\"
 
   }")
 

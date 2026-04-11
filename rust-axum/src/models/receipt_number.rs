@@ -106,6 +106,10 @@ pub struct MergedReceiptRequest {
 
     #[serde(default)]
     pub state: Option<String>, // 合併打印狀態（例如 "merged" 或 "active"），默認為 "merged"
+
+    #[serde(default)]
+    pub receipt_issued_by: Option<String>, // 測試經手人 receiptIssuedBy
+    
 }
 
 /// 請求生成收據編號的 Payload
@@ -128,6 +132,9 @@ pub struct GenerateReceiptRequest {
 
     #[serde(default)]
     pub state: Option<String>, // 合併打印狀態（例如 "merged" 或 "active"），默認為 "merged"
+
+    #[serde(default)]
+    pub receipt_issued_by: Option<String>, // 測試經手人 receiptIssuedBy
 
 }
 

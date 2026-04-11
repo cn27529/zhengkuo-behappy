@@ -15,7 +15,12 @@ echo "-----------------------------------------------"
 echo "1. 測試生成一般收據 (stamp)..."
 STAMP_RES=$(curl -s -X POST "$API_URL/receipt-numbers/generate" \
   -H "Content-Type: application/json" \
-  -d "{\"recordId\": $RECORD_ID, \"receiptType\": \"standard\", \"userId\": \"$TEST_ADMIN\"}")
+  -d "{
+    \"recordId\": $RECORD_ID, 
+    \"receiptType\": \"standard\", 
+    \"userId\": \"$TEST_ADMIN\"
+  
+  }")
 
 echo "響應: $STAMP_RES"
 STAMP_NUM=$(echo $STAMP_RES | grep -oE '[0-9]{8}')

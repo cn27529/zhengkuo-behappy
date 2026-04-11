@@ -14,16 +14,30 @@ export class RustReceiptNumberService {
   }
 
   // 作廢合併打印的接口
+  /*
+    \"receiptNumber\": \"$RECEIPT_NUMBER\",
+    \"recordIds\": $RECORD_IDS,
+    \"state\": \"$STATE\",  
+    \"receiptType\": \"$RECEIPT_TYPE\",
+    \"voidReason\": \"$VOID_REASON\",            
+    \"userId\": \"$TEST_ADMIN\"
+  */
   async removeMergedReceiptNumber(
     receiptNumber,
+    state,
+    receiptType,
     voidReason,
+    recordIds,
     additionalContext = {},
   ) {
     const startTime = Date.now();
     const requestBody = {
       receiptNumber: receiptNumber, // 需要作廢的合併編號
+      state: state || "remove merged", // "remove merged" 作廢合併打印
+      receiptType: receiptType, // "stamp" 或 "standard"
       voidReason: voidReason || "作廢合併打印", // 作廢原因
-      userId: additionalContext.userId || null,
+      recordIds: recordIds, // 參與合併的多個 recordId
+      userId: additionalContext.userId || authService.getCurrentUser() || null,
     };
 
     const logContext = {
@@ -59,21 +73,32 @@ export class RustReceiptNumberService {
   }
 
   // 合併打印的接口
+  /*
+    \"receiptNumber\": \"$RECEIPT_NUMBER\",
+    \"recordIds\": $RECORD_IDS,
+    \"state\": \"$STATE\",
+    \"receiptType\": \"$RECEIPT_TYPE\",
+    \"voidReason\": \"$VOID_REASON\",
+    \"userId\": \"$TEST_ADMIN\"
+  */
   async generateMergedReceiptNumber(
     recordIds,
     receiptType,
-    totalAmount,
+    state,
     voidReason,
     additionalContext = {},
   ) {
     const startTime = Date.now();
+    const receiptIssuedBy = authService.getUserName() || "未知的經手人";
+
     const requestBody = {
-      recordId: parseInt(-1), // 合併打印不對應單一 recordId，暫時使用 -1 或者可以改為 null
+      receiptNumber: "",
       recordIds: recordIds, // 參與合併的多個 recordId
+      state: state || "merged", // "merged" 合併打印
       receiptType: receiptType, // "stamp" 或 "standard"
-      totalAmount: totalAmount || 0, // 合併後的總金額
       voidReason: voidReason || "合併打印", // 作廢原因
-      userId: additionalContext.userId || null,
+      receiptIssuedBy: receiptIssuedBy,
+      userId: additionalContext.userId || authService.getCurrentUser() || null,
     };
 
     const logContext = {
@@ -88,12 +113,12 @@ export class RustReceiptNumberService {
 
     try {
       console.log(
-        `🦀 [Rust] 請求原子性生成合併打印編號: recordIds=${recordIds}, receiptType=${receiptType}, totalAmount=${totalAmount}, voidReason=${requestBody.voidReason}, userId=${additionalContext.userId}`,
+        `🦀 [Rust] 請求原子性生成合併打印編號: recordIds=${recordIds}, receiptType=${receiptType}, totalAmount=${state}, voidReason=${voidReason}, receiptIssuedBy=${receiptIssuedBy} , userId=${additionalContext.userId}`,
         requestBody,
       );
 
       const result = await this.base.rustFetch(
-        `${this.endpoint}/generate`,
+        `${this.endpoint}/merge`,
         {
           method: "POST",
           body: JSON.stringify(requestBody),
@@ -113,10 +138,12 @@ export class RustReceiptNumberService {
    */
   async generateReceiptNumber(recordId, receiptType, additionalContext = {}) {
     const startTime = Date.now();
+    const receiptIssuedBy = authService.getUserName() || "未知的經手人";
     const requestBody = {
       recordId: parseInt(recordId),
       receiptType: receiptType, // "stamp" 或 "standard"
-      userId: additionalContext.userId || null,
+      receiptIssuedBy: receiptIssuedBy,
+      userId: additionalContext.userId || authService.getCurrentUser() || null,
     };
 
     const logContext = {
