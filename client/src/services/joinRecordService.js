@@ -356,6 +356,7 @@ export class JoinRecordService {
       receiptIssuedAt: record.receiptIssuedAt,
       receiptIssuedBy: record.receiptIssuedBy,
       needReceipt: record.needReceipt,
+      receiptId: record.receiptId, // 打印ID
     };
 
     return await this.updateParticipationRecord(record.id, updateData);

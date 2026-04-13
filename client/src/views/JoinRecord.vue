@@ -1317,6 +1317,7 @@ const handleMergedReceiptPrint = () => {
         iso_str: isoStr,
         is_batch: "false",
         is_merged: "true",
+        print_type: "merged_print",
       },
     });
   } catch (error) {
@@ -1361,6 +1362,8 @@ const handleBatchReceiptPrint = () => {
         ids: ids,
         iso_str: isoStr,
         is_batch: "true",
+        is_merged: "false",
+        print_type: "batch_print",
       },
     });
   } catch (error) {
@@ -1388,7 +1391,12 @@ const handleReceiptPrint = (item) => {
     sessionStorage.setItem(printId, printData);
     router.push({
       path: "/receipt-print",
-      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+      query: {
+        print_id: printId,
+        print_data: printData,
+        iso_str: isoStr,
+        print_type: "single_print",
+      },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);

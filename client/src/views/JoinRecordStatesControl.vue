@@ -149,6 +149,17 @@
             批量保存
           </el-button>
 
+          <!-- 批量打印 -->
+          <el-button
+            type="success"
+            size="small"
+            @click="handleBatchReceiptPrint"
+            :disabled="selectedRecords.length < 2"
+          >
+            批量打印 ({{ selectedRecords.length }})
+          </el-button>
+
+          <!-- 合併打印 -->
           <el-button
             type="success"
             size="small"
@@ -699,7 +710,60 @@ const editNotes = async (row) => {
   }
 };
 
-// 合併打印：與 JoinRecord.vue 的 handleMergedReceiptPrint 邏輯相同
+// 批量打印
+const handleBatchReceiptPrint = () => {
+  if (selectedRecords.value.length < 2) {
+    ElMessage.warning("請至少勾選兩筆記錄進行合併打印");
+    return;
+  }
+
+  // 只過濾需要打印收據的記錄
+  const printableRecords = selectedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt),
+  );
+
+  if (printableRecords.length === 0) {
+    ElMessage.warning("已勾選的記錄中，沒有任何一筆標記為「需要打印收據」");
+    return;
+  }
+
+  if (printableRecords.length < 2) {
+    ElMessage.warning("需要打印收據的記錄不足兩筆，無法進行批量打印");
+    return;
+  }
+
+  // 標記導航來源
+  pageStateStore.setPageState("receiptPrint", {
+    from: "joinRecordStatesControl",
+  });
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printDatas = JSON.stringify(printableRecords);
+    const printId = `print_receipt_${ids}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, printDatas);
+
+    router.push({
+      path: "/receipt-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        is_batch: "true",
+        is_merged: "false",
+        print_type: "batch_print",
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+
+// 合併打印：與 JoinRecord.vue 邏輯相同
 const handleMergedReceiptPrint = () => {
   if (selectedRecords.value.length < 2) {
     ElMessage.warning("請至少勾選兩筆記錄進行合併打印");
@@ -732,6 +796,7 @@ const handleMergedReceiptPrint = () => {
     const printDatas = JSON.stringify(printableRecords);
     const printId = `print_receipt_${ids}`;
 
+    // 存儲多筆資料
     sessionStorage.setItem(printId, printDatas);
 
     router.push({
@@ -742,6 +807,7 @@ const handleMergedReceiptPrint = () => {
         iso_str: isoStr,
         is_batch: "false",
         is_merged: "true",
+        print_type: "merged_print",
       },
     });
   } catch (error) {

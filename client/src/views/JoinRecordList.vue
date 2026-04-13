@@ -665,6 +665,8 @@ const handleBatchReceiptPrint = () => {
         ids: ids,
         iso_str: isoStr,
         is_batch: "true",
+        is_merged: "false",
+        print_type: "batch_print",
       },
     });
   } catch (error) {
@@ -720,6 +722,8 @@ const handleBatchCardPrint = () => {
         ids: ids,
         iso_str: isoStr,
         is_batch: "true",
+        is_merged: "false",
+        print_type: "batch_print",
       },
     });
   } catch (error) {

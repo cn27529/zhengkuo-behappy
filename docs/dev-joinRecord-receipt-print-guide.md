@@ -169,7 +169,7 @@ const handleBatchReceiptPrint = () => {
 
   const isoStr = DateUtils.getCurrentISOTime();
   const ids = selectedRecords.value.map((r) => r.id).join(",");
-  const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));  
+  const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
   const printId = `print_receipt_${ids}`;
 
   // 存儲多筆資料到 sessionStorage
@@ -182,6 +182,8 @@ const handleBatchReceiptPrint = () => {
       ids: ids,
       iso_str: isoStr,
       is_batch: "true", // 關鍵參數：標記為批量打印
+      is_merged: "false",
+      print_type: "batch_print",
     },
   });
 };
