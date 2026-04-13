@@ -729,9 +729,10 @@ const handleMergedReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
+    const printDatas = JSON.stringify(printableRecords);
     const printId = `print_receipt_${ids}`;
 
-    sessionStorage.setItem(printId, JSON.stringify(printableRecords));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
       path: "/merged-print",

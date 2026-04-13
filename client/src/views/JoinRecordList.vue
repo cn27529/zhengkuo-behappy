@@ -597,7 +597,7 @@ const handlePrint = (item) => {
     console.log("準備列印數據:", { recordId, printData });
     ElMessage.info(`準備列印表單: ${recordId}`);
 
-    const printId = `print_join_record_${recordId}`;
+    const printId = `print_record_${recordId}`;
     console.log("列印表單 ID:", printId);
 
     sessionStorage.setItem(printId, printData);
@@ -652,11 +652,11 @@ const handleBatchReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
-    const printDatas = selectedRecords.value.map((r) => r);
+    const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
     const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
       path: "/receipt-print",
@@ -707,11 +707,11 @@ const handleBatchCardPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
-    const printDatas = selectedRecords.value.map((r) => r);
+    const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
     const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
       path: "/card-print",

@@ -523,10 +523,10 @@ const handleBatchReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
-    const printDatas = selectedRecords.value.map((r) => r);
+    const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
     const printId = `print_receipt_${ids}`;
 
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
       path: "/receipt-print",
@@ -556,10 +556,10 @@ const handleBatchCardPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
-    const printDatas = selectedRecords.value.map((r) => r);
+    const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
     const printId = `print_receipt_${ids}`;
 
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
       path: "/card-print",

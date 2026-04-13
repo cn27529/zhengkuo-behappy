@@ -243,12 +243,18 @@ const handleMergedReceiptPrint = async () => {
       user_id: currentUser.id,
     });
 
-    const printId = `print_merged_${res.id}_${DateUtils.getCurrentISOTime()}`;
-    sessionStorage.setItem(printId, JSON.stringify(res));
+    const isoStr = DateUtils.getCurrentISOTime();
+    const printData = JSON.stringify(res);
+    const printId = `print_receipt_${res.id}`;
+    
+    sessionStorage.setItem(printId, printData);
 
     router.push({
-      path: "/merged-receipt-print",
-      query: { print_id: printId },
+      path: "/merged-print",
+      query: { 
+        print_id: printId,
+        iso_str: isoStr,
+       },
     });
   } catch (err) {
     ElMessage.error(err.message || "建立合併打印失敗");

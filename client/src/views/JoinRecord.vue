@@ -1303,11 +1303,11 @@ const handleMergedReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
-    const printDatas = printableRecords;
+    const printData = JSON.stringify(printableRecords);
     const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printData);
 
     router.push({
       path: "/merged-print",
@@ -1348,11 +1348,11 @@ const handleBatchReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
-    const printDatas = printableRecords;
+    const printDatas = JSON.stringify(printableRecords);
     const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
       path: "/receipt-print",

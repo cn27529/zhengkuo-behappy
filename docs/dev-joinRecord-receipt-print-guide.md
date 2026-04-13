@@ -47,7 +47,7 @@ const handleReceiptPrint = (item) => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(item);
-    const printId = `print_receipt_${item.id}_${isoStr}`;
+    const printId = `print_receipt_${item.id}`;
 
     sessionStorage.setItem(printId, printData);
 
@@ -169,11 +169,11 @@ const handleBatchReceiptPrint = () => {
 
   const isoStr = DateUtils.getCurrentISOTime();
   const ids = selectedRecords.value.map((r) => r.id).join(",");
-  const printDatas = selectedRecords.value.map((r) => r);
-  const printId = `print_receipt_${isoStr}`;
+  const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));  
+  const printId = `print_receipt_${ids}`;
 
   // 存儲多筆資料到 sessionStorage
-  sessionStorage.setItem(printId, JSON.stringify(printDatas));
+  sessionStorage.setItem(printId, printDatas);
 
   router.push({
     path: "/receipt-print",

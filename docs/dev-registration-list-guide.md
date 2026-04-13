@@ -146,7 +146,6 @@ const handlePrint = (item) => {
   try {
     const formId = item.formId;
     const printData = JSON.stringify(item);
-
     const printId = `print_registration_${formId}_${Math.floor(Math.random() * 1000)}`;
 
     // 存儲到 sessionStorage
