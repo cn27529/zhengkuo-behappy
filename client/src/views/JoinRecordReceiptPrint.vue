@@ -172,7 +172,7 @@
         <el-input
           v-if="currentRecord.contact"
           v-model="currentRecord.contact.name"
-          placeholder="請輸入大德姓名"
+          placeholder="修改大德"
           size="large"
           clearable
           @input="handleNameChange"

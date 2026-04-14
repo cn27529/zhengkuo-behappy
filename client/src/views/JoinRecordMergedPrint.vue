@@ -131,9 +131,11 @@
       </div>
 
       <div class="config-body">
-        <p class="label" v-if="isMergedPrint">合併打印 {{ 1 }} 張</p>
+        <p class="label" v-if="isMergedPrint">
+          合併打印共 {{ manyRecord.length }} 筆參加記錄。
+        </p>
         <!-- 批量打印導航 -->
-        <div v-if="isMergedPrint" class="batch-navigation">
+        <div v-if="!isMergedPrint" class="batch-navigation">
           <el-button
             v-for="(item, index) in manyRecord"
             :key="index"
@@ -167,11 +169,12 @@
         <el-input
           v-if="currentRecord.contact"
           v-model="currentRecord.contact.name"
-          placeholder="請輸入大德姓名"
+          placeholder="修改大德"
           size="large"
           clearable
           @input="handleNameChange"
         />
+
         <el-input v-else disabled placeholder="載入中..." size="large" />
 
         <el-divider />
