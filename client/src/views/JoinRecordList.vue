@@ -721,9 +721,9 @@ const handleBatchCardPrint = () => {
         print_id: printId,
         ids: ids,
         iso_str: isoStr,
-        is_batch: "true",
-        is_merged: "false",
-        print_type: "batch_print",
+        // is_batch: "true",
+        // is_merged: "false",
+        // print_type: "batch_print",
       },
     });
   } catch (error) {
