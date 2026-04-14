@@ -503,7 +503,7 @@ const handlePrintWithHtmlToImage = async () => {
     // 重點：打印視窗跳出後，主視窗直接進入確認狀態
     // 不等回調，直接手動喚起彈窗
     setTimeout(() => {
-      handlePostPrintCheck();
+      handleConfirmPostPrint();
     }, 500); // 給予 500 毫秒讓打印視窗先彈出來，確認框會在它後方/下方準備好
   } catch (error) {
     console.error("打印失敗:", error);
@@ -517,7 +517,7 @@ const handlePrintWithHtmlToImage = async () => {
 /**
  * 打印視窗關閉後的確認邏輯
  */
-const handlePostPrintCheck = async () => {
+const handleConfirmPostPrint = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
       confirmButtonText: "打印完成",

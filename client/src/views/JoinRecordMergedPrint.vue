@@ -526,8 +526,8 @@ const handleMergedPrintWithHtmlToImage = async () => {
 const handleConfirmPostPrint = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
-      confirmButtonText: "打印完成",
-      cancelButtonText: "取消合併打印",
+      confirmButtonText: "合併完成",
+      cancelButtonText: "取消合併",
       type: "question",
       center: true,
     });
