@@ -146,7 +146,7 @@
     "serialNumber": 7,
     "recordId": -1,
     "state": "remove merged",
-    "voidReason": "作廢合併打印123",
+    "voidReason": "作廢合併123",
     "createdAt": "2026-04-10T15:18:51.185072+00:00",
     "updatedAt": "2026-04-10T15:20:24.648096+00:00"
   }
