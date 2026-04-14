@@ -578,28 +578,31 @@ const handleConfirmPostPrint = async () => {
           } else {
             /*
               receiptNumber,
-              state,
-              receiptType,
+              state,              
               voidReason,
               recordIds,
               */
 
+            const receiptNumber = currentRecord.value.receiptNumber;
             const state = "remove merged";
+            const voidReason = currentRecord.value.voidReason;
+            const idsArray = currentRecord.value.ids;
+            const idsStr = JSON.stringify(idsArray);
+            console.log("idsStr=", idsStr); // '["A","B"]'
 
             //調用取消的服務/merge/remove，還沒弄好XD
             // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
             const result = await receiptStore.removeMergedReceiptNumber(
-              currentRecord.value.receiptNumber,
+              receiptNumber,
               state,
-              currentRecord.value.receiptType,
-              currentRecord.value.voidReason,
-              currentRecord.value.ids,
+              voidReason,
+              idsArray,
             );
 
             if (result.success) {
               console.log(
                 "取消合併成功:",
-                currentRecord.value.receiptNumber,
+                receiptNumber,
                 "取消合併編號 ID:",
                 receiptId.value,
               );
