@@ -1317,7 +1317,7 @@ const handlePostPrintCheck = () => {
 
 ### 6. 智能模式切換
 
-通過 URL 參數 `is_batch` 自動判斷單筆或批量模式：
+通過 URL 參數 `print_type` 自動判斷單筆或批量模式：
 
 ```javascript
 // 打印類型
