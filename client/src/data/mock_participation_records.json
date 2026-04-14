@@ -107,7 +107,7 @@
     "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-04-02 09:18:23",
     "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-04-10 15:20:24",
+    "date_updated": "2026-04-14 12:04:28",
     "registrationId": 115,
     "activityId": -1,
     "state": "confirmed",
@@ -293,8 +293,6 @@
     "finalAmount": 4300,
     "paidAmount": 0,
     "needReceipt": "1",
-    "receiptNumber": "26040008",
-    "receiptIssued": "stamp",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -305,15 +303,15 @@
     "paymentNotes": "",
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T09:18:22.941Z",
-    "updatedAt": "2026-04-10T15:20:24.648096+00:00",
-    "receiptId": 115
+    "updatedAt": "2026-04-14T12:04:28.946508+00:00",
+    "receiptId": -1
   },
   {
     "id": 86,
     "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-04-02 03:15:46",
     "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-04-10 15:20:24",
+    "date_updated": "2026-04-14 12:04:28",
     "registrationId": 118,
     "activityId": -1,
     "state": "confirmed",
@@ -449,8 +447,6 @@
     "finalAmount": 2600,
     "paidAmount": 0,
     "needReceipt": "1",
-    "receiptNumber": "26040008",
-    "receiptIssued": "stamp",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -461,15 +457,15 @@
     "paymentNotes": "",
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T03:15:46.115Z",
-    "updatedAt": "2026-04-10T15:20:24.648096+00:00",
-    "receiptId": 115
+    "updatedAt": "2026-04-14T12:04:28.946508+00:00",
+    "receiptId": -1
   },
   {
     "id": 85,
     "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-04-02 03:15:32",
     "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-04-10 15:20:24",
+    "date_updated": "2026-04-14 12:04:28",
     "registrationId": 119,
     "activityId": -1,
     "state": "confirmed",
@@ -683,8 +679,6 @@
     "finalAmount": 5400,
     "paidAmount": 0,
     "needReceipt": "1",
-    "receiptNumber": "26040008",
-    "receiptIssued": "stamp",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -695,8 +689,8 @@
     "paymentNotes": "",
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T03:15:31.696Z",
-    "updatedAt": "2026-04-10T15:20:24.648096+00:00",
-    "receiptId": 115
+    "updatedAt": "2026-04-14T12:04:28.946508+00:00",
+    "receiptId": -1
   },
   {
     "id": 84,
@@ -1349,7 +1343,7 @@
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-03-17 14:08:20",
     "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-04-10 16:13:25",
+    "date_updated": "2026-04-10 16:19:09",
     "registrationId": 110,
     "activityId": 18,
     "state": "confirmed",
@@ -1437,9 +1431,9 @@
     "finalAmount": 1400,
     "paidAmount": 0,
     "needReceipt": "1",
-    "receiptNumber": "26040009",
+    "receiptNumber": "26040010",
     "receiptIssued": "stamp",
-    "receiptIssuedAt": "2026-04-10T16:13:25.792Z",
+    "receiptIssuedAt": "2026-04-10T16:19:09.449Z",
     "receiptIssuedBy": "釋測試",
     "accountingState": "pending",
     "accountingDate": "",
@@ -1449,10 +1443,10 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "9980809",
+    "notes": "五月天",
     "createdAt": "2026-03-17T14:08:20.128Z",
-    "updatedAt": "2026-04-10T16:13:25.794Z",
-    "receiptId": 119
+    "updatedAt": "2026-04-10T16:19:09.451Z",
+    "receiptId": 121
   },
   {
     "id": 73,
@@ -4211,7 +4205,7 @@
             "isHouseholdHead": true,
             "name": "孫雅玲",
             "notes": "",
-            "zodiac": "猴"
+            "zodiac": "���"
           },
           {
             "id": 2,

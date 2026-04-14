@@ -25,7 +25,6 @@ export class RustReceiptNumberService {
   async removeMergedReceiptNumber(
     receiptNumber,
     state,
-    receiptType,
     voidReason,
     recordIds,
     additionalContext = {},
@@ -34,7 +33,7 @@ export class RustReceiptNumberService {
     const requestBody = {
       receiptNumber: receiptNumber, // 需要作廢的合併編號
       state: state || "remove merged", // "remove merged" 作廢合併打印
-      receiptType: receiptType, // "stamp" 或 "standard"
+      receiptType: "", // "stamp" 或 "standard"
       voidReason: voidReason || "作廢合併打印", // 作廢原因
       recordIds: recordIds, // 參與合併的多個 recordId
       userId: additionalContext.userId || authService.getCurrentUser() || null,
@@ -51,10 +50,7 @@ export class RustReceiptNumberService {
     };
 
     try {
-      console.log(
-        `🦀 [Rust] 請求作廢合併打印: receiptNumber=${receiptNumber}, voidReason=${requestBody.voidReason}, userId=${additionalContext.userId}`,
-        requestBody,
-      );
+      console.log("🦀 [Rust] 請求作廢合併打印:", requestBody);
 
       const result = await this.base.rustFetch(
         `${this.endpoint}/merge/remove`,
@@ -112,10 +108,7 @@ export class RustReceiptNumberService {
     };
 
     try {
-      console.log(
-        `🦀 [Rust] 請求原子性生成合併打印編號: recordIds=${recordIds}, receiptType=${receiptType}, totalAmount=${state}, voidReason=${voidReason}, receiptIssuedBy=${receiptIssuedBy} , userId=${additionalContext.userId}`,
-        requestBody,
-      );
+      console.log("🦀 [Rust] 請求原子性生成合併打印編號:", requestBody);
 
       const result = await this.base.rustFetch(
         `${this.endpoint}/merge`,

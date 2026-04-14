@@ -22,7 +22,7 @@
     "serialNumber": 5,
     "recordId": -1,
     "state": "remove merged",
-    "voidReason": "解除合併收據123",
+    "voidReason": "作廢合併收據123",
     "createdAt": "2026-04-08T16:58:41.944768+00:00",
     "updatedAt": "2026-04-09T03:07:09.924222400+00:00"
   }

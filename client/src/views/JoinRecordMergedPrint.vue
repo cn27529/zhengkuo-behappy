@@ -628,8 +628,8 @@ const handleConfirmPostPrint = async () => {
           // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
           const stateResult = await receiptStore.stateReceiptNumber(
             receiptId.value,
-            "取消打印",
-            "merged unprinted",
+            "取消合併",
+            "remove merged",
           ); // 同步更新編號狀態為未打印
           if (stateResult?.success) {
             console.log("「取消合併打印」成功");
@@ -737,16 +737,16 @@ const buildMergedRecordContext = (records) => {
   );
 
   //取得 records 的 id 陣列
-  const mergedIds = [];
+  const recordIds = [];
   records.forEach((item, idx) => {
-    mergedIds.push(item.id);
+    recordIds.push(item.id);
   });
 
   return {
     ...baseRecord,
     items: mergedItems,
     finalAmount: mergedFinalAmount,
-    ids: mergedIds,
+    ids: recordIds,
   };
 };
 

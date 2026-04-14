@@ -8,7 +8,7 @@ TEST_STAFF="ab11998d-27b1-4936-a437-324952ba3c1f"
 # 測試用的參加記錄 ID（從 mock_participation_records copy.json 和 mock_receipt_numbers.json 選取）
 # 這些是尚未有收據編號或適合合併的記錄
 RECORD_IDS="[85,86,89]"  # 使用 id 85,86 的記錄進行合併測試
-VOID_REASON="合併打印TEST" # 作廢原因
+VOID_REASON="TEST合併打印" # 作廢原因
 RECEIPT_TYPE="stamp" # 收據類型
 STATE="merged" # 合併打印狀態（默認為 active）
 RECEIPT_NUMBER=""  # 替換為實際的合併打印編號
