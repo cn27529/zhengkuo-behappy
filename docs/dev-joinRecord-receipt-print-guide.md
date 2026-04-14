@@ -221,21 +221,17 @@ const handleBatchReceiptPrint = () => {
 onMounted(() => {
   setPrintTime();
 
-  // 檢查是否為批量打印
-  const isBatchParam = route.query.is_batch === "true";
-  const printId = route.query.print_id;
-
-  if (isBatchParam && printId) {
-    // 批量打印模式
-    isBatch.value = true;
-    const storedData = sessionStorage.getItem(printId);
+  if (isBatchPrint.value && reqPrintId.value) {
+    // 批量打印
+    isBatchPrint.value = true;
+    const storedData = sessionStorage.getItem(reqPrintId.value);
 
     if (storedData) {
       try {
-        batchRecords.value = JSON.parse(storedData);
-        if (batchRecords.value.length > 0) {
+        manyRecord.value = JSON.parse(storedData);
+        if (manyRecord.value.length > 0) {
           currentIndex.value = 0;
-          record.value = batchRecords.value[0];
+          currentRecord.value = manyRecord.value[0];
           handleTemplateChange();
         } else {
           ElMessage.error("批量數據為空");
@@ -245,15 +241,24 @@ onMounted(() => {
         ElMessage.error("批量數據解析失敗");
         router.back();
       }
+    } else {
+      ElMessage.error("找不到批量打印數據");
+      router.back();
     }
   } else {
-    // 單筆打印模式（原有邏輯）
-    const printData = route.query.print_data;
-    if (printData) {
-      record.value = JSON.parse(printData);
-      handleTemplateChange();
+    // 單筆打印
+    if (reqPrintRecord) {
+      try {
+        currentRecord.value = JSON.parse(reqPrintRecord);
+        handleTemplateChange();
+      } catch (e) {
+        ElMessage.error("數據解析失敗");
+        router.back();
+      }
     }
   }
+
+  if (!currentRecord.value.id) router.back();
 });
 ```
 
@@ -1315,7 +1320,12 @@ const handlePostPrintCheck = () => {
 通過 URL 參數 `is_batch` 自動判斷單筆或批量模式：
 
 ```javascript
-const isBatchParam = route.query.is_batch === "true";
+// 打印類型
+const reqPrintType = computed(() => route.query.print_type);
+// 檢查是否為批量打印
+const isBatchPrint = computed(() =>
+  String(route.query.print_type === appConfig.PRINT_TYPE.BATCH),
+);
 ```
 
 ### 7. 數據持久化

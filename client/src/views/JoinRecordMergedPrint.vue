@@ -55,7 +55,7 @@
             <p style="display: none">
               本表單由系統自動生成(收執聯)，打印時間：{{
                 printTime
-              }}｜打印編號：{{ printId }}
+              }}｜打印編號：{{ reqPrintId }}
             </p>
           </div>
         </div>
@@ -118,7 +118,7 @@
             <p style="display: none">
               本表單由系統自動生成(收執聯)，打印時間：{{
                 printTime
-              }}｜打印編號：{{ printId }}
+              }}｜打印編號：{{ reqPrintId }}
             </p>
           </div>
         </div>
@@ -131,31 +131,24 @@
       </div>
 
       <div class="config-body">
+        <p class="label" v-if="isMergedPrint">合併打印 {{ 1 }} 張</p>
         <!-- 批量打印導航 -->
-
-        <div v-if="isBatchNavigation" class="batch-navigation">
-          <p class="label" v-if="isBatchNavigation">
-            批量導航，第 {{ currentIndex + 1 }} 張 / 共
-            {{ manyRecord.length }} 張
-          </p>
-          <div class="nav-buttons">
-            <el-button
-              v-for="(item, index) in manyRecord"
-              :key="index"
-              :type="getButtonType(index)"
-              :plain="index === currentIndex && !printedIndexes.has(index)"
-              circle
-              size="mini"
-              @click="loadRecordByIndex(index)"
-            >
-              <el-tooltip :content="`${item.id}`" placement="top" size="mini">
-                <span>{{ index + 1 }}</span>
-              </el-tooltip>
-            </el-button>
-          </div>
+        <div v-if="isMergedPrint" class="batch-navigation">
+          <el-button
+            v-for="(item, index) in manyRecord"
+            :key="index"
+            :type="getButtonType(index)"
+            :plain="index === currentIndex && !printedIndexes.has(index)"
+            circle
+            size="mini"
+          >
+            <el-tooltip :content="`${item.id}`" placement="top" size="mini">
+              <span>{{ index + 1 }}</span>
+            </el-tooltip>
+          </el-button>
         </div>
 
-        <el-divider v-if="isBatchNavigation" />
+        <el-divider v-if="isMergedPrint" />
 
         <p class="label">選擇打印模版</p>
         <el-radio-group v-model="activeTemplate" class="template-radio">
@@ -200,22 +193,12 @@
       <div class="config-footer">
         <el-button
           type="success"
-          @click="handlePrintWithHtmlToImage"
-          :loading="printing"
-          size="large"
-          class="full-width"
-        >
-          開始打印
-        </el-button>
-        <!-- 合併打印 -->
-        <el-button
-          type="success"
           @click="handleMergedPrintWithHtmlToImage"
           :loading="printing"
           size="large"
           class="full-width"
         >
-          開始合併打印
+          合併打印
         </el-button>
         <el-button @click="handleClose" size="large" class="full-width"
           >關閉頁面</el-button
@@ -253,19 +236,31 @@ const printing = ref(false);
 
 const route = useRoute();
 const router = useRouter();
-const currentRecord = ref({});
-const printTime = ref("");
-const printId = ref("");
+
 const receiptNumberId = ref(null); // 儲存領取的正式編號 ID，以便後續更新狀態
 
-// 批量打印相關
-const isBatchNavigation = ref(false); // 是否為批量打印導航
-const manyRecord = ref([]);
+// 打印相關
+const currentRecord = ref({}); //目前打印
+const printTime = ref("");
+const receiptId = ref(null); // 儲存領取的正式編號 ID，以便後續更新狀態
+const reqPrintId = computed(() => route.query.print_id);
+const reqPrintRecord = computed(() => route.query.print_data); //單筆打印
+const sealBoxText = ref("印信處"); //財團法人鎮國基金會印信處
+
+const manyRecord = ref([]); //批量打印
 const currentIndex = ref(0);
 const printedIndexes = ref(new Set()); // 追蹤已打印完成的索引
 
-const sealBoxText = ref("印信處"); //財團法人鎮國基金會印信處
-const isMerged = ref(false); // 是否為合併打印
+// 打印類型
+const reqPrintType = computed(() => route.query.print_type);
+// 檢查是否為批量打印
+const isBatchPrint = computed(() =>
+  String(route.query.print_type === appConfig.PRINT_TYPE.BATCH),
+);
+// 是否為合併打印
+const isMergedPrint = computed(() =>
+  String(reqPrintType.value === appConfig.PRINT_TYPE.MERGED),
+);
 
 /**
  * 當大德姓名修改時的處理
@@ -343,7 +338,7 @@ const handleTemplateChange = (template) => {
     .trim();
   const receiptSerialText =
     activeTemplate.value === "standard" ? "感謝狀" : "收據";
-  const batchInfo = isBatchNavigation.value
+  const batchInfo = isBatchPrint.value
     ? `(${currentIndex.value + 1}/${manyRecord.value.length})`
     : "";
   document.title = `${name}-${receiptSerialNum.value}-${receiptSerialText}${batchInfo}`;
@@ -532,141 +527,6 @@ const handleMergedPrintWithHtmlToImage = async () => {
   }
 };
 
-// 單筆打印
-const handlePrintWithHtmlToImage = async () => {
-  // ✅ 0. 打印前確認 — 在領號之前先讓操作者確認內容
-  const templateLabel =
-    activeTemplate.value === "standard" ? "📜 感謝狀" : "🛡️ 收據";
-  const itemsText = (currentRecord.value.items || [])
-    .map(
-      (item) => `${item.label}（${appConfig.formatCurrency(item.subtotal)}）`,
-    )
-    .join("、");
-
-  try {
-    await ElMessageBox.confirm(
-      `
-        <div style="line-height:2; font-size:15px;">
-          <div>🙏 大德：<strong>${contactName.value}</strong></div>
-          <div>📋 打印類型：<strong style="color:#409EFF;">${templateLabel}</strong></div>
-          <div>💰 功德項目：<strong>${itemsText}</strong></div>
-          <div>💵 總金額：<strong style="color:#E6A23C;">${displayAmountChinese.value}</strong></div>
-          <hr style="margin:12px 0; border-color:#eee;"/>
-          <div style="color:#F56C6C; font-size:15px;">
-            ⚠️ 確認後將領取「佛字第」請確認打印詳情。
-          </div>
-        </div>
-      `,
-      "請確認打印詳情",
-      {
-        dangerouslyUseHTMLString: true,
-        confirmButtonText: "✅ 確認，開始打印",
-        //cancelButtonText: "取消打印",
-        type: "warning",
-        center: true,
-        distinguishCancelAndClose: true,
-      },
-    );
-  } catch {
-    // 操作者點「返回修改」或關閉 → 中止，不做任何動作
-    return;
-  }
-
-  const node = document.getElementById("receipt-capture-area");
-
-  // ✅ 1. 在擷取圖片前，先確認是否已有正式編號，若無則即時向 Rust 領取
-  if (!currentRecord.value.receiptNumber) {
-    const fetchLoading = ElLoading.service({ text: "正在領取佛字第..." }); //
-
-    try {
-      //
-      if (serviceAdapter.getIsMock()) {
-        console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
-        handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
-        // 🔥 重要：等待 Vue 完成 DOM 更新，確保擷取到的 HTML 內含新編號
-        await nextTick();
-        await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
-      } else {
-        // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
-        const result = await receiptStore.generateReceiptNumber(
-          currentRecord.value.id,
-          activeTemplate.value,
-        );
-
-        if (result.success) {
-          // 更新本地響應式數據，觸發 receiptSerialNum 計算屬性
-          currentRecord.value.receiptNumber = result.data.receiptNumber; //
-          currentRecord.value.receiptIssued = activeTemplate.value;
-          receiptNumberId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
-
-          console.log(
-            "正式編號領取成功:",
-            currentRecord.value.receiptNumber,
-            "編號 ID:",
-            receiptNumberId.value,
-          );
-
-          handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
-
-          // 🔥 重要：等待 Vue 完成 DOM 更新，確保擷取到的 HTML 內含新編號
-          await nextTick();
-          await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
-        } else {
-          throw new Error(result.message);
-        }
-      }
-    } catch (error) {
-      ElMessage.error("正式編號領取失敗: " + error.message);
-      fetchLoading.close();
-      return; // 領號失敗則中止列印，避免印出 TEMP 編號
-    } finally {
-      fetchLoading.close();
-    }
-  }
-
-  // ✅ 2. 圖像擷取與打印流程
-  const loading = ElLoading.service({
-    text: "正在生成高清圖像...",
-    background: "rgba(240, 242, 245, 0.8)",
-  });
-
-  try {
-    printing.value = true;
-    await document.fonts.ready;
-    await new Promise((resolve) => setTimeout(resolve, 400));
-
-    const dataUrl = await htmlToImage.toPng(node, {
-      pixelRatio: 6,
-      backgroundColor: "#ffffff",
-      cacheBust: true,
-      includeGraphics: true,
-    });
-
-    loading.close();
-
-    // 先執行打印
-    printJS({
-      printable: dataUrl,
-      type: "image",
-      style:
-        "@page { size: 128mm 182mm; margin: 0; } img { width: 100%; height: 100%; }",
-      imageStyle: "width:100%;",
-    });
-
-    // 重點：打印視窗跳出後，主視窗直接進入確認狀態
-    // 不等回調，直接手動喚起彈窗
-    setTimeout(() => {
-      handleConfirmPostPrint();
-    }, 500); // 給予 500 毫秒讓打印視窗先彈出來，確認框會在它後方/下方準備好
-  } catch (error) {
-    console.error("打印失敗:", error);
-    loading.close();
-    ElMessage.error("轉換失敗，請重新嘗試");
-  } finally {
-    printing.value = false;
-  }
-};
-
 /**
  * 打印視窗關閉後的確認邏輯
  */
@@ -682,109 +542,31 @@ const handleConfirmPostPrint = async () => {
     // 使用者確認打印完成，更新打印狀態
     currentRecord.value.activeTemplate = activeTemplate.value;
 
-    if (isMerged.value) {
+    if (isMergedPrint.value) {
       //還沒弄好XD
       //已由/merge的服務處理完畢UI不用再handle
-    } else if (isBatchNavigation.value) {
-      // 如果是批量打印，更新當前這筆的打印狀態，然後自動跳到下一筆
-      currentRecord.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
-      currentRecord.value.receiptIssuedBy = receiptStore.getUserName(); // 更新領取人
-      const result = await printStore.updateReceiptPrintStatus(
-        currentRecord.value,
-      );
-      console.log("批量打印當前這筆:", result);
+      const displayMessage = `${manyRecord.value.length} 筆參加記錄，已標記合併打印 👍`;
+      ElMessage({
+        type: "success",
+        message: displayMessage,
+        duration: 3000,
+      });
 
-      if (result?.success) {
-        // 標記當前索引為已打印
-        printedIndexes.value.add(currentIndex.value);
-
-        // 顯示完整的 store 返回訊息
-        const displayMessage =
-          result?.message ||
-          `收據 ${currentIndex.value + 1}/${manyRecord.value.length} 標記為打印完成 👍`;
-
-        ElMessage({
-          type: "success",
-          message: displayMessage,
-          duration: 3000,
-        });
-
-        // 同步更新編號狀態為已打印
-        if (receiptNumberId.value) {
-          // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
-          const stateResult = await receiptStore.stateReceiptNumber(
-            receiptNumberId.value,
-            "打印完成",
-            "printed",
-          ); // 同步更新編號狀態為已打印
-          if (stateResult?.success) {
-            console.log("編號狀態更新成功");
-          } else {
-            console.warn("編號狀態更新失敗:", stateResult?.message);
-          }
+      // 同步更新編號狀態為合併打印完成
+      if (receiptNumberId.value) {
+        // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
+        const stateResult = await receiptStore.stateReceiptNumber(
+          receiptNumberId.value,
+          "合併打印完成",
+          "merged printed",
+        );
+        if (stateResult?.success) {
+          console.log("編號狀態「打印完成」更新成功");
         } else {
-          console.warn("缺少 receiptNumberId，無法更新編號狀態");
-        }
-
-        // 自動跳到下一張（如果還有的話）
-        if (currentIndex.value < manyRecord.value.length - 1) {
-          setTimeout(() => {
-            handleNext();
-          }, 500);
-        } else {
-          ElMessage({
-            type: "info",
-            message: "所有收據已處理完成！",
-          });
+          console.warn("編號狀態「打印完成」更新失敗:", stateResult?.message);
         }
       } else {
-        ElMessage({
-          type: "warning",
-          message: result?.message || "狀態更新失敗，但打印已完成。",
-        });
-      }
-
-      // 來源是參加頁面執行savedRecords同步
-      updateSavedRecords(result);
-    } else {
-      // 單筆打印
-      currentRecord.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
-      currentRecord.value.receiptIssuedBy = receiptStore.getUserName(); // 更新領取人
-      const result = await printStore.updateReceiptPrintStatus(
-        currentRecord.value,
-      );
-      console.log("單筆打印當前這筆:", result);
-
-      if (result?.success) {
-        ElMessage({
-          type: "success",
-          message: result?.message || "記錄打印完成狀態。👍",
-        });
-
-        // 同步更新編號狀態為已打印
-        if (receiptNumberId.value) {
-          // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
-          const stateResult = await receiptStore.stateReceiptNumber(
-            receiptNumberId.value,
-            "打印完成",
-            "printed",
-          ); // 同步更新編號狀態為已打印
-          if (stateResult?.success) {
-            console.log("編號狀態「打印完成」更新成功");
-          } else {
-            console.warn("編號狀態「打印完成」更新失敗:", stateResult?.message);
-          }
-        } else {
-          console.warn("缺少 receiptNumberId，無法更新編號狀態");
-        }
-
-        // 來源是參加頁面執行savedRecords同步
-        updateSavedRecords(result);
-      } else {
-        ElMessage({
-          type: "warning",
-          message: result?.message || "狀態更新失敗，但打印已完成。",
-        });
+        console.warn("缺少 receiptNumberId，無法更新編號狀態");
       }
     }
   } catch (error) {
@@ -792,43 +574,16 @@ const handleConfirmPostPrint = async () => {
     if (error === "cancel") {
       console.log("使用者取消打印");
 
-      if (isMerged.value) {
+      if (isMergedPrint.value) {
         //還沒弄好XD
         //調用取消的服務/merge/remove
-      } else {
-        //🔥 重要：在使用者取消打印後，仍然需要將該筆記錄的 receiptIssuedBy, receiptIssuedAt, receiptIssued 和 receiptNumber 重置為 null，保持在未打印狀態
-        //  這樣做的原因是：即使用戶取消了打印，但他之前已經領取了正式編號，為了保持數據的一致性和準確性，我們需要將該筆記錄的狀態重置回未打印，讓它可以再次被打印並領取新的編號。
-        //  注意：這裡的重置動作不會直接影響到後端的數據，除非 printStore.updateReceiptPrintStatus 這個方法內部有實現對 receiptIssued 和 receiptNumber 的更新邏輯。確保該方法能夠正確處理這些字段的重置。
-        //  這裡的重置動作是為了確保前端的狀態能夠反映出「取消打印」的結果，讓使用者在下一次嘗試打印時能夠重新領取編號並進行打印。
-        //  如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
-        //  已經領取了正式編號會保留在編號系統做為證據。
-
-        currentRecord.value.receiptIssued = ""; // 重置模版狀態，保持在未打印狀態
-        currentRecord.value.receiptNumber = ""; // 重置編號，保持在未打印狀態
-        currentRecord.value.receiptIssuedAt = ""; // 重置領取時間
-        currentRecord.value.receiptIssuedBy = ""; // 重置領取人
-        currentRecord.value.needReceipt = "1";
-        const result = await printStore.updateReceiptPrintStatus(
-          currentRecord.value,
-        );
-        if (result?.success) {
-          ElMessage({
-            type: "info",
-            message: result?.message || "已取消打印狀態更新，記錄維持原樣。",
-          });
-        } else {
-          ElMessage({
-            type: "warning",
-            message: result?.message || "狀態更新失敗，但已取消打印。",
-          });
-        }
 
         if (receiptNumberId.value) {
           // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
           const stateResult = await receiptStore.stateReceiptNumber(
             receiptNumberId.value,
-            "取消打印",
-            "unprinted",
+            "取消合併打印",
+            "merged unprinted",
           ); // 同步更新編號狀態為未打印
           if (stateResult?.success) {
             console.log("編號狀態「取消打印」更新成功");
@@ -908,11 +663,11 @@ const handleClose = () => {
 };
 
 /**
- * 合併打印：將多筆 printDataRecords 的 items 依 type 群組加總 subtotal，
- * 回傳以第一筆為基底、僅更新 items 與 finalAmount 的新 recordContext。
+ * 合併打印：將多筆 manyRecord 的 items 依 type 群組加總 subtotal，
+ * 回傳以第一筆為基底、僅更新 items 與 finalAmount 的新 currentRecord。
  *
- * @param {Array} records - printDataRecords.value
- * @returns {Object} 合併後的 recordContext
+ * @param {Array} records - manyRecord.value
+ * @returns {Object} 合併後的 currentRecord
  */
 const buildMergedRecordContext = (records) => {
   const baseRecord = { ...records[0] };
@@ -952,82 +707,40 @@ const buildMergedRecordContext = (records) => {
 onMounted(() => {
   setPrintTime();
 
-  // 檢查是否為批量打印
-  const isBatchParam = route.query.is_batch === "true";
-  printId.value = route.query.print_id;
-  // 合併打印的參數檢查
-  const isMergedParam = route.query.is_merged === "true";
-
   // 合併打印
-  if (isMergedParam && printId.value) {
-    isMerged.value = true; // 標記為合併打印
-    isBatchNavigation.value = false; // 合併打印不啟用批量導航
-    manyRecord.value = JSON.parse(sessionStorage.getItem(printId.value));
-    if (manyRecord.value) {
-      try {
-        if (manyRecord.value.length > 0) {
-          currentIndex.value = 0;
+  if (!isMergedPrint && !reqPrintId.value) {
+    return;
+  }
 
-          /*
+  manyRecord.value = JSON.parse(sessionStorage.getItem(reqPrintId.value));
+  if (manyRecord.value) {
+    try {
+      if (manyRecord.value.length > 0) {
+        currentIndex.value = 0;
+
+        /*
           合併打印內容的實現邏輯：
-          目前要實現將的合併打印的 "items" 內容併成一份，以 "items"的"type" 做群組將 "subtotal" 做加總然後更新"finalAmount"欄位，recordContext.value 除了"items"與 "finalAmount" 被更新以外，其餘的資料不變的。
+          目前要實現將的合併打印的 "items" 內容併成一份，以 "items"的"type" 做群組將 "subtotal" 做加總然後更新"finalAmount"欄位，currentRecord.value 除了"items"與 "finalAmount" 被更新以外，其餘的資料不變的。
           合併打印只使用第一筆數據來渲染，要實現將合併打印的所有數據都渲染在同一張收據上，
-          需要在模板中對 recordContext.value 進行調整，讓它包含 printDataRecords.value 中的所有數據，而不只是第一筆。
+          需要在模板中對 currentRecord.value 進行調整，讓它包含 manyRecord.value 中的所有數據，而不只是第一筆。
           這樣在 handleTemplateChange 和打印時，就能夠使用完整的合併數據來生成收據內容。
           */
-          // recordContext.value = printDataRecords.value[0];
-          // 合併打印內容實現
-          currentRecord.value = buildMergedRecordContext(manyRecord.value);
+        // currentRecord.value = manyRecord.value[0];
+        // 合併打印內容實現
+        currentRecord.value = buildMergedRecordContext(manyRecord.value);
 
-          handleTemplateChange();
-        } else {
-          ElMessage.error("合併打印數據為空");
-          router.back();
-        }
-      } catch (e) {
-        ElMessage.error("合併打印數據解析失敗");
+        handleTemplateChange();
+      } else {
+        ElMessage.error("合併打印數據為空");
         router.back();
       }
-    } else {
-      ElMessage.error("找不到合併打印數據");
-      router.back();
-    }
-  } else if (isBatchParam && printId.value) {
-    // 批量打印
-    isBatchNavigation.value = true;
-    manyRecord.value = JSON.parse(sessionStorage.getItem(printId.value));
-    if (manyRecord.value) {
-      try {
-        if (manyRecord.value.length > 0) {
-          currentIndex.value = 0;
-          currentRecord.value = manyRecord.value[0];
-          handleTemplateChange();
-        } else {
-          ElMessage.error("批量數據為空");
-          router.back();
-        }
-      } catch (e) {
-        ElMessage.error("批量數據解析失敗");
-        router.back();
-      }
-    } else {
-      ElMessage.error("找不到批量打印數據");
+    } catch (e) {
+      ElMessage.error("合併打印數據解析失敗");
       router.back();
     }
   } else {
-    // 單筆打印
-    isBatchNavigation.value = false; // 合併打印不啟用批量導航
-    const storedData = sessionStorage.getItem(printId.value);
-    if (storedData) {
-      try {
-        currentRecord.value = JSON.parse(storedData);
-        handleTemplateChange();
-        return; // 優先使用 sessionStorage 中的數據，避免重複解析 URL 參數
-      } catch (e) {
-        ElMessage.error("數據解析失敗");
-        router.back();
-      }
-    }
+    ElMessage.error("找不到合併打印數據");
+    router.back();
   }
 
   if (!currentRecord.value.id) router.back();
