@@ -545,7 +545,7 @@ const handlePostPrintCheck = async () => {
         // 顯示完整的 store 返回訊息
         const displayMessage =
           result?.message ||
-          `收據 ${currentIndex.value + 1}/${manyRecord.value.length} 標記為打印完成 👍`;
+          `收據 ${currentIndex.value + 1}/${manyRecord.value.length} 批量打印完成 👍`;
 
         ElMessage({
           type: "success",
@@ -558,16 +558,16 @@ const handlePostPrintCheck = async () => {
           // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
           const stateResult = await receiptStore.stateReceiptNumber(
             receiptId.value,
-            "打印完成",
-            "printed",
+            "批量打印完成",
+            "batch printed",
           ); // 同步更新編號狀態為已打印
           if (stateResult?.success) {
-            console.log("編號狀態更新成功");
+            console.log("「批量打印」更新成功");
           } else {
-            console.warn("編號狀態更新失敗:", stateResult?.message);
+            console.warn("「批量打印」更新失敗:", stateResult?.message);
           }
         } else {
-          console.warn("缺少 receiptNumberId，無法更新編號狀態");
+          console.warn("缺少 receiptId，無法更新");
         }
 
         // 自動跳到下一張（如果還有的話）
@@ -602,7 +602,7 @@ const handlePostPrintCheck = async () => {
       if (result?.success) {
         ElMessage({
           type: "success",
-          message: result?.message || "記錄打印完成狀態。👍",
+          message: result?.message || "打印完成。👍",
         });
 
         // 同步更新編號狀態為已打印
@@ -611,15 +611,15 @@ const handlePostPrintCheck = async () => {
           const stateResult = await receiptStore.stateReceiptNumber(
             receiptId.value,
             "打印完成",
-            "printed",
+            "single printed",
           ); // 同步更新編號狀態為已打印
           if (stateResult?.success) {
-            console.log("編號狀態「打印完成」更新成功");
+            console.log("「單筆打印完成」更新成功");
           } else {
-            console.warn("編號狀態「打印完成」更新失敗:", stateResult?.message);
+            console.warn("「單筆打印完成」更新失敗:", stateResult?.message);
           }
         } else {
-          console.warn("缺少 receiptNumberId，無法更新編號狀態");
+          console.warn("缺少 receiptId，無法更新");
         }
 
         // 來源是參加頁面執行savedRecords同步
@@ -627,7 +627,7 @@ const handlePostPrintCheck = async () => {
       } else {
         ElMessage({
           type: "warning",
-          message: result?.message || "狀態更新失敗，但打印已完成。",
+          message: result?.message || "狀態更新失敗，但單筆打印已完成。",
         });
       }
     }
@@ -671,12 +671,12 @@ const handlePostPrintCheck = async () => {
           "unprinted",
         ); // 同步更新編號狀態為未打印
         if (stateResult?.success) {
-          console.log("編號狀態「取消打印」更新成功");
+          console.log("「取消打印」更新成功");
         } else {
-          console.warn("編號狀態「取消打印」更新失敗:", stateResult?.message);
+          console.warn("「取消打印」更新失敗:", stateResult?.message);
         }
       } else {
-        console.warn("缺少 receiptNumberId，無法更新編號狀態");
+        console.warn("缺少 receiptId，無法更新編號狀態");
       }
 
       ElMessage({

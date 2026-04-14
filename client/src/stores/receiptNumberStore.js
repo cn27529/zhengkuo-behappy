@@ -132,7 +132,7 @@ export const useReceiptNumberStore = defineStore("receiptNumber", () => {
       const currentUserId = authService.getCurrentUser();
 
       console.log(
-        `🚀 開始生成合併打印編號: recordIds=${recordIds}, receiptType=${receiptType}, totalAmount=${state}, voidReason=${voidReason}, userId=${currentUserId}`,
+        `🚀 開始生成合併打印編號: recordIds=${recordIds}, receiptType=${receiptType}, state=${state}, voidReason=${voidReason}, userId=${currentUserId}`,
       );
 
       // 將 userId 作为 additionalContext 傳遞給 Service

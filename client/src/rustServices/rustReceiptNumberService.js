@@ -94,7 +94,7 @@ export class RustReceiptNumberService {
     const requestBody = {
       receiptNumber: "",
       recordIds: recordIds, // 參與合併的多個 recordId
-      state: state || "merged", // "merged" 合併打印
+      state: "merged", // "merged" 合併打印
       receiptType: receiptType, // "stamp" 或 "standard"
       voidReason: voidReason || "合併打印", // 作廢原因
       receiptIssuedBy: receiptIssuedBy,

@@ -237,8 +237,6 @@ const printing = ref(false);
 const route = useRoute();
 const router = useRouter();
 
-const receiptNumberId = ref(null); // 儲存領取的正式編號 ID，以便後續更新狀態
-
 // 打印相關
 const currentRecord = ref({}); //目前打印
 const printTime = ref("");
@@ -437,14 +435,6 @@ const handleMergedPrintWithHtmlToImage = async () => {
     voidReason,
         */
 
-        console.log(
-          "generateMergedReceiptNumber:",
-          currentRecord.value.ids,
-          activeTemplate.value,
-          currentRecord.value.state,
-          currentRecord.value.voidReason,
-        );
-
         // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
         const result = await receiptStore.generateMergedReceiptNumber(
           currentRecord.value.ids,
@@ -457,13 +447,13 @@ const handleMergedPrintWithHtmlToImage = async () => {
           // 更新本地響應式數據，觸發 receiptSerialNum 計算屬性
           currentRecord.value.receiptNumber = result.data.receiptNumber; //
           currentRecord.value.receiptIssued = activeTemplate.value;
-          receiptNumberId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
+          receiptId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
 
           console.log(
             "合併打印正式編號領取成功:",
             currentRecord.value.receiptNumber,
             "合併打印編號 ID:",
-            receiptNumberId.value,
+            receiptId.value,
           );
 
           handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
@@ -534,7 +524,7 @@ const handleConfirmPostPrint = async () => {
   try {
     await ElMessageBox.confirm("單據是否已成功由打印機完成？", "打印確認", {
       confirmButtonText: "打印完成",
-      cancelButtonText: "取消打印",
+      cancelButtonText: "取消合併打印",
       type: "question",
       center: true,
     });
@@ -545,7 +535,7 @@ const handleConfirmPostPrint = async () => {
     if (isMergedPrint.value) {
       //還沒弄好XD
       //已由/merge的服務處理完畢UI不用再handle
-      const displayMessage = `${manyRecord.value.length} 筆參加記錄，已標記合併打印 👍`;
+      const displayMessage = `${manyRecord.value.length} 筆參加記錄，合併打印 👍`;
       ElMessage({
         type: "success",
         message: displayMessage,
@@ -553,45 +543,92 @@ const handleConfirmPostPrint = async () => {
       });
 
       // 同步更新編號狀態為合併打印完成
-      if (receiptNumberId.value) {
+      if (receiptId.value) {
         // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
         const stateResult = await receiptStore.stateReceiptNumber(
-          receiptNumberId.value,
+          receiptId.value,
           "合併打印完成",
           "merged printed",
         );
         if (stateResult?.success) {
-          console.log("編號狀態「打印完成」更新成功");
+          console.log("「合併打印」更新成功");
         } else {
-          console.warn("編號狀態「打印完成」更新失敗:", stateResult?.message);
+          console.warn("「合併打印」更新失敗:", stateResult?.message);
         }
       } else {
-        console.warn("缺少 receiptNumberId，無法更新編號狀態");
+        console.warn("缺少 receiptId，無法更新編號狀態");
       }
     }
   } catch (error) {
     // 這裡攔截「取消打印」的觸發
     if (error === "cancel") {
-      console.log("使用者取消打印");
+      console.log("使用者取消合併");
 
       if (isMergedPrint.value) {
-        //還沒弄好XD
-        //調用取消的服務/merge/remove
+        const fetchLoading = ElLoading.service({ text: "正在領取佛字第..." }); //
 
-        if (receiptNumberId.value) {
+        try {
+          //
+          if (serviceAdapter.getIsMock()) {
+            console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
+            handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
+            // 🔥 重要：等待 Vue 完成 DOM 更新，確保擷取到的 HTML 內含新編號
+            await nextTick();
+            await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
+          } else {
+            /*
+              recordIds,
+          receiptType,
+          state,
+          voidReason,
+              */
+
+            //調用取消的服務/merge/remove，還沒弄好XD
+            // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
+            const result = await receiptStore.removeMergedReceiptNumber(
+              currentRecord.value.receiptNumber,
+              currentRecord.value.voidReason,
+            );
+
+            if (result.success) {
+              console.log(
+                "取消合併成功:",
+                currentRecord.value.receiptNumber,
+                "取消合併編號 ID:",
+                receiptId.value,
+              );
+
+              handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
+
+              // 🔥 重要：等待 Vue 完成 DOM 更新，確保擷取到的 HTML 內含新編號
+              await nextTick();
+              await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
+            } else {
+              throw new Error(result.message);
+            }
+          }
+        } catch (error) {
+          ElMessage.error("取消合併失敗: " + error.message);
+          fetchLoading.close();
+          return; // 領號失敗則中止列印，避免印出 TEMP 編號
+        } finally {
+          fetchLoading.close();
+        }
+
+        if (receiptId.value) {
           // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
           const stateResult = await receiptStore.stateReceiptNumber(
-            receiptNumberId.value,
-            "取消合併打印",
+            receiptId.value,
+            "取消打印",
             "merged unprinted",
           ); // 同步更新編號狀態為未打印
           if (stateResult?.success) {
-            console.log("編號狀態「取消打印」更新成功");
+            console.log("「取消合併打印」成功");
           } else {
-            console.warn("編號狀態「取消打印」更新失敗:", stateResult?.message);
+            console.warn("「取消合併打印」失敗:", stateResult?.message);
           }
         } else {
-          console.warn("缺少 receiptNumberId，無法更新編號狀態");
+          console.warn("缺少 receiptId，無法更新編號狀態");
         }
 
         ElMessage({
