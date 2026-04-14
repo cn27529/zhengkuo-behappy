@@ -578,10 +578,10 @@ const handleConfirmPostPrint = async () => {
           } else {
             /*
               receiptNumber,
-    state,
-    receiptType,
-    voidReason,
-    recordIds,
+              state,
+              receiptType,
+              voidReason,
+              recordIds,
               */
 
             const state = "remove merged";
