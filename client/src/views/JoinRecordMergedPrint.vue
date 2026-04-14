@@ -577,17 +577,23 @@ const handleConfirmPostPrint = async () => {
             await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
           } else {
             /*
-              recordIds,
-          receiptType,
-          state,
-          voidReason,
+              receiptNumber,
+    state,
+    receiptType,
+    voidReason,
+    recordIds,
               */
+
+            const state = "remove merged";
 
             //調用取消的服務/merge/remove，還沒弄好XD
             // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
             const result = await receiptStore.removeMergedReceiptNumber(
               currentRecord.value.receiptNumber,
+              state,
+              currentRecord.value.receiptType,
               currentRecord.value.voidReason,
+              currentRecord.value.ids,
             );
 
             if (result.success) {

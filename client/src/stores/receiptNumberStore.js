@@ -73,7 +73,13 @@ export const useReceiptNumberStore = defineStore("receiptNumber", () => {
   /*
    * 作廢合併打印
    */
-  const removeMergedReceiptNumber = async (receiptNumber, voidReason) => {
+  const removeMergedReceiptNumber = async (
+    receiptNumber,
+    state,
+    receiptType,
+    voidReason,
+    recordIds,
+  ) => {
     loading.value = true;
     error.value = null;
     try {
@@ -81,12 +87,15 @@ export const useReceiptNumberStore = defineStore("receiptNumber", () => {
       const currentUserId = authService.getCurrentUser();
 
       console.log(
-        `🚀 開始作廢合併編號: receiptNumber=${receiptNumber}, voidReason=${voidReason}, userId=${currentUserId}`,
+        `🚀 開始作廢合併編號: receiptNumber=${receiptNumber}, state=${state}, receiptType=${receiptType}, voidReason=${voidReason}, recordIds=${recordIds}, userId=${currentUserId}`,
       );
 
       const result = await rustReceiptNumberService.removeMergedReceiptNumber(
         receiptNumber,
+        state,
+        receiptType,
         voidReason,
+        recordIds,
         {
           userId: currentUserId,
         },
