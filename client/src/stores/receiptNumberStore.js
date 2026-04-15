@@ -186,9 +186,12 @@ export const useReceiptNumberStore = defineStore("receiptNumber", () => {
       // 從 authService 獲取當前登入使用者的 UUID
       const currentUserId = authService.getCurrentUser();
 
-      console.log(
-        `🚀 開始生成編號: RecordID=${recordId}, Type=${receiptType}, User=${currentUserId}`,
-      );
+      const reqBody = {
+        recordId,
+        receiptType,
+        currentUserId,
+      };
+      console.log("🚀 開始生成編號:", reqBody);
 
       // 將 userId 作為 additionalContext 傳遞給 Service
       const result = await rustReceiptNumberService.generateReceiptNumber(

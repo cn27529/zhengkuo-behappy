@@ -171,9 +171,9 @@ pub async fn generate_receipt_number(
     )
     .bind(&receipt_number)
     .bind(&payload.receipt_type)
-    .bind(new_id)  // 打印ID 回寫到 receiptId 欄位
-    .bind(&now_iso)
+    .bind(&now_iso)        
     .bind(&receipt_issued_by)
+    .bind(new_id)  // 打印ID 回寫到 receiptId 欄位
     .bind(payload.record_id)
     .execute(&mut *tx)
     .await

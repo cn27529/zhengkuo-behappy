@@ -150,10 +150,7 @@ export class RustReceiptNumberService {
     };
 
     try {
-      console.log(
-        `🦀 [Rust] 請求原子性生成編號: recordId=${recordId}, receiptType=${receiptType}, userId=${additionalContext.userId}`,
-        requestBody,
-      );
+      console.log("🦀 [Rust] 請求原子性生成編號:", requestBody);
 
       const result = await this.base.rustFetch(
         `${this.endpoint}/generate`,

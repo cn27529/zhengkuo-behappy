@@ -439,16 +439,17 @@ const handlePrintWithHtmlToImage = async () => {
         await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
       } else {
         // 🔥 核心：向 receiptNumberStore 請求生成正式編號，並傳遞必要的上下文
-        const result = await receiptStore.generateReceiptNumber(
+        const newReceiptNumber = await receiptStore.generateReceiptNumber(
           currentRecord.value.id,
           activeTemplate.value,
         );
 
-        if (result.success) {
+        if (newReceiptNumber.success) {
           // 更新本地響應式數據，觸發 receiptSerialNum 計算屬性
-          currentRecord.value.receiptNumber = result.data.receiptNumber; //
+          currentRecord.value.receiptNumber =
+            newReceiptNumber.data.receiptNumber; //
           currentRecord.value.receiptIssued = activeTemplate.value;
-          receiptId.value = result.data.id; // 儲存編號 ID 以便後續狀態更新
+          receiptId.value = newReceiptNumber.data.id; // 儲存編號 ID 以便後續狀態更新
 
           console.log(
             "正式編號領取成功:",
@@ -463,7 +464,7 @@ const handlePrintWithHtmlToImage = async () => {
           await nextTick();
           await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
         } else {
-          throw new Error(result.message);
+          throw new Error(newReceiptNumber.message);
         }
       }
     } catch (error) {
