@@ -198,7 +198,7 @@ export class RustReceiptNumberService {
     const startTime = Date.now();
     const requestBody = {
       state: "void",
-      voidReason: voidReason || "手動作廢",
+      voidReason: voidReason || "未知的原因",
       updatedAt: DateUtils.getCurrentISOTime(),
       userId: authService.getCurrentUser() || null, // 記錄是誰作廢的
     };
