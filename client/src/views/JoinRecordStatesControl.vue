@@ -474,6 +474,7 @@ import { useJoinRecordQueryStore } from "../stores/joinRecordQueryStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { BoolUtils } from "../utils/boolUtils.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
+import appConfig from "../config/appConfig.js"
 
 const queryStore = useJoinRecordQueryStore();
 const pageStateStore = usePageStateStore();
@@ -751,10 +752,8 @@ const handleBatchReceiptPrint = () => {
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,
-        is_batch: "true",
-        is_merged: "false",
-        print_type: "batch_print",
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.BATCH,
       },
     });
   } catch (error) {
@@ -763,7 +762,7 @@ const handleBatchReceiptPrint = () => {
   }
 };
 
-// 合併打印：與 JoinRecord.vue 邏輯相同
+// 合併打印
 const handleMergedReceiptPrint = () => {
   if (selectedRecords.value.length < 2) {
     ElMessage.warning("請至少勾選兩筆記錄進行合併打印");
@@ -804,10 +803,8 @@ const handleMergedReceiptPrint = () => {
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,
-        is_batch: "false",
-        is_merged: "true",
-        print_type: "merged_print",
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.MERGED,
       },
     });
   } catch (error) {

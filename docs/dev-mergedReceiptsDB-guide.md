@@ -232,32 +232,51 @@ mergedReceiptsDB.totalAmount = Σ ( 各筆 participationRecord.finalAmount )
 ```javascript
 const handleMergedReceiptPrint = async () => {
   if (selectedRecords.value.length < 2) {
-    ElMessage.warning("請選擇 2 筆以上記錄");
+    ElMessage.warning("請至少勾選兩筆記錄進行合併打印");
     return;
   }
 
-  try {
-    const res = await mergedReceiptService.create({
-      record_ids: selectedRecords.value.map((r) => r.id),
-      receiptType: "stamp",
-      user_id: currentUser.id,
-    });
+  // 只過濾需要打印收據的記錄
+  const printableRecords = selectedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt),
+  );
 
+  if (printableRecords.length === 0) {
+    ElMessage.warning("已勾選的記錄中，沒有任何一筆標記為「需要打印收據」");
+    return;
+  }
+
+  if (printableRecords.length < 2) {
+    ElMessage.warning("需要打印收據的記錄不足兩筆，無法進行合併打印");
+    return;
+  }
+
+  // 標記導航來源
+  pageStateStore.setPageState("receiptPrint", {
+    from: "joinRecordStatesControl",
+  });
+
+  try {
     const isoStr = DateUtils.getCurrentISOTime();
-    const printData = JSON.stringify(res);
-    const printId = `print_receipt_${res.id}`;
-    
-    sessionStorage.setItem(printId, printData);
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printDatas = JSON.stringify(printableRecords);
+    const printId = `print_receipt_${ids}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
       path: "/merged-print",
-      query: { 
+      query: {
         print_id: printId,
-        iso_str: isoStr,
-       },
+        ids: ids,
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.MERGED,
+      },
     });
-  } catch (err) {
-    ElMessage.error(err.message || "建立合併打印失敗");
+  } catch (error) {
+    console.error("導航到合併打印頁面失敗:", error);
+    ElMessage.error("導航到合併打印頁面失敗");
   }
 };
 ```

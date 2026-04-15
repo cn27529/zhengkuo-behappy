@@ -53,7 +53,12 @@ const handleReceiptPrint = (item) => {
 
     router.push({
       path: "/receipt-print",
-      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+      query: { 
+        print_id: printId, 
+        print_data: printData, 
+        iso_str: isoStr, 
+        print_type: appConfig.PRINT_TYPE.SINGLE, 
+      },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);
@@ -180,10 +185,8 @@ const handleBatchReceiptPrint = () => {
     query: {
       print_id: printId,
       ids: ids,
-      iso_str: isoStr,
-      is_batch: "true", // 關鍵參數：標記為批量打印
-      is_merged: "false",
-      print_type: "batch_print",
+      iso_str: isoStr,      
+      print_type: appConfig.PRINT_TYPE.BATCH,
     },
   });
 };
@@ -1324,7 +1327,15 @@ const handlePostPrintCheck = () => {
 const reqPrintType = computed(() => route.query.print_type);
 // 檢查是否為批量打印
 const isBatchPrint = computed(() =>
-  String(route.query.print_type === appConfig.PRINT_TYPE.BATCH),
+  String(reqPrintType.value === appConfig.PRINT_TYPE.BATCH)
+);
+// 是否為合併打印
+const isMergedPrint = computed(() =>
+  String(reqPrintType.value === appConfig.PRINT_TYPE.MERGED)
+);
+
+const isSinglePrint = computed(() =>
+  String(reqPrintType.value === appConfig.PRINT_TYPE.SINGLE)
 );
 ```
 

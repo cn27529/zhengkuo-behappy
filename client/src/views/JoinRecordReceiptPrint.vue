@@ -259,11 +259,15 @@ const printedIndexes = ref(new Set()); // 追蹤已打印完成的索引
 const reqPrintType = computed(() => route.query.print_type);
 // 檢查是否為批量打印
 const isBatchPrint = computed(() =>
-  String(route.query.print_type === appConfig.PRINT_TYPE.BATCH),
+  String(reqPrintType.value === appConfig.PRINT_TYPE.BATCH),
 );
 // 是否為合併打印
 const isMergedPrint = computed(() =>
   String(reqPrintType.value === appConfig.PRINT_TYPE.MERGED),
+);
+
+const isSinglePrint = computed(() =>
+  String(reqPrintType.value === appConfig.PRINT_TYPE.SINGLE),
 );
 
 /**
@@ -555,16 +559,27 @@ const handleConfirmPostPrint = async () => {
 
         // 同步更新編號狀態為已打印
         if (receiptId.value) {
+          const state = "";
+          const voidReason = "";
+          if (isBatchPrint.value) state = "batch printed";
+          voidReason = "批量打印完成";
+          if (isSinglePrint.value) state = "printed";
+          voidReason = "打印完成";
+
           // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
           const stateResult = await receiptStore.stateReceiptNumber(
             receiptId.value,
-            "批量打印完成",
-            "batch printed",
+            voidReason,
+            state,
           ); // 同步更新編號狀態為已打印
           if (stateResult?.success) {
-            console.log("「批量打印」更新成功");
+            if (isBatchPrint.value) console.log("「批量打印」更新成功");
+            if (isSinglePrint.value) console.log("「單筆打印」更新成功");
           } else {
-            console.warn("「批量打印」更新失敗:", stateResult?.message);
+            if (isBatchPrint.value)
+              console.warn("「批量打印」更新失敗:", stateResult?.message);
+            if (isSinglePrint.value)
+              console.warn("「單筆打印」更新失敗:", stateResult?.message);
           }
         } else {
           console.warn("缺少 receiptId，無法更新");
@@ -590,7 +605,9 @@ const handleConfirmPostPrint = async () => {
 
       // 來源是參加頁面執行savedRecords同步
       updateSavedRecords(result);
-    } else {
+    }
+
+    if (isSinglePrint.value) {
       // 單筆打印
       currentRecord.value.receiptIssuedAt = DateUtils.getCurrentISOTime(); // 更新領取時間
       currentRecord.value.receiptIssuedBy = receiptStore.getUserName(); // 更新領取人
@@ -749,41 +766,44 @@ const handleClose = () => {
 onMounted(() => {
   setPrintTime();
 
-  if (isBatchPrint.value && reqPrintId.value) {
-    // 批量打印
-    isBatchPrint.value = true;
-    const storedData = sessionStorage.getItem(reqPrintId.value);
+  switch (reqPrintType.value) {
+    case appConfig.PRINT_TYPE.BATCH:
+      // 批量打印
+      isBatchPrint.value = true;
+      const storedData = sessionStorage.getItem(reqPrintId.value);
 
-    if (storedData) {
-      try {
-        manyRecord.value = JSON.parse(storedData);
-        if (manyRecord.value.length > 0) {
-          currentIndex.value = 0;
-          currentRecord.value = manyRecord.value[0];
-          handleTemplateChange();
-        } else {
-          ElMessage.error("批量數據為空");
+      if (storedData) {
+        try {
+          manyRecord.value = JSON.parse(storedData);
+          if (manyRecord.value.length > 0) {
+            currentIndex.value = 0;
+            currentRecord.value = manyRecord.value[0];
+            handleTemplateChange();
+          } else {
+            ElMessage.error("批量數據為空");
+            router.back();
+          }
+        } catch (e) {
+          ElMessage.error("批量數據解析失敗");
           router.back();
         }
-      } catch (e) {
-        ElMessage.error("批量數據解析失敗");
+      } else {
+        ElMessage.error("找不到批量打印數據");
         router.back();
       }
-    } else {
-      ElMessage.error("找不到批量打印數據");
-      router.back();
-    }
-  } else {
-    // 單筆打印
-    if (reqPrintRecord) {
-      try {
-        currentRecord.value = JSON.parse(reqPrintRecord);
-        handleTemplateChange();
-      } catch (e) {
-        ElMessage.error("數據解析失敗");
-        router.back();
+      break;
+    case appConfig.PRINT_TYPE.SINGLE:
+      // 單筆打印
+      if (reqPrintRecord) {
+        try {
+          currentRecord.value = JSON.parse(reqPrintRecord.value);
+          handleTemplateChange();
+        } catch (e) {
+          ElMessage.error("數據解析失敗");
+          router.back();
+        }
       }
-    }
+      break;
   }
 
   if (!currentRecord.value.id) router.back();

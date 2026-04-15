@@ -1280,7 +1280,7 @@ const formatDate = (dateString) => {
   });
 };
 
-// 合併打印（目前僅顯示提示，實際功能待開發）
+// 合併打印
 const handleMergedReceiptPrint = () => {
   if (savedRecords.value.length === 0) {
     ElMessage.warning("請先選擇要打印的記錄");
@@ -1314,10 +1314,8 @@ const handleMergedReceiptPrint = () => {
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,
-        is_batch: "false",
-        is_merged: "true",
-        print_type: "merged_print",
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.MERGED,
       },
     });
   } catch (error) {
@@ -1360,10 +1358,8 @@ const handleBatchReceiptPrint = () => {
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,
-        is_batch: "true",
-        is_merged: "false",
-        print_type: "batch_print",
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.BATCH,
       },
     });
   } catch (error) {
@@ -1395,7 +1391,7 @@ const handleReceiptPrint = (item) => {
         print_id: printId,
         print_data: printData,
         iso_str: isoStr,
-        print_type: "single_print",
+        print_type: appConfig.PRINT_TYPE.SINGLE,
       },
     });
   } catch (error) {

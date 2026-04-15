@@ -3,6 +3,7 @@ import { baseRustService } from "./baseRustService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { authService } from "../services/authService.js";
+import appConfig from "../config/appConfig.js";
 
 export class RustJoinRecordService {
   // ========== 建構函式 ==========

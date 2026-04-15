@@ -15,18 +15,11 @@ export const appConfig = {
     BATCH: "batch_print",
     MERGED: "merged_print",
   }),
-  // 輔助方法：驗證並取得有效的 print_type
-  getValidPrintType: (printTypeFromUrl) => {
-    const validValues = Object.values(appConfig.PRINT_TYPE);
-    if (validValues.includes(printTypeFromUrl)) {
-      return printTypeFromUrl;
-    }
-    return appConfig.PRINT_TYPE.SINGLE; // 預設單筆打印
-  },
-  // 輔助方法：檢查是否為有效打印類型
-  isValidPrintType: (printType) => {
-    return Object.values(appConfig.PRINT_TYPE).includes(printType);
-  },
+  //收據打印類型列舉，收據"stamp" 或 感謝狀"standard"
+  RECEIPT_TYPE: Object.freeze({
+    STAMP: "stamp",
+    STANDARD: "standard",    
+  }),
 };
 
 export default appConfig;

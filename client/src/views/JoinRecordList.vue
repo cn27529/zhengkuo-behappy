@@ -620,7 +620,7 @@ const handlePrint = (item) => {
   }
 };
 
-// 單筆收據打印
+// 單筆打印
 const handleReceiptPrint = (item) => {
   try {
     // 在導向打印頁面前進行標記。🔥 精準標記來源為 'joinRecordList'
@@ -634,7 +634,12 @@ const handleReceiptPrint = (item) => {
 
     router.push({
       path: "/receipt-print",
-      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+      query: {
+        print_id: printId,
+        print_data: printData,
+        iso_str: isoStr,
+        print_type: appConfig.PRINT_TYPE.SINGLE,
+      },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);
@@ -664,9 +669,7 @@ const handleBatchReceiptPrint = () => {
         print_id: printId,
         ids: ids,
         iso_str: isoStr,
-        is_batch: "true",
-        is_merged: "false",
-        print_type: "batch_print",
+        print_type: appConfig.PRINT_TYPE.BATCH,
       },
     });
   } catch (error) {

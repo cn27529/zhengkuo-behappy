@@ -375,7 +375,11 @@ const handleReceiptPrint = (record_id) => {
     sessionStorage.setItem(printId, printData);
     router.push({
       path: "/receipt-print",
-      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+      query: { 
+        print_id: printId, 
+        print_data: printData, 
+        iso_str: isoStr, 
+        print_type: appConfig.PRINT_TYPE.SINGLE },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);

@@ -256,11 +256,15 @@ const printedIndexes = ref(new Set()); // 追蹤已打印完成的索引
 const reqPrintType = computed(() => route.query.print_type);
 // 檢查是否為批量打印
 const isBatchPrint = computed(() =>
-  String(route.query.print_type === appConfig.PRINT_TYPE.BATCH),
+  String(reqPrintType.value === appConfig.PRINT_TYPE.BATCH)
 );
 // 是否為合併打印
 const isMergedPrint = computed(() =>
-  String(reqPrintType.value === appConfig.PRINT_TYPE.MERGED),
+  String(reqPrintType.value === appConfig.PRINT_TYPE.MERGED)
+);
+
+const isSinglePrint = computed(() =>
+  String(reqPrintType.value === appConfig.PRINT_TYPE.SINGLE)
 );
 
 /**
