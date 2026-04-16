@@ -8,6 +8,7 @@ import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
 import { PhoneMatch } from "../utils/phoneMatchUtils.js";
 import { DateUtils } from "../utils/dateUtils.js";
+import { receiptNumberService } from "../services/receiptNumberService.js";
 
 // 參加記錄查詢的 Pinia store，管理查詢狀態與操作。
 export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
@@ -603,6 +604,12 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     return searchResults.value.find((record) => record.id === id);
   };
 
+  const getByReceiptNumber = async (receiptNumber) => {
+    return searchResults.value.filter(
+      (record) => record.receiptNumber === receiptNumber,
+    );
+  };
+
   return {
     getJoinRecordById,
     // 狀態
@@ -621,6 +628,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     stateConfigs,
 
     // 方法
+    getByReceiptNumber,
     queryJoinRecordData,
     deleteParticipationRecord,
     clearSearch,

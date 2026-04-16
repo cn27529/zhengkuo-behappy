@@ -185,11 +185,25 @@
               <div class="contact-name">
                 <strong>{{ row.contact?.name }}</strong>
               </div>
+              <div>
+                {{ row.contact?.relationship || "-" }}
+                <span
+                  v-if="row.contact?.otherRelationship"
+                  class="other-relationship"
+                >
+                  ({{ row.contact.otherRelationship }})
+                </span>
+              </div>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="contact.relationship" label="關係" width="120">
+        <el-table-column
+          prop="contact.relationship"
+          label="關係"
+          width="120"
+          v-if="false"
+        >
           <template #default="{ row }">
             <div>
               {{ row.contact?.relationship || "-" }}
@@ -288,7 +302,7 @@
         </el-table-column>
 
         <!-- 佛字第 -->
-        <el-table-column label="佛字第 | 經手人" min-width="80" align="center">
+        <el-table-column label="佛字第" width="90" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
               <!-- 收據開立者經手人 -->
@@ -297,12 +311,7 @@
                   :content="`經手人：${row.receiptIssuedBy}`"
                   placement="top"
                 >
-                  <el-tag
-                    v-if="row.receiptNumber"
-                    type="danger"
-                    size="small"
-                    style="margin-top: 4px"
-                  >
+                  <el-tag v-if="row.receiptNumber" type="danger" size="small">
                     {{ row.receiptNumber || "" }}
                   </el-tag>
                 </el-tooltip>
@@ -621,17 +630,55 @@ const handlePrint = (item) => {
 };
 
 // 單筆打印
-const handleReceiptPrint = (item) => {
+const handleReceiptPrint = async (item) => {
   try {
     // 在導向打印頁面前進行標記。🔥 精準標記來源為 'joinRecordList'
-    pageStateStore.setPageState("receiptPrint", { from: "joinRecordList" });
+    pageStateStore.setPageState("receiptPrint", {
+      from: "joinRecordList",
+    });
 
-    const isoStr = DateUtils.getCurrentISOTime();
-    const printData = JSON.stringify(item);
-    const printId = `print_receipt_${item.id}`;
+    let isoStr = DateUtils.getCurrentISOTime();
+    let printData = JSON.stringify(item);
+    let printId = `print_receipt_${item.id}`;
+    let ids = null;
+
+    //已經打印過，確認是否為合併打印
+    if (item.receiptNumber) {
+      //ElMessage.info(item.receiptNumber);
+      const printableRecords = await queryStore.getByReceiptNumber(
+        item.receiptNumber,
+      );
+      if (printableRecords && printableRecords.length > 1) {
+        ElMessage.info("這是合併打印");
+
+        try {
+          ids = printableRecords.map((r) => r.id).join(",");
+          printData = JSON.stringify(printableRecords);
+          printId = `print_receipt_${ids}`;
+          // 存儲多筆資料
+          sessionStorage.setItem(printId, printData);
+
+          router.push({
+            path: "/merged-print",
+            query: {
+              print_id: printId,
+              ids: ids,
+              iso_str: isoStr,
+              print_type: appConfig.PRINT_TYPE.MERGED,
+            },
+          });
+
+          return;
+        } catch (error) {
+          console.error("導航到批量收據頁面失敗:", error);
+          ElMessage.error("導航到批量收據頁面失敗");
+        }
+      }
+    } else {
+      ElMessage.info("還沒打印過");
+    }
 
     sessionStorage.setItem(printId, printData);
-
     router.push({
       path: "/receipt-print",
       query: {

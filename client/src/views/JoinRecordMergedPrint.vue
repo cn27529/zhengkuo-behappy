@@ -256,15 +256,15 @@ const printedIndexes = ref(new Set()); // 追蹤已打印完成的索引
 const reqPrintType = computed(() => route.query.print_type);
 // 檢查是否為批量打印
 const isBatchPrint = computed(() =>
-  String(reqPrintType.value === appConfig.PRINT_TYPE.BATCH)
+  String(reqPrintType.value === appConfig.PRINT_TYPE.BATCH),
 );
 // 是否為合併打印
 const isMergedPrint = computed(() =>
-  String(reqPrintType.value === appConfig.PRINT_TYPE.MERGED)
+  String(reqPrintType.value === appConfig.PRINT_TYPE.MERGED),
 );
 
 const isSinglePrint = computed(() =>
-  String(reqPrintType.value === appConfig.PRINT_TYPE.SINGLE)
+  String(reqPrintType.value === appConfig.PRINT_TYPE.SINGLE),
 );
 
 /**
@@ -479,6 +479,9 @@ const handleMergedPrintWithHtmlToImage = async () => {
     } finally {
       fetchLoading.close();
     }
+  } else {
+    //已經打印過
+    console.log("已經打印過，當前打印ID", receiptId.value);
   }
 
   // ✅ 2. 圖像擷取與打印流程
@@ -781,6 +784,8 @@ onMounted(() => {
         // currentRecord.value = manyRecord.value[0];
         // 合併打印內容實現
         currentRecord.value = buildMergedRecordContext(manyRecord.value);
+        receiptId.value = currentRecord.value.receiptId; //已經打印過，指定當前的打印ID
+        console.log("已經打印過，當前打印ID", receiptId.value);
 
         handleTemplateChange();
       } else {

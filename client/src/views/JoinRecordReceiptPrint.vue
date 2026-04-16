@@ -458,6 +458,9 @@ const handlePrintWithHtmlToImage = async () => {
     } finally {
       fetchLoading.close();
     }
+  } else {
+    //已經打印過
+    console.log("已經打印過，當前打印ID", receiptId.value);
   }
 
   // ✅ 2. 圖像擷取與打印流程
@@ -645,6 +648,7 @@ const handleConfirmPostPrint = async () => {
         currentRecord.value.receiptIssuedAt = ""; // 重置領取時間
         currentRecord.value.receiptIssuedBy = ""; // 重置領取人
         currentRecord.value.needReceipt = "1";
+        currentRecord.value.receiptId = receiptId.value; // 打印ID
         const result = await printStore.updateReceiptPrintStatus(
           currentRecord.value,
         );
@@ -762,6 +766,8 @@ onMounted(() => {
         if (batchRecords.value.length > 0) {
           currentIndex.value = 0;
           currentRecord.value = batchRecords.value[0];
+          receiptId.value = currentRecord.value.receiptId; //已經打印過，指定當前的打印ID
+          console.log("已經打印過，當前打印ID", receiptId.value);
           handleTemplateChange();
         } else {
           ElMessage.error("批量數據為空");
@@ -776,12 +782,13 @@ onMounted(() => {
       router.back();
     }
   } else {
-    alert(isBatch.value);
+    //alert(isBatch.value);
     // 單筆打印
     const printData = route.query.print_data;
     if (printData) {
       try {
         currentRecord.value = JSON.parse(printData);
+        receiptId.value = currentRecord.value.receiptId; //已經打印過，指定當前的打印ID
         handleTemplateChange();
       } catch (e) {
         ElMessage.error("數據解析失敗");

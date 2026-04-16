@@ -194,6 +194,7 @@
 
         <!-- 記錄ID -->
         <el-table-column
+          v-if="false"
           prop="id"
           label="記錄ID"
           width="100"
@@ -205,7 +206,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="需要打印" width="100" align="center">
+        <el-table-column label="需要打印" width="90" align="center">
           <template #default="{ row }">
             <el-switch
               v-model="row.needReceipt"
@@ -225,11 +226,14 @@
               <div class="contact-name">
                 <strong>{{ row.contact?.name || "-" }}</strong>
               </div>
-              <div
-                class="contact-phone"
-                v-if="row.contact?.mobile || row.contact?.phone"
-              >
-                {{ row.contact?.mobile || row.contact?.phone }}
+              <div>
+                {{ row.contact?.relationship || "-" }}
+                <span
+                  v-if="row.contact?.otherRelationship"
+                  class="other-relationship"
+                >
+                  ({{ row.contact.otherRelationship }})
+                </span>
               </div>
             </div>
           </template>
@@ -294,22 +298,20 @@
         </el-table-column>
 
         <!-- 佛字第 -->
-        <el-table-column
-          label="佛字第"
-          min-width="70"
-          align="center"
-          v-if="false"
-        >
+        <el-table-column label="佛字第" width="90" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
-              <el-tag
-                v-if="row.receiptNumber"
-                type="danger"
-                size="mini"
-                style="margin-top: 4px"
-              >
-                {{ row.receiptNumber || "" }}
-              </el-tag>
+              <!-- 收據開立者經手人 -->
+              <span class="receipt-by" v-if="row.receiptIssuedBy">
+                <el-tooltip
+                  :content="`經手人：${row.receiptIssuedBy}`"
+                  placement="top"
+                >
+                  <el-tag v-if="row.receiptNumber" type="danger" size="small">
+                    {{ row.receiptNumber || "" }}
+                  </el-tag>
+                </el-tooltip>
+              </span>
             </div>
           </template>
         </el-table-column>
@@ -474,7 +476,7 @@ import { useJoinRecordQueryStore } from "../stores/joinRecordQueryStore.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { BoolUtils } from "../utils/boolUtils.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
-import appConfig from "../config/appConfig.js"
+import appConfig from "../config/appConfig.js";
 
 const queryStore = useJoinRecordQueryStore();
 const pageStateStore = usePageStateStore();
@@ -752,7 +754,7 @@ const handleBatchReceiptPrint = () => {
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,        
+        iso_str: isoStr,
         print_type: appConfig.PRINT_TYPE.BATCH,
       },
     });
@@ -803,7 +805,7 @@ const handleMergedReceiptPrint = () => {
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,        
+        iso_str: isoStr,
         print_type: appConfig.PRINT_TYPE.MERGED,
       },
     });
