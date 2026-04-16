@@ -106,8 +106,8 @@
     "id": 89,
     "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-04-02 09:18:23",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-04-14 12:04:28",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-04-16 14:16:24",
     "registrationId": 115,
     "activityId": -1,
     "state": "confirmed",
@@ -303,15 +303,15 @@
     "paymentNotes": "",
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T09:18:22.941Z",
-    "updatedAt": "2026-04-14T12:04:28.946508+00:00",
+    "updatedAt": "2026-04-16T13:37:01.121Z",
     "receiptId": -1
   },
   {
     "id": 86,
     "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-04-02 03:15:46",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-04-14 12:04:28",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-04-16 14:16:24",
     "registrationId": 118,
     "activityId": -1,
     "state": "confirmed",
@@ -457,15 +457,15 @@
     "paymentNotes": "",
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T03:15:46.115Z",
-    "updatedAt": "2026-04-14T12:04:28.946508+00:00",
+    "updatedAt": "2026-04-16T14:09:50.766862+00:00",
     "receiptId": -1
   },
   {
     "id": 85,
     "user_created": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
     "date_created": "2026-04-02 03:15:32",
-    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-04-14 12:04:28",
+    "user_updated": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_updated": "2026-04-16 14:16:24",
     "registrationId": 119,
     "activityId": -1,
     "state": "confirmed",
@@ -689,7 +689,7 @@
     "paymentNotes": "",
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T03:15:31.696Z",
-    "updatedAt": "2026-04-14T12:04:28.946508+00:00",
+    "updatedAt": "2026-04-16T14:09:50.766862+00:00",
     "receiptId": -1
   },
   {
@@ -4205,7 +4205,7 @@
             "isHouseholdHead": true,
             "name": "孫雅玲",
             "notes": "",
-            "zodiac": "���"
+            "zodiac": "猴"
           },
           {
             "id": 2,
