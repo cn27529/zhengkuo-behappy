@@ -626,53 +626,61 @@ const handleConfirmPostPrint = async () => {
     if (error === "cancel") {
       console.log("使用者取消打印");
 
-      //🔥 重要：在使用者取消打印後，仍然需要將該筆記錄的 receiptIssuedBy, receiptIssuedAt, receiptIssued 和 receiptNumber 重置為 null，保持在未打印狀態
-      //  這樣做的原因是：即使用戶取消了打印，但他之前已經領取了正式編號，為了保持數據的一致性和準確性，我們需要將該筆記錄的狀態重置回未打印，讓它可以再次被打印並領取新的編號。
-      //  注意：這裡的重置動作不會直接影響到後端的數據，除非 printStore.updateReceiptPrintStatus 這個方法內部有實現對 receiptIssued 和 receiptNumber 的更新邏輯。確保該方法能夠正確處理這些字段的重置。
-      //  這裡的重置動作是為了確保前端的狀態能夠反映出「取消打印」的結果，讓使用者在下一次嘗試打印時能夠重新領取編號並進行打印。
-      //  如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
-      //  已經領取了正式編號會保留在編號系統做為證據。
+      if (serviceAdapter.getIsMock()) {
+        console.warn("⚠️ 當前模式不為 Directus，將使用 Mock 數據");
+        handleTemplateChange(); // 觸發標題更新，確保列印存檔時的檔名同步
+        // 🔥 重要：等待 Vue 完成 DOM 更新，確保擷取到的 HTML 內含新編號
+        await nextTick();
+        await new Promise((resolve) => setTimeout(resolve, 300)); // 給予字體渲染緩衝
+      } else {
+        //🔥 重要：在使用者取消打印後，仍然需要將該筆記錄的 receiptIssuedBy, receiptIssuedAt, receiptIssued 和 receiptNumber 重置為 null，保持在未打印狀態
+        //  這樣做的原因是：即使用戶取消了打印，但他之前已經領取了正式編號，為了保持數據的一致性和準確性，我們需要將該筆記錄的狀態重置回未打印，讓它可以再次被打印並領取新的編號。
+        //  注意：這裡的重置動作不會直接影響到後端的數據，除非 printStore.updateReceiptPrintStatus 這個方法內部有實現對 receiptIssued 和 receiptNumber 的更新邏輯。確保該方法能夠正確處理這些字段的重置。
+        //  這裡的重置動作是為了確保前端的狀態能夠反映出「取消打印」的結果，讓使用者在下一次嘗試打印時能夠重新領取編號並進行打印。
+        //  如果不進行這個重置，則該筆記錄可能會處於一個矛盾的狀態：它已經領取了正式編號，但實際上並沒有完成打印，這會導致數據的不一致和混亂。
+        //  已經領取了正式編號會保留在編號系統做為證據。
 
-      currentRecord.value.receiptIssued = ""; // 重置模版狀態，保持在未打印狀態
-      currentRecord.value.receiptNumber = ""; // 重置編號，保持在未打印狀態
-      currentRecord.value.receiptIssuedAt = ""; // 重置領取時間
-      currentRecord.value.receiptIssuedBy = ""; // 重置領取人
-      currentRecord.value.needReceipt = "1";
-      const result = await printStore.updateReceiptPrintStatus(
-        currentRecord.value,
-      );
-      if (result?.success) {
+        currentRecord.value.receiptIssued = ""; // 重置模版狀態，保持在未打印狀態
+        currentRecord.value.receiptNumber = ""; // 重置編號，保持在未打印狀態
+        currentRecord.value.receiptIssuedAt = ""; // 重置領取時間
+        currentRecord.value.receiptIssuedBy = ""; // 重置領取人
+        currentRecord.value.needReceipt = "1";
+        const result = await printStore.updateReceiptPrintStatus(
+          currentRecord.value,
+        );
+        if (result?.success) {
+          ElMessage({
+            type: "info",
+            message: result?.message || "已取消打印狀態更新，記錄維持原樣。",
+          });
+        } else {
+          ElMessage({
+            type: "warning",
+            message: result?.message || "狀態更新失敗，但已取消打印。",
+          });
+        }
+
+        if (receiptId.value) {
+          // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
+          const stateResult = await receiptStore.stateReceiptNumber(
+            receiptId.value,
+            "取消打印",
+            "unprinted",
+          ); // 同步更新編號狀態為未打印
+          if (stateResult?.success) {
+            console.log("編號狀態「取消打印」更新成功");
+          } else {
+            console.warn("編號狀態「取消打印」更新失敗:", stateResult?.message);
+          }
+        } else {
+          console.warn("缺少 receiptNumberId，無法更新編號狀態");
+        }
+
         ElMessage({
           type: "info",
-          message: result?.message || "已取消打印狀態更新，記錄維持原樣。",
-        });
-      } else {
-        ElMessage({
-          type: "warning",
-          message: result?.message || "狀態更新失敗，但已取消打印。",
+          message: "已取消狀態更新，記錄維持原樣。",
         });
       }
-
-      if (receiptId.value) {
-        // 🔥 重要：將 stateReceiptNumber 的調用放在這裡，確保只有在確認打印完成後才更新編號狀態
-        const stateResult = await receiptStore.stateReceiptNumber(
-          receiptId.value,
-          "取消打印",
-          "unprinted",
-        ); // 同步更新編號狀態為未打印
-        if (stateResult?.success) {
-          console.log("編號狀態「取消打印」更新成功");
-        } else {
-          console.warn("編號狀態「取消打印」更新失敗:", stateResult?.message);
-        }
-      } else {
-        console.warn("缺少 receiptNumberId，無法更新編號狀態");
-      }
-
-      ElMessage({
-        type: "info",
-        message: "已取消狀態更新，記錄維持原樣。",
-      });
 
       // 可以在這裡加入額外邏輯，例如：
       // 1. 如果是批量打印，是否需要停留在當前頁面不跳轉？（目前邏輯本來就不會跳轉）
