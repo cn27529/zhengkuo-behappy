@@ -795,7 +795,7 @@
           <div class="results-header">
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
             <!-- 合併打印 -->
-            <p class="search-hint" v-if="false">
+            <p class="search-hint">
               <el-button
                 v-if="savedRecords.length > 1"
                 type="success"
