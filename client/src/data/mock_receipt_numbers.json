@@ -1,5 +1,19 @@
 [
   {
+    "id": 140,
+    "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
+    "date_created": "2026-04-18 14:26:23",
+    "receiptNumber": "26040028",
+    "receiptType": "stamp",
+    "yearMonth": "2604",
+    "serialNumber": 28,
+    "recordId": -1,
+    "state": "merged printed",
+    "voidReason": "合併打印完成",
+    "createdAt": "2026-04-18T14:26:23.334932+00:00",
+    "updatedAt": "2026-04-18T14:26:46.716Z"
+  },
+  {
     "id": 139,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
     "date_created": "2026-04-16 14:10:51",

@@ -293,6 +293,10 @@
     "finalAmount": 4300,
     "paidAmount": 0,
     "needReceipt": "1",
+    "receiptNumber": "26040028",
+    "receiptIssued": "stamp",
+    "receiptIssuedAt": "2026-04-18T14:26:23.334932+00:00",
+    "receiptIssuedBy": "後台管理員",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -304,7 +308,7 @@
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T09:18:22.941Z",
     "updatedAt": "2026-04-16T13:37:01.121Z",
-    "receiptId": -1
+    "receiptId": 140
   },
   {
     "id": 86,
@@ -447,6 +451,10 @@
     "finalAmount": 2600,
     "paidAmount": 0,
     "needReceipt": "1",
+    "receiptNumber": "26040028",
+    "receiptIssued": "stamp",
+    "receiptIssuedAt": "2026-04-18T14:26:23.334932+00:00",
+    "receiptIssuedBy": "後台管理員",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -458,7 +466,7 @@
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T03:15:46.115Z",
     "updatedAt": "2026-04-16T14:09:50.766862+00:00",
-    "receiptId": -1
+    "receiptId": 140
   },
   {
     "id": 85,
@@ -679,6 +687,10 @@
     "finalAmount": 5400,
     "paidAmount": 0,
     "needReceipt": "1",
+    "receiptNumber": "26040028",
+    "receiptIssued": "stamp",
+    "receiptIssuedAt": "2026-04-18T14:26:23.334932+00:00",
+    "receiptIssuedBy": "後台管理員",
     "accountingState": "pending",
     "accountingDate": "",
     "accountingBy": "",
@@ -690,7 +702,7 @@
     "notes": "吉野合併收據",
     "createdAt": "2026-04-02T03:15:31.696Z",
     "updatedAt": "2026-04-16T14:09:50.766862+00:00",
-    "receiptId": -1
+    "receiptId": 140
   },
   {
     "id": 84,
