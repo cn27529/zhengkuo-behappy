@@ -28,6 +28,7 @@ CREATE TABLE "participationRecordDB" (
     `notes` varchar(255) null,
     `createdAt` varchar(255) null,
     `updatedAt` varchar(255) null,
+    `receiptId` integer null default '-1', # 打印ID，receiptNumberDB.id
     CONSTRAINT `participationrecorddb_user_created_foreign` FOREIGN KEY (`user_created`) REFERENCES `directus_users` (`id`),
     CONSTRAINT `participationrecorddb_user_updated_foreign` FOREIGN KEY (`user_updated`) REFERENCES `directus_users` (`id`)
   )
