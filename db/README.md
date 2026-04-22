@@ -14,3 +14,11 @@ sqlite3 your_database_new.db < dump.sql
 # 驗證
 
 sqlite3 your_database_new.db "PRAGMA encoding;"
+
+# 查看表有哪些欄位
+
+sqlite3 zk.db "PRAGMA table_info(joinRecordDB);"
+
+# 執行匯入
+
+sqlite3 zk.db < new_table_import.sql

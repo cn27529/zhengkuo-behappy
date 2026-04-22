@@ -113,6 +113,7 @@ pub struct MergedReceiptRequest {
 }
 
 /// 請求生成收據編號的 Payload
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GenerateReceiptRequest {
@@ -148,6 +149,7 @@ pub struct UpdateReceiptStatusRequest {
 }
 
 /// 查詢參數
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ReceiptNumberQuery {

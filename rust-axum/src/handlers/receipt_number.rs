@@ -411,7 +411,7 @@ pub async fn remove_merged_receipt_number(
         .unwrap_or_else(|| "remove merged".to_string()); 
 
     // 2. 更新 receiptNumbersDB：將該合併打印標記為作廢
-    let update_result = sqlx::query(
+    let _update_result = sqlx::query(
         r#"
         UPDATE receiptNumbersDB 
         SET state = ?, 

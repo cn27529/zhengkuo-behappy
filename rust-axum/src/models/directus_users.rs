@@ -2,6 +2,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct DirectusUser {
     pub id: String,
@@ -36,6 +37,7 @@ pub struct DirectusUser {
     pub text_direction: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DirectusUserResponse {
@@ -119,6 +121,7 @@ impl From<DirectusUser> for DirectusUserResponse {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct DirectusUserQuery {
     pub status: Option<String>,
