@@ -9,9 +9,9 @@ use sqlx::SqlitePool;
 // 導入共享的 API 響應結構
 use crate::models::api_response::{ApiResponse, Meta};
 
-use crate::models::participation_record::{
-    CreateParticipationRecordRequest, ParticipationRecord, ParticipationRecordResponse, 
-    ParticipationRecordQuery, UpdateParticipationRecordRequest,
+use crate::models::join_record::{
+    CreateJoinRecordRequest, JoinRecord, JoinRecordResponse, 
+    JoinRecordQuery, UpdateJoinRecordRequest,
 };
 
 const JOIN_RECORD_FULL_QUERY: &str = r#"
@@ -59,10 +59,10 @@ FROM joinRecordDB
 "#;
 
 /// 獲取所有參與記錄
-pub async fn get_all_participation_records(
-    Query(params): Query<ParticipationRecordQuery>,
+pub async fn get_all_join_records(
+    Query(params): Query<JoinRecordQuery>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<Vec<ParticipationRecordResponse>>>, (StatusCode, Json<ApiResponse<Vec<ParticipationRecordResponse>>>)> {
+) -> Result<Json<ApiResponse<Vec<JoinRecordResponse>>>, (StatusCode, Json<ApiResponse<Vec<JoinRecordResponse>>>)> {
     let mut query = format!("{} WHERE 1=1", JOIN_RECORD_FULL_QUERY);
     let mut count_query = String::from("SELECT COUNT(*) FROM joinRecordDB WHERE 1=1");
 
@@ -115,7 +115,7 @@ pub async fn get_all_participation_records(
     query.push_str(&format!(" LIMIT {} OFFSET {}", limit, offset));
 
     // 執行查詢
-    let records = sqlx::query_as::<_, ParticipationRecord>(&query)
+    let records = sqlx::query_as::<_, JoinRecord>(&query)
         .fetch_all(&pool)
         .await
         .map_err(|e| {
@@ -139,7 +139,7 @@ pub async fn get_all_participation_records(
         })?;
 
     // 轉換為響應格式
-    let responses: Vec<ParticipationRecordResponse> = records
+    let responses: Vec<JoinRecordResponse> = records
         .into_iter()
         .map(|record| record.into())
         .collect();
@@ -155,13 +155,13 @@ pub async fn get_all_participation_records(
 }
 
 /// 根據 registrationId 獲取參與記錄
-pub async fn get_participation_record_by_registration_id(
+pub async fn get_join_record_by_registration_id(
     Path(registration_id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<ParticipationRecordResponse>>, (StatusCode, Json<ApiResponse<ParticipationRecordResponse>>)> {
+) -> Result<Json<ApiResponse<JoinRecordResponse>>, (StatusCode, Json<ApiResponse<JoinRecordResponse>>)> {
     
     let query = format!("{} WHERE registrationId = ?", JOIN_RECORD_FULL_QUERY);
-    let record = sqlx::query_as::<_, ParticipationRecord>(&query)
+    let record = sqlx::query_as::<_, JoinRecord>(&query)
         .bind(registration_id)
         .fetch_optional(&pool)
         .await
@@ -185,13 +185,13 @@ pub async fn get_participation_record_by_registration_id(
 }
 
 /// 根據 activityId 獲取參與記錄
-pub async fn get_participation_record_by_activity_id(
+pub async fn get_join_record_by_activity_id(
     Path(activity_id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<Vec<ParticipationRecordResponse>>>, (StatusCode, Json<ApiResponse<Vec<ParticipationRecordResponse>>>)> {
+) -> Result<Json<ApiResponse<Vec<JoinRecordResponse>>>, (StatusCode, Json<ApiResponse<Vec<JoinRecordResponse>>>)> {
     
     let query = format!("{} WHERE activityId = ?", JOIN_RECORD_FULL_QUERY);
-    let records = sqlx::query_as::<_, ParticipationRecord>(&query)
+    let records = sqlx::query_as::<_, JoinRecord>(&query)
         .bind(activity_id)
         .fetch_all(&pool)
         .await
@@ -203,7 +203,7 @@ pub async fn get_participation_record_by_activity_id(
             )
         })?;
 
-    let responses: Vec<ParticipationRecordResponse> = records
+    let responses: Vec<JoinRecordResponse> = records
         .into_iter()
         .map(|record| record.into())
         .collect();
@@ -212,13 +212,13 @@ pub async fn get_participation_record_by_activity_id(
 }
 
 /// 根據 ID 獲取單個參與記錄
-pub async fn get_participation_record_by_id(
+pub async fn get_join_record_by_id(
     Path(id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
-) -> Result<Json<ApiResponse<ParticipationRecordResponse>>, (StatusCode, Json<ApiResponse<ParticipationRecordResponse>>)> {
+) -> Result<Json<ApiResponse<JoinRecordResponse>>, (StatusCode, Json<ApiResponse<JoinRecordResponse>>)> {
     
     let query = format!("{} WHERE id = ?", JOIN_RECORD_FULL_QUERY);
-    let record = sqlx::query_as::<_, ParticipationRecord>(&query)
+    let record = sqlx::query_as::<_, JoinRecord>(&query)
         .bind(id)
         .fetch_optional(&pool)
         .await
@@ -242,10 +242,10 @@ pub async fn get_participation_record_by_id(
 }
 
 /// 創建新參與記錄
-pub async fn create_participation_record(
+pub async fn create_join_record(
     Extension(pool): Extension<SqlitePool>,
-    Json(payload): Json<CreateParticipationRecordRequest>,
-) -> Result<Json<ApiResponse<ParticipationRecordResponse>>, (StatusCode, Json<ApiResponse<ParticipationRecordResponse>>)> {
+    Json(payload): Json<CreateJoinRecordRequest>,
+) -> Result<Json<ApiResponse<JoinRecordResponse>>, (StatusCode, Json<ApiResponse<JoinRecordResponse>>)> {
     // 生成當前時間戳
     let now = chrono::Utc::now().to_rfc3339();
 
@@ -306,7 +306,7 @@ pub async fn create_participation_record(
 
     // 返回創建的記錄
     let query = format!("{} WHERE id = ?", JOIN_RECORD_FULL_QUERY);
-    let record = sqlx::query_as::<_, ParticipationRecord>(&query)
+    let record = sqlx::query_as::<_, JoinRecord>(&query)
         .bind(id)
         .fetch_one(&pool)
         .await
@@ -325,11 +325,11 @@ pub async fn create_participation_record(
 }
 
 /// 更新參與記錄
-pub async fn update_participation_record(
+pub async fn update_join_record(
     Path(id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
-    Json(payload): Json<UpdateParticipationRecordRequest>,
-) -> Result<Json<ApiResponse<ParticipationRecordResponse>>, (StatusCode, Json<ApiResponse<ParticipationRecordResponse>>)> {
+    Json(payload): Json<UpdateJoinRecordRequest>,
+) -> Result<Json<ApiResponse<JoinRecordResponse>>, (StatusCode, Json<ApiResponse<JoinRecordResponse>>)> {
     // 檢查記錄是否存在
     let exists: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM joinRecordDB WHERE id = ?")
         .bind(id)
@@ -496,7 +496,7 @@ pub async fn update_participation_record(
 
     // 返回更新後的記錄
     let query = format!("{} WHERE id = ?", JOIN_RECORD_FULL_QUERY);
-    let record = sqlx::query_as::<_, ParticipationRecord>(&query)
+    let record = sqlx::query_as::<_, JoinRecord>(&query)
         .bind(id)
         .fetch_one(&pool)
         .await
@@ -515,7 +515,7 @@ pub async fn update_participation_record(
 }
 
 /// 刪除參與記錄
-pub async fn delete_participation_record(
+pub async fn delete_join_record(
     Path(id): Path<i64>,
     Extension(pool): Extension<SqlitePool>,
 ) -> Result<Json<ApiResponse<()>>, (StatusCode, Json<ApiResponse<()>>)> {

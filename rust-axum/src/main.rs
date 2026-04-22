@@ -148,6 +148,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let directus_users_routes = routes::directus_users::create_routes();
     let price_config_routes = routes::price_config::create_routes(); // ✅ 新增：價格配置路由 by 20260331
     let merged_receipts_routes = routes::merged_receipts::create_routes(); // ✅ 新增：合併打印路由 by 20260404
+    let join_record_routes = routes::join_record::create_routes(); // ✅ 新增：加入紀錄路由 by 20260422
 
     // ✅ 創建 SqliteProvider(DatabaseProvider 的實現)
     let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
@@ -171,6 +172,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(directus_users_routes)
         .merge(price_config_routes) // ✅ 新增：價格配置路由 by 20260331
         .merge(merged_receipts_routes) // ✅ 新增：合併打印路由 by 20260404
+        .merge(join_record_routes) // ✅ 新增：加入紀錄路由 by 20260422
         // Add the SQL viewer at /sql-viewer
         .merge(sql_viewer_router)
         .layer(Extension(state.clone()))
@@ -205,6 +207,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  GET    /api/directus-users         - DIRECTUS使用者");
     tracing::info!("  GET    /api/price-config           - 價格配置列表"); // ✅ 新增：價格配置端點 by 20260331
     tracing::info!("  GET    /api/merged-receipts        - 合併打印列表"); // ✅ 新增：合併打印端點 by 20260404
+    tracing::info!("  GET    /api/join-records           - 參與記錄列表"); // ✅ 新增：加入紀錄端點 by 20260422
     
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");
@@ -252,7 +255,8 @@ async fn root_handler() -> Json<Value> {
             "directus_users": "/api/directus-users",
             "price_configs": "/api/price-config",
             "db_test": "/db-test",
-            "sql_viewer": "/sql-viewer"
+            "sql_viewer": "/sql-viewer",
+            "join_records": "/api/join-records"
         },
         "architecture": {
             "auth_backend": "Directus (login, users, permissions)",
@@ -315,34 +319,6 @@ async fn db_test(Extension(pool): Extension<sqlx::SqlitePool>) -> Json<Value> {
 
 // Server Info 端點
 async fn server_info(Extension(state): Extension<Arc<AppState>>) -> Json<ServerInfo> {
-    // // 計算運行時間
-    // let uptime = chrono::Utc::now() - state.start_time;
-
-    // // 檢查數據庫連接 - 使用 db.rs 中的函數
-    // let db_connected = db::test_connection(&state.pool).await.is_ok();
-
-    // // 獲取數據庫路徑
-    // let database_url = std::env::var("DATABASE_URL")
-    //     .unwrap_or_else(|_| "未知".to_string())
-    //     .replace("sqlite:", "");
-
-    // let info = ServerInfo {
-    //     name: "Rust Axum Backend".to_string(),
-    //     version: state.version.clone(),
-    //     uptime_seconds: uptime.num_seconds(),
-    //     database_connected: db_connected,
-    //     database_type: "SQLite".to_string(),
-    //     database_path: database_url,
-    //     current_time: chrono::Utc::now().to_rfc3339(),
-    //     architecture: Architecture {
-    //         auth_backend: "Directus".to_string(),
-    //         data_backend: "Rust Axum".to_string(),
-    //         database: "Shared SQLite".to_string(),
-    //     },
-    // };
-
-    // Json(info)
-
 
     // 1. 計算運行時間
     let uptime = chrono::Utc::now() - state.start_time;
