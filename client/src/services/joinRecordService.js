@@ -370,7 +370,7 @@ export class JoinRecordService {
       console.log("Service 傳送資料:", payload);
       const createISOTime = DateUtils.getCurrentISOTime();
 
-      // 轉換為 participationRecordDB 格式
+      // 轉換為 joinRecordDB 格式
       const recordData = {
         registrationId: payload.registrationId || -1,
         activityId: payload.activityId || -1,

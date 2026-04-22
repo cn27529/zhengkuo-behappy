@@ -62,6 +62,6 @@ fi
 
 echo "-----------------------------------------------"
 echo "🎉 第一階段單筆測試完成！"
-echo "請檢查資料庫中的 receiptNumbersDB 與 participationRecordDB 是否同步。"
+echo "請檢查資料庫中的 receiptNumbersDB 與 joinRecordDB 是否同步。"
 echo "確認無誤後，即可進行第二階段：高併發流水號壓力測試。"
 echo "-----------------------------------------------"

@@ -167,7 +167,7 @@ pub async fn generate_receipt_number(
 
     // 6. 更新參加記錄表 (同步反饋)
     sqlx::query(
-        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptIssuedAt = ?, receiptIssuedBy = ?, receiptId = ? WHERE id = ?"
+        "UPDATE joinRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptIssuedAt = ?, receiptIssuedBy = ?, receiptId = ? WHERE id = ?"
     )
     .bind(&receipt_number)
     .bind(&payload.receipt_type)
@@ -310,7 +310,7 @@ pub async fn generate_merged_receipt_number(
     // 6. 更新參加記錄表 (同步反饋)，構建動態展開 IN (?, ?, ?)
     let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
     let sql = format!(
-        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptIssuedAt = ?, receiptIssuedBy = ?, receiptId = ? WHERE id IN ({})",
+        "UPDATE joinRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptIssuedAt = ?, receiptIssuedBy = ?, receiptId = ? WHERE id IN ({})",
         placeholders
     );
 
@@ -375,7 +375,7 @@ pub async fn generate_merged_receipt_number(
 /// 🔥 作廢合併打印（反操作）
 /// 1. receiptNumbersDB: 更新 state 為 'void'，voidReason 註記「作廢合併列印」
 /// 2. mergedReceiptsDB: 不異動，保留歷史記錄
-/// 3. participationRecordDB: 清空 receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy
+/// 3. joinRecordDB: 清空 receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy
 pub async fn remove_merged_receipt_number(
     Extension(pool): Extension<SqlitePool>,
     Json(payload): Json<MergedReceiptRequest>,
@@ -434,10 +434,10 @@ pub async fn remove_merged_receipt_number(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("更新收據記錄失敗: {}", e))))
     })?;
 
-    // 3. 更新 participationRecordDB：清空收據相關欄位
+    // 3. 更新 joinRecordDB：清空收據相關欄位
     // 構建動態 SQL 清空多筆記錄
     let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
-    let sql = format!("UPDATE participationRecordDB SET receiptNumber = NULL, receiptIssued = NULL, receiptIssuedAt = NULL, receiptIssuedBy = NULL, receiptId = -1, updatedAt = ?, date_updated = ?, user_updated = ? WHERE id IN ({})",
+    let sql = format!("UPDATE joinRecordDB SET receiptNumber = NULL, receiptIssued = NULL, receiptIssuedAt = NULL, receiptIssuedBy = NULL, receiptId = -1, updatedAt = ?, date_updated = ?, user_updated = ? WHERE id IN ({})",
         placeholders
     );
 
