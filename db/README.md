@@ -19,6 +19,10 @@ sqlite3 your_database_new.db "PRAGMA encoding;"
 
 sqlite3 zk.db "PRAGMA table_info(joinRecordDB);"
 
+# 匯出 old_table
+
+sqlite3 your_db.db ".dump old_table" > old_table_dump.sql
+
 # 執行匯入
 
 sqlite3 zk.db < new_table_import.sql
