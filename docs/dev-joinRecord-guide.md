@@ -137,7 +137,7 @@ const hasValidAncestors = (registration) => {
 **修改內容：**
 
 1. **Model 層：**
-   - 在 `ParticipationRecord` 結構體中添加 `contact` 欄位
+   - 在 `JoinRecord` 結構體中添加 `contact` 欄位
    - 在各個請求/響應結構體中添加 `contact` 欄位
    - 使用與 `items` 相同的 JSON 序列化處理
 
@@ -460,7 +460,7 @@ const { value: notes } = await ElMessageBox.prompt(
 - `./client/src/views/JoinRecord.vue` - 主要視圖組件
 - `./client/src/stores/joinRecordStore.js` - 狀態管理
 - `./client/src/services/joinRecordService.js` - 服務層
-- `./client/src/data/mock_participation_records.json` - 模擬資料
+- `./client/src/data/mock_join_records.json` - 模擬資料
 
 ### 配置檔案
 

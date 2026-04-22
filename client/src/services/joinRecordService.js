@@ -8,7 +8,7 @@ export class JoinRecordService {
   constructor() {
     this.serviceName = "JoinRecordService";
     this.base = baseService;
-    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsParticipationRecord}`;
+    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsJoinRecord}`;
     console.log(`JoinRecordService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
@@ -17,7 +17,7 @@ export class JoinRecordService {
   /**
    * 創建參加記錄
    */
-  async createParticipationRecord(recordData) {
+  async createJoinRecord(recordData) {
     const processedData = {
       ...recordData,
       createdAt: DateUtils.getCurrentISOTime(),
@@ -36,7 +36,7 @@ export class JoinRecordService {
     const startTime = Date.now();
     const logContext = {
       service: this.serviceName,
-      operation: "createParticipationRecord",
+      operation: "createJoinRecord",
       method: "POST",
       startTime: startTime,
       endpoint: this.endpoint,
@@ -60,14 +60,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 創建參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 獲取所有參加記錄
    */
-  async getAllParticipationRecords(params = {}) {
+  async getAllJoinRecords(params = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -85,7 +85,7 @@ export class JoinRecordService {
 
     const logContext = {
       //service: this.serviceName,
-      operation: "getAllParticipationRecords",
+      operation: "getAllJoinRecords",
       method: "GET",
       startTime: startTime,
       endpoint: apiUrl,
@@ -107,7 +107,7 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
@@ -115,7 +115,7 @@ export class JoinRecordService {
    * 根據 IDs 列表獲取參加記錄
    * @param {*} recordIds
    */
-  async getParticipationRecordByIds(recordIds) {
+  async getJoinRecordByIds(recordIds) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -132,8 +132,8 @@ export class JoinRecordService {
         message: `成功獲取參加記錄列表 (IDs: ${idsArray.join(",")})`,
       };
       idsArray.forEach((id) => {
-        const record = this.getParticipationRecordById(id, {
-          operation: "getParticipationRecordByIds - individual fetch",
+        const record = this.getJoinRecordById(id, {
+          operation: "getJoinRecordByIds - individual fetch",
           id,
           ...context,
         });
@@ -143,14 +143,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 根據 IDs 列表獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 根據 ID 獲取參加記錄
    */
-  async getParticipationRecordById(recordId) {
+  async getJoinRecordById(recordId) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -163,7 +163,7 @@ export class JoinRecordService {
     const apiUrl = `${this.endpoint}/${recordId}`;
     const logContext = {
       //service: this.serviceName,
-      operation: "getParticipationRecordById",
+      operation: "getJoinRecordById",
       method: "GET",
       startTime: startTime,
       endpoint: apiUrl,
@@ -185,14 +185,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 根據 registrationId 獲取參加記錄
    */
-  async getParticipationRecordsByRegistrationId(registrationId) {
+  async getJoinRecordsByRegistrationId(registrationId) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -210,7 +210,7 @@ export class JoinRecordService {
 
     const logContext = {
       //service: this.serviceName,
-      operation: "getParticipationRecordsByRegistrationId",
+      operation: "getJoinRecordsByRegistrationId",
       method: "GET",
       startTime: startTime,
       endpoint: apiUrl,
@@ -232,14 +232,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 更新參加記錄
    */
-  async updateParticipationRecord(recordId, recordData) {
+  async updateJoinRecord(recordId, recordData) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return {
@@ -256,7 +256,7 @@ export class JoinRecordService {
     const startTime = Date.now();
     const logContext = {
       service: this.serviceName,
-      operation: "updateParticipationRecord",
+      operation: "updateJoinRecord",
       method: "PATCH",
       startTime: startTime,
       endpoint: `${this.endpoint}/${recordId}`,
@@ -281,14 +281,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error(`❌ 更新參加記錄失敗 (ID: ${recordId})`, error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 刪除參加記錄
    */
-  async deleteParticipationRecord(recordId) {
+  async deleteJoinRecord(recordId) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return {
@@ -297,7 +297,7 @@ export class JoinRecordService {
       };
     }
 
-    const currentRecord = await this.getParticipationRecordById(recordId);
+    const currentRecord = await this.getJoinRecordById(recordId);
     if (!currentRecord) {
       return {
         success: false,
@@ -309,7 +309,7 @@ export class JoinRecordService {
     const startTime = Date.now();
     const logContext = {
       service: this.serviceName,
-      operation: "deleteParticipationRecord",
+      operation: "deleteJoinRecord",
       method: "DELETE",
       startTime: startTime,
       endpoint: `${this.endpoint}/${recordId}`,
@@ -333,7 +333,7 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error(`❌ 刪除參加記錄失敗 (ID: ${recordId})`, error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
@@ -359,7 +359,7 @@ export class JoinRecordService {
       receiptId: record.receiptId, // 打印ID
     };
 
-    return await this.updateParticipationRecord(record.id, updateData);
+    return await this.updateJoinRecord(record.id, updateData);
   }
 
   /**
@@ -400,7 +400,7 @@ export class JoinRecordService {
 
       console.log("準備儲存的記錄資料:", recordData);
 
-      const result = await this.createParticipationRecord(recordData);
+      const result = await this.createJoinRecord(recordData);
       return result;
     } catch (error) {
       console.error("儲存失敗", error);
@@ -478,7 +478,7 @@ export class JoinRecordService {
   }
 
   // ========== 錯誤處理 ==========
-  handleParticipationRecordError(error) {
+  handleJoinRecordError(error) {
     return this.base.handleDirectusError(error);
   }
 

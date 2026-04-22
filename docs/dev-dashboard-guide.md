@@ -133,10 +133,10 @@ const handleReceiptPrint = (record_id) => {
 
     router.push({
       path: "/receipt-print",
-      query: { 
-        print_id: printId, 
-        print_data: printData, 
-        iso_str: isoStr, 
+      query: {
+        print_id: printId,
+        print_data: printData,
+        iso_str: isoStr,
         print_type: appConfig.PRINT_TYPE.SINGLE,
       },
     });
@@ -457,7 +457,7 @@ const initialize = async () => {
   } else {
     const [regResult, joinResult, actResult] = await Promise.all([
       serviceAdapter.getAllRegistrations(),
-      serviceAdapter.getAllParticipationRecords(),
+      serviceAdapter.getAllJoinRecords(),
       serviceAdapter.getAllActivities(),
     ]);
   }

@@ -84,7 +84,7 @@ export class JoinRecordService {
   constructor() {
     this.serviceName = "JoinRecordService";
     this.base = baseService;
-    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsParticipationRecord}`;
+    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsJoinRecord}`;
   }
 }
 ```

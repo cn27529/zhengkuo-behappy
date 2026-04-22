@@ -802,7 +802,7 @@ const handleDelete = async (item) => {
       },
     );
 
-    const result = await queryStore.deleteParticipationRecord(item.id);
+    const result = await queryStore.deleteJoinRecord(item.id);
 
     if (result?.success) {
       searchResults.value = searchResults.value.filter(

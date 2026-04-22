@@ -33,6 +33,7 @@ export class BaseService {
       itemsReceiptNumber: "/items/receiptNumbersDB", // 新增 receiptNumbersDB 端點
       itemsPriceConfig: "/items/priceConfigDB", // 新增 priceConfigDB 端點
       itemMergedReceipts: "/items/mergedReceiptsDB", // 新增 mergedReceiptsDB 端點
+      itemsJoinRecord: "/items/joinRecordDB", // 新增 joinRecordDB 端點
     };
 
     // 模擬 API 延遲（毫秒）

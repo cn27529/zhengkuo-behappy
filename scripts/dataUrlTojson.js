@@ -16,7 +16,7 @@ const dataJsonObj = [
   },
   {
     dataUrl: "http://localhost:3000/api/participation-records?fields=*",
-    fileName: "mock_participation_records.json",
+    fileName: "mock_join_records.json",
   },
   {
     dataUrl: "http://localhost:3000/api/registrations?fields=*",
@@ -37,6 +37,10 @@ const dataJsonObj = [
   {
     dataUrl: "http://localhost:3000/api/merged-receipts?fields=*",
     fileName: "mock_mergedReceipts.json",
+  },
+  {
+    dataUrl: "http://localhost:3000/api/join-records?fields=*",
+    fileName: "mock_join_records.json",
   },
 ];
 

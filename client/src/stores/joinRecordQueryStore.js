@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { serviceAdapter } from "../adapters/serviceAdapter.js";
 import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
-import mockParticipationRecords from "../data/mock_participation_records.json";
+import mockJoinRecordData from "../data/mock_join_records.json";
 import { useConfigStore } from "./configStore.js";
 import { useAuthStore } from "./authStore.js";
 import { PhoneMatch } from "../utils/phoneMatchUtils.js";
@@ -60,10 +60,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
       if (serviceAdapter.getIsMock()) {
         console.warn("⚠️ 當前模式不是 directus，使用 Mock 數據");
 
-        if (
-          !mockParticipationRecords ||
-          mockParticipationRecords.length === 0
-        ) {
+        if (!mockJoinRecordData || mockJoinRecordData.length === 0) {
           console.error("Mock 數據為空或未找到");
           return {
             success: false,
@@ -72,7 +69,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
           };
         }
 
-        let filteredData = getFilteredData(queryData, mockParticipationRecords);
+        let filteredData = getFilteredData(queryData, mockJoinRecordData);
 
         console.log("🔍 Mock 模式最終 filteredData:", filteredData);
         console.log("🔍 filteredData 類型:", typeof filteredData);
@@ -101,7 +98,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
       };
 
       // 使用 serviceAdapter 的參加記錄查詢方法
-      const result = await serviceAdapter.getAllParticipationRecords(params);
+      const result = await serviceAdapter.getAllJoinRecords(params);
 
       if (result.success) {
         console.log("後端查詢成功:", result.data?.length || 0, "筆資料");
@@ -148,14 +145,13 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
   };
 
   // 刪除參加記錄
-  const deleteParticipationRecord = async (recordId) => {
+  const deleteJoinRecord = async (recordId) => {
     if (!recordId) {
       return { success: false, message: "缺少記錄 ID" };
     }
 
     try {
-      const result =
-        await joinRecordService.deleteParticipationRecord(recordId);
+      const result = await joinRecordService.deleteJoinRecord(recordId);
 
       if (result?.success) {
         searchResults.value = searchResults.value.filter(
@@ -512,7 +508,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
       }
 
       // TODO: 實際 API 調用
-      const result = await joinRecordService.updateParticipationRecord(
+      const result = await joinRecordService.updateJoinRecord(
         recordId,
         updates,
       );
@@ -566,9 +562,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
 
       // TODO: 實際 API 批量調用
       const results = await Promise.all(
-        recordIds.map((id) =>
-          joinRecordService.updateParticipationRecord(id, updates),
-        ),
+        recordIds.map((id) => joinRecordService.updateJoinRecord(id, updates)),
       );
 
       const successCount = results.filter((r) => r.success).length;
@@ -630,7 +624,7 @@ export const useJoinRecordQueryStore = defineStore("joinRecordQuery", () => {
     // 方法
     getByReceiptNumber,
     queryJoinRecordData,
-    deleteParticipationRecord,
+    deleteJoinRecord,
     clearSearch,
     setSearchQuery,
     setStateFilter,

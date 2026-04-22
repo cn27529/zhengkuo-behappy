@@ -174,8 +174,7 @@ const activities1Year = computed(() => {
 // 依參加記錄更新人次
 const submitByParticipantRecordsUpdate = async () => {
   // 根據活動ID查詢所有參加記錄
-  const result =
-    await serviceAdapter.getParticipationRecordsByActivityId(activityId);
+  const result = await serviceAdapter.getJoinRecordsByActivityId(activityId);
 
   let totalParticipants = 0;
 

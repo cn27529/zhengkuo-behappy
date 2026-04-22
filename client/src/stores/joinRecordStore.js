@@ -9,7 +9,7 @@ import { authService } from "../services/authService.js";
 import { priceConfigService } from "../services/priceConfigService.js";
 import { useQueryStore } from "./registrationQueryStore.js";
 import mockRegistrationData from "../data/mock_registrations.json";
-import mockJoinRecordData from "../data/mock_participation_records.json";
+import mockJoinRecordData from "../data/mock_join_records.json";
 
 /**
  * 參加記錄的 Pinia store，管理參加記錄的狀態與操作。
@@ -398,7 +398,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
       // TODO: 未來串接 API
       console.log("📄 從服務器獲取參加記錄資料...");
-      const result = await serviceAdapter.getAllParticipationRecords(params);
+      const result = await serviceAdapter.getAllJoinRecords(params);
       if (result.success) {
         allJoinRecords.value = result.data || [];
         console.log(`✅ 成功獲取 ${allJoinRecords.value.length} 筆參加記錄`);
@@ -549,7 +549,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         needReceipt: needReceipt, // 是否需要收據
         createdUser: getCurrentUser(),
         createdAt: createISOTime,
-        user_created: getCurrentUser(),        
+        user_created: getCurrentUser(),
       };
       console.log("submitRecord:", payload);
       if (serviceAdapter.getIsMock()) {

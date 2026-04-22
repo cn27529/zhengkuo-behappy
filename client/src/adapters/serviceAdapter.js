@@ -316,19 +316,19 @@ class ServiceAdapter {
 
     // JoinRecord 方法
     const joinRecordMethods = [
-      "createParticipationRecord",
-      "getAllParticipationRecords",
-      "getParticipationRecordById",
-      "getParticipationRecordsByRegistrationId",
-      "getParticipationRecordsByActivityId",
-      "updateParticipationRecord",
+      "createJoinRecord",
+      "getAllJoinRecords",
+      "getJoinRecordById",
+      "getJoinRecordsByRegistrationId",
+      "getJoinRecordsByActivityId",
+      "updateJoinRecord",
       "updateByReceiptPrint",
-      "deleteParticipationRecord",
+      "deleteJoinRecord",
       "saveRecord",
       "getActivityConfig",
       "getLampTypeLabel",
       "generateMockData",
-      "handleParticipationRecordError",
+      "handleJoinRecordError",
     ];
 
     joinRecordMethods.forEach((method) => {
@@ -578,19 +578,19 @@ class ServiceAdapter {
     };
 
     const methods = [
-      "createParticipationRecord",
-      "getAllParticipationRecords",
-      "getParticipationRecordById",
-      "getParticipationRecordsByRegistrationId",
-      "getParticipationRecordsByActivityId",
-      "updateParticipationRecord",
+      "createJoinRecord",
+      "getAllJoinRecords",
+      "getJoinRecordById",
+      "getJoinRecordsByRegistrationId",
+      "getJoinRecordsByActivityId",
+      "updateJoinRecord",
       "updateByReceiptPrint",
-      "deleteParticipationRecord",
+      "deleteJoinRecord",
       "saveRecord",
       "getActivityConfig",
       "getLampTypeLabel",
       "generateMockData",
-      "handleParticipationRecordError",
+      "handleJoinRecordError",
     ];
 
     methods.forEach((method) => {

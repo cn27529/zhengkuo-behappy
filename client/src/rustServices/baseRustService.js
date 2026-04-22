@@ -29,6 +29,7 @@ export class BaseRustService {
       receiptNumber: "/api/receipt-numbers", //收據與感謝狀取號
       priceConfig: "/api/price-configs", // 價格配置 by 20260331
       mergedReceipts: "/api/merged-receipts", // 合併打印 by 20260402
+      joinRecords: "/api/join-records", // 參與紀錄 by 20260422
       myData: "/api/my-data",
       users: "/api/users",
       health: "/health",
