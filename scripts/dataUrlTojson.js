@@ -35,10 +35,6 @@ const dataJsonObj = [
     fileName: "mock_priceConfigs.json",
   },
   {
-    dataUrl: "http://localhost:3000/api/merged-receipts?fields=*",
-    fileName: "mock_mergedReceipts.json",
-  },
-  {
     dataUrl: "http://localhost:3000/api/join-records?fields=*",
     fileName: "mock_join_records.json",
   },
