@@ -147,8 +147,8 @@ const hasValidAncestors = (registration) => {
 
 **修改文件：**
 
-- `rust-axum/src/models/participation_record.rs`
-- `rust-axum/src/handlers/participation_record.rs`
+- `rust-axum/src/models/join_record.rs`
+- `rust-axum/src/handlers/join_record.rs`
 
 ## 資料結構
 

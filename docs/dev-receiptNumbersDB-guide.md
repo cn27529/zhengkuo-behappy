@@ -271,7 +271,7 @@ async fn generate_receiptNumber(
 
     // 6. 更新參加記錄
     let result = sqlx::query(
-        "UPDATE participation_records
+        "UPDATE joinRecordDB
          SET receiptNumber = ?,
              receiptIssued = ?,
              receiptIssuedAt = CURRENT_TIMESTAMP,
@@ -426,10 +426,10 @@ const handlePostPrintCheck = async () => {
 ```sql
 -- 添加唯一索引
 CREATE UNIQUE INDEX idx_receiptNumber
-ON participation_records(receiptNumber);
+ON join_records(receiptNumber);
 
 -- 或使用唯一約束
-ALTER TABLE participation_records
+ALTER TABLE join_records
 ADD CONSTRAINT uk_receiptNumber UNIQUE (receiptNumber);
 ```
 
@@ -640,7 +640,7 @@ function generateRandomCode(length) {
 
 ```sql
 -- 添加版本號欄位
-ALTER TABLE participation_records
+ALTER TABLE join_records
 ADD COLUMN version INT DEFAULT 0;
 ```
 
@@ -650,7 +650,7 @@ ADD COLUMN version INT DEFAULT 0;
 async function updateWithOptimisticLock(record, newReceiptNumber) {
   const result = await db.query(
     `
-    UPDATE participation_records 
+    UPDATE join_records 
     SET receiptNumber = ?, 
         receiptIssued = ?,
         version = version + 1

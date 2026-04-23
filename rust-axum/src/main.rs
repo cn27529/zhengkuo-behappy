@@ -141,8 +141,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 創建活動路由
     let activity_routes = routes::activity::create_routes();
     let registration_routes = routes::registration::create_routes();
-    let monthly_donate_routes = routes::monthly_donate::create_routes();
-    let participation_record_routes = routes::participation_record::create_routes();
+    let monthly_donate_routes = routes::monthly_donate::create_routes();    
     let my_data_routes = routes::my_data::create_routes();
     let receipt_number_routes = routes::receipt_number::create_routes(); // ✅ 新增：收據編號路由
     let directus_users_routes = routes::directus_users::create_routes();
@@ -164,10 +163,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/server/ping", get(server_ping))
         .merge(activity_routes)
         .merge(registration_routes)
-        .merge(monthly_donate_routes)
-        .merge(participation_record_routes)
-        .merge(my_data_routes)
-        
+        .merge(monthly_donate_routes)        
+        .merge(my_data_routes)        
         .merge(receipt_number_routes) // ✅ 新增：合併打印編號路由
         .merge(directus_users_routes)
         .merge(price_config_routes) // ✅ 新增：價格配置路由 by 20260331
@@ -248,8 +245,7 @@ async fn root_handler() -> Json<Value> {
             "health": "/health",
             "activities": "/api/activities",
             "registrations": "/api/registrations",
-            "monthly_donates": "/api/monthly-donates",
-            "participation_records": "/api/participation-records",            
+            "monthly_donates": "/api/monthly-donates",            
             "receipt_numbers": "/api/receipt-numbers/", 
             "receipt_generation": "/api/receipt-numbers/generation", 
             "directus_users": "/api/directus-users",

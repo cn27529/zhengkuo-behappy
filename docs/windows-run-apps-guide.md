@@ -464,7 +464,7 @@ bash scripts/test_rust_registration_api.sh
 bash scripts/test_rust_activity_api.sh
 bash scripts/test_rust_mydata_api.sh
 bash scripts/test_rust_receipt_number_api.sh
-bash scripts/test_rust_participation_record_api.sh
+bash scripts/test_rust_join_record_api.sh
 ```
 
 ### 6.3 日誌系統測試
@@ -621,7 +621,7 @@ rust-axum/src/
 │   ├── activity.rs          # 活動管理 CRUD
 │   ├── monthly_donate.rs    # 每月贊助 CRUD
 │   ├── my_data.rs           # 個人資料 CRUD
-│   ├── participation_record.rs
+│   ├── join_record.rs
 │   └── receipt_number.rs    # 收據編號管理
 ├── models/                  # 資料結構定義
 ├── routes/                  # HTTP 路由定義
