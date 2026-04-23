@@ -51,10 +51,7 @@
               清空
             </el-button>
           </div>
-          <p class="search-hint">
-            💡 提示:
-            可依項目類型或關鍵字（聯絡人、參加者、地址、備註、佛字第）搜尋相關記錄
-          </p>
+          <p class="search-hint">💡 提示：搜尋關鍵字系統會自動匹配相關欄位</p>
         </div>
       </div>
 
@@ -151,6 +148,26 @@
           >
             批量保存
           </el-button>
+
+          <!-- 批量打印 -->
+          <el-button
+            type="success"
+            size="small"
+            @click="handleBatchReceiptPrint"
+            :disabled="selectedRecords.length < 2"
+          >
+            批量打印 ({{ selectedRecords.length }})
+          </el-button>
+
+          <!-- 合併打印 -->
+          <el-button
+            type="success"
+            size="small"
+            @click="handleMergedReceiptPrint"
+            :disabled="selectedRecords.length < 2"
+          >
+            合併打印 ({{ selectedRecords.length }})
+          </el-button>
         </div>
       </div>
     </div>
@@ -177,6 +194,7 @@
 
         <!-- 記錄ID -->
         <el-table-column
+          v-if="false"
           prop="id"
           label="記錄ID"
           width="100"
@@ -188,7 +206,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="需要打印" width="100" align="center">
+        <el-table-column label="需要打印" width="90" align="center">
           <template #default="{ row }">
             <el-switch
               v-model="row.needReceipt"
@@ -208,11 +226,14 @@
               <div class="contact-name">
                 <strong>{{ row.contact?.name || "-" }}</strong>
               </div>
-              <div
-                class="contact-phone"
-                v-if="row.contact?.mobile || row.contact?.phone"
-              >
-                {{ row.contact?.mobile || row.contact?.phone }}
+              <div>
+                {{ row.contact?.relationship || "-" }}
+                <span
+                  v-if="row.contact?.otherRelationship"
+                  class="other-relationship"
+                >
+                  ({{ row.contact.otherRelationship }})
+                </span>
               </div>
             </div>
           </template>
@@ -277,22 +298,20 @@
         </el-table-column>
 
         <!-- 佛字第 -->
-        <el-table-column
-          label="佛字第"
-          min-width="70"
-          align="center"
-          v-if="false"
-        >
+        <el-table-column label="佛字第" width="90" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
-              <el-tag
-                v-if="row.receiptNumber"
-                type="danger"
-                size="mini"
-                style="margin-top: 4px"
-              >
-                {{ row.receiptNumber || "" }}
-              </el-tag>
+              <!-- 收據開立者經手人 -->
+              <span class="receipt-by" v-if="row.receiptIssuedBy">
+                <el-tooltip
+                  :content="`經手人：${row.receiptIssuedBy}`"
+                  placement="top"
+                >
+                  <el-tag v-if="row.receiptNumber" type="danger" size="small">
+                    {{ row.receiptNumber || "" }}
+                  </el-tag>
+                </el-tooltip>
+              </span>
             </div>
           </template>
         </el-table-column>
@@ -370,8 +389,29 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          prop="receiptId"
+          label="打印ID"
+          width="60"
+          align="center"
+          v-if="false"
+        >
+          <template #default="{ row }">
+            <div class="merged-ref">
+              <el-tag
+                v-if="row.receiptId"
+                type="info"
+                size="mini"
+                style="margin-top: 4px"
+              >
+                {{ row.receiptId }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
+
         <!-- 操作 -->
-        <el-table-column label="操作" width="100" fixed="right" align="center">
+        <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
             <el-button
               type="primary"
@@ -428,12 +468,19 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
 import { useJoinRecordQueryStore } from "../stores/joinRecordQueryStore.js";
+import { DateUtils } from "../utils/dateUtils.js";
+import { BoolUtils } from "../utils/boolUtils.js";
+import { usePageStateStore } from "../stores/pageStateStore.js";
+import appConfig from "../config/appConfig.js";
 
 const queryStore = useJoinRecordQueryStore();
+const pageStateStore = usePageStateStore();
+const router = useRouter();
 const tableRef = ref(null);
 
 // 使用 storeToRefs 保持響應性
@@ -663,6 +710,108 @@ const editNotes = async (row) => {
     markAsModified(row.id, "notes");
   } catch {
     // 用戶取消
+  }
+};
+
+// 批量打印
+const handleBatchReceiptPrint = () => {
+  if (selectedRecords.value.length < 2) {
+    ElMessage.warning("請至少勾選兩筆記錄進行合併打印");
+    return;
+  }
+
+  // 只過濾需要打印收據的記錄
+  const printableRecords = selectedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt),
+  );
+
+  if (printableRecords.length === 0) {
+    ElMessage.warning("已勾選的記錄中，沒有任何一筆標記為「需要打印收據」");
+    return;
+  }
+
+  if (printableRecords.length < 2) {
+    ElMessage.warning("需要打印收據的記錄不足兩筆，無法進行批量打印");
+    return;
+  }
+
+  // 標記導航來源
+  pageStateStore.setPageState("receiptPrint", {
+    from: "joinRecordStatesControl",
+  });
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printDatas = JSON.stringify(printableRecords);
+    const printId = `print_receipt_${ids}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, printDatas);
+
+    router.push({
+      path: "/receipt-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        print_type: appConfig.PRINT_TYPE.BATCH,
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+
+// 合併打印
+const handleMergedReceiptPrint = () => {
+  if (selectedRecords.value.length < 2) {
+    ElMessage.warning("請至少勾選兩筆記錄進行合併打印");
+    return;
+  }
+
+  // 只過濾需要打印收據的記錄
+  const printableRecords = selectedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt),
+  );
+
+  if (printableRecords.length === 0) {
+    ElMessage.warning("已勾選的記錄中，沒有任何一筆標記為「需要打印收據」");
+    return;
+  }
+
+  if (printableRecords.length < 2) {
+    ElMessage.warning("需要打印收據的記錄不足兩筆，無法進行合併打印");
+    return;
+  }
+
+  // 標記導航來源
+  pageStateStore.setPageState("receiptPrint", {
+    from: "joinRecordStatesControl",
+  });
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printDatas = JSON.stringify(printableRecords);
+    const printId = `print_receipt_${ids}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, printDatas);
+
+    router.push({
+      path: "/merged-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,
+        print_type: appConfig.PRINT_TYPE.MERGED,
+      },
+    });
+  } catch (error) {
+    console.error("導航到合併打印頁面失敗:", error);
+    ElMessage.error("導航到合併打印頁面失敗");
   }
 };
 </script>

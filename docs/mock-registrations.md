@@ -1,4 +1,4 @@
-# mock-registrations.json 格式說明
+# 祈福登記 - 資料結構說明
 
 檔案位置：`/src/data/mock_registrations.json`
 

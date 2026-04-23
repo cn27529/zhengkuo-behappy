@@ -2,17 +2,34 @@
 
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const PORT = 8080;
 
+// ✅ 偵測 --prod 參數
+const isProd = process.argv.includes("--prod");
+const HOST = isProd ? "34.81.85.198" : "localhost";
+
+console.log(`🌍 環境: ${isProd ? "生產環境 (prod)" : "本地開發 (dev)"}`);
+console.log(`🔗 Host: ${HOST}`);
+
+// ✅ 讀取 index.html 並替換 localhost → 生產 IP
+app.get("/", (req, res) => {
+  console.log("isProd:", isProd);
+  const html = fs.readFileSync(path.join(__dirname, "index.html"), "utf-8");
+  const result = isProd ? html.replaceAll("localhost", HOST) : html;
+  console.log(result);
+  res.send(result);
+});
+
 // 設置靜態文件服務 - 服務根目錄的文件
 app.use(express.static(path.join(__dirname)));
 
-// 主頁路由 - 直接提供 index.html
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+// // 主頁路由 - 直接提供 index.html
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "index.html"));
+// });
 
 // 健康檢查端點
 app.get("/health", (req, res) => {

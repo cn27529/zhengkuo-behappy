@@ -43,18 +43,30 @@ log(`📁 專案根目錄: ${projectRoot}`, "cyan");
 startServices(projectRoot);
 
 function startServices(projectRoot) {
+  // 读取脚本参数
+  const args = process.argv.slice(2);
+  let isProd = false;
+  if (args.includes("--prod")) {
+    console.log("生产模式");
+    //process.env.NODE_ENV = "production";
+    isProd = true;
+  }
+
+  console.log("isProd:", isProd);
+
   log(`\n${"=".repeat(50)}`, "cyan");
   log(`${colors.bold}${colors.green}🚀 啟動所有服務...${colors.reset}`);
   log(`${"=".repeat(50)}\n`, "cyan");
 
   log("📦 所有服務列表:", "cyan");
   log("  • 🐇Directus (port 8055)", "blue");
-  log("  • 🌍Vue Client (port 5173)", "blue");
+  log("  • 🌍Vue Client Dev (port 5173)", "blue");
   log("  • 🦀Rust-Axum (port 3000)", "blue");
   log("  • 🌱Log Server (port 3002)", "blue");
   log("  • 📚文檔服務 (port 3001)", "blue");
-  log("  • 📦服務入口總覽 (port 8080)", "blue");
+  log("  • 📦Portal入口 (port 8080)", "blue");
   log("  • 📊數據庫文件 (port 9000)", "blue");
+  log("  • 🌍前台應用 (port 5174,80)", "blue");
   log("");
 
   log("💡 提示: 按 Ctrl+C 可停止所有服務\n", "yellow");
@@ -67,16 +79,16 @@ function startServices(projectRoot) {
         "concurrently",
         "--kill-others",
         "--names",
-        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦APPS,📊SQLITE",
+        "🐇DIRECTUS,🌍CLIENT,🦀RUST,🌱LOGS,📚DOCS,📦PORTAL,📊SQLITE",
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
         "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold,bgRed.bold",
         '"npm run start:server"',
-        '"npm run start:client"',
+        isProd ? '"npm run start:client:prod"' : '"npm run start:client"',
         '"npm run start:rust"',
         '"npm run start:logs"',
         '"npm run start:docs"',
-        '"npm run start:apps"',
+        isProd ? '"npm run start:portal:prod"' : '"npm run start:portal"',
         '"npm run sqlite:viewer"',
       ],
       {
@@ -118,23 +130,4 @@ function startServices(projectRoot) {
     log(`   3. server、client、rust-axum 目錄都存在`, "yellow");
     process.exit(1);
   }
-
-  // // 執行 npm run dev
-  // const processes = spawn("npm", ["run", "dev"], {
-  //   stdio: "inherit",
-  //   shell: true,
-  // });
-
-  // processes.on("close", (code) => {
-  //   console.log("\n" + "=".repeat(50));
-  //   if (code === 0) {
-  //     log("✅ 所有服務已正常結束", "green");
-  //   } else {
-  //     log(`⚠️ 服務結束，退出碼: ${code}`, "yellow");
-  //   }
-  //   console.log("=".repeat(50));
-
-  //   // 恢復原始工作目錄
-  //   process.chdir(originalCwd);
-  // });
 }

@@ -1,13 +1,15 @@
-# 參加記錄服務開發規劃
+# 參加記錄 - 服務開發規劃
 
 ## 概述說明
 
-主表：joinRecordDB 資料庫模型設計
+joinRecordService 服務模型設計
 
-### 1.1 主表：joinRecordDB
+## 主表：participationRecordDB
+
+### 1.1
 
 ```sql
-CREATE TABLE joinRecordDB (
+CREATE TABLE participationRecordDB (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   registrationId INTEGER NOT NULL,           -- 關聯祈福登記表ID
   activityId INTEGER NOT NULL,           -- 關聯活動ID

@@ -1,4 +1,4 @@
-# 祈福登記打印預覽功能開發指南
+# 祈福登記 - 詳情打印 - 功能開發指南
 
 > **最後更新**: 2026-02-27  
 > **文件路徑**: `client/src/views/RegistrationPrint.vue`
@@ -506,6 +506,7 @@ const handleDownloadImage = async () => {
 ```
 
 **安裝方式**:
+
 ```bash
 npm install html2canvas
 ```

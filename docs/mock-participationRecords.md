@@ -1,6 +1,6 @@
-# 參加記錄資料結構說明
+# 參加記錄 - 資料結構說明
 
-檔案位置：`/src/data/mock_participation_records.json`
+檔案位置：`/src/data/mock_join_records.json`
 
 ## 概述說明
 
@@ -8,7 +8,7 @@
 
 ## 主要資料結構
 
-### ParticipationRecord (參加記錄)
+### JoinRecord (參加記錄)
 
 ```json
 {
@@ -40,7 +40,8 @@
   "createdAt": "2025-01-16T09:00:00.000Z",   // 建立時間
   "createdBy": "admin",                      // 建立者
   "updatedAt": "2025-01-16T15:00:00.000Z",   // 更新時間
-  "updatedUser": "accounting"                // 更新者
+  "updatedUser": "accounting",                // 更新者
+  "receiptId": "118" // 生成編號的ID
 }
 ```
 
@@ -186,6 +187,6 @@
 
 ## 檔案位置
 
-- 模擬資料：`./client/src/data/mock_participation_records.json`
+- 模擬資料：`./client/src/data/mock_join_records.json`
 - 開發指南：`./docs/dev-joinRecord-guide.md`
 - 用戶故事：`./docs/user-story-參加記錄.md`

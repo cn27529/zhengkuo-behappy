@@ -904,22 +904,22 @@ const handlePrintPage = () => {
   try {
     const printData = JSON.stringify(registrationForm.value);
     const formId = registrationForm.value.formId;
-
+    const recordId = registrationForm.value.id;
     if (formId === null || formId === undefined || formId === "") {
       ElMessage.error("表單尚未提交，無法列印");
       return;
     }
 
-    console.log("準備列印數據:", { formId, printData });
-    ElMessage.info(`準備列印表單: ${formId}`);
+    console.log("準備列印數據:", { recordId, printData });
 
-    const printId = `print_registration_${formId}_${Math.floor(Math.random() * 1000)}`;
+    //const printId = `print_registration_${recordId}_${Math.floor(Math.random() * 1000)}`;
+    const printId = `print_registration_${recordId}`;
     console.log("列印表單 ID:", printId);
 
     sessionStorage.setItem(printId, printData);
 
     router.push({
-      path: "/print-registration",
+      path: "/registration-print",
       query: {
         print_id: printId,
         print_data: printData,

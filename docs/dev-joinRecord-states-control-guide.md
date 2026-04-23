@@ -1,4 +1,4 @@
-# 參加記錄狀態控制台開發指南
+# 參加記錄狀態控制台 - 開發指南
 
 ## 概述說明
 
@@ -186,20 +186,15 @@ if (serviceAdapter.getIsMock()) {
 
 ### Directus 模式
 
-在 Directus 模式下，會調用 `joinRecordService.updateParticipationRecord()` 方法。
+在 Directus 模式下，會調用 `joinRecordService.updateJoinRecord()` 方法。
 
 ```javascript
 // 單筆更新
-const result = await joinRecordService.updateParticipationRecord(
-  recordId,
-  updates,
-);
+const result = await joinRecordService.updateJoinRecord(recordId, updates);
 
 // 批量更新（並行調用）
 const results = await Promise.all(
-  recordIds.map((id) =>
-    joinRecordService.updateParticipationRecord(id, updates),
-  ),
+  recordIds.map((id) => joinRecordService.updateJoinRecord(id, updates)),
 );
 ```
 

@@ -1,4 +1,4 @@
-# Activity（活動管理）功能說明
+# 法會活動 - 功能說明
 
 ## 概述說明
 
@@ -174,8 +174,7 @@ const activities1Year = computed(() => {
 // 依參加記錄更新人次
 const submitByParticipantRecordsUpdate = async () => {
   // 根據活動ID查詢所有參加記錄
-  const result =
-    await serviceAdapter.getParticipationRecordsByActivityId(activityId);
+  const result = await serviceAdapter.getJoinRecordsByActivityId(activityId);
 
   let totalParticipants = 0;
 

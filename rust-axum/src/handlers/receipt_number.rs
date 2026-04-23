@@ -10,7 +10,7 @@ use chrono::Local;
 use crate::models::api_response::{ApiResponse, Meta};
 use crate::models::receipt_number::{
     ReceiptNumber, ReceiptNumberResponse, GenerateReceiptRequest, 
-    ReceiptNumberQuery, UpdateReceiptStatusRequest,
+    ReceiptNumberQuery, UpdateReceiptStatusRequest, MergedReceiptRequest
 };
 
 const RECEIPT_FULL_QUERY: &str = r#"
@@ -90,6 +90,7 @@ pub async fn get_all_receipt_numbers(
     )))
 }
 
+
 /// 🔥 核心功能：原子性生成收據編號 (方案 1)
 pub async fn generate_receipt_number(
     Extension(pool): Extension<SqlitePool>,
@@ -132,25 +133,28 @@ pub async fn generate_receipt_number(
         format!("{}{}", year_month, formatted_serial) // 一般收據
     };
 
-    let now_iso = now_dt.to_rfc3339();
+    let now_iso = chrono::Utc::now().to_rfc3339();
+    let now_timestamp = chrono::Utc::now().timestamp_millis();
+    let state = payload.state.clone().unwrap_or_else(|| "active".to_string()); 
 
     // 5. 插入 receiptNumbersDB
     let insert_result = sqlx::query(
         r#"
         INSERT INTO receiptNumbersDB (
             receiptNumber, receiptType, yearMonth, serialNumber, 
-            recordId, createdAt, date_created, state, user_created
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?)
+            recordId, createdAt, state, user_created, date_created
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&receipt_number)
     .bind(&payload.receipt_type)
     .bind(&year_month)
     .bind(next_serial)
-    .bind(payload.record_id)
+    .bind(payload.record_id)  // 單筆的參加記錄給id
     .bind(&now_iso)
-    .bind(&now_iso)
+    .bind(&state)
     .bind(&payload.user_id)
+    .bind(&now_timestamp)
     .execute(&mut *tx)
     .await
     .map_err(|e| {
@@ -158,13 +162,18 @@ pub async fn generate_receipt_number(
     })?;
 
     let new_id = insert_result.last_insert_rowid();
+    // 未知的經手人
+    let receipt_issued_by = payload.receipt_issued_by.clone().unwrap_or_else(|| "未知的經手人".to_string()); 
 
     // 6. 更新參加記錄表 (同步反饋)
     sqlx::query(
-        "UPDATE participationRecordDB SET receiptNumber = ?, receiptIssued = ? WHERE id = ?"
+        "UPDATE joinRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptIssuedAt = ?, receiptIssuedBy = ?, receiptId = ? WHERE id = ?"
     )
     .bind(&receipt_number)
     .bind(&payload.receipt_type)
+    .bind(&now_iso)        
+    .bind(&receipt_issued_by)
+    .bind(new_id)  // 打印ID 回寫到 receiptId 欄位
     .bind(payload.record_id)
     .execute(&mut *tx)
     .await
@@ -177,6 +186,25 @@ pub async fn generate_receipt_number(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("提交事務失敗: {}", e))))
     })?;
 
+    // 🔥 7-1. 強制 checkpoint，清空 WAL
+    // 使用 TRUNCATE 選項會立即清空 WAL 檔案
+    // PASSIVE 尝试执行，遇到冲突就立即停止并返回。	不会阻塞任何读写操作。
+    // FULL (默认)	主动等待所有当前读写操作完成，然后执行检查点。在此期间新的写入会被阻塞。	会短暂阻塞写入。
+    // RESTART	类似 FULL，完成后还会尽可能截断 WAL 文件（如果还有读连接引用旧的 WAL 页，可能会稍微等待）。	会阻塞写入，并可能短暂等待读连接。
+    // TRUNCATE	执行检查点，然后将 WAL 文件截断为 0 字节。	会阻塞写入。
+    match sqlx::query("PRAGMA wal_checkpoint(PASSIVE)")
+        .execute(&pool)
+        .await 
+    {
+        Ok(result) => {
+            eprintln!("Checkpoint 完成: {:?}", result);
+        }
+        Err(e) => {
+            // 只記錄警告，不影響 API 響應
+            eprintln!("警告: WAL checkpoint 失敗: {}", e);
+        }
+    }
+
     // 8. 返回新生成的完整記錄
     let final_record = sqlx::query_as::<_, ReceiptNumber>(&format!("{} WHERE id = ?", RECEIPT_FULL_QUERY))
         .bind(new_id)
@@ -188,7 +216,287 @@ pub async fn generate_receipt_number(
 
     Ok(Json(ApiResponse::success_with_message(
         final_record.into(),
-        format!("成功生成編號: {}", receipt_number),
+        format!("成功生成打印編號: {}", receipt_number),
+    )))
+}
+
+
+/// 🔥 核心功能：原子性生成合併打印編號
+pub async fn generate_merged_receipt_number(
+    Extension(pool): Extension<SqlitePool>,
+    Json(payload): Json<MergedReceiptRequest>,
+) -> Result<Json<ApiResponse<ReceiptNumberResponse>>, (StatusCode, Json<ApiResponse<ReceiptNumberResponse>>)> {
+    
+    // 驗證 record_ids
+    let record_ids = payload.record_ids.ok_or_else(|| {
+        (StatusCode::BAD_REQUEST, Json(ApiResponse::error("record_ids 不能為空".to_string())))
+    })?;
+
+    if record_ids.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, Json(ApiResponse::error("record_ids 不能為空".to_string()))));
+    }
+
+    // 1. 開始資料庫事務
+    let mut tx = pool.begin().await.map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("啟動事務失敗: {}", e))))
+    })?;
+
+    // 2. 獲取當前年月 (YYMM)
+    let now_dt = Local::now();
+    let year_month = now_dt.format("%y%m").to_string(); // 例如 "2602"
+
+    // 3. 查詢當月該類型的最大流水號 (使用事務鎖定)
+    let max_serial: Option<i32> = sqlx::query_scalar(
+        "SELECT serialNumber FROM receiptNumbersDB 
+         WHERE yearMonth = ? AND receiptType = ? 
+         ORDER BY serialNumber DESC LIMIT 1"
+    )
+    .bind(&year_month)
+    .bind(&payload.receipt_type)
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("獲取流水號失敗: {}", e))))
+    })?;
+
+    let next_serial = max_serial.unwrap_or(0) + 1;
+    if next_serial > 9999 {
+        return Err((StatusCode::BAD_REQUEST, Json(ApiResponse::error("當月編號已達上限(9999)".to_string()))));
+    }
+
+    // 4. 根據規則生成編號
+    let formatted_serial = format!("{:04}", next_serial);
+    let receipt_number = if payload.receipt_type == "standard" {
+        format!("A{}{}", year_month, formatted_serial) // 感謝狀帶 A 前綴
+    } else {
+        format!("{}{}", year_month, formatted_serial) // 一般收據
+    };
+
+    let now_iso = chrono::Utc::now().to_rfc3339();
+    let now_timestamp = chrono::Utc::now().timestamp_millis();
+
+    let state = payload.state.clone().unwrap_or_else(|| "merged".to_string()); 
+    let void_reason = payload.void_reason.clone().unwrap_or_else(|| "合併打印".to_string());
+
+    // 5. 插入 receiptNumbersDB
+    let insert_result = sqlx::query(
+        r#"
+        INSERT INTO receiptNumbersDB (
+            receiptNumber, receiptType, yearMonth, serialNumber, 
+            recordId, createdAt, user_created, state, date_created, voidReason
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        "#,
+    )
+    .bind(&receipt_number)
+    .bind(&payload.receipt_type)
+    .bind(&year_month)
+    .bind(next_serial)
+    .bind(-1)  // 單筆的給參加記錄id，多筆的不給id
+    .bind(&now_iso)
+    .bind(&payload.user_id)
+    .bind(&state)
+    .bind(&now_timestamp)
+    .bind(&void_reason)    
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("記錄編號失敗: {}", e))))
+    })?;
+
+    let new_id = insert_result.last_insert_rowid();
+    // 未知的經手人
+    let receipt_issued_by = payload.receipt_issued_by.clone().unwrap_or_else(|| "未知的經手人".to_string()); 
+
+    // 6. 更新參加記錄表 (同步反饋)，構建動態展開 IN (?, ?, ?)
+    let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
+    let sql = format!(
+        "UPDATE joinRecordDB SET receiptNumber = ?, receiptIssued = ?, receiptIssuedAt = ?, receiptIssuedBy = ?, receiptId = ? WHERE id IN ({})",
+        placeholders
+    );
+
+    let mut q = sqlx::query(&sql)
+        .bind(&receipt_number)
+        .bind(&payload.receipt_type)
+        .bind(&now_iso)
+        .bind(&receipt_issued_by)
+        .bind(new_id);  // 打印ID 回寫到 receiptId 欄位
+
+
+    for id in &record_ids {
+        q = q.bind(id);
+    }
+
+    q.execute(&mut *tx)
+        .await
+        .map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("同步更新參加記錄失敗: {}", e))))
+        })?;
+
+    // 7. 提交事務
+    tx.commit().await.map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("提交事務失敗: {}", e))))
+    })?;
+
+    // 🔥 7-1. 強制 checkpoint，清空 WAL
+    // 🔥 關鍵修復：強制 checkpoint 並清空 WAL
+    // 使用 TRUNCATE 選項會立即清空 WAL 檔案
+    // PASSIVE 尝试执行，遇到冲突就立即停止并返回。不会阻塞任何读写操作。
+    // FULL (默认)	主动等待所有当前读写操作完成，然后执行检查点。在此期间新的写入会被阻塞。会短暂阻塞写入。
+    // RESTART	类似 FULL，完成后还会尽可能截断 WAL 文件（如果还有读连接引用旧的 WAL 页，可能会稍微等待）。会阻塞写入，并可能短暂等待读连接。
+    // TRUNCATE	执行检查点，然后将 WAL 文件截断为 0 字节。会阻塞写入。
+    match sqlx::query("PRAGMA wal_checkpoint(PASSIVE)")
+        .execute(&pool)
+        .await 
+    {
+        Ok(result) => {
+            eprintln!("Checkpoint 完成: {:?}", result);
+        }
+        Err(e) => {
+            // 只記錄警告，不影響 API 響應
+            eprintln!("警告: WAL checkpoint 失敗: {}", e);
+        }
+    }
+
+    // 8. 返回新生成的完整記錄
+    let final_record = sqlx::query_as::<_, ReceiptNumber>(&format!("{} WHERE id = ?", RECEIPT_FULL_QUERY))
+        .bind(new_id)
+        .fetch_one(&pool)
+        .await
+        .map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("查詢新編號失敗: {}", e))))
+        })?;
+
+    Ok(Json(ApiResponse::success_with_message(
+        final_record.into(),
+        format!("成功生成合併打印編號: {}", receipt_number),
+    )))
+}
+
+/// 🔥 作廢合併打印（反操作）
+/// 1. receiptNumbersDB: 更新 state 為 'void'，voidReason 註記「作廢合併列印」
+/// 2. joinRecordDB: 清空 receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy
+pub async fn remove_merged_receipt_number(
+    Extension(pool): Extension<SqlitePool>,
+    Json(payload): Json<MergedReceiptRequest>,
+) -> Result<Json<ApiResponse<()>>, (StatusCode, Json<ApiResponse<()>>)> {
+    
+    // 驗證 record_ids
+    let record_ids = payload.record_ids.ok_or_else(|| {
+        (StatusCode::BAD_REQUEST, Json(ApiResponse::error("record_ids 不能為空".to_string())))
+    })?;
+
+    if record_ids.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, Json(ApiResponse::error("record_ids 不能為空".to_string()))));
+    }
+
+    // 1. 開始資料庫事務
+    let mut tx = pool.begin().await.map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("啟動事務失敗: {}", e))))
+    })?;
+
+    let now_iso = chrono::Utc::now().to_rfc3339();
+    let now_timestamp = chrono::Utc::now().timestamp_millis();
+    
+    // 修改後
+    let ids_str = record_ids.iter().map(|id| id.to_string()).collect::<Vec<_>>().join(",");
+    let void_reason = format!(
+        "{} [recordIds: {}]",
+        payload.void_reason.as_deref().unwrap_or("作廢合併"),
+        ids_str
+    );
+
+    let state = payload.state
+        .clone()
+        .unwrap_or_else(|| "remove merged".to_string()); 
+
+    // 2. 更新 receiptNumbersDB：將該合併打印標記為作廢
+    let _update_result = sqlx::query(
+        r#"
+        UPDATE receiptNumbersDB 
+        SET state = ?, 
+            voidReason = ?, 
+            updatedAt = ?, 
+            date_updated = ?, 
+            user_updated = ? 
+        WHERE receiptNumber = ? 
+        "#
+    )
+    .bind(&state)
+    .bind(&void_reason)
+    .bind(&now_iso)
+    .bind(&now_timestamp)
+    .bind(&payload.user_id)
+    .bind(&payload.receipt_number)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("更新收據記錄失敗: {}", e))))
+    })?;
+
+    // 3. 更新 joinRecordDB：清空收據相關欄位
+    // 構建動態 SQL 清空多筆記錄
+    let placeholders = record_ids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
+    let sql = format!("UPDATE joinRecordDB SET receiptNumber = NULL, receiptIssued = NULL, receiptIssuedAt = NULL, receiptIssuedBy = NULL, receiptId = -1, updatedAt = ?, date_updated = ?, user_updated = ? WHERE id IN ({})",
+        placeholders
+    );
+
+    let mut q = sqlx::query(&sql)
+    .bind(&now_iso)
+    .bind(&now_timestamp)
+    .bind(&payload.user_id);
+    
+
+    for id in &record_ids {
+        q = q.bind(id);
+    }
+
+    let update_participants_result = q.execute(&mut *tx)
+        .await
+        .map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("清空參加記錄收據欄位失敗: {}", e))))
+        })?;
+
+    // 5. 可選：檢查更新的記錄數量是否匹配
+    if update_participants_result.rows_affected() as usize != record_ids.len() {
+        eprintln!(
+            "警告：預期更新 {} 筆參加記錄，實際更新 {} 筆",
+            record_ids.len(),
+            update_participants_result.rows_affected()
+        );
+    }
+
+    // 6. 提交事務
+    tx.commit().await.map_err(|e| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(ApiResponse::error(format!("提交事務失敗: {}", e))))
+    })?;
+
+    // 🔥 7. 強制 checkpoint，清空 WAL
+    // 🔥 關鍵修復：強制 checkpoint 並清空 WAL
+    // 使用 TRUNCATE 選項會立即清空 WAL 檔案
+    //     PASSIVE	尝试执行，遇到冲突就立即停止并返回。	不会阻塞任何读写操作。
+    // FULL (默认)	主动等待所有当前读写操作完成，然后执行检查点。在此期间新的写入会被阻塞。	会短暂阻塞写入。
+    // RESTART	类似 FULL，完成后还会尽可能截断 WAL 文件（如果还有读连接引用旧的 WAL 页，可能会稍微等待）。	会阻塞写入，并可能短暂等待读连接。
+    // TRUNCATE	执行检查点，然后将 WAL 文件截断为 0 字节。	会阻塞写入。
+    match sqlx::query("PRAGMA wal_checkpoint(PASSIVE)")
+        .execute(&pool)
+        .await 
+    {
+        Ok(result) => {
+            eprintln!("Checkpoint 完成: {:?}", result);
+        }
+        Err(e) => {
+            // 只記錄警告，不影響 API 響應
+            eprintln!("警告: WAL checkpoint 失敗: {}", e);
+        }
+    }
+
+    Ok(Json(ApiResponse::success_with_message(
+        (),
+        format!(
+            "成功作廢合併打印 {}，共處理 {} 筆參加記錄",
+            payload.receipt_number,
+            record_ids.len()
+        ),
     )))
 }
 
@@ -199,7 +507,8 @@ pub async fn void_receipt_number(
     Json(payload): Json<UpdateReceiptStatusRequest>,
 ) -> Result<Json<ApiResponse<ReceiptNumberResponse>>, (StatusCode, Json<ApiResponse<ReceiptNumberResponse>>)> {
     
-    let now_iso = Local::now().to_rfc3339();
+    let now_iso = chrono::Utc::now().to_rfc3339();
+    let now_timestamp = chrono::Utc::now().timestamp_millis();
     
     sqlx::query(
         "UPDATE receiptNumbersDB SET state = ?, voidReason = ?, updatedAt = ?, date_updated = ?, user_updated = ? WHERE id = ?"
@@ -207,7 +516,7 @@ pub async fn void_receipt_number(
     .bind(&payload.state)
     .bind(&payload.void_reason)
     .bind(&now_iso)
-    .bind(&now_iso)
+    .bind(&now_timestamp)
     .bind(&payload.user_id)
     .bind(id)
     .execute(&pool)

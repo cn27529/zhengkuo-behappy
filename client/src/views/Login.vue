@@ -20,6 +20,7 @@ const appTitle = computed(() => appConfig.title);
 
 // 進入全螢幕
 const enterFullscreen = () => {
+  return;
   const el = document.documentElement;
 
   if (el.requestFullscreen) {

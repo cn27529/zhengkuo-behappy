@@ -78,3 +78,15 @@ npm run start:logs
 https://github.com/orchid-admin/axum-admin/tree/main
 https://github.com/lingdu1234/axum_admin?tab=readme-ov-file
 https://docs.rs/axum-login/latest/axum_login/
+
+# 用远程分支覆盖本地
+
+git fetch origin
+git reset --hard origin/zk-client-gcp
+
+# 查看資料夾與檔案的容量
+
+```bash
+du -sh * .[^\.]* | sort -h
+
+```

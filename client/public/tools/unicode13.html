@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>𡍼 罕见字显示测试 | 使用思源宋体 woff2</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 24px 20px;
+            color: #1e2a3a;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        h1 small {
+            font-size: 0.8rem;
+            background: #eef2ff;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-family: monospace;
+        }
+
+        .big-char {
+            font-size: 6rem;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #fef9e3 0%, #fff7ed 100%);
+            border-radius: 28px;
+            margin: 1rem 0;
+            border: 2px solid #fde68a;
+            word-break: break-word;
+            letter-spacing: 0.1em;
+        }
+
+        .test-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .test-row {
+            display: flex;
+            flex-wrap: wrap;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .test-label {
+            width: 200px;
+            background: #f8fafc;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+
+        .test-value {
+            flex: 1;
+            padding: 1rem;
+            font-size: 3rem;
+            text-align: center;
+            background: white;
+            word-break: break-word;
+        }
+
+        .status {
+            background: #eef2ff;
+            border-radius: 16px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .font-control {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 1.5rem 0 1rem;
+        }
+
+        button {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #0f172a;
+            transform: scale(0.98);
+        }
+
+        button.secondary {
+            background: #64748b;
+        }
+
+        .info-box {
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 700px) {
+            .test-label {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .big-char {
+                font-size: 3.5rem;
+                padding: 1rem;
+            }
+
+            .test-value {
+                font-size: 2rem;
+            }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #5b6e8c;
+            margin-top: 2rem;
+        }
+
+        .font-loaded {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0.6;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>
+                🔤 罕见字「𡍼」字体加载测试
+                <small>思源宋体 (Source Han Serif) woff2</small>
+            </h1>
+            <p>使用您提供的 <code>NotoSansTC-Regular.woff2</code> 字体文件，完整支持 CJK 扩展B区字符。</p>
+
+            <div class="big-char" id="mainChar">𡍼</div>
+
+            <div id="loadStatus" class="status">⏳ 正在加载思源宋体字体文件...</div>
+        </div>
+
+        <div class="card">
+            <h2>📊 不同字体方案对比</h2>
+            <div class="test-grid">
+                <div class="test-row">
+                    <div class="test-label">🎯 思源宋体 (Web Font)</div>
+                    <div class="test-value" id="testWebfont">𡍼</div>
+                </div>
+                <div class="test-row">
+                    <div class="test-label">📱 系统默认字体</div>
+                    <div class="test-value" id="testSystem" style="font-family: inherit;">𡍼</div>
+                </div>
+                <div class="test-row">
+                    <div class="test-label">🔧 思源黑体后备方案</div>
+                    <div class="test-value" id="testFallback"
+                        style="font-family: 'Noto Sans CJK SC', 'Noto Sans CJK TC', 'Source Han Sans', sans-serif;">𡍼
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 真实文本测试</h2>
+            <p id="sentence1" style="font-size: 1.1rem; line-height: 1.6;">这个罕见的汉字「𡍼」现在应该正常显示了。连续三个：𡍼𡍼𡍼。</p>
+            <p id="sentence2" style="font-size: 1.1rem; line-height: 1.6;">混合标点：【𡍼】 — 字符编码 U+2437C，属于 CJK 统一表意文字扩展 B 区。
+            </p>
+            <div class="info-box">
+                💡 <strong>字体信息</strong>：NotoSansTC-Regular.woff2 是思源宋体繁体中文版，完整覆盖 CJK 扩展 A/B/C/D 区，包含「𡍼」字符。
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ 字体控制</h2>
+            <div class="font-control">
+                <button id="loadFontBtn">📥 重新加载/强制刷新字体</button>
+                <button id="resetBtn" class="secondary">🗑️ 移除Web字体(仅测试系统默认)</button>
+            </div>
+            <div id="manualHint" class="info-box" style="background: #fffbeb;">
+                📌 <strong>使用说明</strong>：将 <code>NotoSansTC-Regular.woff2</code> 文件上传到 Netlify 的
+                <strong>同一目录</strong> 下，本页面会自动加载。如果字体文件在其他路径，请修改下方代码中的字体URL。
+            </div>
+        </div>
+
+        <footer>
+            测试页面 | 字体: Source Han Serif TC Light (思源宋体) | 支持扩展B区字符
+        </footer>
+    </div>
+
+    <script>
+        // 目标字符
+        const RARE_CHAR = '𡍼';
+
+        // 字体文件路径 - 请修改为您的实际路径
+        // 如果 NotoSansTC-Regular.woff2 和这个HTML在同一目录，使用相对路径即可
+        const FONT_URL = './NotoSansTC-Regular.woff2';
+
+        // 备用CDN（如果本地文件加载失败，尝试从CDN加载）
+        const FALLBACK_URLS = [
+            './NotoSansTC-Regular.woff2' // 备选2（但这个是黑体）
+        ];
+
+        // 需要刷新字体的元素
+        const elementsToRefresh = [
+            document.getElementById('mainChar'),
+            document.getElementById('testWebfont'),
+            document.getElementById('testSystem'),
+            document.getElementById('testFallback'),
+            document.getElementById('sentence1'),
+            document.getElementById('sentence2')
+        ];
+
+        let activeFontStyle = null;
+        let fontLoadedSuccess = false;
+
+        // 刷新所有元素的显示（触发重绘）
+        function refreshAllDisplays() {
+            for (let el of elementsToRefresh) {
+                if (el) {
+                    // 保存当前内容，重新设置触发重绘
+                    const currentText = el.innerText || el.textContent;
+                    if (currentText && currentText.includes(RARE_CHAR)) {
+                        // 对于段落元素，保留HTML结构但强制刷新文本节点
+                        if (el.tagName === 'P') {
+                            const html = el.innerHTML;
+                            el.innerHTML = html;
+                        } else {
+                            const text = el.innerText;
+                            el.innerText = '';
+                            el.innerText = text;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 更新状态消息
+        function updateStatus(message, isError = false, isSuccess = false) {
+            const statusDiv = document.getElementById('loadStatus');
+            if (statusDiv) {
+                statusDiv.innerHTML = message;
+                statusDiv.classList.remove('success', 'error');
+                if (isSuccess) statusDiv.classList.add('success');
+                if (isError) statusDiv.classList.add('error');
+            }
+        }
+
+        // 移除已有的字体样式
+        function removeExistingFont() {
+            if (activeFontStyle && activeFontStyle.parentNode) {
+                activeFontStyle.parentNode.removeChild(activeFontStyle);
+                activeFontStyle = null;
+            }
+            // 移除任何可能冲突的字体样式
+            const existingStyles = document.querySelectorAll('style[data-font="source-han-serif"]');
+            existingStyles.forEach(style => style.remove());
+        }
+
+        // 核心方法：加载思源宋体字体
+        async function loadSourceHanSerif(fontUrl = FONT_URL) {
+            removeExistingFont();
+
+            updateStatus(`⏳ 正在加载字体: ${fontUrl.split('/').pop()} ...`);
+
+            // 方法1：使用 CSS @font-face (最稳定)
+            const style = document.createElement('style');
+            style.setAttribute('data-font', 'source-han-serif');
+            style.textContent = `
+            @font-face {
+                font-family: 'SourceHanSerifWeb';
+                src: url('${fontUrl}') format('woff2');
+                font-weight: 300;
+                font-style: normal;
+                font-display: swap;
+            }
+            /* 强制使用思源宋体显示所有罕见字区域 */
+            #mainChar, #testWebfont, #sentence1, #sentence2 {
+                font-family: 'SourceHanSerifWeb', 'Noto Sans CJK TC', 'Source Han Serif TC', 'Noto Serif CJK TC', serif !important;
+            }
+            /* 让 testWebfont 区域强制使用 */
+            #testWebfont {
+                font-family: 'SourceHanSerifWeb', 'Source Han Serif TC', serif !important;
+            }
+        `;
+            document.head.appendChild(style);
+            activeFontStyle = style;
+
+            // 方法2：使用 FontFace API 检测加载是否成功
+            try {
+                const font = new FontFace('SourceHanSerifWeb_Test', `url(${fontUrl}) format('woff2')`);
+                const loadedFont = await font.load();
+                document.fonts.add(loadedFont);
+
+                // 字体加载成功，验证是否能渲染目标字符
+                setTimeout(() => {
+                    verifyFontRendering();
+                }, 500);
+
+                updateStatus(`✅ 字体加载成功！「𡍼」现在应该正常显示了。`, false, true);
+                fontLoadedSuccess = true;
+                refreshAllDisplays();
+
+                // 添加额外样式确保所有区域都生效
+                document.body.style.animation = 'none';
+                setTimeout(() => {
+                    refreshAllDisplays();
+                }, 100);
+
+            } catch (err) {
+                console.warn('FontFace API 加载失败:', err);
+                // 字体可能已经通过 CSS 加载，等待一段时间再检测
+                setTimeout(() => {
+                    verifyFontRendering();
+                }, 1000);
+                updateStatus(`⚠️ 字体加载中... 如果长时间未显示，请检查文件路径是否正确。`, false, false);
+            }
+        }
+
+        // 验证字体渲染效果（通过Canvas检测）
+        function verifyFontRendering() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 150;
+            canvas.height = 60;
+
+            // 使用刚加载的字体绘制
+            ctx.font = '40px "SourceHanSerifWeb", "Noto Sans CJK TC", "Source Han Serif TC", serif';
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.fillText(RARE_CHAR, 10, 45);
+
+            // 检测是否有像素绘制（非豆腐块）
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let hasValidPixel = false;
+            for (let i = 0; i < imageData.length; i += 4) {
+                if (imageData[i] > 200 || imageData[i + 1] > 200 || imageData[i + 2] > 200) {
+                    hasValidPixel = true;
+                    break;
+                }
+            }
+
+            const manualHint = document.getElementById('manualHint');
+            if (hasValidPixel) {
+                updateStatus(`✅ 字体验证通过！「𡍼」已成功渲染。`, false, true);
+                if (manualHint) {
+                    manualHint.innerHTML = '🎉 <strong>成功！</strong> 思源宋体已生效，「𡍼」字符现在应该清晰可见。如果不是豆腐块，说明字体加载正确。';
+                    manualHint.style.background = '#d1fae5';
+                }
+            } else {
+                updateStatus(`⚠️ 字体加载可能失败，或字体文件不包含此字符。尝试使用备用方案...`, true, false);
+                if (manualHint) {
+                    manualHint.innerHTML = '❌ <strong>字体加载失败</strong>，可能原因：<br>1. 字体文件路径不正确（请确认 NotoSansTC-Regular.woff2 和HTML在同一目录）<br>2. 字体文件损坏或不包含「𡍼」字符<br>3. 网络问题导致下载失败<br><br>👉 <strong>解决方案</strong>：点击下方按钮尝试使用在线CDN字体，或将woff2上传到正确的目录。';
+                    manualHint.style.background = '#fee2e2';
+                }
+            }
+
+            // 额外在控制台输出信息
+            console.log(`字体渲染验证结果: ${hasValidPixel ? '成功' : '失败'} - 字符: ${RARE_CHAR}`);
+        }
+
+        // 重置到系统默认字体（移除Web字体）
+        function resetToSystemFont() {
+            removeExistingFont();
+
+            // 重置所有相关元素的字体样式
+            const elements = ['mainChar', 'testWebfont', 'testSystem', 'testFallback', 'sentence1', 'sentence2'];
+            for (let id of elements) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.fontFamily = '';
+                }
+            }
+
+            // 特别重置 testWebfont
+            const testWebfont = document.getElementById('testWebfont');
+            if (testWebfont) {
+                testWebfont.style.fontFamily = '';
+            }
+
+            refreshAllDisplays();
+            updateStatus(`🔄 已移除Web字体，恢复系统默认显示。如显示豆腐块属正常现象。`, false, false);
+
+            const manualHint = document.getElementById('manualHint');
+            if (manualHint) {
+                manualHint.innerHTML = '📌 已恢复系统默认字体。如需重新加载思源宋体，请点击「重新加载/强制刷新字体」按钮。';
+                manualHint.style.background = '#fffbeb';
+            }
+
+            fontLoadedSuccess = false;
+        }
+
+        // 尝试使用其他备用字体URL
+        function tryFallbackFont() {
+            updateStatus(`🔄 尝试使用备用字体方案...`, false, false);
+            // 使用一个已知支持扩展B区的在线字体（花园明朝体的CDN）
+            const fallbackStyle = document.createElement('style');
+            fallbackStyle.setAttribute('data-font', 'source-han-serif');
+            fallbackStyle.textContent = `
+            @font-face {
+                font-family: 'FallbackCJKFont';
+                src: url('https://cdn.jsdelivr.net/npm/@aspectron/hanamin@latest/fonts/HanaMinA.ttf') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+                font-display: swap;
+            }
+            #mainChar, #testWebfont, #sentence1, #sentence2 {
+                font-family: 'FallbackCJKFont', 'SourceHanSerifWeb', 'Noto Sans CJK TC', serif !important;
+            }
+        `;
+            document.head.appendChild(fallbackStyle);
+            activeFontStyle = fallbackStyle;
+
+            setTimeout(() => {
+                verifyFontRendering();
+            }, 1500);
+        }
+
+        // 页面启动时自动加载
+        window.addEventListener('DOMContentLoaded', () => {
+            // 显示设备信息
+            const ua = navigator.userAgent;
+            const isAndroid = /Android/i.test(ua);
+            const deviceInfo = document.createElement('div');
+            deviceInfo.style.fontSize = '0.8rem';
+            deviceInfo.style.marginTop = '8px';
+            deviceInfo.style.color = '#64748b';
+            deviceInfo.innerHTML = isAndroid ? '📱 检测到 Android 设备，思源宋体将强制加载。' : '💻 检测到桌面设备。';
+            document.querySelector('.card:first-child .status').after(deviceInfo);
+
+            // 自动加载字体
+            setTimeout(() => {
+                loadSourceHanSerif(FONT_URL);
+            }, 100);
+
+            // 绑定按钮事件
+            document.getElementById('loadFontBtn').addEventListener('click', () => {
+                loadSourceHanSerif(FONT_URL);
+            });
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                resetToSystemFont();
+            });
+        });
+
+        // 监听字体加载完成事件（备用）
+        document.fonts.ready.then(() => {
+            console.log('所有字体已就绪');
+            setTimeout(() => {
+                if (!fontLoadedSuccess) {
+                    refreshAllDisplays();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>

@@ -16,40 +16,40 @@ CREATE INDEX idx_registration_formId ON registrationDB(formId);
 
 
 
--- -- participationRecordDB (參加記錄檔) 索引方案
+-- -- joinRecordDB (參加記錄檔) 索引方案
 -- 1. 核心外鍵關聯（跨表查詢必備）
-CREATE INDEX idx_participation_registrationId ON participationRecordDB(registrationId);
-CREATE INDEX idx_participation_activityId ON participationRecordDB(activityId);
-CREATE INDEX idx_participation_user_created ON participationRecordDB(user_created);
-CREATE INDEX idx_participation_user_updated ON participationRecordDB(user_updated);
+CREATE INDEX idx_participation_registrationId ON joinRecordDB(registrationId);
+CREATE INDEX idx_participation_activityId ON joinRecordDB(activityId);
+CREATE INDEX idx_participation_user_created ON joinRecordDB(user_created);
+CREATE INDEX idx_participation_user_updated ON joinRecordDB(user_updated);
 
 -- 2. 業務狀態查詢（管理流程）
-CREATE INDEX idx_participation_state ON participationRecordDB(state);
-CREATE INDEX idx_participation_accountingState ON participationRecordDB(accountingState);
-CREATE INDEX idx_participation_paymentState ON participationRecordDB(paymentState);
-CREATE INDEX idx_participation_receiptIssued ON participationRecordDB(receiptIssued);
+CREATE INDEX idx_participation_state ON joinRecordDB(state);
+CREATE INDEX idx_participation_accountingState ON joinRecordDB(accountingState);
+CREATE INDEX idx_participation_paymentState ON joinRecordDB(paymentState);
+CREATE INDEX idx_participation_receiptIssued ON joinRecordDB(receiptIssued);
 
 -- 3. 財務查詢（對賬、統計）
-CREATE INDEX idx_participation_finalAmount ON participationRecordDB(finalAmount);
-CREATE INDEX idx_participation_paidAmount ON participationRecordDB(paidAmount);
+CREATE INDEX idx_participation_finalAmount ON joinRecordDB(finalAmount);
+CREATE INDEX idx_participation_paidAmount ON joinRecordDB(paidAmount);
 
 -- 4. 時間維度查詢
-CREATE INDEX idx_participation_date_created ON participationRecordDB(date_created);
-CREATE INDEX idx_participation_date_updated ON participationRecordDB(date_updated);
+CREATE INDEX idx_participation_date_created ON joinRecordDB(date_created);
+CREATE INDEX idx_participation_date_updated ON joinRecordDB(date_updated);
 
 -- 5. 收據號查詢（唯一性可考慮UNIQUE約束）
-CREATE INDEX idx_participation_receiptNumber ON participationRecordDB(receiptNumber) WHERE receiptNumber IS NOT NULL;
+CREATE INDEX idx_participation_receiptNumber ON joinRecordDB(receiptNumber) WHERE receiptNumber IS NOT NULL;
 
 
 -- -- 如果出現以下查詢模式，可考慮添加聯合索引：
 -- 場景：經常按「活動+狀態」查詢
-CREATE INDEX idx_participation_activity_state ON participationRecordDB(activityId, state);
+CREATE INDEX idx_participation_activity_state ON joinRecordDB(activityId, state);
 
 -- 場景：經常按「登記+活動」查詢
-CREATE INDEX idx_participation_reg_activity ON participationRecordDB(registrationId, activityId);
+CREATE INDEX idx_participation_reg_activity ON joinRecordDB(registrationId, activityId);
 
 -- 場景：財務報表按「狀態+時間」範圍查詢
-CREATE INDEX idx_participation_state_date ON participationRecordDB(state, date_created);
+CREATE INDEX idx_participation_state_date ON joinRecordDB(state, date_created);
 
 -- 場景：按「會計狀態+付款狀態」篩選
-CREATE INDEX idx_participation_account_payment ON participationRecordDB(accountingState, paymentState);
+CREATE INDEX idx_participation_account_payment ON joinRecordDB(accountingState, paymentState);

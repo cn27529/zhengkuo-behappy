@@ -1,4 +1,4 @@
-# 操作記錄資料結構說明
+# 操作記錄 - 資料結構說明
 
 檔案位置：`/src/data/mock_logEntrys.json`
 

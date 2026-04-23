@@ -1,4 +1,4 @@
-# 活動參加記錄查詢功能開發指南
+# 參加記錄查詢 - 功能開發指南
 
 ## 修改日期
 
@@ -7,7 +7,7 @@
 
 ## 概述說明
 
-本功能實現了"活動參加記錄查詢"，允許用戶查詢和管理已提交的活動參加記錄，`JoinRecordList.vue` 是參加記錄的查詢列表頁面，提供搜尋、篩選和分頁功能。
+本功能實現了"參加記錄查詢"，允許用戶查詢和管理已提交的參加記錄，`JoinRecordList.vue` 是參加記錄的查詢列表頁面，提供搜尋、篩選和分頁功能。
 
 ## 主要功能特點
 
@@ -42,7 +42,7 @@
 ### 1. JoinRecordList.vue
 
 - **路徑**: `client/src/views/JoinRecordList.vue`
-- **功能**: 活動參加記錄查詢頁面
+- **功能**: 參加記錄查詢頁面
 - **特色**:
   - 支援多條件查詢（狀態、項目類型、關鍵字）
   - 響應式設計，支援手機和桌面設備
@@ -480,8 +480,13 @@ const handleReceiptPrint = (item) => {
     sessionStorage.setItem(printId, printData);
 
     router.push({
-      path: "/join-record-receipt-print",
-      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+      path: "/receipt-print",
+      query: { 
+        print_id: printId, 
+        print_data: printData, 
+        iso_str: isoStr, 
+        print_type: appConfig.PRINT_TYPE.SINGLE, 
+      },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);
@@ -501,7 +506,7 @@ const handleCardPrint = (item) => {
     sessionStorage.setItem(printId, printData);
 
     router.push({
-      path: "/join-record-card-print",
+      path: "/card-print",
       query: { print_id: printId, print_data: printData, iso_str: isoStr },
     });
   } catch (error) {
@@ -523,18 +528,18 @@ const handleBatchReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
-    const printDatas = selectedRecords.value.map((r) => r);
-    const printId = `print_receipt_ids_${ids}`;
+    const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
+    const printId = `print_receipt_${ids}`;
 
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
-      path: "/join-record-receipt-print",
+      path: "/receipt-print",
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,
-        is_batch: "true",
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.BATCH,
       },
     });
   } catch (error) {
@@ -556,18 +561,18 @@ const handleBatchCardPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
-    const printDatas = selectedRecords.value.map((r) => r);
-    const printId = `print_receipt_ids_${ids}`;
+    const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
+    const printId = `print_receipt_${ids}`;
 
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
-      path: "/join-record-card-print",
+      path: "/card-print",
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,
-        is_batch: "true",
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.BATCH,
       },
     });
   } catch (error) {

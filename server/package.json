@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npx directus start",
     "build": "npx directus bootstrap",
-    "start": "npx directus start"
+    "start": "directus start"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +14,7 @@
   "dependencies": {
     "@directus/sdk": "^18.0.3",
     "directus": "^11.12.0",
-    "directus-extension-editorjs": "^1.5.0",    
+    "directus-extension-editorjs": "^1.5.0",
     "sqlite3": "^5.1.7"
   }
 }

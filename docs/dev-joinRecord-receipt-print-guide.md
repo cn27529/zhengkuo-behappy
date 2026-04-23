@@ -1,4 +1,4 @@
-# 活動參加記錄 - 收據打印功能說明
+# 參加記錄收據打印 - 功能說明
 
 > **最後更新**: 2026-02-26  
 > **測試狀態**: ✅ 已通過完整測試
@@ -47,13 +47,18 @@ const handleReceiptPrint = (item) => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const printData = JSON.stringify(item);
-    const printId = `print_receipt_${item.id}_${isoStr}`;
+    const printId = `print_receipt_${item.id}`;
 
     sessionStorage.setItem(printId, printData);
 
     router.push({
-      path: "/join-record-receipt-print",
-      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+      path: "/receipt-print",
+      query: { 
+        print_id: printId, 
+        print_data: printData, 
+        iso_str: isoStr, 
+        print_type: appConfig.PRINT_TYPE.SINGLE, 
+      },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);
@@ -169,19 +174,19 @@ const handleBatchReceiptPrint = () => {
 
   const isoStr = DateUtils.getCurrentISOTime();
   const ids = selectedRecords.value.map((r) => r.id).join(",");
-  const printDatas = selectedRecords.value.map((r) => r);
-  const printId = `print_receipt_ids_${isoStr}`;
+  const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
+  const printId = `print_receipt_${ids}`;
 
   // 存儲多筆資料到 sessionStorage
-  sessionStorage.setItem(printId, JSON.stringify(printDatas));
+  sessionStorage.setItem(printId, printDatas);
 
   router.push({
-    path: "/join-record-receipt-print",
+    path: "/receipt-print",
     query: {
       print_id: printId,
       ids: ids,
-      iso_str: isoStr,
-      is_batch: "true", // 關鍵參數：標記為批量打印
+      iso_str: isoStr,      
+      print_type: appConfig.PRINT_TYPE.BATCH,
     },
   });
 };
@@ -219,21 +224,17 @@ const handleBatchReceiptPrint = () => {
 onMounted(() => {
   setPrintTime();
 
-  // 檢查是否為批量打印
-  const isBatchParam = route.query.is_batch === "true";
-  const printId = route.query.print_id;
-
-  if (isBatchParam && printId) {
-    // 批量打印模式
-    isBatch.value = true;
-    const storedData = sessionStorage.getItem(printId);
+  if (isBatchPrint.value && reqPrintId.value) {
+    // 批量打印
+    isBatchPrint.value = true;
+    const storedData = sessionStorage.getItem(reqPrintId.value);
 
     if (storedData) {
       try {
-        batchRecords.value = JSON.parse(storedData);
-        if (batchRecords.value.length > 0) {
+        manyRecord.value = JSON.parse(storedData);
+        if (manyRecord.value.length > 0) {
           currentIndex.value = 0;
-          record.value = batchRecords.value[0];
+          currentRecord.value = manyRecord.value[0];
           handleTemplateChange();
         } else {
           ElMessage.error("批量數據為空");
@@ -243,15 +244,24 @@ onMounted(() => {
         ElMessage.error("批量數據解析失敗");
         router.back();
       }
+    } else {
+      ElMessage.error("找不到批量打印數據");
+      router.back();
     }
   } else {
-    // 單筆打印模式（原有邏輯）
-    const printData = route.query.print_data;
-    if (printData) {
-      record.value = JSON.parse(printData);
-      handleTemplateChange();
+    // 單筆打印
+    if (reqPrintRecord) {
+      try {
+        currentRecord.value = JSON.parse(reqPrintRecord);
+        handleTemplateChange();
+      } catch (e) {
+        ElMessage.error("數據解析失敗");
+        router.back();
+      }
     }
   }
+
+  if (!currentRecord.value.id) router.back();
 });
 ```
 
@@ -1066,7 +1076,7 @@ const handleTemplateChange = (template) => {
 ```javascript
 // router/index.js
 {
-  path: "/join-record-receipt-print",
+  path: "/receipt-print",
   title: "收據打印",
   component: () => import("../views/JoinRecordReceiptPrint.vue"),
   meta: { requiresAuth: true }
@@ -1310,10 +1320,23 @@ const handlePostPrintCheck = () => {
 
 ### 6. 智能模式切換
 
-通過 URL 參數 `is_batch` 自動判斷單筆或批量模式：
+通過 URL 參數 `print_type` 自動判斷單筆或批量模式：
 
 ```javascript
-const isBatchParam = route.query.is_batch === "true";
+// 打印類型
+const reqPrintType = computed(() => route.query.print_type);
+// 檢查是否為批量打印
+const isBatchPrint = computed(() =>
+  String(reqPrintType.value === appConfig.PRINT_TYPE.BATCH)
+);
+// 是否為合併打印
+const isMergedPrint = computed(() =>
+  String(reqPrintType.value === appConfig.PRINT_TYPE.MERGED)
+);
+
+const isSinglePrint = computed(() =>
+  String(reqPrintType.value === appConfig.PRINT_TYPE.SINGLE)
+);
 ```
 
 ### 7. 數據持久化
@@ -1371,8 +1394,8 @@ if (currentIndex.value < batchRecords.value.length - 1) {
 ## 相關文件
 
 - [客製收據打印 Web 解決方案](./web-print-guide.md)
-- [活動參加記錄系統](./dev-joinRecord-guide.md)
-- [活動參加記錄列表](./dev-joinRecord-list-guide.md)
+- [參加記錄系統](./dev-joinRecord-guide.md)
+- [參加記錄列表](./dev-joinRecord-list-guide.md)
 - [收據打印狀態更新](./dev-receipt-print-status-update.md)
 
 ## 更新日誌

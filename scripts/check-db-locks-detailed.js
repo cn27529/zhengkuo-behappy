@@ -33,11 +33,15 @@ try {
 
   // 2. 檢查 WAL checkpoint 狀態
   if (journalMode === "wal") {
-    console.log("\n📈 WAL 狀態:");
-    const walInfo = db.pragma("wal_checkpoint(PASSIVE)", { simple: false });
-    console.log(`  Busy: ${walInfo[0].busy}`);
-    console.log(`  Log: ${walInfo[0].log} frames`);
-    console.log(`  Checkpointed: ${walInfo[0].checkpointed} frames`);
+    try {
+      console.log("📈 WAL 狀態:", journalMode);
+      const walInfo = db.pragma("wal_checkpoint(TRUNCATE)", { simple: false });
+      console.log(`  Busy: ${walInfo[0].busy}`);
+      console.log(`  Log: ${walInfo[0].log} frames`);
+      console.log(`  Checkpointed: ${walInfo[0].checkpointed} frames`);
+    } catch (err) {
+      console.log("📈 WAL 狀態錯誤:", err);
+    }
   }
 
   // 3. 檢查資料庫統計
@@ -45,7 +49,9 @@ try {
   const pageCount = db.pragma("page_count", { simple: true });
   const pageSize = db.pragma("page_size", { simple: true });
   const dbSizeMB = ((pageCount * pageSize) / 1024 / 1024).toFixed(2);
-  console.log(`  大小: ${dbSizeMB} MB (${pageCount} pages × ${pageSize} bytes)`);
+  console.log(
+    `  大小: ${dbSizeMB} MB (${pageCount} pages × ${pageSize} bytes)`,
+  );
 
   // 4. 檢查 WAL 文件大小
   const walFile = targetDb + "-wal";
@@ -75,12 +81,12 @@ try {
     // 嘗試以寫入模式打開
     const testDb = new Database(targetDb, { timeout: 100 });
     testDb.pragma("query_only = 0");
-    
+
     // 嘗試開始一個事務
     const canWrite = testDb.prepare("BEGIN IMMEDIATE").run();
     testDb.prepare("ROLLBACK").run();
     testDb.close();
-    
+
     console.log("  ✅ 資料庫可寫入（無鎖定）");
   } catch (error) {
     if (error.message.includes("database is locked")) {

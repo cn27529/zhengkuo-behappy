@@ -6,9 +6,10 @@ import { DateUtils } from "../utils/dateUtils.js";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 import { joinRecordService } from "../services/joinRecordService.js"; // CUD用
 import { authService } from "../services/authService.js";
+import { priceConfigService } from "../services/priceConfigService.js";
 import { useQueryStore } from "./registrationQueryStore.js";
 import mockRegistrationData from "../data/mock_registrations.json";
-import mockJoinRecordData from "../data/mock_participation_records.json";
+import mockJoinRecordData from "../data/mock_join_records.json";
 
 /**
  * 參加記錄的 Pinia store，管理參加記錄的狀態與操作。
@@ -18,17 +19,22 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   /**
    * 活動類型
    * key: 活動類型
+   * 護持三寶、供齋、護持道場、助印經書、放生
    */
   const activityConfigs = ref({
     chaodu: {
       label: "超度/超薦",
-      price: 1000,
+      price: 1000, // 將從價格服務更新
       source: "salvation.ancestors", //祖先
     },
-    survivors: { label: "陽上人", price: 0, source: "salvation.survivors" }, //陽上人
+    survivors: {
+      label: "陽上人",
+      price: 0, // 將從價格服務更新
+      source: "salvation.survivors", //陽上人
+    },
     diandeng: {
       label: "點燈",
-      price: 600,
+      price: 600, // 將從價格服務更新
       source: "blessing.persons", //消災人員
       lampTypes: {
         guangming: { label: "光明燈", price: 600 },
@@ -36,9 +42,46 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
         yuanchen: { label: "元辰燈", price: 1000 },
       },
     },
-    qifu: { label: "消災祈福", price: 300, source: "blessing.persons" }, //消災人員
-    xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" }, //消災人員
-    pudu: { label: "中元普度", price: 1200, source: "blessing.persons" }, //消災人員
+    qifu: {
+      label: "消災祈福",
+      price: 300, // 將從價格服務更新
+      source: "blessing.persons", //消災人員
+    },
+    xiaozai: {
+      label: "固定消災",
+      price: 100, // 將從價格服務更新
+      source: "blessing.persons", //消災人員
+    },
+    pudu: {
+      label: "中元普度",
+      price: 1200, // 將從價格服務更新
+      source: "blessing.persons", //消災人員
+    },
+    support_triple_gem: {
+      label: "護持三寶",
+      price: 200, // 將從價格服務更新
+      source: "blessing.persons",
+    },
+    food_offering: {
+      label: "供齋",
+      price: 200, // 將從價格服務更新
+      source: "blessing.persons",
+    },
+    support_temple: {
+      label: "護持道場",
+      price: 200, // 將從價格服務更新
+      source: "blessing.persons",
+    },
+    sutra_printing: {
+      label: "助印經書",
+      price: 200, // 將從價格服務更新
+      source: "blessing.persons",
+    },
+    life_release: {
+      label: "放生",
+      price: 200, // 將從價格服務更新
+      source: "blessing.persons",
+    },
   });
 
   /*
@@ -48,10 +91,15 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const selections = ref({
     chaodu: [], //祖先
     survivors: [], //陽上人
-    diandeng: [], //消災人員
-    qifu: [], //消災人員
-    xiaozai: [], //消災人員
-    pudu: [], //消災人員
+    diandeng: [], //點燈
+    qifu: [], //消災祈福
+    xiaozai: [], //固定消災
+    pudu: [], //中元普度
+    support_triple_gem: [], //護持三寶
+    food_offering: [], //供齋
+    support_temple: [], //護持道場
+    sutra_printing: [], //助印經書
+    life_release: [], //放生
   });
 
   // 每個人員的燈種選擇 { personId: lampType }
@@ -65,6 +113,87 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
   const getSourceData = (registration, source) => {
     const [section, field] = source.split(".");
     return registration[section][field] || [];
+  };
+
+  /**
+   * 從價格服務更新活動配置中的價格
+   */
+  const renewPricesByCurrentPriceConfig = async () => {
+    try {
+      console.log("💰 從價格服務更新活動價格...");
+
+      // 獲取當前生效的價格配置
+      const result = await priceConfigService.getCurrentPriceConfig();
+
+      if (result.success && result.data && result.data.prices) {
+        const prices = result.data.prices;
+
+        // 更新各個活動類型的價格
+        if (prices.chaodu !== undefined) {
+          activityConfigs.value.chaodu.price = prices.chaodu;
+        }
+        if (prices.survivors !== undefined) {
+          activityConfigs.value.survivors.price = prices.survivors;
+        }
+        if (prices.diandeng !== undefined) {
+          activityConfigs.value.diandeng.price = prices.diandeng;
+
+          // 如果有點燈的燈種價格配置，也一併更新
+          if (prices.diandeng_guangming !== undefined) {
+            activityConfigs.value.diandeng.lampTypes.guangming.price =
+              prices.diandeng_guangming;
+          }
+          if (prices.diandeng_taisui !== undefined) {
+            activityConfigs.value.diandeng.lampTypes.taisui.price =
+              prices.diandeng_taisui;
+          }
+          if (prices.diandeng_yuanchen !== undefined) {
+            activityConfigs.value.diandeng.lampTypes.yuanchen.price =
+              prices.diandeng_yuanchen;
+          }
+        }
+        if (prices.qifu !== undefined) {
+          activityConfigs.value.qifu.price = prices.qifu;
+        }
+        if (prices.xiaozai !== undefined) {
+          activityConfigs.value.xiaozai.price = prices.xiaozai;
+        }
+        if (prices.pudu !== undefined) {
+          activityConfigs.value.pudu.price = prices.pudu;
+        }
+        if (prices.support_triple_gem !== undefined) {
+          activityConfigs.value.support_triple_gem.price =
+            prices.support_triple_gem;
+        }
+        if (prices.food_offering !== undefined) {
+          activityConfigs.value.food_offering.price = prices.food_offering;
+        }
+        if (prices.support_temple !== undefined) {
+          activityConfigs.value.support_temple.price = prices.support_temple;
+        }
+        if (prices.sutra_printing !== undefined) {
+          activityConfigs.value.sutra_printing.price = prices.sutra_printing;
+        }
+        if (prices.life_release !== undefined) {
+          activityConfigs.value.life_release.price = prices.life_release;
+        }
+
+        console.log("✅ 活動價格更新完成:", {
+          chaodu: activityConfigs.value.chaodu.price,
+          diandeng: activityConfigs.value.diandeng.price,
+          qifu: activityConfigs.value.qifu.price,
+          support_triple_gem: activityConfigs.value.support_triple_gem.price,
+        });
+
+        return true;
+      } else {
+        console.warn("⚠️ 無法獲取價格配置，使用默認價格");
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ 更新活動價格失敗:", error);
+      return false;
+    }
   };
 
   /*
@@ -124,7 +253,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
     return {
       type,
-      label, // 超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度
+      label, // 超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
       price, // 金額
       quantity: sourceData.length, // 數量
       subtotal: price * sourceData.length, // 小計
@@ -269,7 +398,7 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
 
       // TODO: 未來串接 API
       console.log("📄 從服務器獲取參加記錄資料...");
-      const result = await serviceAdapter.getAllParticipationRecords(params);
+      const result = await serviceAdapter.getAllJoinRecords(params);
       if (result.success) {
         allJoinRecords.value = result.data || [];
         console.log(`✅ 成功獲取 ${allJoinRecords.value.length} 筆參加記錄`);
@@ -470,6 +599,13 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     return authService.getUserName();
   };
 
+  // 初始化 - 在頁面使用前調用，更新價格配置
+  const initializePrices = async () => {
+    console.log("💰 初始化活動價格配置...");
+    await renewPricesByCurrentPriceConfig();
+    console.log("✅ 活動價格配置初始化完成");
+  };
+
   // 暴露給元件使用的變數與方法
   return {
     // State
@@ -493,13 +629,17 @@ export const useJoinRecordStore = defineStore("joinRecord", () => {
     setGroupSelection,
     setPersonLampType,
     getPersonLampType,
-    submitRecord, // // 提交參加記錄
+    submitRecord, // 提交參加記錄
     loadRegistrationData, // 載入祈福登記資料
     getAllRegistrations, // 獲取所有祈福登記
     getAllJoinRecords, // 獲取所有參加記錄
+    renewPricesByCurrentPriceConfig, // 更新活動價格
+    initializePrices, // 初始化價格配置
+
     // 獲取用戶信息
     getUserName,
     getCurrentUser,
+
     // 其他方法
     getItemsSummary, // 取得項目摘要
     getItemsDetail, // 取得項目詳細清單

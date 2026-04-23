@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>罕見字字型使用指南</title>
+    <style>
+        :root {
+            --ink: #1a1008;
+            --paper: #f5f0e8;
+            --paper2: #ede6d6;
+            --accent: #7c3a00;
+            --accent2: #b85c00;
+            --line: #d0bc9e;
+            --code-bg: #1e1410;
+            --code-fg: #e8c87a;
+            --code-key: #7ecb8f;
+            --code-val: #e89a6a;
+            --code-cmt: #8a7a6a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+            line-height: 1.7;
+            padding: 2rem 1rem 4rem;
+        }
+
+        .wrap {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* ── Header ── */
+        header {
+            border-bottom: 2px solid var(--line);
+            padding-bottom: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .kicker {
+            font-size: .68rem;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--accent2);
+            margin-bottom: .5rem;
+        }
+
+        h1 {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .lead {
+            margin-top: .7rem;
+            font-size: .92rem;
+            color: #5a4a3a;
+        }
+
+        /* ── Warn box ── */
+        .warn-box {
+            background: #fff8e6;
+            border: 1.5px solid #e8c060;
+            border-left: 5px solid #c8900a;
+            border-radius: 0 6px 6px 0;
+            padding: 1rem 1.2rem;
+            margin-bottom: 2rem;
+            font-size: .9rem;
+            line-height: 1.7;
+        }
+
+        .warn-box .title {
+            font-weight: 700;
+            color: #7a5200;
+            margin-bottom: .3rem;
+            font-size: .95rem;
+        }
+
+        /* ── Steps ── */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .step {
+            background: var(--paper2);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            padding: .9rem 1.2rem;
+            border-bottom: 1px solid var(--line);
+            background: #e8dece;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #f5f0e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .8rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: .95rem;
+        }
+
+        .step-body {
+            padding: 1rem 1.2rem;
+            font-size: .88rem;
+        }
+
+        .step-body p {
+            margin-bottom: .6rem;
+        }
+
+        .step-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ── Code blocks ── */
+        pre,
+        code {
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            font-size: .78rem;
+            line-height: 1.75;
+            padding: 1rem 1.1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: .7rem;
+            white-space: pre;
+        }
+
+        code.inline {
+            background: #2a1e16;
+            color: #e8c87a;
+            font-size: .82em;
+            padding: .15rem .4rem;
+            border-radius: 3px;
+        }
+
+        .cmt {
+            color: var(--code-cmt);
+        }
+
+        .key {
+            color: var(--code-key);
+        }
+
+        .val {
+            color: var(--code-val);
+        }
+
+        .hi {
+            color: #f0a050;
+            font-weight: 700;
+        }
+
+        /* ── Demo box ── */
+        .demo-box {
+            border: 1.5px dashed var(--line);
+            border-radius: 6px;
+            padding: 1.2rem;
+            margin-top: .8rem;
+            background: #f0ead8;
+            text-align: center;
+        }
+
+        .demo-label {
+            font-size: .68rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: #9a8a7a;
+            margin-bottom: .5rem;
+        }
+
+        /* SVG char used as guaranteed demo */
+        .svg-char-demo {
+            display: inline-block;
+            vertical-align: -0.12em;
+        }
+
+        /* ── File structure ── */
+        .file-tree {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: .8rem;
+            line-height: 2;
+            padding: 1rem 1.2rem;
+            border-radius: 4px;
+            margin-top: .7rem;
+        }
+
+        .dir {
+            color: #7eb8e8;
+        }
+
+        .file-font {
+            color: #e8a07a;
+        }
+
+        .file-html {
+            color: #7ecb8f;
+        }
+
+        /* ── Info callout ── */
+        .callout {
+            background: #e8f4e8;
+            border: 1.5px solid #80c080;
+            border-left: 5px solid #3a8a3a;
+            border-radius: 0 6px 6px 0;
+            padding: 1rem 1.2rem;
+            font-size: .88rem;
+            line-height: 1.7;
+            margin-top: .8rem;
+        }
+
+        .callout strong {
+            color: #2a6a2a;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: .75rem;
+            color: #9a8a7a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+
+        <header>
+            <div class="kicker">Source Han Serif TC · 罕見字 U+2137C</div>
+            <h1>如何用 woff2 字型在網頁顯示「<svg style="width:.9em;height:.9em;vertical-align:-.1em" viewBox="80 50 840 770"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(0,870) scale(1,-1)">
+                        <path fill="currentColor"
+                            d="M80 820H920V780H80ZM80 780H130V50H80ZM870 780H920V50H870ZM130 640H870V600H130ZM230 600H280V430H230ZM720 600H770V430H720ZM230 470H770V430H230ZM130 310H870V270H130ZM230 270H280V90H230ZM720 270H770V90H720ZM80 90H920V50H80Z" />
+                    </g>
+                </svg>」</h1>
+            <p class="lead">完整步驟：取得正確字型 → 子集化 → 部署到 Netlify</p>
+        </header>
+
+        <!-- 重要提示 -->
+        <div class="warn-box">
+            <div class="title">⚠ 你上傳的 woff2 不包含這個字</div>
+            檢測發現上傳的 <code class="inline">SourceHanSerifTC-VF.woff2</code> 只有 52 個全形英文字母（Ａ-Ｚ, ａ-ｚ），
+            已被子集化，<strong>不包含 U+2137C</strong>。你需要下載 <strong>完整原始版</strong> 的 Source Han Serif TC，再自行子集化。
+        </div>
+
+        <div class="steps">
+
+            <!-- Step 1 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">1</div>
+                    <div class="step-title">下載完整版 Source Han Serif TC</div>
+                </div>
+                <div class="step-body">
+                    <p>需要 Adobe 官方發布的完整 OTF（包含所有 CJK Extension B 字符）：</p>
+                    <pre><span class="cmt"># 方法 A：從 Adobe GitHub Releases 下載（推薦）</span>
+<span class="cmt"># https://github.com/adobe-fonts/source-han-serif/releases</span>
+<span class="cmt"># 找 "SuperOTC" 或 "SubsetOTF" → TC → SourceHanSerifTC-Light.otf</span>
+<span class="cmt"># 檔案約 22 MB</span>
+
+<span class="cmt"># 方法 B：用 curl 下載（如果有完整 URL）</span>
+curl -L -o SourceHanSerifTC-Light.otf \
+  "https://github.com/adobe-fonts/source-han-serif/\
+releases/download/2.003R/\
+09_SourceHanSerifTC.zip"
+<span class="cmt"># 解壓後找 OTF/SourceHanSerifTC-Light.otf</span></pre>
+                    <div class="callout">
+                        <strong>注意：</strong>必須是 <code class="inline">.otf</code> 或未子集化的 <code
+                            class="inline">.ttf</code>，
+                        不能用已子集化的 woff2（子集化過的字型已刪掉罕見字）。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">2</div>
+                    <div class="step-title">子集化：只保留 U+2137C（用 pyftsubset）</div>
+                </div>
+                <div class="step-body">
+                    <p>安裝工具並生成一個超小的 woff2，只含「𡍼」這一個字：</p>
+                    <pre><span class="cmt"># 安裝 Python 工具</span>
+pip install fonttools brotli
+
+<span class="cmt"># 子集化：只保留 U+2137C，輸出 woff2</span>
+pyftsubset SourceHanSerifTC-Light.otf \
+  <span class="key">--unicodes=</span><span class="val">"U+2137C"</span> \
+  <span class="key">--flavor=</span><span class="val">woff2</span> \
+  <span class="key">--output-file=</span><span class="val">rarechar.woff2</span>
+
+<span class="cmt"># 預期輸出：約 3-10 KB（只有一個字形）</span>
+ls -lh rarechar.woff2</pre>
+                    <p style="margin-top:.6rem">如果你需要同時顯示多個罕見字，可以加多個 codepoint：</p>
+                    <pre><span class="cmt"># 多個字符</span>
+pyftsubset SourceHanSerifTC-Light.otf \
+  <span class="key">--unicodes=</span><span class="val">"U+2137C,U+2B820,U+2B821"</span> \
+  <span class="key">--flavor=</span><span class="val">woff2</span> \
+  <span class="key">--output-file=</span><span class="val">rarechar.woff2</span></pre>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">3</div>
+                    <div class="step-title">把 woff2 放進專案，在 CSS 用 @font-face 載入</div>
+                </div>
+                <div class="step-body">
+                    <p>推薦的檔案結構：</p>
+                    <div class="file-tree"><span class="dir">your-project/</span>
+                        ├── <span class="dir">public/</span>
+                        │ └── <span class="dir">fonts/</span>
+                        │ └── <span class="file-font">rarechar.woff2</span> <span class="cmt">← 子集化後的字型</span>
+                        ├── <span class="file-html">index.html</span>
+                        └── <span class="file-html">netlify.toml</span></div>
+
+                    <p style="margin-top:.8rem">CSS 寫法（放在 <code class="inline">&lt;style&gt;</code> 或獨立 CSS 檔案）：</p>
+                    <pre><span class="cmt">/* 1. 宣告自訂字型，只對 U+2137C 生效 */</span>
+<span class="hi">@font-face {</span>
+  font-family: <span class="val">'RareChar'</span>;
+  src: url(<span class="val">'/fonts/rarechar.woff2'</span>) format(<span class="val">'woff2'</span>);
+  <span class="hi">unicode-range: U+2137C;</span>  <span class="cmt">/* 關鍵：只對這個字生效 */</span>
+  font-display: <span class="val">block</span>;
+<span class="hi">}</span>
+
+<span class="cmt">/* 2. 在需要顯示罕見字的元素加入 font-family */</span>
+body {
+  font-family:
+    <span class="val">'RareChar'</span>,       <span class="cmt">/* 先用這個處理 U+2137C */</span>
+    <span class="val">'PingFang TC'</span>,    <span class="cmt">/* macOS/iOS 其他中文字 */</span>
+    <span class="val">'Microsoft JhengHei'</span>, <span class="cmt">/* Windows */</span>
+    <span class="val">'Noto Serif TC'</span>,  <span class="cmt">/* Android/Linux */</span>
+    serif;
+}</pre>
+
+                    <p style="margin-top:.8rem">HTML 裡的 <code class="inline">&lt;link&gt;</code> preload 寫法（可選，加快載入）：
+                    </p>
+                    <pre>&lt;link rel=<span class="val">"preload"</span> href=<span class="val">"/fonts/rarechar.woff2"</span>
+      as=<span class="val">"font"</span> type=<span class="val">"font/woff2"</span> crossorigin&gt;</pre>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">4</div>
+                    <div class="step-title">Netlify 設定：解除 CSP 字型限制</div>
+                </div>
+                <div class="step-body">
+                    <p>這是之前 Android 失敗的真正原因。在專案根目錄加 <code class="inline">netlify.toml</code>：</p>
+                    <pre><span class="cmt"># netlify.toml</span>
+[[headers]]
+  for = <span class="val">"/*"</span>
+  [headers.values]
+    <span class="cmt"># 允許從自己的域名載入字型（'self'）</span>
+    Content-Security-Policy = <span class="val">"default-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline';"</span></pre>
+
+                    <p style="margin-top:.6rem">或用 <code class="inline">public/_headers</code> 檔案（適合靜態專案）：</p>
+                    <pre>/*
+  Content-Security-Policy: default-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline';</pre>
+
+                    <div class="callout">
+                        <strong>為什麼之前 data: URI 字型會失敗？</strong><br>
+                        Netlify 預設 CSP 中 <code class="inline">font-src</code> 不包含 <code class="inline">data:</code>，
+                        所以 base64 嵌入的字型被瀏覽器拒絕。用獨立 woff2 檔案（<code class="inline">font-src 'self'</code>）就不會有這問題。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-num">5</div>
+                    <div class="step-title">完整 HTML 範例</div>
+                </div>
+                <div class="step-body">
+                    <p>把以下代碼直接複製，替換字型路徑即可用：</p>
+                    <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang=<span class="val">"zh-Hant"</span>&gt;
+&lt;head&gt;
+  &lt;meta charset=<span class="val">"UTF-8"</span>&gt;
+  &lt;meta name=<span class="val">"viewport"</span> content=<span class="val">"width=device-width, initial-scale=1.0"</span>&gt;
+
+  <span class="cmt">&lt;!-- 預載字型（可選，提速） --&gt;</span>
+  &lt;link rel=<span class="val">"preload"</span> href=<span class="val">"/fonts/rarechar.woff2"</span>
+        as=<span class="val">"font"</span> type=<span class="val">"font/woff2"</span> crossorigin&gt;
+
+  &lt;style&gt;
+    <span class="hi">@font-face {</span>
+      font-family: <span class="val">'RareChar'</span>;
+      src: url(<span class="val">'/fonts/rarechar.woff2'</span>) format(<span class="val">'woff2'</span>);
+      unicode-range: <span class="hi">U+2137C</span>;
+      font-display: block;
+    <span class="hi">}</span>
+
+    body {
+      font-family: <span class="val">'RareChar'</span>, <span class="val">'PingFang TC'</span>,
+                   <span class="val">'Microsoft JhengHei'</span>, <span class="val">'Noto Serif TC'</span>, serif;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;p&gt;這個罕見字「<span class="hi">𡍼</span>」現在可以在所有裝置正確顯示。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+
+                    <div class="demo-box">
+                        <div class="demo-label">用 Inline SVG 示意效果（字型載入後會用真實字型）</div>
+                        <p style="font-size:1.5rem;line-height:2">
+                            這個罕見字「<svg class="svg-char-demo" style="width:1.2em;height:1.2em;vertical-align:-.15em"
+                                viewBox="80 50 840 770" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="𡍼">
+                                <g transform="translate(0,870) scale(1,-1)">
+                                    <path fill="#7c3a00"
+                                        d="M80 820H920V780H80ZM80 780H130V50H80ZM870 780H920V50H870ZM130 640H870V600H130ZM230 600H280V430H230ZM720 600H770V430H720ZM230 470H770V430H230ZM130 310H870V270H130ZM230 270H280V90H230ZM720 270H770V90H720ZM80 90H920V50H80Z" />
+                                </g>
+                            </svg>」現在可以在所有裝置正確顯示。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /steps -->
+
+        <footer>Source Han Serif TC · U+2137C · 字型子集化指南</footer>
+
+    </div>
+</body>
+
+</html>

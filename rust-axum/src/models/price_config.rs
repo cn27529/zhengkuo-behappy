@@ -1,0 +1,162 @@
+// src/models/price_config.rs
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
+use serde_json::Value as JsonValue;
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct PriceConfig {
+    // Directus 系統字段
+    pub id: i64,
+    #[sqlx(default)]
+    pub user_created: Option<String>,  // char(36) - Directus 用戶 UUID
+    #[sqlx(default)]
+    pub date_created: Option<String>,  // datetime
+    #[sqlx(default)]
+    pub user_updated: Option<String>,  // char(36) - Directus 用戶 UUID
+    #[sqlx(default)]
+    pub date_updated: Option<String>,  // datetime
+
+    #[sqlx(default)]
+    pub version: Option<String>,
+    #[sqlx(default)]
+    pub state: Option<String>,
+    #[sqlx(default)]
+    #[serde(
+        serialize_with = "serialize_json_string",
+        deserialize_with = "deserialize_json_string",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub prices: Option<String>,
+    #[sqlx(default)]
+    pub notes: Option<String>,
+    
+     #[sqlx(rename = "enableDate", default)]  // 確認資料庫實際欄位名
+    pub enable_date: Option<String>,
+    
+    // 自定義時間戳
+    #[sqlx(rename = "createdAt")]
+    pub created_at: Option<String>,   // varchar(255)
+    #[sqlx(rename = "updatedAt")]
+    pub updated_at: Option<String>,   // varchar(255)
+}
+
+fn serialize_json_string<S>(
+    value: &Option<String>,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    match value {
+        Some(s) => match serde_json::from_str::<JsonValue>(s) {
+            Ok(json) => json.serialize(serializer),
+            Err(_) => serializer.serialize_none(),
+        },
+        None => serializer.serialize_none(),
+    }
+}
+
+fn deserialize_json_string<'de, D>(
+    deserializer: D,
+) -> Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value: Option<JsonValue> = Option::deserialize(deserializer)?;
+    Ok(value.map(|v| v.to_string()))
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreatePriceConfigRequest {
+    #[serde(default)]
+    pub version: Option<String>,
+    #[serde(default)]
+    pub state: Option<String>,
+    #[serde(default)]
+    pub prices: Option<JsonValue>,
+    #[serde(default)]
+    pub notes: Option<String>,
+    #[serde(default)]
+    pub enable_date: Option<String>,
+    #[serde(default)]
+    pub created_at: Option<String>,
+    #[serde(default)]
+    pub updated_at: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdatePriceConfigRequest {
+    pub version: Option<String>,
+    pub state: Option<String>,
+    pub prices: Option<JsonValue>,
+    pub notes: Option<String>,
+    pub enable_date: Option<String>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    #[serde(default)]
+    pub user_updated: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PriceConfigQuery {
+    pub version: Option<String>,
+    pub state: Option<String>,
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
+    pub sort: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PriceConfigResponse {
+    
+    // Directus 系統字段
+    pub id: i64,
+     #[serde(rename = "user_created", skip_serializing_if = "Option::is_none")]
+    pub user_created: Option<String>,
+    #[serde(rename = "date_created", skip_serializing_if = "Option::is_none")]
+    pub date_created: Option<String>,
+    #[serde(rename = "user_updated", skip_serializing_if = "Option::is_none")]
+    pub user_updated: Option<String>,
+    #[serde(rename = "date_updated", skip_serializing_if = "Option::is_none")]
+    pub date_updated: Option<String>,
+
+    // 自定義字段
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prices: Option<JsonValue>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub notes: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub enable_date: Option<String>,
+    
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
+}
+
+impl From<PriceConfig> for PriceConfigResponse {
+    fn from(data: PriceConfig) -> Self {
+        Self {
+            id: data.id,
+            user_created: data.user_created,
+            date_created: data.date_created,
+            user_updated: data.user_updated,
+            date_updated: data.date_updated,
+            version: data.version,
+            state: data.state,
+            prices: data.prices.and_then(|s| serde_json::from_str(&s).ok()),
+            notes: data.notes,
+            enable_date: data.enable_date,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+        }
+    }
+}

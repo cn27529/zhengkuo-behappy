@@ -8,7 +8,7 @@ export class JoinRecordService {
   constructor() {
     this.serviceName = "JoinRecordService";
     this.base = baseService;
-    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsParticipationRecord}`;
+    this.endpoint = `${this.base.apiBaseUrl}${this.base.apiEndpoints.itemsJoinRecord}`;
     console.log(`JoinRecordService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
@@ -17,7 +17,7 @@ export class JoinRecordService {
   /**
    * 創建參加記錄
    */
-  async createParticipationRecord(recordData) {
+  async createJoinRecord(recordData) {
     const processedData = {
       ...recordData,
       createdAt: DateUtils.getCurrentISOTime(),
@@ -36,7 +36,7 @@ export class JoinRecordService {
     const startTime = Date.now();
     const logContext = {
       service: this.serviceName,
-      operation: "createParticipationRecord",
+      operation: "createJoinRecord",
       method: "POST",
       startTime: startTime,
       endpoint: this.endpoint,
@@ -60,14 +60,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 創建參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 獲取所有參加記錄
    */
-  async getAllParticipationRecords(params = {}) {
+  async getAllJoinRecords(params = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -85,7 +85,7 @@ export class JoinRecordService {
 
     const logContext = {
       //service: this.serviceName,
-      operation: "getAllParticipationRecords",
+      operation: "getAllJoinRecords",
       method: "GET",
       startTime: startTime,
       endpoint: apiUrl,
@@ -107,14 +107,50 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
+    }
+  }
+
+  /**
+   * 根據 IDs 列表獲取參加記錄
+   * @param {*} recordIds
+   */
+  async getJoinRecordByIds(recordIds) {
+    if (this.base.getIsMock()) {
+      return {
+        success: true,
+        data: [],
+        message: "Mock 模式：返回空參加記錄列表",
+      };
+    }
+    try {
+      // recordIds 可能是單個 ID 或 ID 列表陣列，確保它是陣列格式
+      const idsArray = Array.isArray(recordIds) ? recordIds : [recordIds];
+      const result = {
+        success: true,
+        data: [],
+        message: `成功獲取參加記錄列表 (IDs: ${idsArray.join(",")})`,
+      };
+      idsArray.forEach((id) => {
+        const record = this.getJoinRecordById(id, {
+          operation: "getJoinRecordByIds - individual fetch",
+          id,
+          ...context,
+        });
+        result.data.push(record.data);
+      });
+
+      return result;
+    } catch (error) {
+      console.error("❌ 根據 IDs 列表獲取參加記錄失敗:", error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 根據 ID 獲取參加記錄
    */
-  async getParticipationRecordById(recordId) {
+  async getJoinRecordById(recordId) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -127,7 +163,7 @@ export class JoinRecordService {
     const apiUrl = `${this.endpoint}/${recordId}`;
     const logContext = {
       //service: this.serviceName,
-      operation: "getParticipationRecordById",
+      operation: "getJoinRecordById",
       method: "GET",
       startTime: startTime,
       endpoint: apiUrl,
@@ -149,14 +185,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 根據 registrationId 獲取參加記錄
    */
-  async getParticipationRecordsByRegistrationId(registrationId) {
+  async getJoinRecordsByRegistrationId(registrationId) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -174,7 +210,7 @@ export class JoinRecordService {
 
     const logContext = {
       //service: this.serviceName,
-      operation: "getParticipationRecordsByRegistrationId",
+      operation: "getJoinRecordsByRegistrationId",
       method: "GET",
       startTime: startTime,
       endpoint: apiUrl,
@@ -196,14 +232,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 更新參加記錄
    */
-  async updateParticipationRecord(recordId, recordData) {
+  async updateJoinRecord(recordId, recordData) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法更新數據");
       return {
@@ -220,7 +256,7 @@ export class JoinRecordService {
     const startTime = Date.now();
     const logContext = {
       service: this.serviceName,
-      operation: "updateParticipationRecord",
+      operation: "updateJoinRecord",
       method: "PATCH",
       startTime: startTime,
       endpoint: `${this.endpoint}/${recordId}`,
@@ -245,14 +281,14 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error(`❌ 更新參加記錄失敗 (ID: ${recordId})`, error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 刪除參加記錄
    */
-  async deleteParticipationRecord(recordId) {
+  async deleteJoinRecord(recordId) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 directus，無法刪除數據");
       return {
@@ -261,7 +297,7 @@ export class JoinRecordService {
       };
     }
 
-    const currentRecord = await this.getParticipationRecordById(recordId);
+    const currentRecord = await this.getJoinRecordById(recordId);
     if (!currentRecord) {
       return {
         success: false,
@@ -273,7 +309,7 @@ export class JoinRecordService {
     const startTime = Date.now();
     const logContext = {
       service: this.serviceName,
-      operation: "deleteParticipationRecord",
+      operation: "deleteJoinRecord",
       method: "DELETE",
       startTime: startTime,
       endpoint: `${this.endpoint}/${recordId}`,
@@ -297,7 +333,7 @@ export class JoinRecordService {
       return result;
     } catch (error) {
       console.error(`❌ 刪除參加記錄失敗 (ID: ${recordId})`, error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
@@ -320,9 +356,10 @@ export class JoinRecordService {
       receiptIssuedAt: record.receiptIssuedAt,
       receiptIssuedBy: record.receiptIssuedBy,
       needReceipt: record.needReceipt,
+      receiptId: record.receiptId, // 打印ID
     };
 
-    return await this.updateParticipationRecord(record.id, updateData);
+    return await this.updateJoinRecord(record.id, updateData);
   }
 
   /**
@@ -333,7 +370,7 @@ export class JoinRecordService {
       console.log("Service 傳送資料:", payload);
       const createISOTime = DateUtils.getCurrentISOTime();
 
-      // 轉換為 participationRecordDB 格式
+      // 轉換為 joinRecordDB 格式
       const recordData = {
         registrationId: payload.registrationId || -1,
         activityId: payload.activityId || -1,
@@ -363,7 +400,7 @@ export class JoinRecordService {
 
       console.log("準備儲存的記錄資料:", recordData);
 
-      const result = await this.createParticipationRecord(recordData);
+      const result = await this.createJoinRecord(recordData);
       return result;
     } catch (error) {
       console.error("儲存失敗", error);
@@ -373,6 +410,7 @@ export class JoinRecordService {
 
   // ========== 輔助方法 ==========
 
+  // 根據活動類型獲取對應的配置（標籤、價格、來源）：超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
   getActivityConfig(activityType) {
     const configs = {
       chaodu: {
@@ -385,6 +423,31 @@ export class JoinRecordService {
       qifu: { label: "消災祈福", price: 300, source: "blessing.persons" },
       xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" },
       pudu: { label: "中元普度", price: 1200, source: "blessing.persons" },
+      support_triple_gem: {
+        label: "護持三寶",
+        price: 200,
+        source: "blessing.persons",
+      },
+      food_offering: {
+        label: "供齋",
+        price: 500,
+        source: "blessing.persons",
+      },
+      support_temple: {
+        label: "護持道場",
+        price: 1000,
+        source: "blessing.persons",
+      },
+      sutra_printing: {
+        label: "助印經書",
+        price: 800,
+        source: "blessing.persons",
+      },
+      life_release: {
+        label: "放生",
+        price: 1500,
+        source: "blessing.persons",
+      },
     };
     return configs[activityType];
   }
@@ -415,7 +478,7 @@ export class JoinRecordService {
   }
 
   // ========== 錯誤處理 ==========
-  handleParticipationRecordError(error) {
+  handleJoinRecordError(error) {
     return this.base.handleDirectusError(error);
   }
 

@@ -1,4 +1,4 @@
-# Monthly Donate（`每月贊助`）開發指南
+# 每月贊助 - 開發指南
 
 ## 概述說明
 
@@ -579,7 +579,7 @@ const checkDuplicateMonths = (donorName, newMonths) => {
 
 ### Mock 資料
 
-- `mock_monthlyDonates.json` - 測試用贊助資料
+- `mock_monthly_donates.json` - 測試用贊助資料
 - 包含多筆贊助項目的複雜範例
 
 ### 測試腳本

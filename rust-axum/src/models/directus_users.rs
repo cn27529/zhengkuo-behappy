@@ -2,6 +2,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct DirectusUser {
     pub id: String,
@@ -36,6 +37,7 @@ pub struct DirectusUser {
     pub text_direction: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DirectusUserResponse {
@@ -88,37 +90,38 @@ pub struct DirectusUserResponse {
 }
 
 impl From<DirectusUser> for DirectusUserResponse {
-    fn from(user: DirectusUser) -> Self {
+    fn from(data: DirectusUser) -> Self {
         Self {
-            id: user.id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
+            id: data.id,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            email: data.email,
             //password: user.password,
-            location: user.location,
-            title: user.title,
-            description: user.description,
-            tags: user.tags,
-            avatar: user.avatar,
-            language: user.language,
-            status: user.status,
-            role: user.role,
-            last_access: user.last_access,
-            last_page: user.last_page,
-            provider: user.provider,
-            external_identifier: user.external_identifier,
-            auth_data: user.auth_data,
-            email_notifications: user.email_notifications,
-            appearance: user.appearance,
-            theme_dark: user.theme_dark,
-            theme_light: user.theme_light,
-            theme_light_overrides: user.theme_light_overrides,
-            theme_dark_overrides: user.theme_dark_overrides,
-            text_direction: user.text_direction,
+            location: data.location,
+            title: data.title,
+            description: data.description,
+            tags: data.tags,
+            avatar: data.avatar,
+            language: data.language,
+            status: data.status,
+            role: data.role,
+            last_access: data.last_access,
+            last_page: data.last_page,
+            provider: data.provider,
+            external_identifier: data.external_identifier,
+            auth_data: data.auth_data,
+            email_notifications: data.email_notifications,
+            appearance: data.appearance,
+            theme_dark: data.theme_dark,
+            theme_light: data.theme_light,
+            theme_light_overrides: data.theme_light_overrides,
+            theme_dark_overrides: data.theme_dark_overrides,
+            text_direction: data.text_direction,
         }
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct DirectusUserQuery {
     pub status: Option<String>,

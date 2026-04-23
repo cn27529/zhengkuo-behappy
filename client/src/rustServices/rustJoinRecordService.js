@@ -3,14 +3,14 @@ import { baseRustService } from "./baseRustService.js";
 import { DateUtils } from "../utils/dateUtils.js";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { authService } from "../services/authService.js";
+import appConfig from "../config/appConfig.js";
 
 export class RustJoinRecordService {
   // ========== 建構函式 ==========
   constructor() {
     this.serviceName = "RustJoinRecordService";
     this.base = baseRustService;
-    this.endpoint =
-      this.base.endpoints.participationRecords || "participation-records";
+    this.endpoint = this.base.endpoints.joinRecords || "join-records";
     console.log(`RustJoinRecordService 初始化: 當前模式為 ${this.base.mode}`);
   }
 
@@ -19,7 +19,7 @@ export class RustJoinRecordService {
   /**
    * 創建參加記錄
    */
-  async createParticipationRecord(recordData, additionalContext = {}) {
+  async createJoinRecord(recordData, additionalContext = {}) {
     const createISOTime = DateUtils.getCurrentISOTime();
     const processedData = {
       ...recordData,
@@ -29,7 +29,7 @@ export class RustJoinRecordService {
 
     const logContext = {
       service: this.serviceName,
-      operation: "createParticipationRecord",
+      operation: "createJoinRecord",
       method: "POST",
       endpoint: this.endpoint,
       requestBody: processedData,
@@ -58,14 +58,14 @@ export class RustJoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 創建參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 獲取所有參加記錄
    */
-  async getAllParticipationRecords(params = {}, context = {}) {
+  async getAllJoinRecords(params = {}, context = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -78,6 +78,7 @@ export class RustJoinRecordService {
       sort: "-createdAt",
       ...params,
     }).toString();
+
     const apiUrl = `${this.endpoint}?${queryParams}`;
 
     try {
@@ -86,7 +87,7 @@ export class RustJoinRecordService {
         { method: "GET" },
         {
           //service: this.serviceName,
-          operation: "getAllParticipationRecords",
+          operation: "getAllJoinRecords",
           params,
           ...context,
         },
@@ -94,14 +95,78 @@ export class RustJoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
+    }
+  }
+
+  /**
+   * 生成 Mock 資料
+   */
+  generateMockData() {
+    return {
+      id: -1,
+      registrationId: -1,
+      activityId: -1,
+      state: "confirmed",
+      items: [],
+      totalAmount: 0,
+      finalAmount: 0,
+      createdAt: DateUtils.getCurrentISOTime(),
+      updatedAt: DateUtils.getCurrentISOTime(),
+    };
+  }
+
+  /**
+   * 根據 ID 列表獲取參加記錄
+   */
+  async getJoinRecordByIds(recordIds, context = {}) {
+    if (this.base.getIsMock()) {
+      const idsArray = Array.isArray(recordIds) ? recordIds : [recordIds];
+      const mockData = this.generateMockData();
+      const mockResult = [];
+      idsArray.forEach((id) => {
+        console.warn(`⚠️ 當前模式不為 Rust，獲取參加記錄成功 (ID: ${id})`);
+        mockResult.push(mockData.filter((record) => record.id === id)[0]); // 根據 ID 返回對應的 Mock 資料
+      });
+      return {
+        success: true,
+        data: mockResult,
+        message: "Mock 模式：返回參加記錄列表",
+      };
+    }
+
+    try {
+      // recordIds 可能是單個 ID 或 ID 列表陣列，確保它是陣列格式
+      const idsArray = Array.isArray(recordIds) ? recordIds : [recordIds];
+      const queryParams = new URLSearchParams({
+        filter: `id_in(${idsArray.join(",")})`,
+      }).toString();
+
+      const result = {
+        success: true,
+        data: [],
+        message: `成功獲取參加記錄列表 (IDs: ${idsArray.join(",")})`,
+      };
+      idsArray.forEach((id) => {
+        const record = this.getJoinRecordById(id, {
+          operation: "getJoinRecordByIds - individual fetch",
+          id,
+          ...context,
+        });
+        result.data.push(record.data);
+      });
+
+      return result;
+    } catch (error) {
+      console.error("❌ 根據 IDs 獲取參加記錄失敗:", error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 根據 ID 獲取參加記錄
    */
-  async getParticipationRecordById(recordId, context = {}) {
+  async getJoinRecordById(recordId, context = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -116,7 +181,7 @@ export class RustJoinRecordService {
         { method: "GET" },
         {
           //service: this.serviceName,
-          operation: "getParticipationRecordById",
+          operation: "getJoinRecordById",
           id: recordId,
           ...context,
         },
@@ -124,14 +189,14 @@ export class RustJoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 根據 registrationId 獲取參加記錄
    */
-  async getParticipationRecordsByRegistrationId(registrationId, context = {}) {
+  async getJoinRecordsByRegistrationId(registrationId, context = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -146,7 +211,7 @@ export class RustJoinRecordService {
         { method: "GET" },
         {
           //service: this.serviceName,
-          operation: "getParticipationRecordsByRegistrationId",
+          operation: "getJoinRecordsByRegistrationId",
           registrationId,
           ...context,
         },
@@ -154,14 +219,14 @@ export class RustJoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 根據 activityId 獲取參加記錄
    */
-  async getParticipationRecordsByActivityId(activityId, context = {}) {
+  async getJoinRecordsByActivityId(activityId, context = {}) {
     if (this.base.getIsMock()) {
       return {
         success: true,
@@ -176,7 +241,7 @@ export class RustJoinRecordService {
         { method: "GET" },
         {
           //service: this.serviceName,
-          operation: "getParticipationRecordsByActivityId",
+          operation: "getJoinRecordsByActivityId",
           activityId,
           ...context,
         },
@@ -184,14 +249,14 @@ export class RustJoinRecordService {
       return result;
     } catch (error) {
       console.error("❌ 獲取參加記錄失敗:", error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 更新參加記錄
    */
-  async updateParticipationRecord(recordId, recordData, context = {}) {
+  async updateJoinRecord(recordId, recordData, context = {}) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 rust，無法更新數據");
       return {
@@ -215,7 +280,7 @@ export class RustJoinRecordService {
         },
         {
           service: this.serviceName,
-          operation: "updateParticipationRecord",
+          operation: "updateJoinRecord",
           id: recordId,
           requestBody: updateData,
           ...context,
@@ -224,14 +289,14 @@ export class RustJoinRecordService {
       return result;
     } catch (error) {
       console.error(`❌ 更新參加記錄失敗 (ID: ${recordId})`, error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
   /**
    * 刪除參加記錄
    */
-  async deleteParticipationRecord(recordId, context = {}) {
+  async deleteJoinRecord(recordId, context = {}) {
     if (this.base.getIsMock()) {
       console.warn("⚠️ 當前模式不是 rust，無法刪除數據");
       return {
@@ -246,7 +311,7 @@ export class RustJoinRecordService {
         { method: "DELETE" },
         {
           service: this.serviceName,
-          operation: "deleteParticipationRecord",
+          operation: "deleteJoinRecord",
           id: recordId,
           ...context,
         },
@@ -254,7 +319,7 @@ export class RustJoinRecordService {
       return result;
     } catch (error) {
       console.error(`❌ 刪除參加記錄失敗 (ID: ${recordId})`, error);
-      return this.handleParticipationRecordError(error);
+      return this.handleJoinRecordError(error);
     }
   }
 
@@ -288,7 +353,7 @@ export class RustJoinRecordService {
           : authService.getUserName() || "沒有名稱", // 確保有名稱可用，否則使用預設值
     };
 
-    return await this.updateParticipationRecord(record.id, updateData, {
+    return await this.updateJoinRecord(record.id, updateData, {
       operation: "updateByReceiptPrint",
       ...context,
     });
@@ -330,7 +395,7 @@ export class RustJoinRecordService {
       };
 
       console.log("🦀 [Rust] 準備儲存的記錄資料:", recordData);
-      const result = await this.createParticipationRecord(recordData, {
+      const result = await this.createJoinRecord(recordData, {
         ...context,
       });
       return result;
@@ -342,6 +407,7 @@ export class RustJoinRecordService {
 
   // ========== 輔助方法 ==========
 
+  // 根據活動類型獲取對應的配置（標籤、價格、來源）：超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
   getActivityConfig(activityType) {
     const configs = {
       chaodu: {
@@ -354,6 +420,27 @@ export class RustJoinRecordService {
       qifu: { label: "消災祈福", price: 300, source: "blessing.persons" },
       xiaozai: { label: "固定消災", price: 100, source: "blessing.persons" },
       pudu: { label: "中元普度", price: 1200, source: "blessing.persons" },
+      support_triple_gem: {
+        label: "護持三寶",
+        price: 200,
+        source: "blessing.persons",
+      },
+      food_offering: { label: "供齋", price: 500, source: "offering.food" },
+      support_temple: {
+        label: "護持道場",
+        price: 1000,
+        source: "offering.temple",
+      },
+      sutra_printing: {
+        label: "助印經書",
+        price: 800,
+        source: "offering.sutra_printing",
+      },
+      life_release: {
+        label: "放生",
+        price: 1500,
+        source: "offering.life_release",
+      },
     };
     return configs[activityType];
   }
@@ -365,23 +452,6 @@ export class RustJoinRecordService {
       yuanchen: "元辰燈",
     };
     return lampTypes[lampType] || "光明燈";
-  }
-
-  /**
-   * 生成 Mock 資料
-   */
-  generateMockData() {
-    return {
-      id: -1,
-      registrationId: -1,
-      activityId: -1,
-      state: "confirmed",
-      items: [],
-      totalAmount: 0,
-      finalAmount: 0,
-      createdAt: DateUtils.getCurrentISOTime(),
-      updatedAt: DateUtils.getCurrentISOTime(),
-    };
   }
 
   // ========== Rust 特有功能 ==========
@@ -410,7 +480,7 @@ export class RustJoinRecordService {
   /**
    * Rust 特定的錯誤處理
    */
-  handleParticipationRecordError(error) {
+  handleJoinRecordError(error) {
     return this.base.handleRustError(error);
   }
 

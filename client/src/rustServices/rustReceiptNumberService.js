@@ -13,15 +13,130 @@ export class RustReceiptNumberService {
     );
   }
 
+  // 作廢合併打印的接口
+  /*
+    \"receiptNumber\": \"$RECEIPT_NUMBER\",
+    \"recordIds\": $RECORD_IDS,
+    \"state\": \"$STATE\",  
+    \"receiptType\": \"$RECEIPT_TYPE\",
+    \"voidReason\": \"$VOID_REASON\",            
+    \"userId\": \"$TEST_ADMIN\"
+  */
+  async removeMergedReceiptNumber(
+    receiptNumber,
+    state,
+    voidReason,
+    recordIds,
+    additionalContext = {},
+  ) {
+    const startTime = Date.now();
+    const requestBody = {
+      receiptNumber: receiptNumber, // 需要作廢的合併編號
+      state: state || "remove merged", // "remove merged" 作廢合併打印
+      receiptType: "", // "stamp" 或 "standard"
+      voidReason: voidReason || "作廢合併打印", // 作廢原因
+      recordIds: recordIds, // 參與合併的多個 recordId
+      userId: additionalContext.userId || authService.getCurrentUser() || null,
+    };
+
+    const logContext = {
+      service: this.serviceName,
+      operation: "removeMergedReceiptNumber",
+      method: "POST",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/merge/remove`,
+      requestBody: requestBody,
+      ...additionalContext,
+    };
+
+    try {
+      console.log("🦀 [Rust] 請求作廢合併打印:", requestBody);
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/merge/remove`,
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        },
+        logContext,
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ Rust 作廢合併打印失敗:", error);
+      return this.handleError(error);
+    }
+  }
+
+  // 合併打印的接口
+  /*
+    \"receiptNumber\": \"$RECEIPT_NUMBER\",
+    \"recordIds\": $RECORD_IDS,
+    \"state\": \"$STATE\",
+    \"receiptType\": \"$RECEIPT_TYPE\",
+    \"voidReason\": \"$VOID_REASON\",
+    \"userId\": \"$TEST_ADMIN\"
+  */
+  async generateMergedReceiptNumber(
+    recordIds,
+    receiptType,
+    state,
+    voidReason,
+    additionalContext = {},
+  ) {
+    const startTime = Date.now();
+    const receiptIssuedBy = authService.getUserName() || "未知的經手人";
+
+    const requestBody = {
+      receiptNumber: "",
+      recordIds: recordIds, // 參與合併的多個 recordId
+      state: "merged", // "merged" 合併打印
+      receiptType: receiptType, // "stamp" 或 "standard"
+      voidReason: voidReason || "合併打印", // 作廢原因
+      receiptIssuedBy: receiptIssuedBy,
+      userId: additionalContext.userId || authService.getCurrentUser() || null,
+    };
+
+    const logContext = {
+      service: this.serviceName,
+      operation: "generateMergedReceiptNumber",
+      method: "POST",
+      startTime: startTime,
+      endpoint: `${this.endpoint}/merge`,
+      requestBody: requestBody,
+      ...additionalContext,
+    };
+
+    try {
+      console.log("🦀 [Rust] 請求原子性生成合併打印編號:", requestBody);
+
+      const result = await this.base.rustFetch(
+        `${this.endpoint}/merge`,
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        },
+        logContext,
+      );
+
+      return result;
+    } catch (error) {
+      console.error("❌ Rust 合併打印編號失敗:", error);
+      return this.handleError(error);
+    }
+  }
+
   /**
    * ✅ 🔥 核心功能：原子性生成收據編號 (對應 Rust 方案 1)
    */
   async generateReceiptNumber(recordId, receiptType, additionalContext = {}) {
     const startTime = Date.now();
+    const receiptIssuedBy = authService.getUserName() || "未知的經手人";
     const requestBody = {
       recordId: parseInt(recordId),
       receiptType: receiptType, // "stamp" 或 "standard"
-      userId: additionalContext.userId || null,
+      receiptIssuedBy: receiptIssuedBy,
+      userId: additionalContext.userId || authService.getCurrentUser() || null,
     };
 
     const logContext = {
@@ -35,10 +150,7 @@ export class RustReceiptNumberService {
     };
 
     try {
-      console.log(
-        `🦀 [Rust] 請求原子性生成編號 (${receiptType}):`,
-        requestBody,
-      );
+      console.log("🦀 [Rust] 請求原子性生成編號:", requestBody);
 
       const result = await this.base.rustFetch(
         `${this.endpoint}/generate`,
@@ -86,7 +198,7 @@ export class RustReceiptNumberService {
     const startTime = Date.now();
     const requestBody = {
       state: "void",
-      voidReason: voidReason || "手動作廢",
+      voidReason: voidReason || "未知的原因",
       updatedAt: DateUtils.getCurrentISOTime(),
       userId: authService.getCurrentUser() || null, // 記錄是誰作廢的
     };

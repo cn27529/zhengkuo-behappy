@@ -82,10 +82,10 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
     let pool = SqlitePoolOptions::new()
         .max_connections(max_connections)
         .acquire_timeout(Duration::from_secs(acquire_timeout))
-        // 設置自動檢查點頁數500頁（wal_autocheckpoint）
+        // 設置自動檢查點頁數100頁（wal_autocheckpoint）
         .after_connect(|conn, _meta| {
             Box::pin(async move {
-                sqlx::query("PRAGMA wal_autocheckpoint = 500;")
+                sqlx::query("PRAGMA wal_autocheckpoint = 100;")
                     .execute(conn)
                     .await?;
                 Ok(())
@@ -95,7 +95,7 @@ pub async fn create_pool() -> Result<SqlitePool, sqlx::Error> {
         .await?;
 
     tracing::info!("✅🦀 [Rust] SQLite 數據庫連接池創建成功");
-    tracing::info!("✅🦀 [Rust] PRAGMA wal_autocheckpoint = 500 (設置自動檢查點頁數)");
+    tracing::info!("✅🦀 [Rust] PRAGMA wal_autocheckpoint = 100 (設置自動檢查點頁數)");
 
     
     Ok(pool)

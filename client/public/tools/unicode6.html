@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <title>罕見字深度測試 - 𡍼 - gemini v2</title>
+    <style>
+        /* 方案 A: 引用 Google 的 Noto Sans CJK JP (日本版通常收錄較多擴展區) */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
+
+        body {
+            padding: 30px;
+            font-family: sans-serif;
+        }
+
+        .test-case {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #ccc;
+        }
+
+        .char {
+            font-size: 80px;
+            display: block;
+            margin: 10px 0;
+        }
+
+        /* 強制調用特定的系統字型順序 */
+        .system-fallback {
+            font-family: "PingFang TC", "STHeiti", "Microsoft JhengHei", "Source Han Sans TW", "Noto Sans CJK TC", sans-serif;
+        }
+
+        /* 使用更廣泛的 Noto 字體 */
+        .noto-test {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        code {
+            color: #d32f2f;
+            background: #eee;
+            padding: 2px 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>罕見字深度測試 - 𡍼 - gemini v2</h2>
+    <p>Unicode: <code>U+21374</code></p>
+
+    <div class="test-case">
+        <strong>1. 系統預設渲染：</strong>
+        <span class="char">𡍼</span>
+    </div>
+
+    <div class="test-case">
+        <strong>2. 強制 Noto Sans JP (擴展區支援較廣)：</strong>
+        <span class="char noto-test">𡍼</span>
+    </div>
+
+    <div class="test-case">
+        <strong>3. 使用 HTML 實體編碼 (測試解析能力)：</strong>
+        <span class="char">&#136052;</span>
+    </div>
+
+    <hr>
+
+    <h3>為什麼還是豆腐塊？</h3>
+    <ol>
+        <li><strong>Android 系統限制：</strong> 很多 Android 手機的 Chrome 為了省電和流量，會拒絕下載超過一定大小的 WebFont。</li>
+        <li><strong>切片失效：</strong> Google Fonts 的動態切片（Unicode-range）有時會漏掉擴展 B 區的字。</li>
+    </ol>
+
+    <h3>終極解決方案 (開發者角度)：</h3>
+    <p>如果你是在做產品，且該字必須出現，請不要依賴字型了。建議改用：</p>
+    <ul>
+        <li><strong>SVG 圖檔：</strong> 這是最穩妥的，直接把字畫成向量圖。</li>
+        <li><strong>WebFont 自建：</strong> 使用工具（如 font-spider）只把這個「𡍼」字單獨打包成一個幾 KB 的 woff2 字型檔隨網頁發布。</li>
+    </ul>
+
+</body>
+
+</html>

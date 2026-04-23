@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>罕見字 𡍼 跨平台 - gemini v3</title>
+    <style>
+        /* 載入思源宋體 (你上傳的檔案) */
+        @font-face {
+            font-family: 'SourceHanSerif';
+            src: url('./SourceHanSerifTC-Light.woff2') format('woff2');
+            font-weight: 300;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* 預留：如果你以後把全字庫 ttf 轉成 woff2，可以開啟這段 */
+
+        @font-face {
+            font-family: 'EBAS_Backup';
+            src: url('./ebas927.woff2') format('woff2');
+            font-weight: normal;
+            font-display: swap;
+        }
+
+
+        body {
+            /* 優先使用系統黑體，最後才用思源宋體當備援 */
+            font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", 'SourceHanSerif', sans-serif;
+            line-height: 1.8;
+            padding: 40px 20px;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            color: #2c3e50;
+            font-size: 24px;
+        }
+
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 5px solid #3498db;
+        }
+
+        /* 關鍵：強制套用自訂字型的類別 */
+        .rare-font-applied {
+            /* 優先順序：自訂字型 -> 系統字型 */
+            font-family: 'SourceHanSerif', "Microsoft JhengHei", serif;
+            font-size: 40px;
+            word-wrap: break-word;
+        }
+
+        .comparison {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .box {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .box.fail {
+            background: #fff5f5;
+        }
+
+        .box.success {
+            background: #f5fff5;
+        }
+
+        code {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>罕見字 𡍼 跨平台 - gemini v3</h1>
+        <p>本頁面用來測試 Android / iOS / macOS 瀏覽器對於 <strong>CJK Extension B</strong> 區段字元的顯示能力。</p>
+
+        <div class="test-section">
+            <h3>1. 測試目標字：𡍼 (U+21374)</h3>
+            <div class="comparison">
+                <div class="box fail">
+                    <strong>系統預設</strong><br>
+                    <span style="font-size: 40px;">𡍼</span>
+                </div>
+                <div class="box success">
+                    <strong>載入 WOFF2 後</strong><br>
+                    <span class="rare-font-applied">𡍼</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. 其他擴展區字元測試</h3>
+            <p>如果這些字都能看到，代表你的 WOFF2 覆蓋範圍很廣：</p>
+            <div class="rare-font-applied">
+                𡍼 𩶘 𨯬 𠜎 𠀾 𡳞
+            </div>
+        </div>
+
+        <div style="background: #eef2f7; padding: 15px; border-radius: 6px; font-size: 14px;">
+            <strong>💡 測試說明：</strong>
+            <ul>
+                <li>如果在 Android 上看到<strong>豆腐塊 (□)</strong>，請確認 <code>SourceHanSerifTC-Light.woff2</code> 是否與此 HTML
+                    在同一目錄。</li>
+                <li>思源宋體 (Source Han Serif) 包含了大部分的 Extension B 字元。</li>
+                <li>本頁面使用 <code>font-display: swap</code>，載入字型時若有延遲，字體會從黑體跳轉為宋體。</li>
+            </ul>
+        </div>
+
+        <footer>
+            使用技術：HTML5, CSS @font-face, WOFF2 Compression
+        </footer>
+    </div>
+
+</body>
+
+</html>

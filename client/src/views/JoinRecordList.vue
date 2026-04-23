@@ -2,9 +2,9 @@
 <template>
   <div class="main-content">
     <div class="page-header">
-      <h2>活動參加記錄查詢</h2>
+      <h2>參加記錄查詢</h2>
       <p class="page-subtitle" style="display: none">
-        查詢已提交的活動參加記錄資料
+        查詢已提交的參加記錄資料
       </p>
     </div>
 
@@ -72,10 +72,7 @@
               清空
             </el-button>
           </div>
-          <p class="search-hint">
-            💡 提示:
-            可依項目類型或關鍵字（聯絡人、參加者、地址、備註）搜尋相關記錄
-          </p>
+          <p class="search-hint">💡 提示：搜尋關鍵字系統會自動匹配相關欄位</p>
         </div>
       </div>
     </div>
@@ -177,20 +174,19 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="聯絡人" min-width="100" align="center">
+        <el-table-column
+          prop="contact.name"
+          label="聯絡人"
+          width="150"
+          align="center"
+        >
           <template #default="{ row }">
             <div class="contact-info">
               <div class="contact-name">
-                <strong>{{ row.contact?.name || "-" }}</strong>
+                <strong>{{ row.contact?.name }}</strong>
               </div>
-              <div
-                class="contact-phone"
-                v-if="row.contact?.mobile || row.contact?.phone"
-              >
-                {{ row.contact?.mobile || row.contact?.phone }}
-              </div>
-              <div v-if="false" class="contact-relationship">
-                {{ row.contact?.relationship }}
+              <div>
+                {{ row.contact?.relationship || "-" }}
                 <span
                   v-if="row.contact?.otherRelationship"
                   class="other-relationship"
@@ -202,7 +198,42 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="參加項目" min-width="120" align="center">
+        <el-table-column
+          prop="contact.relationship"
+          label="關係"
+          width="120"
+          v-if="false"
+        >
+          <template #default="{ row }">
+            <div>
+              {{ row.contact?.relationship || "-" }}
+              <span
+                v-if="row.contact?.otherRelationship"
+                class="other-relationship"
+              >
+                ({{ row.contact.otherRelationship }})
+              </span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="contact.mobile"
+          label="手機/聯絡電話"
+          width="120"
+          align="center"
+        >
+          <template #default="{ row }">
+            <div class="contact-phone">
+              {{ row.contact?.mobile || "-" }}
+            </div>
+            <div class="contact-phone">
+              {{ row.contact?.phone || "-" }}
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="參加項目" min-width="100" align="center">
           <template #default="{ row }">
             <div class="items-summary">
               <span v-for="(item, index) in row.items" :key="index">
@@ -260,7 +291,7 @@
         <el-table-column
           prop="totalAmount"
           label="總金額"
-          min-width="50"
+          width="80"
           align="center"
         >
           <template #default="{ row }">
@@ -271,27 +302,18 @@
         </el-table-column>
 
         <!-- 佛字第 -->
-        <el-table-column label="佛字第 | 經手人" min-width="80" align="center">
+        <el-table-column label="佛字第" width="90" align="center">
           <template #default="{ row }">
             <div class="receipt-number">
-              <el-tag
-                v-if="row.receiptNumber"
-                type="danger"
-                size="small"
-                style="margin-top: 4px"
-              >
-                {{ row.receiptNumber || "" }}
-              </el-tag>
               <!-- 收據開立者經手人 -->
               <span class="receipt-by" v-if="row.receiptIssuedBy">
                 <el-tooltip
                   :content="`經手人：${row.receiptIssuedBy}`"
                   placement="top"
                 >
-                  📝
-                  <el-button type="danger" size="small" circle>
-                    {{ row.receiptIssuedBy.substring(1, 2) }}
-                  </el-button>
+                  <el-tag v-if="row.receiptNumber" type="danger" size="small">
+                    {{ row.receiptNumber || "" }}
+                  </el-tag>
                 </el-tooltip>
               </span>
             </div>
@@ -301,13 +323,25 @@
         <el-table-column
           prop="user_created"
           label="資料人員"
-          min-width="50"
+          width="100"
           align="center"
         >
           <template #default="{ row }">
             <span class="user-created">{{
               recordUserName(row.user_created)
             }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="receiptId"
+          label="打印ID"
+          width="60"
+          align="center"
+          v-if="false"
+        >
+          <template #default="{ row }">
+            <span class="item-amount">{{ row.receiptId }}</span>
           </template>
         </el-table-column>
 
@@ -572,7 +606,7 @@ const handlePrint = (item) => {
     console.log("準備列印數據:", { recordId, printData });
     ElMessage.info(`準備列印表單: ${recordId}`);
 
-    const printId = `print_join_record_${recordId}`;
+    const printId = `print_record_${recordId}`;
     console.log("列印表單 ID:", printId);
 
     sessionStorage.setItem(printId, printData);
@@ -595,21 +629,64 @@ const handlePrint = (item) => {
   }
 };
 
-// 單筆收據打印
-const handleReceiptPrint = (item) => {
+// 單筆打印
+const handleReceiptPrint = async (item) => {
   try {
     // 在導向打印頁面前進行標記。🔥 精準標記來源為 'joinRecordList'
-    pageStateStore.setPageState("receiptPrint", { from: "joinRecordList" });
+    pageStateStore.setPageState("receiptPrint", {
+      from: "joinRecordList",
+    });
 
-    const isoStr = DateUtils.getCurrentISOTime();
-    const printData = JSON.stringify(item);
-    const printId = `print_receipt_${item.id}`;
+    let isoStr = DateUtils.getCurrentISOTime();
+    let printData = JSON.stringify(item);
+    let printId = `print_receipt_${item.id}`;
+    let ids = null;
+
+    //已經打印過，確認是否為合併打印
+    if (item.receiptNumber) {
+      //ElMessage.info(item.receiptNumber);
+      const printableRecords = await queryStore.getByReceiptNumber(
+        item.receiptNumber,
+      );
+      if (printableRecords && printableRecords.length > 1) {
+        ElMessage.info("這是合併打印");
+
+        try {
+          ids = printableRecords.map((r) => r.id).join(",");
+          printData = JSON.stringify(printableRecords);
+          printId = `print_receipt_${ids}`;
+          // 存儲多筆資料
+          sessionStorage.setItem(printId, printData);
+
+          router.push({
+            path: "/merged-print",
+            query: {
+              print_id: printId,
+              ids: ids,
+              iso_str: isoStr,
+              print_type: appConfig.PRINT_TYPE.MERGED,
+            },
+          });
+
+          return;
+        } catch (error) {
+          console.error("導航到批量收據頁面失敗:", error);
+          ElMessage.error("導航到批量收據頁面失敗");
+        }
+      }
+    } else {
+      ElMessage.info("還沒打印過");
+    }
 
     sessionStorage.setItem(printId, printData);
-
     router.push({
-      path: "/join-record-receipt-print",
-      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+      path: "/receipt-print",
+      query: {
+        print_id: printId,
+        print_data: printData,
+        iso_str: isoStr,
+        print_type: appConfig.PRINT_TYPE.SINGLE,
+      },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);
@@ -627,19 +704,19 @@ const handleBatchReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
-    const printDatas = selectedRecords.value.map((r) => r);
-    const printId = `print_receipt_ids_${ids}`;
+    const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
+    const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
-      path: "/join-record-receipt-print",
+      path: "/receipt-print",
       query: {
         print_id: printId,
         ids: ids,
         iso_str: isoStr,
-        is_batch: "true",
+        print_type: appConfig.PRINT_TYPE.BATCH,
       },
     });
   } catch (error) {
@@ -661,7 +738,7 @@ const handleCardPrint = (item) => {
     sessionStorage.setItem(printId, printData);
 
     router.push({
-      path: "/join-record-card-print",
+      path: "/card-print",
       query: { print_id: printId, print_data: printData, iso_str: isoStr },
     });
   } catch (error) {
@@ -682,19 +759,18 @@ const handleBatchCardPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = selectedRecords.value.map((r) => r.id).join(",");
-    const printDatas = selectedRecords.value.map((r) => r);
-    const printId = `print_receipt_ids_${ids}`;
+    const printDatas = JSON.stringify(selectedRecords.value.map((r) => r));
+    const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
-      path: "/join-record-card-print",
+      path: "/card-print",
       query: {
         print_id: printId,
         ids: ids,
         iso_str: isoStr,
-        is_batch: "true",
       },
     });
   } catch (error) {
@@ -726,7 +802,7 @@ const handleDelete = async (item) => {
       },
     );
 
-    const result = await queryStore.deleteParticipationRecord(item.id);
+    const result = await queryStore.deleteJoinRecord(item.id);
 
     if (result?.success) {
       searchResults.value = searchResults.value.filter(

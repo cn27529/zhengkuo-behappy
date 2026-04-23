@@ -36,7 +36,7 @@
               清空
             </el-button>
           </div>
-          <p class="search-hint">💡 提示：可搜尋贊助人姓名或備註。</p>
+          <p class="search-hint">💡 提示：搜尋關鍵字系統會自動匹配相關欄位</p>
         </div>
       </div>
     </div>
@@ -221,10 +221,7 @@
 
             <el-table-column
               label="操作"
-              width="150"
-              fixed="right"
-              align="center"
-            >
+              width="150" fixed="right" align="center">
               <template #default="{ row }">
                 <div class="action-buttons-group">
                   <el-tooltip content="新增贊助項目" placement="top">
@@ -624,10 +621,7 @@
             </el-table-column>
             <el-table-column
               label="操作"
-              width="150"
-              fixed="right"
-              align="center"
-            >
+              width="150" fixed="right" align="center">
               <template #default="{ row }">
                 <div class="action-buttons-group">
                   <el-tooltip content="刪除贊助項目" placement="top">

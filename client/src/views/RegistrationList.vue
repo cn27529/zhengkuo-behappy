@@ -46,7 +46,7 @@
               祈福登記
             </el-button>
           </div>
-          <p class="search-hint">💡 提示:搜尋關鍵字,系統會自動匹配相關欄位</p>
+          <p class="search-hint">💡 提示：搜尋關鍵字系統會自動匹配相關欄位</p>
         </div>
       </div>
     </div>
@@ -115,30 +115,37 @@
         <el-table-column
           prop="contact.name"
           label="聯絡人"
-          min-width="100"
+          width="150"
           align="center"
         >
           <template #default="{ row }">
-            <strong>{{ row.contact?.name || "-" }}</strong>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="contact.mobile" label="手機" min-width="120">
-          <template #default="{ row }">
-            {{ row.contact?.mobile || "-" }}
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="contact.phone" label="電話" min-width="120">
-          <template #default="{ row }">
-            {{ row.contact?.phone || "-" }}
+            <div class="contact-info">
+              <div class="contact-name">
+                <strong>{{ row.contact?.name }}</strong>
+              </div>
+              <div
+                class="contact-phone"
+                v-if="row.contact?.mobile || row.contact?.phone"
+              >
+                {{ row.contact?.mobile || row.contact?.phone }}
+              </div>
+              <div v-if="false" class="contact-relationship">
+                {{ row.contact?.relationship }}
+                <span
+                  v-if="row.contact?.otherRelationship"
+                  class="other-relationship"
+                >
+                  ({{ row.contact.otherRelationship }})
+                </span>
+              </div>
+            </div>
           </template>
         </el-table-column>
 
         <el-table-column
           prop="contact.relationship"
           label="關係"
-          min-width="100"
+          width="120"
         >
           <template #default="{ row }">
             <div>
@@ -153,10 +160,33 @@
           </template>
         </el-table-column>
 
+        <el-table-column prop="contact.mobile" label="手機/聯絡電話" width="120" align="center">
+          <template #default="{ row }">
+            <div class="contact-phone">
+                {{ row.contact?.mobile || "-" }}
+              </div>
+              <div class="contact-phone">
+                {{ row.contact?.phone || "-" }}
+              </div>
+          </template>
+        </el-table-column>
+
+      <!-- 消災地址 -->
+      <el-table-column
+        prop="contact.address"
+        label="消災地址"
+      >
+        <template #default="{ row }">
+          <div class="contact-address">
+            {{ row.blessing?.address || "-" }}
+          </div>
+        </template>
+      </el-table-column>
+
         <el-table-column
           prop="user_created"
           label="資料人員"
-          min-width="80"
+          width="100"
           align="center"
         >
           <template #default="{ row }">
@@ -191,12 +221,8 @@
                 </el-button>
               </el-tooltip>
 
-              <el-tooltip content="卡片設計" placement="right">
-                <el-button
-                  circle
-                  @click="handleCardDesign(row)"
-                  size="small"
-                  v-if="false"
+              <el-tooltip content="卡片設計" placement="right" v-if="false">
+                <el-button circle @click="handleCardDesign(row)" size="small"
                   >💳</el-button
                 >
               </el-tooltip>
@@ -720,6 +746,45 @@ onMounted(() => {
   margin-left: 0;
 }
 
+/* 聯絡人信息樣式 */
+.contact-info {
+  text-align: center;
+}
+
+.contact-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.contact-phone {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.contact-relationship {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.other-relationship {
+  color: #666;
+  font-style: italic;
+  margin-left: 4px;
+}
+
+.amount {
+  color: var(--el-color-primary);
+  font-size: 1rem;
+  text-align: right;
+}
+
+.date-time {
+  font-size: 0.875rem;
+  color: #666;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .results-header {
@@ -751,6 +816,10 @@ onMounted(() => {
 
   :deep(.el-table__cell) {
     padding: 8px 4px;
+  }
+
+  .contact-info {
+    text-align: left;
   }
 
   .action-buttons-group {

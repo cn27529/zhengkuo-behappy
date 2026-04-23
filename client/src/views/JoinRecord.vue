@@ -93,7 +93,12 @@
           <hr />
         </div>
 
-        <div class="form-section" v-if="selectedRegistration">
+        <!-- 活動選擇區塊 -->
+        <div
+          class="form-section"
+          v-if="selectedRegistration"
+          style="display: none"
+        >
           <!-- 活動選擇區塊 -->
           <div class="activity-selection-section">
             <!-- <h6>選擇活動</h6> -->
@@ -412,7 +417,8 @@
                       v-model="selections.diandeng"
                     />
                     <span>{{ person.name }}</span>
-                    <span class="zodiac">({{ person.zodiac }})</span>
+                    <span class="zodiac">({{ person.zodiac }}) </span>
+
                     <span v-if="person.notes" class="notes">{{
                       person.notes
                     }}</span>
@@ -426,8 +432,11 @@
                     class="person-lamp-type"
                     v-if="selections.diandeng.includes(person)"
                   >
-                    <span class="lamp-type-label">燈種：</span>
+                    <span class="lamp-type-label" style="display: none"
+                      >燈種：</span
+                    >
                     <select
+                      disabled
                       :value="joinRecordStore.getPersonLampType(person.id)"
                       @change="
                         joinRecordStore.setPersonLampType(
@@ -572,6 +581,118 @@
               </div>
             </div>
 
+            <!-- 護持三寶 -->
+            <div class="activity-section">
+              <div
+                class="activity-header clickable"
+                @click="toggleActivity('support_triple_gem')"
+                :title="
+                  isAllSelected('support_triple_gem')
+                    ? '點擊取消全選'
+                    : '點擊全選'
+                "
+              >
+                <span class="stat-badge">{{
+                  activityConfigs.support_triple_gem.label
+                }}</span>
+
+                <span
+                  class="selected-count"
+                  v-if="selections.support_triple_gem.length > 0"
+                >
+                  (已選 {{ selections.support_triple_gem.length }} )
+                </span>
+
+                <span class="price-tag"
+                  >每位
+                  {{
+                    appConfig.formatCurrency(
+                      activityConfigs.support_triple_gem.price,
+                    )
+                  }}</span
+                >
+              </div>
+
+              <div class="person-list">
+                <div
+                  v-for="person in getSourceData('support_triple_gem')"
+                  :key="'fixed-' + person.id"
+                  class="person-item"
+                >
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      :value="person"
+                      v-model="selections.support_triple_gem"
+                    />
+                    <span>{{ person.name }}</span>
+                    <span class="zodiac">({{ person.zodiac }})</span>
+                    <span v-if="person.notes" class="notes">{{
+                      person.notes
+                    }}</span>
+                    <span v-if="person.isHouseholdHead" class="household-head"
+                      >戶長</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- food_offering=供齋 -->
+            <div class="activity-section">
+              <div
+                class="activity-header clickable"
+                @click="toggleActivity('food_offering')"
+                :title="
+                  isAllSelected('food_offering') ? '點擊取消全選' : '點擊全選'
+                "
+              >
+                <span class="stat-badge">{{
+                  activityConfigs.food_offering.label
+                }}</span>
+
+                <span
+                  class="selected-count"
+                  v-if="selections.food_offering.length > 0"
+                >
+                  (已選 {{ selections.food_offering.length }} )
+                </span>
+
+                <span class="price-tag"
+                  >每位
+                  {{
+                    appConfig.formatCurrency(
+                      activityConfigs.food_offering.price,
+                    )
+                  }}</span
+                >
+              </div>
+
+              <div class="person-list">
+                <div
+                  v-for="person in getSourceData('food_offering')"
+                  :key="'fixed-' + person.id"
+                  class="person-item"
+                >
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      :value="person"
+                      v-model="selections.food_offering"
+                    />
+                    <span>{{ person.name }}</span>
+                    <span class="zodiac">({{ person.zodiac }})</span>
+                    <span v-if="person.notes" class="notes">{{
+                      person.notes
+                    }}</span>
+                    <span v-if="person.isHouseholdHead" class="household-head"
+                      >戶長</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <!-- 其他 -->
           </div>
         </div>
@@ -673,6 +794,18 @@
         <div class="results-section" v-if="savedRecords.length > 0">
           <div class="results-header">
             <h3>已保存記錄 ({{ savedRecords.length }})</h3>
+            <!-- 合併打印 -->
+            <p class="search-hint">
+              <el-button
+                v-if="savedRecords.length > 1"
+                type="success"
+                size="large"
+                @click="handleMergedReceiptPrint"
+              >
+                合併打印
+              </el-button>
+            </p>
+            <!-- 批量打印 -->
             <p class="search-hint" v-if="false">
               <el-button
                 v-if="savedRecords.length > 1"
@@ -693,7 +826,9 @@
               <div class="record-header">
                 <!-- 單筆打印 -->
                 <span class="record-name"
-                  >{{ record.contact.name }}
+                  >{{ record.contact.name }} （{{
+                    record.contact.relationship
+                  }}）
                   <el-button
                     v-if="BoolUtils.normalizeBool(record.needReceipt)"
                     type="success"
@@ -766,7 +901,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { authService } from "../services/authService.js";
@@ -776,18 +911,37 @@ import { useActivityStore } from "../stores/activityStore.js";
 import { usePageStateStore } from "../stores/pageStateStore.js";
 import { storeToRefs } from "pinia";
 import appConfig from "../config/appConfig.js";
-import { el } from "element-plus/es/locale/index.mjs";
 import { BoolUtils } from "../utils/boolUtils.js";
+import { useTaiSuiStore } from "../stores/taisuiStore.js";
 
 const joinRecordStore = useJoinRecordStore();
 const activityStore = useActivityStore();
 const pageStateStore = usePageStateStore();
 const router = useRouter();
+const taiSuiStore = useTaiSuiStore(); // 太歲資料存取
 
 // 狀態管理
 const isDev = computed(() => authService.getCurrentDev());
 const selectedActivityId = ref(null);
 const needReceipt = ref("0"); // 是否需要收據（'0'=不需要，'1'=需要）
+
+const currentYear = new Date().getFullYear();
+const currentTableData = taiSuiStore.getDotLampTableData(currentYear);
+// 根據生肖獲取燈種 key (guangming/taisui/yuanchen)
+const getLampByZodiac = (zodiac) => {
+  if (!zodiac) return "guangming";
+  try {
+    const lampInfo = currentTableData.getLampInfoByZodiac(zodiac);
+    const map = {
+      光明燈: "guangming",
+      太歲燈: "taisui",
+      元辰燈: "yuanchen",
+    };
+    return map[lampInfo?.lampName] || "guangming";
+  } catch (error) {
+    return "guangming";
+  }
+};
 
 const {
   activityConfigs,
@@ -972,8 +1126,30 @@ const toggleActivity = (activityKey) => {
 };
 
 // 選擇祈福登記
-const handleSelectRegistration = (reg) => {
+// const handleSelectRegistration = (reg) => {
+//   joinRecordStore.setRegistration(reg);
+// };
+
+// 修改 handleSelectRegistration 函數
+const handleSelectRegistration = async (reg) => {
   joinRecordStore.setRegistration(reg);
+
+  // 自動設置點燈燈種
+  nextTick(() => {
+    const diandengPersons = joinRecordStore.getSourceData(
+      reg,
+      "blessing.persons",
+    );
+    diandengPersons.forEach((person) => {
+      if (person.zodiac) {
+        const lampKey = getLampByZodiac(person.zodiac);
+        console.log(
+          `為 ${person.name} (${person.zodiac}) 設置預設燈種: ${lampKey}`,
+        );
+        joinRecordStore.setPersonLampType(person.id, lampKey);
+      }
+    });
+  });
 };
 
 // 重置選擇
@@ -1002,10 +1178,10 @@ const handleSubmitForm = async () => {
     return;
   }
 
-  if (!selectedActivityId.value) {
-    ElMessage.warning("請選擇活動");
-    return;
-  }
+  // if (!selectedActivityId.value) {
+  //   ElMessage.warning("請選擇活動");
+  //   return;
+  // }
 
   if (totalAmount.value === 0) {
     ElMessage.warning("請至少選擇一個活動項目");
@@ -1032,16 +1208,17 @@ const handleSubmitForm = async () => {
   try {
     // 確認提交對話框
     const { value: notes } = await ElMessageBox.prompt(
-      `確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n🖨️ 收據：${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不打印收據"}\n\n請在下方備註欄填寫相關說明：`,
+      //`確認提交以下參加記錄？\n\n活動：${selectedActivity.value?.name}\n聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不打印收據"}\n\n`,
+      `聯絡人：${selectedRegistration.value.contact.name}\n總金額：${appConfig.formatCurrency(totalAmount.value)}\n\n${needReceipt.value === "1" ? "✅ 需要打印收據，請提交後打印給信眾" : "❌ 不打印收據"}\n\n`,
       "確認提交參加記錄",
       {
         confirmButtonText: "確認提交",
         //cancelButtonText: "取消",
-        inputPlaceholder: "請輸入備註說明（必填）",
+        inputPlaceholder: "請輸入備註說明（選填）",
         inputValidator: (value) => {
-          if (!value || value.trim() === "") {
-            return "請填寫備註說明";
-          }
+          // if (!value || value.trim() === "") {
+          //   return "請輸入備註說明（選填）";
+          // }
           return true;
         },
         inputErrorMessage: "備註說明不能為空",
@@ -1103,6 +1280,50 @@ const formatDate = (dateString) => {
   });
 };
 
+// 合併打印
+const handleMergedReceiptPrint = () => {
+  if (savedRecords.value.length === 0) {
+    ElMessage.warning("請先選擇要打印的記錄");
+    return;
+  }
+
+  // 只過濾需要打印收據的記錄
+  const printableRecords = savedRecords.value.filter((r) =>
+    BoolUtils.normalizeBool(r.needReceipt),
+  );
+
+  if (printableRecords.length === 0) {
+    ElMessage.warning("目前沒有需要打印收據的記錄");
+    return;
+  }
+
+  // 在導向打印頁面前進行標記。🔥 精準標記來源為 'joinRecord'
+  pageStateStore.setPageState("receiptPrint", { from: "joinRecord" });
+
+  try {
+    const isoStr = DateUtils.getCurrentISOTime();
+    const ids = printableRecords.map((r) => r.id).join(",");
+    const printData = JSON.stringify(printableRecords);
+    const printId = `print_receipt_${ids}`;
+
+    // 存儲多筆資料
+    sessionStorage.setItem(printId, printData);
+
+    router.push({
+      path: "/merged-print",
+      query: {
+        print_id: printId,
+        ids: ids,
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.MERGED,
+      },
+    });
+  } catch (error) {
+    console.error("導航到批量收據頁面失敗:", error);
+    ElMessage.error("導航到批量收據頁面失敗");
+  }
+};
+
 // 批量打印
 const handleBatchReceiptPrint = () => {
   if (savedRecords.value.length === 0) {
@@ -1126,19 +1347,19 @@ const handleBatchReceiptPrint = () => {
   try {
     const isoStr = DateUtils.getCurrentISOTime();
     const ids = printableRecords.map((r) => r.id).join(",");
-    const printDatas = printableRecords;
-    const printId = `print_receipt_ids_${ids}`;
+    const printDatas = JSON.stringify(printableRecords);
+    const printId = `print_receipt_${ids}`;
 
     // 存儲多筆資料
-    sessionStorage.setItem(printId, JSON.stringify(printDatas));
+    sessionStorage.setItem(printId, printDatas);
 
     router.push({
-      path: "/join-record-receipt-print",
+      path: "/receipt-print",
       query: {
         print_id: printId,
         ids: ids,
-        iso_str: isoStr,
-        is_batch: "true",
+        iso_str: isoStr,        
+        print_type: appConfig.PRINT_TYPE.BATCH,
       },
     });
   } catch (error) {
@@ -1165,8 +1386,13 @@ const handleReceiptPrint = (item) => {
     const printId = `print_receipt_${record.id}`;
     sessionStorage.setItem(printId, printData);
     router.push({
-      path: "/join-record-receipt-print",
-      query: { print_id: printId, print_data: printData, iso_str: isoStr },
+      path: "/receipt-print",
+      query: {
+        print_id: printId,
+        print_data: printData,
+        iso_str: isoStr,
+        print_type: appConfig.PRINT_TYPE.SINGLE,
+      },
     });
   } catch (error) {
     console.error("導航到收據頁面失敗:", error);
@@ -1176,9 +1402,13 @@ const handleReceiptPrint = (item) => {
 
 // 組件掛載
 onMounted(async () => {
-  console.log("活動參加記錄頁面已載入");
+  console.log("參加記錄頁面已載入");
   console.log("Store 狀態:", joinRecordStore);
   isDev.value = authService.getCurrentDev();
+
+  // 先初始化價格配置（從後端獲取最新價格）
+  await joinRecordStore.initializePrices();
+
   await loadRegistrationData(); // 載入真實報名資料
   await loadActivityData(); // 載入活動資料
 
@@ -1189,6 +1419,22 @@ onMounted(async () => {
     console.log("恢復活動選擇:", selectedActivityId.value);
   }
 });
+
+// 監聽活動變化，重新設置燈種
+// watch(
+//   () => selectedRegistration.value?.formId,
+//   (newFormId) => {
+//     const diandengPersons = joinRecordStore.getSourceData(
+//       selectedRegistration.value,
+//       "blessing.persons",
+//     );
+//     diandengPersons.forEach((person) => {
+//       // 重新計算並設置（覆蓋舊的）
+//       const lampKey = getLampByZodiac(person.zodiac);
+//       joinRecordStore.setPersonLampType(person.id, lampKey);
+//     });
+//   },
+// );
 </script>
 
 <style scoped>

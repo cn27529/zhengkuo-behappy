@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>罕見字顯示測試 - 𡍼 - gemini</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .test-box {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .rare-char {
+            font-size: 48px;
+            color: #d32f2f;
+        }
+
+        /* 強制套用網路字型 */
+        .use-webfont {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        code {
+            background: #eee;
+            padding: 2px 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>罕見字顯示測試 - 𡍼 - gemini</h2>
+    <p>測試字元：<span style="font-size: 24px;">𡍼</span> (U+21374)</p>
+
+    <div class="test-box">
+        <span class="label">1. 預設系統字型 (可能會在 Android 失敗):</span>
+        <div class="rare-char">𡍼</div>
+    </div>
+
+    <div class="test-box">
+        <span class="label">2. 使用 Noto Sans TC (網路字型 - 建議方案):</span>
+        <div class="rare-char use-webfont">𡍼</div>
+    </div>
+
+    <hr>
+
+    <h3>技術說明：為何 Android 看不到？</h3>
+    <ul>
+        <li><strong>編碼範圍：</strong>「𡍼」屬於 <strong>CJK Extension B</strong>。這類字元超出了常用字集（如 Big5 或常用國字標準字體）。</li>
+        <li><strong>系統差異：</strong>macOS 和 iOS 通常內置較完整的字庫（如「苹方」）；而 Android 為了節省空間，預設的 <code>Roboto</code> 或
+            <code>Noto Sans CJK</code> 可能只包含基本平面（BMP）的文字。
+        </li>
+        <li><strong>解決方法：</strong>透過 CSS 的 <code>@font-face</code> 引入支援擴展區的字型檔。</li>
+    </ul>
+
+</body>
+
+</html>

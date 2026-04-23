@@ -15,9 +15,9 @@ curl -s "http://localhost:8055/items/registrationDB" | jq '.'
 curl -s "http://localhost:8055/items/activityDB" | jq '.'
 # 每月贊助 - monthlyDonateDB
 curl -s "http://localhost:8055/items/monthlyDonateDB" | jq '.'
-# 參加記錄 - participationRecordDB
-curl -s "http://localhost:8055/items/participationRecordDB" | jq '.'
-curl -s "http://localhost:8055/items/participationRecordDB?fields=*"  | jq '.'
+# 參加記錄 - joinRecordDB
+curl -s "http://localhost:8055/items/joinRecordDB" | jq '.'
+curl -s "http://localhost:8055/items/joinRecordDB?fields=*"  | jq '.'
 
 
 # 使用 curl 測試 OPTIONS 請求
@@ -107,3 +107,13 @@ mv msys64/ /c/tools/
 
 # 或複製到其他位置
 cp -rv msys64/ /d/programs/
+
+
+
+
+http://localhost:3000/api/merged-receipts?fields=*
+
+# 每月贊助
+curl -s "http://localhost:3000/api/monthly-donates?fields=*" | jq '.'
+
+curl -s "http://localhost:3000/api/merged-receipts?fields=*" | jq '.'

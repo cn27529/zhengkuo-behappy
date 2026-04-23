@@ -80,24 +80,24 @@ pub struct ActivityResponse {
 
 /// 從 Activity 到 ActivityResponse 的轉換
 impl From<Activity> for ActivityResponse {
-    fn from(activity: Activity) -> Self {
+    fn from(data: Activity) -> Self {
         Self {
-            id: activity.id,
-            user_created: activity.user_created,
-            date_created: activity.date_created,
-            user_updated: activity.user_updated,
-            date_updated: activity.date_updated,
-            activity_id: activity.activity_id,
-            name: activity.name,
-            item_type: activity.item_type,
-            participants: activity.participants,
-            date: activity.date,
-            state: activity.state,
-            icon: activity.icon,
-            description: activity.description,
-            location: activity.location,
-            created_at: activity.created_at,
-            updated_at: activity.updated_at,
+            id: data.id,
+            user_created: data.user_created,
+            date_created: data.date_created,
+            user_updated: data.user_updated,
+            date_updated: data.date_updated,
+            activity_id: data.activity_id,
+            name: data.name,
+            item_type: data.item_type,
+            participants: data.participants,
+            date: data.date,
+            state: data.state,
+            icon: data.icon,
+            description: data.description,
+            location: data.location,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
         }
     }
 }

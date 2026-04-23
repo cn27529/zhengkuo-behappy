@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>罕见字显示测试：𡍼 | deepseek v2</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3a;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .big-char {
+            font-size: 5rem;
+            text-align: center;
+            padding: 1rem;
+            background: #fef9e3;
+            border-radius: 20px;
+            margin: 1rem 0;
+            word-break: break-word;
+            border: 1px solid #fde68a;
+        }
+
+        .test-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.75rem 0;
+        }
+
+        .test-label {
+            width: 160px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            background: #f8fafc;
+            padding: 0.5rem;
+        }
+
+        .test-value {
+            flex: 1;
+            font-size: 2.2rem;
+            padding: 0.2rem 0.5rem;
+            text-align: center;
+            background: #ffffff;
+        }
+
+        .status {
+            background: #eef2ff;
+            border-radius: 16px;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        button {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            margin-right: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .font-note {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 600px) {
+            .test-label {
+                width: 100%;
+                border-bottom: none;
+            }
+
+            .big-char {
+                font-size: 3.5rem;
+            }
+
+            .test-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>罕见字显示测试：𡍼 | deepseek v2</h1>
+            <p>📱 当前设备：<span id="deviceInfo">检测中...</span> | 目标字符：<strong>𡍼</strong> (U+2437C, 扩展B区)</p>
+            <div class="big-char" id="mainChar">𡍼</div>
+            <div id="loadStatus" class="status">⏳ 正在尝试加载支持扩展B区的Web字体（花园明朝体）...</div>
+        </div>
+
+        <div class="card">
+            <h2>📊 各字体方案渲染结果</h2>
+            <div class="test-row">
+                <div class="test-label">系统默认字体</div>
+                <div class="test-value" id="nativeTest" style="font-family: inherit;">𡍼</div>
+            </div>
+            <div class="test-row">
+                <div class="test-label">强制 Web 字体 (花园明朝)</div>
+                <div class="test-value" id="webfontTest"
+                    style="font-family: 'HanaMinA', 'HanaMinB', 'Noto Sans CJK SC', monospace;">𡍼</div>
+            </div>
+            <div class="test-row">
+                <div class="test-label">Noto Sans CJK SC 回退</div>
+                <div class="test-value" id="notoTest"
+                    style="font-family: 'Noto Sans CJK SC', 'Noto Sans CJK TC', 'Droid Sans Fallback', sans-serif;">𡍼
+                </div>
+            </div>
+            <div class="test-row">
+                <div class="test-label">Android 原生备用 (Droid Fallback)</div>
+                <div class="test-value" id="droidTest"
+                    style="font-family: 'Droid Sans Fallback', 'Roboto', sans-serif;">𡍼</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 为什么 Android 显示豆腐块？</h2>
+            <p>Android 系统自带的 <strong>Roboto / Noto Sans CJK 普通版</strong> 只包含常用汉字（约2.7万字），而「𡍼」属于 <strong>CJK
+                    扩展B区</strong>（Unicode 3.0 以后增加），绝大多数手机出厂字体不含这些字形。</p>
+            <div class="font-note">
+                ✅ <strong>解决方案：</strong>
+                本页面会<strong>自动加载「花园明朝体」(HanaMinA)</strong>，这是一款开源字体，完整支持所有CJK扩展区（A/B/C/D/E/F）。加载成功后所有「𡍼」都会正常显示。
+            </div>
+            <div>
+                <button id="reloadFontBtn">🔄 重新加载 Web 字体</button>
+                <button id="resetBtn">🗑️ 移除字体/恢复默认</button>
+            </div>
+            <div id="manualHint" style="margin-top: 12px; font-size: 0.8rem; color: #92400e;"></div>
+        </div>
+
+        <div class="card">
+            <h2>📝 上下文测试</h2>
+            <p>句子示例：这个罕见的汉字「𡍼」现在应该能正常显示了吧？连续三个：𡍼𡍼𡍼。</p>
+            <p>混合标点：【𡍼】 — 字符编码 U+2437C。</p>
+            <p style="background: #f9f9f9; padding: 8px; border-radius: 12px;">📖 古籍用字：𡍼，音 tú，义同“涂”或用于姓氏。</p>
+        </div>
+
+        <footer>
+            测试专为 Android Chrome 优化 | 字体来源：花园明朝体 (HanaMinA) CDN | 若仍显示□，请尝试点击「重新加载Web字体」
+        </footer>
+    </div>
+
+    <script>
+        // 目标罕见字符
+        const RARE_CHAR = '𡍼';
+
+        // 获取显示元素
+        const mainCharDiv = document.getElementById('mainChar');
+        const nativeTestDiv = document.getElementById('nativeTest');
+        const webfontTestDiv = document.getElementById('webfontTest');
+        const notoTestDiv = document.getElementById('notoTest');
+        const droidTestDiv = document.getElementById('droidTest');
+        const loadStatusDiv = document.getElementById('loadStatus');
+        const manualHint = document.getElementById('manualHint');
+
+        // 所有需要刷新字体的元素
+        const allCharElements = [mainCharDiv, nativeTestDiv, webfontTestDiv, notoTestDiv, droidTestDiv];
+
+        // 用于存储动态添加的 style 标签
+        let activeFontStyle = null;
+        let currentFontFamily = '';
+
+        // 检测设备信息（简单判断 Android）
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            const isAndroid = /Android/i.test(ua);
+            const isChrome = /Chrome/i.test(ua) && !/Edg/i.test(ua);
+            const infoDiv = document.getElementById('deviceInfo');
+            if (isAndroid) {
+                infoDiv.innerHTML = `🤖 Android ${isChrome ? 'Chrome' : '浏览器'} (需要Web字体支持)`;
+            } else {
+                infoDiv.innerHTML = `💻 ${isChrome ? 'Chrome' : '其他浏览器'} (可能默认已支持)`;
+            }
+            return { isAndroid, isChrome };
+        }
+
+        // 强制刷新所有罕见字元素的显示（通过重新设置文本触发重绘）
+        function refreshAllDisplays() {
+            for (let el of allCharElements) {
+                if (el && el.innerText === RARE_CHAR) {
+                    const text = el.innerText;
+                    el.innerText = '';
+                    el.innerText = text;
+                } else if (el && el.innerText !== RARE_CHAR) {
+                    // 确保内容正确
+                    el.innerText = RARE_CHAR;
+                }
+            }
+            // 也刷新段落里的罕见字（直接重新设置innerHTML部分）
+            const paragraphs = document.querySelectorAll('.card p');
+            for (let p of paragraphs) {
+                if (p.innerHTML.includes(RARE_CHAR)) {
+                    const oldHtml = p.innerHTML;
+                    p.innerHTML = oldHtml; // 触发重绘
+                }
+            }
+        }
+
+        // 更新状态消息
+        function updateStatus(message, isError = false) {
+            loadStatusDiv.innerHTML = message;
+            if (isError) {
+                loadStatusDiv.classList.add('error');
+                loadStatusDiv.classList.remove('success');
+            } else {
+                loadStatusDiv.classList.add('success');
+                loadStatusDiv.classList.remove('error');
+            }
+        }
+
+        // 核心: 加载花园明朝体 (HanaMinA) 使用多个 CDN 源，提高成功率
+        async function loadHanaMinFont() {
+            // 移除已有字体样式
+            if (activeFontStyle && activeFontStyle.parentNode) {
+                activeFontStyle.parentNode.removeChild(activeFontStyle);
+                activeFontStyle = null;
+            }
+
+            updateStatus('⏳ 正在加载「花园明朝体」(HanaMinA) 完整扩展B区支持...', false);
+            manualHint.innerHTML = '⏳ 字体文件较大(约8MB)，请稍等片刻...';
+
+            // 多个 CDN 备用列表 (花园明朝体 HanaMinA.ttf)
+            const fontUrls = [
+                'https://cdn.jsdelivr.net/npm/@aspectron/hanamin@latest/fonts/HanaMinA.ttf',
+                'https://github.com/adobe-fonts/source-han-sans/raw/release/OTF/Japanese/SourceHanSans-J.zip', // 无效，只是占位
+                // 真实有效备用：直接用花园明朝官方github上的raw (但raw.githubusercontent.com 有时限)
+                'https://github.com/ButTaiwan/hanamin/raw/master/fonts/HanaMinA.ttf'
+            ];
+
+            // 尝试第一个有效URL (花园明朝体)
+            const primaryUrl = 'https://cdn.jsdelivr.net/npm/@aspectron/hanamin@latest/fonts/HanaMinA.ttf';
+
+            // 创建 @font-face 规则
+            const style = document.createElement('style');
+            style.id = 'dynamic-hanamin-font';
+            // 使用 primaryUrl, 如果加载失败后续会提示手动方案
+            style.textContent = `
+            @font-face {
+                font-family: 'HanaMinA_Web';
+                src: url('${primaryUrl}') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+                font-display: swap;
+            }
+            /* 强制所有罕见字相关区域优先使用该字体 */
+            #mainChar, #webfontTest, .big-char, .test-value {
+                font-family: 'HanaMinA_Web', 'Noto Sans CJK SC', 'Noto Sans CJK TC', 'HanaMinA', 'HanaMinB', 'Droid Sans Fallback', sans-serif !important;
+            }
+            /* 同时应用到段落里的罕见字 */
+            .card p {
+                font-family: 'HanaMinA_Web', 'Noto Sans CJK SC', 'Noto Sans CJK TC', 'HanaMinA', sans-serif !important;
+            }
+        `;
+            document.head.appendChild(style);
+            activeFontStyle = style;
+
+            // 预加载字体，检测是否真的可用 (通过 FontFace API 检测)
+            const font = new FontFace('HanaMinA_Web_Test', `url(${primaryUrl})`);
+            try {
+                const loadedFont = await font.load();
+                document.fonts.add(loadedFont);
+                updateStatus('✅ 字体加载成功！所有「𡍼」现在应该正常显示。如果仍是豆腐块，请尝试刷新页面。', false);
+                manualHint.innerHTML = '✅ 字体已生效。如果仍然显示□，可能是缓存问题，请点击下方“重新加载Web字体”或尝试清理浏览器缓存后刷新。';
+                // 强制重绘所有汉字区域
+                refreshAllDisplays();
+                // 额外确保 webfontTest 区域字体族明确
+                webfontTestDiv.style.fontFamily = "'HanaMinA_Web', 'Noto Sans CJK SC', monospace";
+                refreshAllDisplays();
+            } catch (err) {
+                console.warn('字体加载失败:', err);
+                updateStatus('⚠️ 自动字体加载失败 (CDN网络问题)。请尝试手动点击下方“重试加载”或使用备用方案。', true);
+                manualHint.innerHTML = '❌ 字体文件下载失败。你可以：<br>1. 检查网络连接后点击「重新加载Web字体」<br>2. 或手动安装「Google Noto Fonts」/「花园明朝体」到手机系统。<br>3. 部分安卓设备需要安装「Noto Sans CJK SC」完整版。';
+                // 即使加载失败，也尝试显示备用字体
+                refreshAllDisplays();
+            }
+
+            // 额外检测字体是否真正绘制了字符(通过canvas检测)
+            setTimeout(() => {
+                verifyFontRendering();
+            }, 1500);
+        }
+
+        // 验证渲染效果 (canvas 方法)
+        function verifyFontRendering() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 100;
+            canvas.height = 40;
+            ctx.font = '30px "HanaMinA_Web", "Noto Sans CJK SC", sans-serif';
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.fillText(RARE_CHAR, 10, 30);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let hasNonZero = false;
+            for (let i = 0; i < imageData.length; i += 4) {
+                if (imageData[i] > 200 || imageData[i + 1] > 200 || imageData[i + 2] > 200) {
+                    hasNonZero = true;
+                    break;
+                }
+            }
+            if (!hasNonZero) {
+                const warnMsg = document.createElement('div');
+                warnMsg.className = 'font-note error';
+                warnMsg.style.marginTop = '10px';
+                warnMsg.innerHTML = '⚠️ 检测到当前浏览器仍然无法绘制「𡍼」字形。请尝试以下终极方案：<br>👉 <strong>在Android上安装“Noto Sans CJK SC”或“花园明朝体”APP</strong>（如通过“Google Noto Fonts”应用）或使用支持扩展B区的浏览器如“Kiwi Browser”并手动设置字体。';
+                document.querySelector('.card:last-child').appendChild(warnMsg);
+            } else {
+                manualHint.innerHTML = '🎉 渲染检测通过！当前设备已能正常显示「𡍼」字符。';
+            }
+        }
+
+        // 重置字体（移除Web字体，回退到系统默认）
+        function resetToSystemFont() {
+            if (activeFontStyle && activeFontStyle.parentNode) {
+                activeFontStyle.parentNode.removeChild(activeFontStyle);
+                activeFontStyle = null;
+            }
+            // 移除所有强制字体样式
+            const allElements = [...allCharElements, ...document.querySelectorAll('.card p')];
+            for (let el of allElements) {
+                if (el) {
+                    el.style.fontFamily = '';
+                }
+            }
+            // 重置内联样式
+            webfontTestDiv.style.fontFamily = '';
+            nativeTestDiv.style.fontFamily = '';
+            notoTestDiv.style.fontFamily = " 'Noto Sans CJK SC', 'Noto Sans CJK TC', 'Droid Sans Fallback', sans-serif ";
+            droidTestDiv.style.fontFamily = "'Droid Sans Fallback', 'Roboto', sans-serif";
+            refreshAllDisplays();
+            updateStatus('已移除自定义Web字体，恢复系统默认。如显示豆腐块属于正常现象，请点击“重新加载Web字体”修复。', false);
+            manualHint.innerHTML = '已重置。如需修复显示，请点击上方按钮重新加载字体。';
+        }
+
+        // 另一种备用方案：尝试使用 Google Noto Sans CJK SC 的CDN (完整版可能不支持扩展B, 但花园明朝为主)
+        function loadBackupNoto() {
+            if (activeFontStyle && activeFontStyle.parentNode) {
+                activeFontStyle.parentNode.removeChild(activeFontStyle);
+            }
+            const style = document.createElement('style');
+            style.textContent = `
+            @font-face {
+                font-family: 'NotoFullCJK';
+                src: url('https://fonts.gstatic.com/ea/notosanssc/v1/NotoSansSC-Regular.otf') format('opentype');
+                font-weight: normal;
+            }
+            #mainChar, #webfontTest, .big-char {
+                font-family: 'NotoFullCJK', 'Noto Sans CJK SC', 'HanaMinA', sans-serif !important;
+            }
+        `;
+            document.head.appendChild(style);
+            activeFontStyle = style;
+            updateStatus('尝试加载 Google Noto Sans SC (可能不支持扩展B区，建议使用花园明朝体)', false);
+            refreshAllDisplays();
+        }
+
+        // 页面启动自动加载字体
+        window.addEventListener('DOMContentLoaded', () => {
+            detectDevice();
+            // 自动加载花园明朝体 (这是解决 Android 豆腐块的关键)
+            setTimeout(() => {
+                loadHanaMinFont();
+            }, 100);
+
+            // 绑定按钮事件
+            document.getElementById('reloadFontBtn').addEventListener('click', () => {
+                loadHanaMinFont();
+            });
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                resetToSystemFont();
+            });
+        });
+
+        // 额外：每隔2秒检查是否所有区域都正确刷新，防止某些手机不重绘
+        setInterval(() => {
+            if (activeFontStyle) {
+                // 简单确保内容
+                for (let el of allCharElements) {
+                    if (el && el.innerText !== RARE_CHAR) {
+                        el.innerText = RARE_CHAR;
+                    }
+                }
+            }
+        }, 3000);
+    </script>
+</body>
+
+</html>

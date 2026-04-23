@@ -6,6 +6,7 @@ import { monthlyDonateService as directusMonthlyDonate } from "../services/month
 import { joinRecordService as directusJoinRecord } from "../services/joinRecordService.js";
 import { mydataService as directusMydata } from "../services/mydataService.js";
 import { directusUsersService as directusUsers } from "../services/directusUsersService.js";
+import { priceConfigService as directusPriceConfigService } from "../services/priceConfigService.js"; // 新增價格配置服務適配器 by 20260331
 import { DateUtils } from "../utils/dateUtils.js";
 
 // Rust 服務（延遲加載，避免初始化錯誤）
@@ -23,6 +24,7 @@ async function loadRustServices() {
       { rustJoinRecordService },
       { rustMyDataService },
       { rustDirectusUsersService },
+      { rustPriceConfigService }, // ← 新增      
     ] = await Promise.all([
       import("../rustServices/rustActivityService.js"),
       import("../rustServices/rustAuthService.js"),
@@ -31,6 +33,7 @@ async function loadRustServices() {
       import("../rustServices/rustJoinRecordService.js"),
       import("../rustServices/rustMyDataService.js"),
       import("../rustServices/rustDirectusUsersService.js"),
+      import("../rustServices/rustPriceConfigService.js"), // ← 新增      
     ]);
 
     rustServices = {
@@ -41,6 +44,7 @@ async function loadRustServices() {
       joinRecord: rustJoinRecordService,
       mydata: rustMyDataService,
       user: rustDirectusUsersService,
+      priceConfig: rustPriceConfigService, // ← 新增      
     };
 
     console.log("✅ Rust 服務加載完成");
@@ -77,6 +81,7 @@ class ServiceAdapter {
       joinRecord: directusJoinRecord,
       mydata: directusMydata,
       user: directusUsers,
+      priceConfig: directusPriceConfigService, // 新增價格配置服務適配器 by 20260331      
     };
 
     // 錯誤計數器
@@ -306,19 +311,19 @@ class ServiceAdapter {
 
     // JoinRecord 方法
     const joinRecordMethods = [
-      "createParticipationRecord",
-      "getAllParticipationRecords",
-      "getParticipationRecordById",
-      "getParticipationRecordsByRegistrationId",
-      "getParticipationRecordsByActivityId",
-      "updateParticipationRecord",
+      "createJoinRecord",
+      "getAllJoinRecords",
+      "getJoinRecordById",
+      "getJoinRecordsByRegistrationId",
+      "getJoinRecordsByActivityId",
+      "updateJoinRecord",
       "updateByReceiptPrint",
-      "deleteParticipationRecord",
+      "deleteJoinRecord",
       "saveRecord",
       "getActivityConfig",
       "getLampTypeLabel",
       "generateMockData",
-      "handleParticipationRecordError",
+      "handleJoinRecordError",
     ];
 
     joinRecordMethods.forEach((method) => {
@@ -357,6 +362,28 @@ class ServiceAdapter {
       this[method] = (...args) =>
         this.callServiceMethod("user", method, ...args);
     });
+
+    // PriceConfig 方法
+    const priceConfigMethods = [
+      "createPriceConfig",
+      "updatePriceConfig",
+      "deletePriceConfig",
+      "getAllPriceConfigs",
+      "getPriceConfigById",
+      "getPriceConfigByVersion",
+      "handlePriceConfigError",
+      "getPriceHistory",
+      "getPriceConfigByDate",
+      "getCurrentPriceConfig",
+      // 可以根據需要添加更多方法
+    ];
+
+    priceConfigMethods.forEach((method) => {
+      this[method] = (...args) =>
+        this.callServiceMethod("priceConfig", method, ...args);
+    });
+
+    
   }
 
   /**
@@ -499,19 +526,19 @@ class ServiceAdapter {
     };
 
     const methods = [
-      "createParticipationRecord",
-      "getAllParticipationRecords",
-      "getParticipationRecordById",
-      "getParticipationRecordsByRegistrationId",
-      "getParticipationRecordsByActivityId",
-      "updateParticipationRecord",
+      "createJoinRecord",
+      "getAllJoinRecords",
+      "getJoinRecordById",
+      "getJoinRecordsByRegistrationId",
+      "getJoinRecordsByActivityId",
+      "updateJoinRecord",
       "updateByReceiptPrint",
-      "deleteParticipationRecord",
+      "deleteJoinRecord",
       "saveRecord",
       "getActivityConfig",
       "getLampTypeLabel",
       "generateMockData",
-      "handleParticipationRecordError",
+      "handleJoinRecordError",
     ];
 
     methods.forEach((method) => {
@@ -574,9 +601,36 @@ class ServiceAdapter {
     return proxy;
   }
 
-  /**
-   * 手動切換後端
-   */
+  get priceConfigService() {
+    const proxy = {
+      getCurrentMode: () => this.getCurrentMode(),
+      setMode: (mode) => this.setMode(mode),
+      getIsMock: () => this.getIsMock(),
+      getCurrentUser: () => this.getCurrentUser(),
+    };
+
+    const methods = [
+      "createPriceConfig",
+      "updatePriceConfig",
+      "deletePriceConfig",
+      "getAllPriceConfigs",
+      "getPriceConfigById",
+      "getPriceConfigByVersion",
+      "handlePriceConfigError",
+      "getPriceHistory",
+      "getPriceConfigByDate",
+      "getCurrentPriceConfig",
+      // 可以根據需要添加更多方法
+    ];
+
+    methods.forEach((method) => {
+      proxy[method] = (...args) =>
+        this.callServiceMethod("priceConfig", method, ...args);
+    });
+
+    return proxy;
+  }
+
   switchBackend(type) {
     if (!["directus", "axum"].includes(type)) {
       console.error("無效的後端類型");

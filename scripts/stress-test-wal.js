@@ -6,7 +6,7 @@ const https = require("https");
 const http = require("http");
 
 const DIRECTUS_URL = process.env.DIRECTUS_URL || "http://localhost:8055";
-const INTERVAL_MS = parseInt(process.env.INTERVAL_MS) || 500; // 預設 500ms 寫入一次
+const INTERVAL_MS = parseInt(process.env.INTERVAL_MS) || 100; // 預設 100ms 寫入一次
 const BATCH_SIZE = parseInt(process.env.BATCH_SIZE) || 1; // 每次寫入筆數
 
 let writeCount = 0;

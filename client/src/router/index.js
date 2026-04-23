@@ -20,9 +20,18 @@ const routes = [
     path: "/td-clock",
     component: () => import("../views/TianganDizhiClock12.vue"),
   },
+  //金額設定管理
+  {
+    path: "/price-config",
+    title: "金額設定",
+    name: "PriceConfig",
+    component: () => import("../views/PriceConfig.vue"),
+    meta: { requiresAuth: true },
+  },
   {
     path: "/join-record",
     title: "活動參加",
+    name: "JoinRecord",
     component: () => import("../views/JoinRecord.vue"),
     meta: { requiresAuth: true },
   },
@@ -42,20 +51,26 @@ const routes = [
   },
   {
     path: "/join-record-print",
-    title: "活動參加記錄列印",
+    title: "參加記錄列印",
     component: () => import("../views/JoinRecordPrint.vue"),
     meta: { requiresAuth: true },
   },
   {
-    path: "/join-record-card-print",
+    path: "/card-print",
     title: "牌位打印",
     component: () => import("../views/JoinRecordCardPrint.vue"),
     meta: { requiresAuth: true },
   },
   {
-    path: "/join-record-receipt-print",
+    path: "/receipt-print",
     title: "收據打印",
     component: () => import("../views/JoinRecordReceiptPrint.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/merged-print",
+    title: "合併打印",
+    component: () => import("../views/JoinRecordMergedPrint.vue"),
     meta: { requiresAuth: true },
   },
   {

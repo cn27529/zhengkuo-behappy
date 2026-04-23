@@ -15,7 +15,12 @@ echo "-----------------------------------------------"
 echo "1. 測試生成一般收據 (stamp)..."
 STAMP_RES=$(curl -s -X POST "$API_URL/receipt-numbers/generate" \
   -H "Content-Type: application/json" \
-  -d "{\"recordId\": $RECORD_ID, \"receiptType\": \"standard\", \"userId\": \"$TEST_ADMIN\"}")
+  -d "{
+    \"recordId\": $RECORD_ID, 
+    \"receiptType\": \"standard\", 
+    \"userId\": \"$TEST_ADMIN\"
+  
+  }")
 
 echo "響應: $STAMP_RES"
 STAMP_NUM=$(echo $STAMP_RES | grep -oE '[0-9]{8}')
@@ -57,6 +62,6 @@ fi
 
 echo "-----------------------------------------------"
 echo "🎉 第一階段單筆測試完成！"
-echo "請檢查資料庫中的 receiptNumbersDB 與 participationRecordDB 是否同步。"
+echo "請檢查資料庫中的 receiptNumbersDB 與 joinRecordDB 是否同步。"
 echo "確認無誤後，即可進行第二階段：高併發流水號壓力測試。"
 echo "-----------------------------------------------"

@@ -141,14 +141,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 創建活動路由
     let activity_routes = routes::activity::create_routes();
     let registration_routes = routes::registration::create_routes();
-    let monthly_donate_routes = routes::monthly_donate::create_routes();
-    let participation_record_routes = routes::participation_record::create_routes();
+    let monthly_donate_routes = routes::monthly_donate::create_routes();    
     let my_data_routes = routes::my_data::create_routes();
     let receipt_number_routes = routes::receipt_number::create_routes(); // ✅ 新增：收據編號路由
     let directus_users_routes = routes::directus_users::create_routes();
+    let price_config_routes = routes::price_config::create_routes(); // ✅ 新增：價格配置路由 by 20260331    
+    let join_record_routes = routes::join_record::create_routes(); // ✅ 新增：加入紀錄路由 by 20260422
 
     // ✅ 創建 SqliteProvider(DatabaseProvider 的實現)
     let sql_viewer_router = SqlViewerLayer::sqlite("/sql-viewer", pool.clone()).into_router();
+
 
     // 創建主路由 - 使用 nest 而不是 merge
     let app = Router::new()
@@ -160,12 +162,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/server/ping", get(server_ping))
         .merge(activity_routes)
         .merge(registration_routes)
-        .merge(monthly_donate_routes)
-        .merge(participation_record_routes)
-        .merge(my_data_routes)
-        // ✅ 新增：合併收據編號路由
-        .merge(receipt_number_routes)
+        .merge(monthly_donate_routes)        
+        .merge(my_data_routes)        
+        .merge(receipt_number_routes) // ✅ 新增：合併打印編號路由
         .merge(directus_users_routes)
+        .merge(price_config_routes) // ✅ 新增：價格配置路由 by 20260331        
+        .merge(join_record_routes) // ✅ 新增：加入紀錄路由 by 20260422
         // Add the SQL viewer at /sql-viewer
         .merge(sql_viewer_router)
         .layer(Extension(state.clone()))
@@ -198,6 +200,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("  POST   /api/receipt-numbers/generate - 生成收據編號");
     tracing::info!("  GET    /api/receipt-numbers        - 收據編號歷史記錄");
     tracing::info!("  GET    /api/directus-users         - DIRECTUS使用者");
+    tracing::info!("  GET    /api/price-config           - 價格配置列表"); // ✅ 新增：價格配置端點 by 20260331    
+    tracing::info!("  GET    /api/join-records           - 參與記錄列表"); // ✅ 新增：加入紀錄端點 by 20260422
+    
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");
 
@@ -237,13 +242,14 @@ async fn root_handler() -> Json<Value> {
             "health": "/health",
             "activities": "/api/activities",
             "registrations": "/api/registrations",
-            "monthly_donates": "/api/monthly-donates",
-            "participation_records": "/api/participation-records",            
+            "monthly_donates": "/api/monthly-donates",            
             "receipt_numbers": "/api/receipt-numbers/", 
             "receipt_generation": "/api/receipt-numbers/generation", 
             "directus_users": "/api/directus-users",
+            "price_configs": "/api/price-config",
             "db_test": "/db-test",
-            "sql_viewer": "/sql-viewer"
+            "sql_viewer": "/sql-viewer",
+            "join_records": "/api/join-records"
         },
         "architecture": {
             "auth_backend": "Directus (login, users, permissions)",
@@ -306,34 +312,6 @@ async fn db_test(Extension(pool): Extension<sqlx::SqlitePool>) -> Json<Value> {
 
 // Server Info 端點
 async fn server_info(Extension(state): Extension<Arc<AppState>>) -> Json<ServerInfo> {
-    // // 計算運行時間
-    // let uptime = chrono::Utc::now() - state.start_time;
-
-    // // 檢查數據庫連接 - 使用 db.rs 中的函數
-    // let db_connected = db::test_connection(&state.pool).await.is_ok();
-
-    // // 獲取數據庫路徑
-    // let database_url = std::env::var("DATABASE_URL")
-    //     .unwrap_or_else(|_| "未知".to_string())
-    //     .replace("sqlite:", "");
-
-    // let info = ServerInfo {
-    //     name: "Rust Axum Backend".to_string(),
-    //     version: state.version.clone(),
-    //     uptime_seconds: uptime.num_seconds(),
-    //     database_connected: db_connected,
-    //     database_type: "SQLite".to_string(),
-    //     database_path: database_url,
-    //     current_time: chrono::Utc::now().to_rfc3339(),
-    //     architecture: Architecture {
-    //         auth_backend: "Directus".to_string(),
-    //         data_backend: "Rust Axum".to_string(),
-    //         database: "Shared SQLite".to_string(),
-    //     },
-    // };
-
-    // Json(info)
-
 
     // 1. 計算運行時間
     let uptime = chrono::Utc::now() - state.start_time;

@@ -106,7 +106,8 @@ import printJS from "print-js";
 
 const route = useRoute();
 const router = useRouter();
-const record = ref(JSON.parse(route.query.print_data || "{}")); // 從列表傳來的數據
+
+const currentRecord = ref(JSON.parse(route.query.print_data || "{}")); // 從列表傳來的數據
 const printing = ref(false);
 
 const contactName = ref(null);
@@ -144,11 +145,15 @@ const updateDocumentTitle = () => {
   const currentTemplate = cardTemplates[selectedBg.value];
   const templateName = currentTemplate?.name || "";
 
-  const contactName = record.value?.contact?.name || "未知信眾";
+  const contactName = currentRecord.value?.contact?.name || "未知信眾";
   const contactTel =
-    record.value?.contact?.phone || record.value?.contact?.mobile || "";
+    currentRecord.value?.contact?.phone ||
+    currentRecord.value?.contact?.mobile ||
+    "";
   // 提取姓氏 (根據您的資料結構)
-  const salvationItem = record.value.items?.find((i) => i.type === "chaodu");
+  const salvationItem = currentRecord.value.items?.find(
+    (i) => i.type === "chaodu",
+  );
   //const surname = salvationItem?.sourceData?.[0]?.surname || "";
 
   // 組合成您要求的格式
@@ -156,7 +161,7 @@ const updateDocumentTitle = () => {
 };
 
 onMounted(() => {
-  console.log("record object:", record.value);
+  console.log("record object:", currentRecord.value);
   updateDocumentTitle();
 });
 
@@ -188,16 +193,18 @@ const availableTags = computed(() => {
   const tags = [];
 
   // 聯絡人
-  if (record.value.contact) {
-    contactName.value = record.value.contact.name;
+  if (currentRecord.value.contact) {
+    contactName.value = currentRecord.value.contact.name;
     tags.push({
       id: "c1",
-      label: `聯絡人 ${record.value.contact.name}`,
-      value: record.value.contact.name,
+      label: `聯絡人 ${currentRecord.value.contact.name}`,
+      value: currentRecord.value.contact.name,
     });
   }
   // 提取祖先
-  const salvationItem = record.value.items?.find((i) => i.type === "chaodu");
+  const salvationItem = currentRecord.value.items?.find(
+    (i) => i.type === "chaodu",
+  );
   if (salvationItem?.sourceData?.[0]?.surname) {
     surname.value = salvationItem.sourceData[0].surname + "歷代祖先";
     tags.push({
@@ -207,7 +214,7 @@ const availableTags = computed(() => {
     });
   }
   // 提取地址
-  const address = record.value.items?.[0]?.sourceAddress;
+  const address = currentRecord.value.items?.[0]?.sourceAddress;
   if (address) {
     tags.push({
       id: "chaodu_a1",
@@ -218,7 +225,9 @@ const availableTags = computed(() => {
 
   // 提取陽上人
   // 在 items 陣列中尋找 type 為 survivors 的項目
-  const survivorItem = record.value.items?.find((i) => i.type === "survivors");
+  const survivorItem = currentRecord.value.items?.find(
+    (i) => i.type === "survivors",
+  );
   if (survivorItem?.sourceData?.length > 0) {
     // const names = survivorItem.sourceData.map((s) => s.name).join("、");
     // tags.push({
@@ -238,7 +247,7 @@ const availableTags = computed(() => {
   }
 
   // 消災祈福
-  const qifuItem = record.value.items?.find((i) => i.type === "qifu");
+  const qifuItem = currentRecord.value.items?.find((i) => i.type === "qifu");
   if (qifuItem?.sourceData?.length > 0) {
     // 如果您希望每個人名都是獨立標籤，可以改用：
     qifuItem.sourceData.forEach((s, idx) => {
@@ -261,7 +270,9 @@ const availableTags = computed(() => {
   }
 
   // 固定消災
-  const xiaozaiItem = record.value.items?.find((i) => i.type === "xiaozai");
+  const xiaozaiItem = currentRecord.value.items?.find(
+    (i) => i.type === "xiaozai",
+  );
   if (xiaozaiItem?.sourceData?.length > 0) {
     xiaozaiItem.sourceData.forEach((s, idx) => {
       tags.push({
@@ -283,7 +294,9 @@ const availableTags = computed(() => {
   }
 
   // 點燈
-  const diandengItem = record.value.items?.find((i) => i.type === "diandeng");
+  const diandengItem = currentRecord.value.items?.find(
+    (i) => i.type === "diandeng",
+  );
   if (diandengItem?.lampDetails?.length > 0) {
     diandengItem.lampDetails.forEach((s, idx) => {
       tags.push({

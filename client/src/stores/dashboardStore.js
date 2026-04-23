@@ -240,15 +240,14 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const receiptPendingIds = computed(() => {
     const ids = joinRecords.value
       .filter(
-        // 收據是否已開立，經20260225決定修改定義默認為空值，
-        // 值等於 "standard" 是 "感謝狀", "stamp" 是 "收據"，空值表示：未打印"收據"或"感謝狀"。
         (record) =>
           BoolUtils.normalizeBool(record?.needReceipt) &&
           (!record?.receiptIssuedAt ||
             record?.receiptIssuedAt === "" ||
             record?.receiptIssuedAt === null),
       )
-      .map((record) => record.id);
+      .map((record) => record.id)
+      .slice(0, 5); // 只取前5筆 ID 顯示
     return ids;
   });
 

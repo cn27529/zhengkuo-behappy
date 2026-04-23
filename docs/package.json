@@ -4,8 +4,7 @@
   "description": "文檔服務器",
   "main": "docs-server.js",
   "scripts": {
-    "start": "node docs-server.js",
-    "dev": "node --watch docs-server.js",
+    "dev": "npm run build && node --watch docs-server.js",
     "build": "node generate-books.js"
   },
   "dependencies": {
