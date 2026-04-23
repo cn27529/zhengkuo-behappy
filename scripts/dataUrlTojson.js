@@ -15,10 +15,6 @@ const dataJsonObj = [
     fileName: "mock_monthlyDonates.json",
   },
   {
-    dataUrl: "http://localhost:3000/api/participation-records?fields=*",
-    fileName: "mock_join_records.json",
-  },
-  {
     dataUrl: "http://localhost:3000/api/registrations?fields=*",
     fileName: "mock_registrations.json",
   },
