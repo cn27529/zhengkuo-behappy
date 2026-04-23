@@ -46,7 +46,7 @@ http://localhost:8055/admin
 
 ## 4. 設置 CORS
 
-在 `server/.env` 確認 CORS 設定：
+在 `cms-server/.env` 確認 CORS 設定：
 
 ```env
 CORS_ENABLED=true

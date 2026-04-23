@@ -25,9 +25,9 @@ echo "安裝 log-server 套件..."
 cd log-server && npm install && cd ..
 echo
 
-echo "[5/6] Installing server packages..."
-echo "安裝 server 套件..."
-cd server && npm install && cd ..
+echo "[5/6] Installing cms-server packages..."
+echo "安裝 cms-server 套件..."
+cd cms-server && npm install && cd ..
 echo
 
 echo "[6/6] Installing rust-axum packages..."

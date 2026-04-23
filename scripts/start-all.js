@@ -83,7 +83,7 @@ function startServices(projectRoot) {
         //"🐇,🌍,🦀,🌱",
         "--prefix-colors",
         "bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgBlack.bold,bgWhite.bold,bgWhite.bold,bgRed.bold",
-        '"npm run start:server"',
+        '"npm run start:cms"',
         isProd ? '"npm run start:client:prod"' : '"npm run start:client"',
         '"npm run start:rust"',
         '"npm run start:logs"',
