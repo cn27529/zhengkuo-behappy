@@ -176,7 +176,7 @@ await store.initialize();
 
 #### `getAllPriceConfigs(params?)`
 
-從後端拉取全部資料，結果存入 `allPriceConfigs`。預設以 `sort: "-id"` 降序排列。Mock 模式下讀取 `mock_priceConfigs.json`，後端失敗時也會 fallback 到 mock。
+從後端拉取全部資料，結果存入 `allPriceConfigs`。預設以 `sort: "-id"` 降序排列。Mock 模式下讀取 `mock_price_configs.json`，後端失敗時也會 fallback 到 mock。
 
 ```js
 await store.getAllPriceConfigs();
@@ -400,7 +400,7 @@ const newVersionId = await generateGitHashBrowser(createISOTime);
 
 **觸發條件：** `VITE_MOCK=true`
 
-**Mock 資料位置：** `src/data/mock_priceConfigs.json`
+**Mock 資料位置：** `src/data/mock_price_configs.json`
 
 | 功能                      | Mock 行為                                                            |
 | ------------------------- | -------------------------------------------------------------------- |

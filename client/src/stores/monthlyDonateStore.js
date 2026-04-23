@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { generateGitHashBrowser } from "../utils/generateGitHash.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import mockDonateData from "../data/mock_monthlyDonates.json";
+import mockDonateData from "../data/mock_monthly_donates.json";
 import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 import { monthlyDonateService } from "../services/monthlyDonateService.js"; // CUD用
 import { authService } from "../services/authService.js";

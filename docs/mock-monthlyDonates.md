@@ -1,6 +1,6 @@
 # 每月贊助 - 資料結構說明
 
-檔案位置：`/src/data/mock_monthlyDonates.json`
+檔案位置：`/src/data/mock_monthly_donates.json`
 
 ## 概述說明
 

@@ -12,7 +12,7 @@ const dataJsonObj = [
   },
   {
     dataUrl: "http://localhost:3000/api/monthly-donates?fields=*",
-    fileName: "mock_monthlyDonates.json",
+    fileName: "mock_monthly_donates.json",
   },
   {
     dataUrl: "http://localhost:3000/api/registrations?fields=*",
@@ -28,7 +28,7 @@ const dataJsonObj = [
   },
   {
     dataUrl: "http://localhost:3000/api/price-configs?fields=*",
-    fileName: "mock_priceConfigs.json",
+    fileName: "mock_price_configs.json",
   },
   {
     dataUrl: "http://localhost:3000/api/join-records?fields=*",

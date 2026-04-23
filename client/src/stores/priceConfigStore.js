@@ -6,7 +6,7 @@ import { serviceAdapter } from "../adapters/serviceAdapter.js"; // R用適配器
 import { priceConfigService } from "../services/priceConfigService.js"; // CUD用
 import { authService } from "../services/authService.js";
 import { DateUtils } from "../utils/dateUtils.js";
-import mockPriceConfigs from "../data/mock_priceConfigs.json";
+import mockPriceConfigs from "../data/mock_price_configs.json";
 
 // 定義金額項目
 export const PRICE_ITEMS = [
