@@ -496,47 +496,6 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 
 一筆參加記錄會生成一份收據, 多筆參加記錄是否也能合併生成一份收據, 這架構完全是不同的, 想知道是否能有可行的方案, 提供你文檔, 我們來分析看看研究一下是否有可行的機會, 是否能用多筆勾選的方式生成一份收據, 多筆參加記錄要計算參加項目的金額統計, 這些都要納入考量, 是否要另開資料表來記錄還是在原有的資料做記錄做區分。
 
-claude ai: docs\dev-mergedReceiptsDB-guide.md
-
-## 合併打印代碼生成
-
-依據現有代碼規則及編程風格 client/src/services/priceConfigService.js 生成 client/src/services/mergedReceiptsService.js。數據庫我已經可以由URL "http://localhost:8055/items/mergedReceiptsDB?fields=\*" 獲取資料，你可以參考資料結構
-
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
-      "date_created": "2026-04-02T03:00:15.298Z",
-      "user_updated": null,
-      "date_updated": null,
-      "receiptNumber": "123",
-      "receiptType": "stamp",
-      "mergeIds": [1, 3, 7],
-      "totalAmount": 999,
-      "issuedAt": "2026-03-31T06:12:05.760Z",
-      "issuedBy": "釋測試",
-      "notes": null,
-      "createdAt": "2026-03-31T06:12:05.760Z",
-      "updatedAt": null
-    }
-  ]
-}
-```
-
-接下來交給你。
-
-## 合併打印 client 代碼生成
-
-依據現有代碼規則及編程風格不多添加， client/src/rustServices/rustPriceConfigService.js 生成 client/src/rustServices/rustMergedReceiptsService.js。CRUD命名都要一致，因為之後會用 client/src/adapters/serviceAdapter.js 做適配。
-
-## 合併打印 rust 代碼生成
-
-依據 rust-axum/src/handlers/price_config.rs 現有代碼規則、編程風格、註解，不多添加。生成 CRUD 的 rust-axum/src/handlers/merged_receipts.rs 代碼。
-
-依據 rust-axum/src/routes/price_config.rs 現有代碼規則、編程風格、註解，不多添加。生成 CRUD 的 rust-axum/src/routes/merged_receipts.rs 代碼。
-
 ## 測試 generate_merged_receipt_number 腳本
 
 生成 scripts\test_rust_merged_receipt_api.sh 腳本,測試rust-axum\src\routes\receipt_number.rs 的 generate_merged_receipt_number方法, 如同 scripts\test_rust_receipt_number_api.sh 腳本, 參數定義參考 GenerateReceiptRequest物件, 資料值參照 client\src\data\mock_receipt_numbers.json, client\src\data\mock_mergedReceipts.json, client\src\data\mock_join_records copy.json

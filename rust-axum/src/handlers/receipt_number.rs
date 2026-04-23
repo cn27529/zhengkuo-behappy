@@ -374,8 +374,7 @@ pub async fn generate_merged_receipt_number(
 
 /// 🔥 作廢合併打印（反操作）
 /// 1. receiptNumbersDB: 更新 state 為 'void'，voidReason 註記「作廢合併列印」
-/// 2. mergedReceiptsDB: 不異動，保留歷史記錄
-/// 3. joinRecordDB: 清空 receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy
+/// 2. joinRecordDB: 清空 receiptNumber, receiptIssued, receiptIssuedAt, receiptIssuedBy
 pub async fn remove_merged_receipt_number(
     Extension(pool): Extension<SqlitePool>,
     Json(payload): Json<MergedReceiptRequest>,
