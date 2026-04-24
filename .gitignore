@@ -199,3 +199,6 @@ mock_data/
 
 # 略過
 **/books.json
+
+# client
+client/public/tools/
