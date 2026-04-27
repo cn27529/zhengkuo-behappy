@@ -7,6 +7,10 @@ const http = require("http");
 // 定義 API 端點與對應的檔案名稱
 const dataJsonObj = [
   {
+    dataUrl: "http://localhost:3000/api/my-data?fields=*",
+    fileName: "mock_mydata.json",
+  },
+  {
     dataUrl: "http://localhost:3000/api/activities?fields=*",
     fileName: "mock_activities.json",
   },

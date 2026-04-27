@@ -199,3 +199,6 @@ mock_data/
 
 # 略過
 **/books.json
+
+# 前端不打包的東西
+client/public/tools/

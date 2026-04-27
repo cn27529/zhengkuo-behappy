@@ -260,7 +260,7 @@ install-all.bat
 | 2/6  | `client/`     | 安裝前端套件              |
 | 3/6  | `docs/`       | 安裝文檔服務器套件        |
 | 4/6  | `log-server/` | 安裝日誌服務器套件        |
-| 5/6  | `server/`     | 安裝 Node.js 備用後端套件 |
+| 5/6  | `cms-server/` | 安裝 Node.js 備用後端套件 |
 | 6/6  | `rust-axum/`  | 安裝 rust-axum 相關套件   |
 
 執行完畢後終端機顯示 `All packages installed successfully!` 即代表全部安裝完成。
@@ -585,7 +585,7 @@ New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' `
 | -------------- | -------------------------------- |
 | `client/`      | Vue 3 前端應用程式               |
 | `rust-axum/`   | Rust Axum 主要後端 API           |
-| `server/`      | Node.js / Directus 備用後端      |
+| `cms-server/`  | Node.js / Directus 備用後端      |
 | `log-server/`  | 日誌收集服務器（MongoDB）        |
 | `docs/`        | 文檔服務器（Markdown 瀏覽）      |
 | `db/`          | SQLite 資料庫檔案                |

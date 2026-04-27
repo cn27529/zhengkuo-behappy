@@ -124,7 +124,7 @@ src/
 
 #### 2. Node.js/Directus 後端 (備用)
 
-- **位置**: `./server/`
+- **位置**: `./cms-server/`
 - **特點**: 快速開發、管理界面
 - **端口**: 8055
 
@@ -390,7 +390,7 @@ git push origin zk-client-netlify --force
 tree -L 3 -I "node_modules|.git|dist" ./client > client-tree.txt
 
 # 查看伺服器結構
-tree -L 2 -I "node_modules|.git|dist" ./server > server-tree.txt
+tree -L 2 -I "node_modules|.git|dist" ./cms-server > cms-server-tree.txt
 
 # 查看 Rust 結構
 tree -L 3 -I "target|.lock" ./rust-axum > rust-axum-tree.txt
