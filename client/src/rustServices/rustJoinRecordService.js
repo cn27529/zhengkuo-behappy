@@ -334,7 +334,7 @@ export class RustJoinRecordService {
 
     console.log("更新收據打印狀態 - 原始記錄:", record);
 
-    // 根據活動類型決定是否需要收據
+    // 根據參加類型決定是否需要收據
     const isNeedReceipt =
       record.activeTemplate === "standard" || record.activeTemplate === "stamp";
 
@@ -407,7 +407,7 @@ export class RustJoinRecordService {
 
   // ========== 輔助方法 ==========
 
-  // 根據活動類型獲取對應的配置（標籤、價格、來源）：超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
+  // 根據參加類型對應的配置（標籤、價格、來源）：超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
   getActivityConfig(activityType) {
     const configs = {
       chaodu: {
