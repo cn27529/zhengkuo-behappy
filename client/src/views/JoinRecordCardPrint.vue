@@ -1,38 +1,47 @@
 <template>
   <div class="print-page-container">
     <div class="preview-section">
+      <!-- 牌位打印模版變更底色 -->
       <div
-        id="card-capture-area"
-        class="card-canvas"
-        :style="canvasStyle"
-        @dragover.prevent
-        @drop="handleDrop"
+        id="bg-color-area"
+        :style="{
+          backgroundColor: cardTemplates[selectedBg].bg_color ?? 'transparent',
+          display: 'inline-block',
+        }"
       >
-        <img :src="currentBgImage" class="base-layer" />
-
         <div
-          v-for="(item, index) in droppedItems"
-          :key="index"
-          class="dropped-item"
-          :style="{
-            top: item.top + 'px',
-            left: item.left + 'px',
-            fontSize: item.fontSize + 'pt',
-          }"
-          @mousedown="startMove($event, index)"
-          @wheel.prevent="handleWheel($event, index)"
+          id="card-capture-area"
+          class="card-canvas"
+          :style="canvasStyle"
+          @dragover.prevent
+          @drop="handleDrop"
         >
-          <!-- 垂直排列的文字 -->
-          <div class="item-text">
-            {{ item.text }}
-          </div>
+          <img :src="currentBgImage" class="base-layer" />
 
           <div
-            v-if="!printing"
-            class="item-delete-btn"
-            @click.stop="removeItem(index)"
+            v-for="(item, index) in droppedItems"
+            :key="index"
+            class="dropped-item"
+            :style="{
+              top: item.top + 'px',
+              left: item.left + 'px',
+              fontSize: item.fontSize + 'pt',
+            }"
+            @mousedown="startMove($event, index)"
+            @wheel.prevent="handleWheel($event, index)"
           >
-            🗑️
+            <!-- 垂直排列的文字 -->
+            <div class="item-text">
+              {{ item.text }}
+            </div>
+
+            <div
+              v-if="!printing"
+              class="item-delete-btn"
+              @click.stop="removeItem(index)"
+            >
+              🗑️
+            </div>
           </div>
         </div>
       </div>
@@ -117,21 +126,22 @@ const surname = ref(null);
 const cardTemplates = {
   salvation_1: {
     name: "超度中牌_空白款",
-    url: "/card-template-zk01a.png", // 超度中牌_空白款
+    url: "/card-template-zk01a.png",
     width: "95mm",
     height: "258mm",
   },
   salvation_2: {
     name: "超度中牌_中字款",
-    url: "/card-template-zk02a.png", // 超度中牌_中字款
+    url: "/card-template-zk02a.png",
     width: "92mm",
     height: "258mm",
   },
   safe: {
     name: "合家平安",
-    url: "/card-template-safe.png", //合家平安
+    url: "/card-template-safe.png",
     width: "93mm",
     height: "257mm",
+    //bg_color: "#E9967A", //牌位打印模版變更底色
   },
 };
 
@@ -175,14 +185,11 @@ const updateBg = (val) => {
 
 // 畫布尺寸 (以 93x257 為基準，可根據切換調整)
 const canvasStyle = computed(() => ({
-  // 響應式取得畫布尺寸設定
-  //   width: cardTemplates[selectedBg.value].width,
-  //   height: cardTemplates[selectedBg.value].height,
   width: "93mm",
   height: "257mm",
   position: "relative",
   backgroundColor: "transparent",
-  transition: "all 0.3s ease", // 切換尺寸時的小動畫
+  transition: "all 0.3s ease",
 }));
 
 // 已放置在畫布上的項目
