@@ -499,3 +499,7 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 ## 合併打印處理
 
 合併打印處理：在 client/src/views/JoinRecord.vue 頁面增加了一個合併打印的方法 handleMergedReceiptPrint，在 client/src/views/JoinRecordReceiptPrint.vue 頁面我己經接上 is_merged 的參數，目前要實現將的合併打印的 "items" 內容併成一份，以 "items"的"type" 做群組將 "subtotal" 做加總然後更新"finalAmount"欄位，recordContext.value 除了"items"與 "finalAmount" 被更新以外，其餘的資料不變的。範例資料在 client/src/data/mock_join_records_858689.json。請分析可行性。我們先做到這裡之後還有邏輯要處理。
+
+## 牌位打印模版切換底色
+參加記錄查詢 client\src\views\JoinRecordList.vue 透過"牌位打印"連接到 client\src\views\JoinRecordCardPrint.vue 現在要調適選擇 cardTemplates 數據後將選中"合家平安"的數據時, 將"card-capture-area"背景調為"紅色", 如果選擇其它模版則不改變背景, "紅色"為參數可以做調整
+, 我更希望可以在 cardTemplates 變數中設置, 以利以後的修改
