@@ -1,10 +1,10 @@
 [
   {
-    "id": 92,
+    "id": 94,
     "user_created": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_created": "2026-04-23 02:35:02",
+    "date_created": "2026-04-24 01:59:06",
     "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
-    "date_updated": "2026-04-23 02:36:00",
+    "date_updated": "2026-04-24 01:59:32",
     "registrationId": 120,
     "activityId": -1,
     "state": "confirmed",
@@ -145,7 +145,7 @@
     ],
     "contact": {
       "mobile": "0988111222",
-      "name": "測試𡍼𡍼𡍼",
+      "name": "測試𡍼𡍼424",
       "otherRelationship": "一直𡍼",
       "phone": "",
       "relationship": "其它"
@@ -155,9 +155,9 @@
     "finalAmount": 2588,
     "paidAmount": 0,
     "needReceipt": "1",
-    "receiptNumber": "26040032",
+    "receiptNumber": "26040034",
     "receiptIssued": "stamp",
-    "receiptIssuedAt": "2026-04-23T02:36:00.646Z",
+    "receiptIssuedAt": "2026-04-24T01:59:31.767Z",
     "receiptIssuedBy": "釋測試",
     "accountingState": "pending",
     "accountingDate": "",
@@ -167,9 +167,9 @@
     "paymentMethod": "",
     "paymentDate": "",
     "paymentNotes": "",
-    "notes": "𡍼𡍼法會記錄",
-    "createdAt": "2026-04-23T02:35:01.869Z",
-    "updatedAt": "2026-04-23T02:36:00.646Z",
+    "notes": "424",
+    "createdAt": "2026-04-24T01:59:06.661Z",
+    "updatedAt": "2026-04-24T01:59:31.767Z",
     "receiptId": -1
   },
   {
