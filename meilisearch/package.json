@@ -1,0 +1,12 @@
+{
+  "name": "meilisearch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "meilisearch --master-key=\"1f42c220-3194-417e-a240-b054acfbfaaf\"",
+    "setup:join-records": "node setup-join-records.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

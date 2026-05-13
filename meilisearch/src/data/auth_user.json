@@ -1,0 +1,68 @@
+[
+    {
+        "id": "ab11998d-27b1-4936-a437-324952ba3c1f",
+        "firstName": "S",
+        "lastName": "後台管理員",
+        "email": "admin@example.com",
+        "username": "admin",
+        "displayName": "mock阿德民",
+        "role": "admin",
+        "permissions": [
+            "dashboard",
+            "registration",
+            "receipts",
+            "users"
+        ]
+    },
+    {
+        "id": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
+        "firstName": "釋",
+        "lastName": "小空",
+        "email": "zkuser01@example.com",
+        "username": "zkuser01",
+        "displayName": "mock釋小空",
+        "role": "user",
+        "permissions": [
+            "registration"
+        ]
+    },
+    {
+        "id": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+        "firstName": "釋",
+        "lastName": "測試",
+        "email": "test01@example.com",
+        "username": "user01",
+        "displayName": "mock釋測試",
+        "role": "user",
+        "permissions": [
+            "registration"
+        ]
+    },
+    {
+        "id": "3a751f56b575",
+        "firstName": "寺廟",
+        "lastName": "工作人員",
+        "email": "temple_staff@example.com",
+        "username": "temple_staff",
+        "displayName": "mock寺廟人員",
+        "role": "staff",
+        "permissions": [
+            "dashboard",
+            "registration",
+            "receipts"
+        ]
+    },
+    {
+        "id": "324952ba3c1f",
+        "firstName": "寺廟",
+        "lastName": "志工",
+        "email": "volunteer@example.com",
+        "username": "volunteer",
+        "displayName": "mock寺廟志工",
+        "role": "volunteer",
+        "permissions": [
+            "dashboard",
+            "registration"
+        ]
+    }
+]

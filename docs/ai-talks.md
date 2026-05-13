@@ -499,3 +499,7 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 ## 合併打印處理
 
 合併打印處理：在 client/src/views/JoinRecord.vue 頁面增加了一個合併打印的方法 handleMergedReceiptPrint，在 client/src/views/JoinRecordReceiptPrint.vue 頁面我己經接上 is_merged 的參數，目前要實現將的合併打印的 "items" 內容併成一份，以 "items"的"type" 做群組將 "subtotal" 做加總然後更新"finalAmount"欄位，recordContext.value 除了"items"與 "finalAmount" 被更新以外，其餘的資料不變的。範例資料在 client/src/data/mock_join_records_858689.json。請分析可行性。我們先做到這裡之後還有邏輯要處理。
+
+# 創建 meilisearch
+
+已經啟動 meilisearch 項目，meilisearch/run-meilisearch.png（截圖），directus（https://localhost:8055）已安裝 項目，meilisearch/extensions-meilisearch-operation，directus已設置參加記錄的flows，meilisearch/directus-flows-參加記錄.png（截圖），接下來如何在 meilisearch/ 生成並運行參加記錄的查詢應用。參加記錄結構 db/sqlite_joinRecordDB_table.sql，資料結構說明文檔 docs/mock-joinRecords.md。

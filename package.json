@@ -21,6 +21,7 @@
     "start:portal": "node --watch apps-server.js --dev",
     "start:portal:prod": "node --watch apps-server.js --prod",
     "start:docs": "cd docs && npm run dev",
+    "start:meilisearch": "cd meilisearch && npm run dev",
     "build:client": "cd client && npm run build",
     "build:client:analyze": "cd client && npm run build:analyze",
     "build:cms": "cd cms-server && npm run build",

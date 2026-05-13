@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>參加記錄查詢</title>
+<script src="https://cdn.jsdelivr.net/npm/meilisearch@0.44.0/dist/bundles/meilisearch.umd.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f5; color: #333; }
+  header { background: #7c3aed; color: #fff; padding: 16px 24px; }
+  header h1 { font-size: 1.2rem; }
+  .toolbar { display: flex; gap: 12px; padding: 16px 24px; background: #fff; border-bottom: 1px solid #e5e7eb; flex-wrap: wrap; align-items: center; }
+  #search { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; }
+  select { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem; background: #fff; }
+  #stats { padding: 8px 24px; font-size: 0.85rem; color: #6b7280; }
+  #results { padding: 16px 24px; display: grid; gap: 12px; }
+  .card { background: #fff; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .card-id { font-weight: 600; font-size: 1rem; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+  .badge-confirmed { background: #d1fae5; color: #065f46; }
+  .badge-pending   { background: #fef3c7; color: #92400e; }
+  .badge-completed { background: #dbeafe; color: #1e40af; }
+  .card-meta { font-size: 0.85rem; color: #6b7280; display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+  .card-items { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .item-tag { background: #ede9fe; color: #5b21b6; padding: 2px 8px; border-radius: 4px; font-size: 0.78rem; }
+  .card-amounts { display: flex; gap: 16px; font-size: 0.85rem; }
+  .amount-label { color: #6b7280; }
+  .amount-value { font-weight: 600; }
+  .paid { color: #059669; }
+  .unpaid { color: #dc2626; }
+  em { background: #fef08a; font-style: normal; }
+  #pagination { display: flex; justify-content: center; gap: 8px; padding: 16px; }
+  #pagination button { padding: 6px 14px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; cursor: pointer; }
+  #pagination button.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+  #pagination button:disabled { opacity: 0.4; cursor: default; }
+</style>
+</head>
+<body>
+<header><h1>📋 參加記錄查詢</h1></header>
+
+<div class="toolbar">
+  <input id="search" type="search" placeholder="搜尋姓名、手機、收據號碼、備註…" autofocus>
+  <select id="filter-state">
+    <option value="">全部狀態</option>
+    <option value="pending">待處理</option>
+    <option value="confirmed">已確認</option>
+    <option value="completed">已完成</option>
+  </select>
+  <select id="filter-payment">
+    <option value="">全部付款</option>
+    <option value="paid">已付款</option>
+    <option value="unpaid">未付款</option>
+  </select>
+  <select id="filter-accounting">
+    <option value="">全部會計</option>
+    <option value="reconciled">已對帳</option>
+    <option value="pending">待對帳</option>
+  </select>
+  <select id="filter-receipt">
+    <option value="">全部收據</option>
+    <option value="stamp">收據</option>
+    <option value="standard">感謝狀</option>
+  </select>
+  <select id="sort">
+    <option value="createdAt:desc">最新建立</option>
+    <option value="createdAt:asc">最舊建立</option>
+    <option value="finalAmount:desc">金額高→低</option>
+    <option value="finalAmount:asc">金額低→高</option>
+  </select>
+</div>
+
+<div id="stats"></div>
+<div id="results"></div>
+<div id="pagination"></div>
+
+<script>
+const client = new MeiliSearch({ host: 'http://localhost:7700', apiKey: '1f42c220-3194-417e-a240-b054acfbfaaf' });
+const index = client.index('join_records');
+
+const ITEM_LABELS = {
+  chaodu: '超度/超薦', survivors: '陽上人', qifu: '消災祈福',
+  diandeng: '點燈', xiaozai: '固定消災', pudu: '中元普度',
+  support_triple_gem: '護持三寶', food_offering: '供齋',
+};
+const STATE_LABELS = { pending: '待處理', confirmed: '已確認', completed: '已完成' };
+const PAYMENT_LABELS = { paid: '已付款', unpaid: '未付款' };
+
+let page = 1;
+const PER_PAGE = 20;
+
+function buildFilter() {
+  const filters = [];
+  const state = document.getElementById('filter-state').value;
+  const payment = document.getElementById('filter-payment').value;
+  const accounting = document.getElementById('filter-accounting').value;
+  const receipt = document.getElementById('filter-receipt').value;
+  if (state) filters.push(`state = "${state}"`);
+  if (payment) filters.push(`paymentState = "${payment}"`);
+  if (accounting) filters.push(`accountingState = "${accounting}"`);
+  if (receipt) filters.push(`receiptIssued = "${receipt}"`);
+  return filters.join(' AND ') || undefined;
+}
+
+async function search() {
+  const q = document.getElementById('search').value;
+  const sort = document.getElementById('sort').value;
+  const filter = buildFilter();
+
+  const result = await index.search(q, {
+    filter,
+    sort: [sort],
+    limit: PER_PAGE,
+    offset: (page - 1) * PER_PAGE,
+    attributesToHighlight: ['_contactName', '_contactMobile', '_personNames', 'receiptNumber', 'notes'],
+    highlightPreTag: '<em>',
+    highlightPostTag: '</em>',
+  });
+
+  renderStats(result);
+  renderResults(result.hits);
+  renderPagination(result.estimatedTotalHits);
+}
+
+function renderStats({ estimatedTotalHits, processingTimeMs }) {
+  document.getElementById('stats').textContent =
+    `共 ${estimatedTotalHits} 筆，耗時 ${processingTimeMs}ms`;
+}
+
+function renderResults(hits) {
+  const el = document.getElementById('results');
+  if (!hits.length) { el.innerHTML = '<p style="color:#6b7280">無符合結果</p>'; return; }
+
+  el.innerHTML = hits.map(r => {
+    const h = r._formatted || r;
+    const stateClass = `badge-${r.state || 'pending'}`;
+    const stateLabel = STATE_LABELS[r.state] || r.state || '-';
+    const payClass = r.paymentState === 'paid' ? 'paid' : 'unpaid';
+    const payLabel = PAYMENT_LABELS[r.paymentState] || r.paymentState || '未設定';
+    const itemTags = (r._itemTypes || []).map(t =>
+      `<span class="item-tag">${ITEM_LABELS[t] || t}</span>`).join('');
+    const names = (r._personNames || []).join('、') || '-';
+    const contact = h._contactName || r.contact?.name || '-';
+    const mobile = h._contactMobile || r.contact?.mobile || '-';
+    const receipt = r.receiptNumber ? `收據：${h.receiptNumber || r.receiptNumber}` : '';
+
+    return `<div class="card">
+      <div class="card-header">
+        <span class="card-id">#${r.id}　${contact}　${mobile}</span>
+        <span class="badge ${stateClass}">${stateLabel}</span>
+      </div>
+      <div class="card-meta">
+        <span>登記人：${names}</span>
+        ${receipt ? `<span>${receipt}</span>` : ''}
+        <span>建立：${r.createdAt ? r.createdAt.slice(0,10) : '-'}</span>
+      </div>
+      <div class="card-items">${itemTags}</div>
+      <div class="card-amounts">
+        <span><span class="amount-label">應付 </span><span class="amount-value">$${r.finalAmount ?? '-'}</span></span>
+        <span><span class="amount-label">已付 </span><span class="amount-value ${payClass}">$${r.paidAmount ?? '-'} (${payLabel})</span></span>
+        ${r.discountAmount ? `<span><span class="amount-label">折扣 </span><span class="amount-value">-$${r.discountAmount}</span></span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPagination(total) {
+  const totalPages = Math.ceil(total / PER_PAGE);
+  const el = document.getElementById('pagination');
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
+
+  let html = `<button ${page === 1 ? 'disabled' : ''} onclick="goPage(${page-1})">‹ 上頁</button>`;
+  for (let i = Math.max(1, page-2); i <= Math.min(totalPages, page+2); i++) {
+    html += `<button class="${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button ${page === totalPages ? 'disabled' : ''} onclick="goPage(${page+1})">下頁 ›</button>`;
+  el.innerHTML = html;
+}
+
+function goPage(p) { page = p; search(); window.scrollTo(0,0); }
+
+// 搜尋輸入 debounce
+let timer;
+document.getElementById('search').addEventListener('input', () => {
+  clearTimeout(timer);
+  timer = setTimeout(() => { page = 1; search(); }, 300);
+});
+
+['filter-state','filter-payment','filter-accounting','filter-receipt','sort'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => { page = 1; search(); });
+});
+
+search();
+</script>
+</body>
+</html>
