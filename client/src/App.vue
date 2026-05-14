@@ -3,7 +3,7 @@
     <header v-if="layoutReady && showHeader">
       <div class="header-content">
         <div class="header-logo">
-          <div class="logo-icon">🛕</div>
+          <img class="logo-icon" src="/logo-white.webp" alt="logo" />
           <h1>{{ appTitle }}</h1>
           <div class="user-info" v-if="showUserInfo">
             <span>{{ userDisplayName }}</span
@@ -246,7 +246,8 @@ onMounted(() => {
 }
 
 .logo-icon {
-  font-size: 2rem;
+  height: 3rem;
+  width: auto;
 }
 
 .app-content {
