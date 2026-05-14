@@ -129,19 +129,21 @@ const cardTemplates = {
     url: "/card-template-zk01a.png",
     width: "95mm",
     height: "258mm",
+    bg_color: "#FFFFE0",
   },
   salvation_2: {
     name: "超度中牌_中字款",
     url: "/card-template-zk02a.png",
     width: "92mm",
     height: "258mm",
+    bg_color: "#FFFFE0",
   },
   safe: {
     name: "合家平安",
     url: "/card-template-safe.png",
     width: "93mm",
     height: "257mm",
-    //bg_color: "#E9967A", //牌位打印模版變更底色
+    bg_color: "#E9967A", //牌位打印模版變更底色
   },
 };
 
@@ -460,7 +462,7 @@ const handleClose = () => {
 .item-text {
   font-size: 1.5rem;
   font-family: 標楷體;
-  color: #333;
+  color: #333333;
   text-align: center;
   margin: -5px;
   border: 0px solid #333;
