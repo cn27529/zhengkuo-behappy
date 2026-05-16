@@ -1,0 +1,20 @@
+# 编辑文件，每行写一个要排除的文件夹名
+node_modules
+.git
+temp
+logs
+cache
+dist
+__pycache__
+client/node_modules
+cms-server/node_modules
+db/node_modules
+docker
+docs/node_modules
+log-server/node_modules
+meilisearch
+nginx
+rust-axum/target
+
+
+
