@@ -20,6 +20,21 @@ export const appConfig = {
     STAMP: "stamp",
     STANDARD: "standard",    
   }),
+
+  // 根據參加類型對應的配置（標籤、價格、來源）：超度/超薦、陽上人、點燈(光明燈)、祈福、固定消災、中元普度、護持三寶、供齋、護持道場、助印經書、放生
+  JOIN_RECORD_TYPE: Object.freeze({
+    CHAODU: "chaodu",
+    SURVIVORS: "survivors",
+    DIANDENG: "diandeng",
+    QIFU: "qifu",
+    XIAOZAI: "xiaozai",
+    PUDU: "pudu",
+    SUPPORT_TRIPLE_GEM: "support_triple_gem",
+    FOOD_OFFERING: "food_offering",
+    SUTRA_PRINTING: "sutra_printing",
+    LIFE_RELEASE: "life_release",
+  }),
+
 };
 
 export default appConfig;

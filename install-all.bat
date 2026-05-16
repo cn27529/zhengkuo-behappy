@@ -39,9 +39,9 @@ call npm install
 cd ..
 echo.
 
-echo [5/6] Installing server packages...
-echo 安裝 server 套件...
-cd server
+echo [5/6] Installing cms-server packages...
+echo 安裝 cms-server 套件...
+cd cms-server
 call npm install
 cd ..
 echo.
@@ -49,7 +49,7 @@ echo.
 echo [6/6] Installing rust-axum packages...
 echo 安裝 rust-axum 套件...
 cd rust-axum
-call npm install
+call cargo build
 cd ..
 echo.
 

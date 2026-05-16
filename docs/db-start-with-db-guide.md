@@ -178,7 +178,7 @@ npm install
 npm install -g concurrently
 
 # 檢查各服務目錄
-ls -la server/ client/ rust-axum/
+ls -la cms-server/ client/ rust-axum/
 ```
 
 ### 權限問題

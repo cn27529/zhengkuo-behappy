@@ -93,7 +93,7 @@ export const usePriceConfigStore = defineStore("priceConfig", () => {
   });
 
   /**
-   * 根據活動類型獲取價格
+   * 根據參加類型獲取價格
    * @param {string} activityType - 活動類型 key
    * @returns {number} 價格
    */

@@ -185,23 +185,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("🚀🦀 [Rust] 服務器運行在 http://{}", addr);
     tracing::info!("");
     tracing::info!("📚 系統端點:");
-    tracing::info!("  GET    /                           - 根路徑");
-    tracing::info!("  GET    /health                     - 健康檢查");
-    tracing::info!("  GET    /db-test                    - 數據庫測試");
-    tracing::info!("  GET    /api/server/info            - 服務器信息");
-    tracing::info!("  GET    /api/server/ping            - 服務器 Ping");
-    tracing::info!("  GET    /sql-viewer                 - SQL 數據庫查看器");
+    tracing::info!("  GET    /                             - 根路徑");
+    tracing::info!("  GET    /health                       - 健康檢查");
+    tracing::info!("  GET    /db-test                      - 數據庫測試");
+    tracing::info!("  GET    /server/info                  - 服務器信息");
+    tracing::info!("  GET    /server/ping                  - 服務器 Ping");
+    tracing::info!("  GET    /sql-viewer                   - SQL 數據庫查看器");
     tracing::info!("");
-    tracing::info!("  GET    /api/activities             - 活動列表");
-    tracing::info!("  GET    /api/registrations          - 祈福登記列表");
-    tracing::info!("  GET    /api/monthly-donates        - 每月捐款列表");
-    tracing::info!("  GET    /api/participation-records  - 參與記錄列表");
-    tracing::info!("  GET    /api/my-data                - MyData 列表");
+    tracing::info!("  GET    /api/activities               - 活動列表");
+    tracing::info!("  GET    /api/registrations            - 祈福登記列表");
+    tracing::info!("  GET    /api/monthly-donates          - 每月捐款列表");
+    tracing::info!("  GET    /api/participation-records    - 參與記錄列表");
+    tracing::info!("  GET    /api/my-data                  - MyData 列表");
     tracing::info!("  POST   /api/receipt-numbers/generate - 生成收據編號");
-    tracing::info!("  GET    /api/receipt-numbers        - 收據編號歷史記錄");
-    tracing::info!("  GET    /api/directus-users         - DIRECTUS使用者");
-    tracing::info!("  GET    /api/price-config           - 價格配置列表"); // ✅ 新增：價格配置端點 by 20260331    
-    tracing::info!("  GET    /api/join-records           - 參與記錄列表"); // ✅ 新增：加入紀錄端點 by 20260422
+    tracing::info!("  GET    /api/receipt-numbers          - 收據編號歷史記錄");
+    tracing::info!("  GET    /api/directus-users           - DIRECTUS使用者");
+    tracing::info!("  GET    /api/price-config             - 價格配置列表"); // ✅ 新增：價格配置端點 by 20260331    
+    tracing::info!("  GET    /api/join-records             - 參與記錄列表"); // ✅ 新增：加入紀錄端點 by 20260422
     
     tracing::info!("");
     tracing::info!("💡🦀 [Rust] 提示: Directus 管理 Auth,Axum 處理數據 CRUD");

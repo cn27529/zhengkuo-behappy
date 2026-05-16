@@ -80,7 +80,7 @@ JWT_SECRET=your-jwt-secret-key
 #### Directus 後端環境配置
 
 ```bash
-# server/.env
+# cms-server/.env
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your-secure-password
 DB_CLIENT=sqlite3
@@ -131,7 +131,7 @@ cd rust-axum
 cargo run
 
 # 終端 3: Directus 後端 (可選)
-cd server
+cd cms-server
 npm run dev
 ```
 

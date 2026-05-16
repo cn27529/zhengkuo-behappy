@@ -1,0 +1,379 @@
+./
+├── 404.html
+├── apps-server.js
+├── build.bat
+├── client
+│   ├── index.html
+│   ├── package.json
+│   ├── public
+│   │   ├── card-template-001.jpg
+│   │   ├── card-template-safe.png
+│   │   ├── card-template-zk01.png
+│   │   ├── card-template-zk01a.png
+│   │   ├── card-template-zk01b.png
+│   │   ├── card-template-zk02a.png
+│   │   ├── card-template-zk02b.png
+│   │   ├── card-template-zk03a.png
+│   │   ├── temple-icon.png
+│   │   ├── tools
+│   │   │   ├── NotoSansTC-Regular.woff2
+│   │   │   ├── SourceHanSerifTC-Light.woff2
+│   │   │   ├── SourceHanSerifTC-VF.woff2
+│   │   │   ├── cros.html
+│   │   │   ├── ebas927.woff2
+│   │   │   ├── method-diff-v2.html
+│   │   │   ├── method-diff.html
+│   │   │   ├── unicode.html
+│   │   │   ├── unicode10.html
+│   │   │   ├── unicode11.html
+│   │   │   ├── unicode12.html
+│   │   │   ├── unicode13.html
+│   │   │   ├── unicode14.html
+│   │   │   ├── unicode2.html
+│   │   │   ├── unicode3.html
+│   │   │   ├── unicode4.html
+│   │   │   ├── unicode5.html
+│   │   │   ├── unicode6.html
+│   │   │   ├── unicode7.html
+│   │   │   ├── unicode8.html
+│   │   │   └── unicode9.html
+│   │   ├── vite.svg
+│   │   ├── vue.svg
+│   │   ├── zk-bg.png
+│   │   ├── zk-bg.webp
+│   │   ├── zk-in-bg.png
+│   │   ├── zk10-bg.png
+│   │   ├── zk10-bg.webp
+│   │   ├── zk11-bg.png
+│   │   ├── zk11-bg.webp
+│   │   ├── zk12-bg.png
+│   │   ├── zk12-bg.webp
+│   │   ├── zk13-bg.png
+│   │   ├── zk13-bg.webp
+│   │   ├── zk14-bg.png
+│   │   ├── zk14-bg.webp
+│   │   ├── zk15-bg.png
+│   │   ├── zk15-bg.webp
+│   │   ├── zk16-bg.png
+│   │   ├── zk16-bg.webp
+│   │   ├── zk3-bg.png
+│   │   ├── zk3-bg.webp
+│   │   ├── zk4-bg.png
+│   │   ├── zk4-bg.webp
+│   │   ├── zk5-bg.png
+│   │   ├── zk5-bg.webp
+│   │   ├── zk6-bg.png
+│   │   ├── zk6-bg.webp
+│   │   ├── zk7-bg.png
+│   │   ├── zk7-bg.webp
+│   │   ├── zk8-bg.png
+│   │   ├── zk8-bg.webp
+│   │   ├── zk9-bg.png
+│   │   ├── zk9-bg.webp
+│   │   ├── 牌位001.jpg
+│   │   └── 財團法人鎮國基金會.png
+│   ├── server.js
+│   ├── src
+│   │   ├── App.vue
+│   │   ├── adapters
+│   │   │   └── serviceAdapter.js
+│   │   ├── components
+│   │   │   ├── AnimatedNumber.vue
+│   │   │   ├── ContactForm.vue
+│   │   │   ├── DevTools.vue
+│   │   │   ├── EnvTest.vue
+│   │   │   ├── IconSelector.vue
+│   │   │   ├── LogViewer.vue
+│   │   │   ├── Login2FAForm.vue
+│   │   │   ├── LoginForm.vue
+│   │   │   └── SupabaseLoginForm.vue
+│   │   ├── config
+│   │   │   ├── appConfig.js
+│   │   │   └── supabase.js
+│   │   ├── data
+│   │   │   ├── auth_user.json
+│   │   │   ├── mock_activities.json
+│   │   │   ├── mock_directus_users.json
+│   │   │   ├── mock_join_records.json
+│   │   │   ├── mock_join_records_858689.json
+│   │   │   ├── mock_logEntrys.json
+│   │   │   ├── mock_monthly_donates.json
+│   │   │   ├── mock_mydata.json
+│   │   │   ├── mock_price_configs.json
+│   │   │   ├── mock_receipt_numbers.json
+│   │   │   ├── mock_registrations.json
+│   │   │   └── submit-success.json
+│   │   ├── main.js
+│   │   ├── router
+│   │   │   └── index.js
+│   │   ├── rustServices
+│   │   │   ├── baseRustService.js
+│   │   │   ├── rustActivityService.js
+│   │   │   ├── rustAuthService.js
+│   │   │   ├── rustDirectusUsersService.js
+│   │   │   ├── rustJoinRecordService.js
+│   │   │   ├── rustMonthlyDonateService.js
+│   │   │   ├── rustMyDataService.js
+│   │   │   ├── rustPriceConfigService.js
+│   │   │   ├── rustReceiptNumberService.js
+│   │   │   └── rustRegistrationService.js
+│   │   ├── services
+│   │   │   ├── activityService.js
+│   │   │   ├── authService.js
+│   │   │   ├── baseService.js
+│   │   │   ├── directusUsersService.js
+│   │   │   ├── joinRecordService.js
+│   │   │   ├── monthlyDonateService.js
+│   │   │   ├── mydataService.js
+│   │   │   ├── priceConfigService.js
+│   │   │   ├── receiptNumberService.js
+│   │   │   └── registrationService.js
+│   │   ├── stores
+│   │   │   ├── activityStore.js
+│   │   │   ├── authStore.js
+│   │   │   ├── cardStore.js
+│   │   │   ├── configStore.js
+│   │   │   ├── dashboardStore.js
+│   │   │   ├── joinRecordPrintStore.js
+│   │   │   ├── joinRecordQueryStore.js
+│   │   │   ├── joinRecordReportStore.js
+│   │   │   ├── joinRecordStore.js
+│   │   │   ├── menu.js
+│   │   │   ├── monthlyDonateStore.js
+│   │   │   ├── pageStateStore.js
+│   │   │   ├── priceConfigStore.js
+│   │   │   ├── receiptNumberStore.js
+│   │   │   ├── registrationQueryStore.js
+│   │   │   ├── registrationStore.js
+│   │   │   ├── supabase-auth.js
+│   │   │   └── taisuiStore.js
+│   │   ├── style.css
+│   │   ├── utils
+│   │   │   ├── boolUtils.js
+│   │   │   ├── dateUtils.js
+│   │   │   ├── generateGitHash.js
+│   │   │   ├── generateGitHashAsync.js
+│   │   │   ├── indexedDB-with-backend.js
+│   │   │   ├── indexedDB.js
+│   │   │   ├── mockDataHelper.js
+│   │   │   ├── phoneMatchUtils.js
+│   │   │   ├── receiptUtils.js
+│   │   │   └── receiptUtils.test.js
+│   │   └── views
+│   │       ├── ActivityList.vue
+│   │       ├── AnimatedNumber.vue
+│   │       ├── CardDesign.vue
+│   │       ├── Contact.vue
+│   │       ├── Dashboard.vue
+│   │       ├── ElDialog.vue
+│   │       ├── Empty.vue
+│   │       ├── Env.vue
+│   │       ├── HashCode.vue
+│   │       ├── JoinRecord.vue
+│   │       ├── JoinRecordCardPrint.vue
+│   │       ├── JoinRecordList.vue
+│   │       ├── JoinRecordMergedPrint.vue
+│   │       ├── JoinRecordPrint.vue
+│   │       ├── JoinRecordReceiptPrint.vue
+│   │       ├── JoinRecordReportControl.vue
+│   │       ├── JoinRecordStatesControl.vue
+│   │       ├── LogViewPage.vue
+│   │       ├── Login.vue
+│   │       ├── LoginBuddha.vue
+│   │       ├── Logout.vue
+│   │       ├── MockLogin.vue
+│   │       ├── MonthlyDonate.vue
+│   │       ├── MydataForm.vue
+│   │       ├── MydataList.vue
+│   │       ├── NewTab.vue
+│   │       ├── Placeholder.vue
+│   │       ├── PriceConfig.vue
+│   │       ├── Registration.vue
+│   │       ├── RegistrationEdit.vue
+│   │       ├── RegistrationList.vue
+│   │       ├── RegistrationPrint.vue
+│   │       ├── SupabaseLogin.vue
+│   │       ├── TaiSui.vue
+│   │       ├── TaisuiDotLamp.vue
+│   │       ├── TestPage.vue
+│   │       ├── TianganDizhiClock12.vue
+│   │       └── TianganDizhiClock24.vue
+│   ├── stats.html
+│   └── vite.config.js
+├── cms-server
+│   ├── Dockerfile
+│   ├── extensions
+│   └── package.json
+├── compress_images.sh
+├── db
+│   ├── CREATE-INDEX-BASE-chatgpt.sql
+│   ├── CREATE-INDEX-BASE-deepseek.sql
+│   ├── current.db -> zk.db
+│   ├── data.db
+│   ├── databases.json
+│   ├── new_table_import.sql
+│   ├── old_table_dump.sql
+│   ├── sqlite_activityDB_table.sql
+│   ├── sqlite_directus_users_table.sql
+│   ├── sqlite_joinRecordDB_table.sql
+│   ├── sqlite_logEntryDB_table.sql
+│   ├── sqlite_monthlyDonateDB_table.sql
+│   ├── sqlite_myData_table.sql
+│   ├── sqlite_participationRecordDB_table.sql
+│   ├── sqlite_priceConfigDB_table.sql
+│   ├── sqlite_receiptNumbersDB_table.sql
+│   ├── sqlite_registrationDB_table.sql
+│   └── zk.db
+├── docker
+│   ├── docker-compose.yml
+│   └── logs
+├── docs
+│   ├── config.toml
+│   ├── config.toml.png
+│   ├── docs-server.js
+│   ├── generate-books.js
+│   ├── logEntry-mongoDB.png
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   │   ├── books.html
+│   │   ├── books.json
+│   │   ├── config.toml.png
+│   │   ├── document.html
+│   │   ├── index.html
+│   │   └── styles.css
+│   ├── templates.js
+│   ├── windows-PATH1.jpg
+│   └── windows-PATH2.jpg
+├── index.html
+├── install-all.bat
+├── install-all.sh
+├── log-server
+│   ├── capacity-monitor.js
+│   ├── mongoDBLogger-with-schedule.js
+│   ├── mongoDBLogger.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   │   ├── index.html
+│   │   ├── mongo.html
+│   │   └── styles.css
+│   ├── test-batch-logs.js
+│   ├── test-complete.js
+│   ├── test-logger.js
+│   ├── test-query-stats.js
+│   ├── test-single-log.js
+│   └── utils
+│       └── dateUtils.js
+├── netlify.toml
+├── nginx
+│   ├── docker-compose.yml
+│   ├── nginx-config.conf
+│   └── quick-start.sh
+├── nodejs-firewall.ps1
+├── package.json
+├── requitements
+│   ├── 12zodiac.jpg
+│   ├── 12zodiac2.png
+│   ├── 2024消災超度登記表.pdf
+│   ├── 2025清明超度收據.jpg
+│   ├── 2025清明超度登記表.png
+│   ├── 收1錢-螢幕擷取畫面 2025-10-12 134156_0.jpg
+│   ├── 收2超-螢幕擷取畫面 2025-10-12 134226_0.jpg
+│   ├── 收3點-螢幕擷取畫面 2025-10-12 134236_0.jpg
+│   ├── 收4祈-螢幕擷取畫面 2025-10-12 134246_0.jpg
+│   ├── 收4消-螢幕擷取畫面 2025-10-12 134257_0.jpg
+│   ├── 廣小明5張表範例.jpg
+│   ├── 牌位說明-1768352462512.jpg
+│   ├── 銷貨特搜-1771416115127.jpg
+│   ├── 生蓮之位-20260219_001713673.jpg
+│   ├── 長生祿位-紅-20260219_001445031.jpg
+│   ├── 合家平安-目前手寫版本20260219.jpg
+│   ├── 合家平安.jpg
+│   ├── 超度中牌_中字款.jpg
+│   ├── 超度中牌_空白款.jpg
+│   └── 程式做不到的部份人來配合.jpg
+├── results
+│   ├── 收據-手寫-20250405.jpg
+│   ├── 劉淑華-26030006-感謝狀.pdf
+│   ├── 蘇怡君-A26030033-感謝狀.pdf
+│   ├── 蘇怡君-合家平安.pdf
+│   ├── 蘇怡君-超度中牌_中字款.pdf
+│   └── 蘇怡君-超度中牌_空白款.pdf
+├── rust-axum
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   ├── migrations
+│   │   └── sqlite_participationRecordDB_testdata_v2.sql
+│   ├── package-lock.json
+│   ├── package.json
+│   └── src
+│       ├── db.rs
+│       ├── handlers
+│       │   ├── activity.rs
+│       │   ├── directus_users.rs
+│       │   ├── join_record.rs
+│       │   ├── mod.rs
+│       │   ├── monthly_donate.rs
+│       │   ├── my_data.rs
+│       │   ├── price_config.rs
+│       │   ├── receipt_number.rs
+│       │   └── registration.rs
+│       ├── main.rs
+│       ├── middleware
+│       │   └── mod.rs
+│       ├── models
+│       │   ├── activity.rs
+│       │   ├── api_response.rs
+│       │   ├── directus_users.rs
+│       │   ├── join_record.rs
+│       │   ├── mod.rs
+│       │   ├── monthly_donate.rs
+│       │   ├── my_data.rs
+│       │   ├── price_config.rs
+│       │   ├── receipt_number.rs
+│       │   └── registration.rs
+│       ├── routes
+│       │   ├── activity.rs
+│       │   ├── directus_users.rs
+│       │   ├── join_record.rs
+│       │   ├── mod.rs
+│       │   ├── monthly_donate.rs
+│       │   ├── my_data.rs
+│       │   ├── price_config.rs
+│       │   ├── receipt_number.rs
+│       │   └── registration.rs
+│       └── utils
+│           └── mod.rs
+└── scripts
+    ├── analyze-services.js
+    ├── check-db-locks-detailed.js
+    ├── check-db-locks-safe.js
+    ├── check-db-locks.js
+    ├── check-log-server.js
+    ├── check-symlinks.js
+    ├── dataUrlTojson.js
+    ├── deploy-netlify.sh
+    ├── init-database.js
+    ├── sqlite-viewer.js
+    ├── start-all.js
+    ├── start-with-db.js
+    ├── stress-test-mydata-query.js
+    ├── stress-test-wal.js
+    ├── stress_test_receipt_concurrent.sh
+    ├── testGitHash.js
+    ├── testMydata.js
+    ├── test_dual_backend_on_joinRecordService.sh
+    ├── test_mydata.sh
+    ├── test_remove_merged_receipt.sh
+    ├── test_rust_activity_api.sh
+    ├── test_rust_merged_join_record_api.sh
+    ├── test_rust_merged_receipts_api.sh
+    ├── test_rust_mydata_api.sh
+    ├── test_rust_receipt_number_api.sh
+    ├── test_rust_registration_api.sh
+    ├── test_rust_registration_api_mockdata.sh
+    ├── test_rust_registration_with_user_created.sh
+    └── windows-symlink-helper.js
+
+37 directories, 340 files

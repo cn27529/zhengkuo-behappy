@@ -130,7 +130,7 @@ fetch("http://localhost:8055/auth/login", {
 1. 啟動 Directus:
 
    ```bash
-   cd server
+   cd cms-server
    npm run dev
    ```
 

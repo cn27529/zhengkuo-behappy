@@ -245,7 +245,7 @@ sqlite3 db/template.db ".tables"  # 檢查資料庫結構
 
 ```bash
 # 檢查 Directus 環境
-cd server
+cd cms-server
 npm list directus
 npx directus --version
 
