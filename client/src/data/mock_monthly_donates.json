@@ -163,9 +163,9 @@
   {
     "id": 1,
     "user_created": "ab11998d-27b1-4936-a437-324952ba3c1f",
-    "date_created": "2025-12-13 15:29:27",
-    "user_updated": "d7fe9cb7-26cd-419a-96f5-3dce505844bf",
-    "date_updated": "2026-04-02 09:12:47",
+    "date_created": "2025-12-13 07:29:27",
+    "user_updated": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+    "date_updated": "2026-04-23 11:06:46",
     "name": "廣小華",
     "registrationId": -1,
     "donateId": "t5y6u7i",
@@ -199,10 +199,23 @@
         "price": 600,
         "updatedAt": "",
         "updatedUser": ""
+      },
+      {
+        "createdAt": "2026-04-23T11:06:45.898Z",
+        "createdUser": "a4954ebc-8591-4288-8ebe-a4af19e718f7",
+        "donateItemsId": "540afa1",
+        "months": [
+          "202610",
+          "202611",
+          "202612"
+        ],
+        "price": 300,
+        "updatedAt": "",
+        "updatedUser": ""
       }
     ],
     "memo": "2025年十二月贊助, +2026 1/1 +900",
     "createdAt": "2025-12-15T08:00:00.000Z",
-    "updatedAt": "2026-04-02T09:12:46.905Z"
+    "updatedAt": "2026-04-23T11:06:45.907Z"
   }
 ]
