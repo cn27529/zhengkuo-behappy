@@ -507,3 +507,31 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 ## 更換logo
 
 將 client/src/App.vue 中的 <div class="logo-icon">🛕</div> 更換為實體圖片，圖片在 client/public/logo-white.webp
+
+## EXPORT.cvs to json
+依據 docs\mock-registrations.md 文檔與 client\src\data\mock_registrations.json 資料結構, 將 db\EXPORT.csv 內容生成 EXPORT.json ,現在說明 json的欄位對應到csv欄位: 
+
+蓮友編號(電話)
+,blessing.persons.person:姓名
+,簡稱
+,性別
+,身分證字號
+,國曆生日
+,農曆生日
+,blessing.persons.person.zodiac:生肖
+,contact.mobile:行動電話
+,contact.phone:電話1 或 電話2(擇一)
+,傳真號碼
+,通訊地址
+,郵遞區號1
+,戶籍地址
+,郵遞區號2
+,連絡地址
+,電子郵件
+,contact.name:連絡人
+,備註
+,異動人員
+,updatedAt:異動時間
+,類別
+,contact.relationship:關係
+,notes:蓮友編號(電話)+註銷日期
