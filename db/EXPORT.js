@@ -42,7 +42,7 @@ for (let i = 1; i < lines.length; i++) {
 
   const row = parseRow(line);
   const category = row[22]; // 類別：消災 / 點燈 / 超渡 / 超度
-  if (!category) continue;  // 類別空白略過
+  //if (!category) continue;  // 類別空白略過
 
   // --- 共用欄位 ---
   const formId       = row[0];  // 蓮友編號(電話)
@@ -73,8 +73,8 @@ for (let i = 1; i < lines.length; i++) {
       id: id++,
       formId,
       formName,
-      formSource: 'EXPORT',
-      state: 'updated',
+      formSource: 'EXPORT.csv',
+      state: 'EXPORT',
       updatedAt,
       contact,
       blessing: {
@@ -83,14 +83,14 @@ for (let i = 1; i < lines.length; i++) {
       },
       salvation: { address: '', ancestors: [], survivors: [] }
     };
-  } else if (category === '超渡' || category === '超度') {
+  } else if (category === '超度' || category === '超渡' || category === '') {
     // 超渡：姓名第一字為往生者姓氏（ancestors），本人為陽上人（survivors）
     record = {
       id: id++,
       formId,
       formName,
-      formSource: 'EXPORT',
-      state: 'updated',
+      formSource: 'EXPORT.csv',
+      state: 'EXPORT',
       updatedAt,
       contact,
       blessing: { address: '', persons: [] },
