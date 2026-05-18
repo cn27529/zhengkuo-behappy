@@ -107,7 +107,7 @@ for (let i = 1; i < lines.length; i++) {
       formSource: "EXPORT.csv",
       state: "EXPORT",
       updatedAt,
-      notes: notes || "",
+      notes: notes || category || "",
       contact,
       blessing: { address: "", persons: [] },
       salvation: {
