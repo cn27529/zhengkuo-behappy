@@ -36,7 +36,8 @@ SELECT
     contact,
     blessing,
     createdAt,
-    updatedAt
+    updatedAt,
+    notes
 FROM registrationDB
 "#;
 

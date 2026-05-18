@@ -13,6 +13,7 @@ CREATE TABLE "registrationDB" (
     "blessing" json NULL,
     "createdAt" varchar(255) null,
     "updatedAt" varchar(255) null,
+    "notes" varchar(255) null,
     CONSTRAINT "registrationdb_user_created_foreign" FOREIGN KEY ("user_created") REFERENCES "directus_users" ("id"),
     CONSTRAINT "registrationdb_user_updated_foreign" FOREIGN KEY ("user_updated") REFERENCES "directus_users" ("id")
 );

@@ -57,6 +57,8 @@ pub struct Registration {
     pub created_at: Option<String>,
     #[sqlx(rename = "updatedAt", default)]
     pub updated_at: Option<String>,    
+
+    pub notes: Option<String>, // export-import
 }
 
 // 自定義序列化函數：將 JSON 字符串轉為 JSON 對象
@@ -177,6 +179,9 @@ pub struct RegistrationResponse {
     pub created_at: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub updated_at: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub notes: Option<String>,
 }
 
 impl From<Registration> for RegistrationResponse {
@@ -199,6 +204,8 @@ impl From<Registration> for RegistrationResponse {
                 .and_then(|s| serde_json::from_str(&s).ok()),
             created_at: data.created_at,
             updated_at: data.updated_at,
+
+            notes: data.notes, // export-import
         }
     }
 }
