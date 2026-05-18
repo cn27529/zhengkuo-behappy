@@ -538,3 +538,11 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 ,類別
 ,contact.relationship:關係
 ,notes:蓮友編號(電話)+註銷日期
+
+## csv to json not diff count
+
+代碼 db/EXPORT.js 將 db/EXPORT.csv 轉成 db/EXPORT.json，分析一下為何筆數不一樣是否 csv欄位有缺資料造成還是其它原因。
+
+## IMPOERT.js from EXPORT.json
+
+依據 scripts/stress-test-wal.js 方式生成 scripts/import-from-export-json.js，將 db/EXPORT.json 資料寫入 db/sqlite_registrationDB_table.sql 表，API位置："/items/registrationDB"

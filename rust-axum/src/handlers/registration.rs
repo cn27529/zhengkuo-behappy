@@ -73,8 +73,8 @@ pub async fn get_all_registrations(
         query.push_str(" ORDER BY createdAt DESC");
     }
 
-    // 添加分頁
-    let limit = params.limit.unwrap_or(100);
+    // 添加分頁9999
+    let limit = params.limit.unwrap_or(9999);
     let offset = params.offset.unwrap_or(0);
     query.push_str(&format!(" LIMIT {} OFFSET {}", limit, offset));
 
