@@ -509,9 +509,10 @@ store, service己串接完成, priceConfig.vue 已實現讀取與寫入。現在
 將 client/src/App.vue 中的 <div class="logo-icon">🛕</div> 更換為實體圖片，圖片在 client/public/logo-white.webp
 
 ## EXPORT.cvs to json
-這個工作是要將csv資料轉入目前數據庫, 依據 docs\mock-registrations.md 文檔與 client\src\data\mock_registrations.json 資料結構, 將 db\EXPORT.csv 內容生成 db\EXPORT.json ,有一個關鍵的地方是"類別", 你先理解一下, 讓我看看你的分析對不對 如果思路不一致我們再細部調適對應的內容
 
-現在說明 json的欄位對應到csv欄位: 
+這個工作是要將csv資料轉入目前數據庫, 依據 docs/mock-registrations.md 文檔與 client/src/data/mock_registrations_2data.json 資料結構, 將 db/EXPORT.csv 內容生成 db\EXPORT.json ,有一個關鍵的地方是"類別" 我們需要識別超度、消災、點燈將人員資料填到對的json位置, 你先理解一下讓我看看你的分析對不對 如果思路不一致我們再細部調適對應的內容, 先分析。
+
+現在說明 json的欄位對應到csv欄位:
 
 蓮友編號(電話)
 ,blessing.persons.person:姓名
