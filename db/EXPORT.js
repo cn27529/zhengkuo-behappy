@@ -60,6 +60,7 @@ for (let i = 1; i < lines.length; i++) {
   const updatedAt = row[21] ? new Date(row[21]).toISOString() : "";
   const relationship = row[23]; // 關係：直接填入 CSV 原始值
   const address = getAddress(row);
+  const createdAt = new Date("2026-05-17T14:00:00.000Z").toISOString();
 
   const contact = {
     name: contactName,
@@ -89,6 +90,7 @@ for (let i = 1; i < lines.length; i++) {
       formName,
       formSource: "EXPORT.csv",
       state: "EXPORT",
+      createdAt,
       updatedAt,
       notes: notes || category || "",
       contact,
@@ -106,6 +108,7 @@ for (let i = 1; i < lines.length; i++) {
       formName,
       formSource: "EXPORT.csv",
       state: "EXPORT",
+      createdAt,
       updatedAt,
       notes: notes || category || "",
       contact,

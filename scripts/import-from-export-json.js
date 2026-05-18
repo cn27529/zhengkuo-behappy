@@ -6,6 +6,7 @@ const https = require("https");
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { create } = require("domain");
 
 const DIRECTUS_URL = "http://localhost:8055";
 const DIRECTUS_TOKEN = "";
@@ -76,6 +77,7 @@ async function importRecord(record) {
     formId: record.formId,
     formName: record.formName,
     formSource: record.formSource,
+    createdAt: record.createdAt,
     updatedAt: record.updatedAt,
     contact: record.contact,
     blessing: record.blessing,
@@ -123,6 +125,31 @@ async function main() {
     console.error("❌ 無法連接 Directus:", error.message);
     process.exit(1);
   }
+
+  // // 刪除 state="EXPORT" 的舊資料
+  // console.log('🗑️  刪除 state="EXPORT" 的舊資料...');
+  // const listResult = await request(
+  //   "/items/registrationDB?filter[state][_eq]=EXPORT&fields=id&limit=-1",
+  // );
+  // if (listResult.status !== 200) {
+  //   console.error(`❌ 查詢舊資料失敗 (HTTP ${listResult.status})`);
+  //   process.exit(1);
+  // }
+  // const keys = (listResult.data?.data || []).map((r) => r.id);
+  // if (keys.length > 0) {
+  //   const deleteResult = await request("/items/registrationDB", {
+  //     method: "DELETE",
+  //     body: keys,
+  //   });
+  //   if (deleteResult.status === 200 || deleteResult.status === 204) {
+  //     console.log(`✅ 已刪除 ${keys.length} 筆舊資料\n`);
+  //   } else {
+  //     console.error(`❌ 刪除失敗 (HTTP ${deleteResult.status}):`, JSON.stringify(deleteResult.data).slice(0, 200));
+  //     process.exit(1);
+  //   }
+  // } else {
+  //   console.log("ℹ️  無舊資料需刪除\n");
+  // }
 
   // 分批並發寫入
   for (let i = 0; i < records.length; i += CONCURRENCY) {

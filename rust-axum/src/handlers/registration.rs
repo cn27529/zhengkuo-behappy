@@ -264,12 +264,11 @@ pub async fn create_registration(
         r#"
         INSERT INTO registrationDB (
             state, formId, formName, formSource, 
-            salvation, contact, blessing, createdAt, updatedAt
+            salvation, contact, blessing, notes, createdAt, updatedAt
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
-    //.bind(&user_created_value)
     .bind(&payload.state)
     .bind(&payload.form_id)
     .bind(&payload.form_name)
@@ -277,6 +276,7 @@ pub async fn create_registration(
     .bind(&salvation_str)
     .bind(&contact_str)
     .bind(&blessing_str)
+    .bind(&payload.notes)
     .bind(&now)
     .bind(&now)
     .execute(&pool)
@@ -371,6 +371,10 @@ pub async fn update_registration(
     if let Some(blessing) = &payload.blessing {
         updates.push("blessing = ?");
         bindings.push(blessing.to_string());
+    }
+    if let Some(notes) = &payload.notes {
+        updates.push("notes = ?");
+        bindings.push(notes.clone());
     }
 
     // 在更新語句中添加 user_updated

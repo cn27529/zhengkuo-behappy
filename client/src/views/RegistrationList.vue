@@ -142,11 +142,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column
-          prop="contact.relationship"
-          label="關係"
-          width="120"
-        >
+        <el-table-column prop="contact.relationship" label="關係" width="120">
           <template #default="{ row }">
             <div>
               {{ row.contact?.relationship || "-" }}
@@ -160,28 +156,30 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="contact.mobile" label="手機/聯絡電話" width="120" align="center">
+        <el-table-column
+          prop="contact.mobile"
+          label="手機/聯絡電話"
+          width="120"
+          align="center"
+        >
           <template #default="{ row }">
             <div class="contact-phone">
-                {{ row.contact?.mobile || "-" }}
-              </div>
-              <div class="contact-phone">
-                {{ row.contact?.phone || "-" }}
-              </div>
+              {{ row.contact?.mobile || "-" }}
+            </div>
+            <div class="contact-phone">
+              {{ row.contact?.phone || "-" }}
+            </div>
           </template>
         </el-table-column>
 
-      <!-- 消災地址 -->
-      <el-table-column
-        prop="contact.address"
-        label="消災地址"
-      >
-        <template #default="{ row }">
-          <div class="contact-address">
-            {{ row.blessing?.address || "-" }}
-          </div>
-        </template>
-      </el-table-column>
+        <!-- 消災地址 -->
+        <el-table-column prop="contact.address" label="消災地址/超度地址">
+          <template #default="{ row }">
+            <div class="contact-address">
+              {{ row.blessing?.address || row.salvation?.address || "-" }}
+            </div>
+          </template>
+        </el-table-column>
 
         <el-table-column
           prop="user_created"

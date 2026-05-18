@@ -52,13 +52,14 @@ pub struct Registration {
     )]
     pub blessing: Option<String>,
     
+    #[sqlx(default)]
+    pub notes: Option<String>,
+
     // 自定義時間戳
     #[sqlx(rename = "createdAt", default)]
     pub created_at: Option<String>,
     #[sqlx(rename = "updatedAt", default)]
     pub updated_at: Option<String>,    
-
-    pub notes: Option<String>, // export-import
 }
 
 // 自定義序列化函數：將 JSON 字符串轉為 JSON 對象
@@ -110,7 +111,9 @@ pub struct CreateRegistrationRequest {
     #[serde(default)]
     pub contact: Option<JsonValue>,
     #[serde(default)]
-    pub blessing: Option<JsonValue>,    
+    pub blessing: Option<JsonValue>,
+    #[serde(default)]
+    pub notes: Option<String>,
 }
 
 /// 更新報名記錄請求
@@ -125,6 +128,7 @@ pub struct UpdateRegistrationRequest {
     pub salvation: Option<JsonValue>,
     pub contact: Option<JsonValue>,
     pub blessing: Option<JsonValue>,
+    pub notes: Option<String>,
     
     #[serde(default)]
     pub user_updated: Option<String>,
@@ -174,14 +178,13 @@ pub struct RegistrationResponse {
     pub contact: Option<JsonValue>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub blessing: Option<JsonValue>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub notes: Option<String>,
     
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_at: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub notes: Option<String>,
+    pub updated_at: Option<String>,    
 }
 
 impl From<Registration> for RegistrationResponse {
@@ -202,10 +205,9 @@ impl From<Registration> for RegistrationResponse {
                 .and_then(|s| serde_json::from_str(&s).ok()),
             blessing: data.blessing
                 .and_then(|s| serde_json::from_str(&s).ok()),
+            notes: data.notes,
             created_at: data.created_at,
             updated_at: data.updated_at,
-
-            notes: data.notes, // export-import
         }
     }
 }
