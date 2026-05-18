@@ -35,7 +35,6 @@ async function login() {
   console.log("✅ 登入成功，取得 token\n");
 }
 
-
 async function request(endpoint, options = {}) {
   return new Promise((resolve, reject) => {
     const url = new URL(endpoint, DIRECTUS_URL);
@@ -81,6 +80,7 @@ async function importRecord(record) {
     contact: record.contact,
     blessing: record.blessing,
     salvation: record.salvation,
+    notes: record.notes,
   };
 
   try {
