@@ -132,3 +132,7 @@ Header 欄位數: 25
 - Completed in 0.110s
 
 > 欄位不足問題已完全修正，所有資料行都達到 25 欄，沒有任何缺欄的行了。
+
+## 尤樹城˙尤葉信 沒有地址
+
+db/EXPORT.csv 資料中姓名："尤樹城˙尤葉信" 經 db/EXPORT.js 執行後生成 db/EXPORT.json 在 db/EXPORT.json 中沒有地址，請找原因

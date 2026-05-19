@@ -31,9 +31,13 @@ function parseRow(line) {
 //   "連絡地址" → 郵遞區號2(15) + 連絡地址(16)
 //   "戶籍地址" → 郵遞區號1(13) + 戶籍地址(14)
 function getAddress(row) {
+  //「通訊地址」連絡地址寫填不實，先以「連絡地址」為主，若無再看「戶籍地址」
   const type = row[12];
-  if (type === "連絡地址") return (row[15] + " " + row[16]).trim();
-  if (type === "戶籍地址") return (row[13] + " " + row[14]).trim();
+  if (type === "連絡地址")
+    return ((row[15] || row[13]) + " " + (row[16] || row[14])).trim();
+  //「通訊地址」戶籍地址寫填不實，先以「戶籍地址」為主，若無再看「連絡地址」
+  if (type === "戶籍地址")
+    return ((row[13] || row[15]) + " " + (row[14] || row[16])).trim();
   return "";
 }
 
@@ -115,7 +119,13 @@ for (let i = 1; i < lines.length; i++) {
       blessing: { address: "", persons: [] },
       salvation: {
         address,
-        ancestors: [{ id: 1, surname: name.charAt(0), notes: "" }],
+        ancestors: [
+          {
+            id: 1,
+            surname: name.length <= 4 ? name.charAt(0) : "",
+            notes: name,
+          },
+        ],
         survivors: [{ id: 2, name, zodiac, notes: "" }],
       },
     };
