@@ -94,9 +94,9 @@
         </div>
       </div>
 
-      <!-- 消災地址 -->
+      <!-- 消災住址 -->
       <div class="data-section">
-        <h3 class="section-title">消災地址</h3>
+        <h3 class="section-title">消災住址</h3>
         <div
           class="data-item"
           draggable="true"
@@ -126,9 +126,9 @@
         </div>
       </div>
 
-      <!-- 超度地址 -->
+      <!-- 超度住址 -->
       <div class="data-section">
-        <h3 class="section-title">超度地址</h3>
+        <h3 class="section-title">超度住址</h3>
         <div
           class="data-item"
           draggable="true"
@@ -384,7 +384,7 @@ const onDragStart = (event, type, content = null) => {
     dragState.draggedItemType = type;
     dragState.draggedItemContent = content;
   }
-  // 消災地址
+  // 消災住址
   if (type === "blessingAddress" && content) {
     dragState.draggedItemType = type;
     dragState.draggedItemContent = content;
@@ -394,7 +394,7 @@ const onDragStart = (event, type, content = null) => {
     dragState.draggedItemType = type;
     dragState.draggedItemContent = content;
   }
-  // 超度地址
+  // 超度住址
   if (type === "salvationAddress" && content) {
     dragState.draggedItemType = type;
     dragState.draggedItemContent = content;

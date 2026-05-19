@@ -26,12 +26,12 @@ export const useCardStore = defineStore("card", () => {
       // 基礎資訊
       name: formData.value.contact?.name || "王小明",
 
-      // 消災地址
+      // 消災住址
       blessingAddress: formData.value.blessing?.address || "",
       // 消災人員，將表單數據轉換為卡片數據
       persons: formData.value.blessing?.persons?.map((p) => p.name) || [],
 
-      // 超度地址
+      // 超度住址
       salvationAddress: formData.value.salvation?.address || "",
       // 祖先
       ancestors:
@@ -62,7 +62,7 @@ export const useCardStore = defineStore("card", () => {
         },
         // 消災資料
         "blessing": {
-            // 消災地址
+            // 消災住址
             "address": "台北市中正區中山南路1號",
             // 消災人員
             "persons": [
@@ -84,7 +84,7 @@ export const useCardStore = defineStore("card", () => {
         },
         //超度資料
         "salvation": {
-            // 超度地址
+            // 超度住址
             "address": "台北市中正區中山南路1號",
             // 祖先姓氏
             "ancestors": [

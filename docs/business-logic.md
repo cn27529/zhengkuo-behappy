@@ -49,7 +49,7 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 
 **地址資訊：**
 
-- `address` - 消災地址（與消災人員互為必填）
+- `address` - 消災住址（與消災人員互為必填）
 
 **人員清單：**
 每位消災人員包含：
@@ -62,7 +62,7 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 
 **業務規則：**
 
-1. 消災地址與消災人員互為必填（有其中一項就必須填寫另一項）
+1. 消災住址與消災人員互為必填（有其中一項就必須填寫另一項）
 2. 有消災人員時必須指定至少一位戶長
 3. 戶長數量不得超過系統設定上限
 4. 當有多筆消災人員時，所有條目的姓名和生肖都必須完整填寫
@@ -72,7 +72,7 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 
 **地址資訊：**
 
-- `address` - 超度地址（與祖先/陽上人互為必填）
+- `address` - 超度住址（與祖先/陽上人互為必填）
 
 **祖先清單 (Ancestors)：**
 
@@ -91,7 +91,7 @@ zhengkuo-behappy 是一個專為寺廟設計的綜合管理系統，主要處理
 
 - 祖先清單記錄需要超度的往生者
 - 陽上人清單記錄為往生者祈福的在世親屬
-- 超度地址與祖先/陽上人互為必填（有其中一項就必須填寫另一項）
+- 超度住址與祖先/陽上人互為必填（有其中一項就必須填寫另一項）
 - **重要規則：有祖先時必須有陽上人**（宗教儀式要求）
 - 祖先和陽上人數量都有系統設定上限
 - 當有多筆記錄時，所有條目的必填欄位都必須完整填寫
@@ -293,7 +293,7 @@ monthlyStats = {
 - `subtotal` - 小計
 - `source` - 資料來源（salvation.ancestors, salvation.survivors, blessing.persons）
 - `sourceData` - 具體選擇的人員/祖先資料
-- `sourceAddress` - 對應的地址（消災地址或超度地址）
+- `sourceAddress` - 對應的地址（消災住址或超度住址）
 
 **費用資訊：**
 
@@ -743,12 +743,12 @@ if (hasNamedPersons && householdHeads.length === 0) {
   errors.push("請至少指定一位戶長");
 }
 
-// 消災地址與人員一致性
+// 消災住址與人員一致性
 if (filledBlessingPersons > 0 && !blessingAddress.trim()) {
-  errors.push("已填寫消災人員，消災地址為必填");
+  errors.push("已填寫消災人員，消災住址為必填");
 }
 if (blessingAddress.trim() && filledBlessingPersons === 0) {
-  errors.push("消災地址已填寫，請至少填寫一筆消災人員");
+  errors.push("消災住址已填寫，請至少填寫一筆消災人員");
 }
 
 // 消災人員資料完整性（多筆時）
@@ -775,12 +775,12 @@ if (survivorsCount > maxSurvivors) {
   errors.push(`陽上人數量超過限制 (${survivorsCount}/${maxSurvivors})`);
 }
 
-// 超度地址與資料一致性
+// 超度住址與資料一致性
 if (filledAncestors + filledSurvivors > 0 && !salvationAddress.trim()) {
-  errors.push("已填寫祖先或陽上人，超度地址為必填");
+  errors.push("已填寫祖先或陽上人，超度住址為必填");
 }
 if (salvationAddress.trim() && filledAncestors === 0) {
-  errors.push("超度地址已填寫，請至少填寫一筆歷代祖先");
+  errors.push("超度住址已填寫，請至少填寫一筆歷代祖先");
 }
 
 // 祖先與陽上人關聯性（有祖先必須有陽上人）

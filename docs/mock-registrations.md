@@ -21,7 +21,7 @@
   - otherRelationship: string（若 relationship 為 "其它"，可填寫補充文字）
 
 - blessing (object)
-  - address: string（消災地址，必填）
+  - address: string（消災住址，必填）
   - persons: array（消災人員清單）
     - person 物件欄位：
       - id: number（本清單內唯一 id）
@@ -31,7 +31,7 @@
       - isHouseholdHead: boolean（是否為戶長）
 
 - salvation (object)
-  - address: string（超度地址，必填）
+  - address: string（超度住址，必填）
   - ancestors: array（祖先清單）
     - ancestor 物件欄位：
       - id: number
@@ -48,7 +48,7 @@
 
 - id：建議在同一種類別（persons / ancestors / survivors）內唯一即可，檔案中可從 1 開始。
 - 戶長檢查：應用程式邏輯為「只有在至少有一筆已填姓名的消災人員時，才要求至少指定一位戶長」，並會檢查不超過 `config.maxHouseholdHeads`。
-- 欄位必填檢查在 `stores/registration.js` 的 `validationDetails` 處理（例如聯絡人姓名、消災/超度地址等）。
+- 欄位必填檢查在 `stores/registration.js` 的 `validationDetails` 處理（例如聯絡人姓名、消災/超度住址等）。
 - 若要匯入到應用程式，可使用 `fetch` 或 `import` 讀取此 JSON，然後把物件賦值給 store 的 `registrationForm` 或作為建立多筆測試資料使用。
 
 ## 範例（單筆註解）

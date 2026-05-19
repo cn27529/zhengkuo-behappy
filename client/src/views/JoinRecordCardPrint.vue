@@ -227,7 +227,7 @@ const availableTags = computed(() => {
   if (address) {
     tags.push({
       id: "chaodu_a1",
-      label: `超度地址 ${address}`,
+      label: `超度住址 ${address}`,
       value: address,
     });
   }
@@ -272,7 +272,7 @@ const availableTags = computed(() => {
     if (address) {
       tags.push({
         id: "qifu_a1",
-        label: `消災地址 ${address}`,
+        label: `消災住址 ${address}`,
         value: address,
       });
     }
@@ -296,7 +296,7 @@ const availableTags = computed(() => {
     if (address) {
       tags.push({
         id: "xiaozai_a1",
-        label: `固定消災地址 ${address}`,
+        label: `固定消災住址 ${address}`,
         value: address,
       });
     }

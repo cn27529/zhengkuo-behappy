@@ -216,7 +216,7 @@ export const useQueryStore = defineStore("registrationQuery", () => {
           item.blessing.address &&
           item.blessing.address.toLowerCase().includes(query)
         ) {
-          console.log("✅ 匹配消災地址");
+          console.log("✅ 匹配消災住址");
           matchFound = true;
         }
         if (item.blessing.persons) {
@@ -249,7 +249,7 @@ export const useQueryStore = defineStore("registrationQuery", () => {
           item.salvation.address &&
           item.salvation.address.toLowerCase().includes(query)
         ) {
-          console.log("✅ 匹配超度地址");
+          console.log("✅ 匹配超度住址");
           matchFound = true;
         }
         if (item.salvation.ancestors) {

@@ -320,7 +320,7 @@
                 class="btn btn-outline btn-sm capsule-btn"
                 @click="copyBlessingAddress"
               >
-                同消災地址
+                同消災住址
               </button>
             </div>
           </div>

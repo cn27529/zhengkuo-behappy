@@ -115,7 +115,7 @@
         <el-table-column
           prop="contact.name"
           label="聯絡人"
-          width="150"
+          width="150"          
           align="center"
         >
           <template #default="{ row }">
@@ -172,14 +172,14 @@
           </template>
         </el-table-column>
 
-        <!-- 消災地址 -->
-        <el-table-column prop="contact.address" label="消災地址/超度地址">
+        <!-- 消災住址 -->
+        <el-table-column prop="contact.address" label="消災/超度住址">
           <template #default="{ row }">
             <div class="contact-address">
               {{ row.blessing?.address || row.salvation?.address || "-" }}
             </div>
           </template>
-        </el-table-column>
+        </el-table-column>        
 
         <el-table-column
           prop="user_created"

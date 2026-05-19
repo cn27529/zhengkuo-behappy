@@ -501,25 +501,25 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.otherRelationship = null;
     }
 
-    // 檢查消災地址與消災人員的一致性
+    // 檢查消災住址與消災人員的一致性
     const blessingAddrFilled =
       registrationForm.value.blessing.address &&
       registrationForm.value.blessing.address.trim();
     const filledBlessingPersons = availableBlessingPersons.value.length;
 
-    // 有消災人員但沒有消災地址
+    // 有消災人員但沒有消災住址
     if (filledBlessingPersons > 0 && !blessingAddrFilled) {
       details.valid = false;
-      details.errors.blessingAddress = "已填寫消災人員，消災地址為必填";
+      details.errors.blessingAddress = "已填寫消災人員，消災住址為必填";
       details.messages.push(details.errors.blessingAddress);
     } else {
       details.errors.blessingAddress = null;
     }
 
-    // 有消災地址但沒有消災人員
+    // 有消災住址但沒有消災人員
     if (blessingAddrFilled && filledBlessingPersons === 0) {
       details.valid = false;
-      details.errors.blessingPersons = "消災地址已填寫，請至少填寫一筆消災人員";
+      details.errors.blessingPersons = "消災住址已填寫，請至少填寫一筆消災人員";
       details.messages.push(details.errors.blessingPersons);
     } else {
       details.errors.blessingPersons = null;
@@ -594,27 +594,27 @@ export const useRegistrationStore = defineStore("registration", () => {
       details.errors.survivorIncomplete = null;
     }
 
-    // 檢查超度地址與超度相關資料的一致性
+    // 檢查超度住址與超度相關資料的一致性
     const salvationAddrFilled = (registrationForm.value.salvation.address || "")
       .toString()
       .trim();
     const filledAncestorsCount = availableAncestors.value.length;
     const filledSurvivorsCount = availableSurvivors.value.length;
 
-    // 有祖先或陽上人但沒有超度地址
+    // 有祖先或陽上人但沒有超度住址
     if (
       filledAncestorsCount + filledSurvivorsCount > 0 &&
       !salvationAddrFilled
     ) {
       details.valid = false;
-      details.errors.salvationAddress = "已填寫祖先或陽上人，超度地址為必填";
+      details.errors.salvationAddress = "已填寫祖先或陽上人，超度住址為必填";
       details.messages.push(details.errors.salvationAddress);
     } else if (salvationAddrFilled) {
-      // 有超度地址但沒有祖先
+      // 有超度住址但沒有祖先
       if (filledAncestorsCount === 0) {
         details.valid = false;
         details.errors.salvationAddress =
-          "超度地址已填寫，請至少填寫一筆歷代祖先";
+          "超度住址已填寫，請至少填寫一筆歷代祖先";
         details.messages.push(details.errors.salvationAddress);
       } else if (filledSurvivorsCount === 0) {
         // 有祖先但沒有陽上人
